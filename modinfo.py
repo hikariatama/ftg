@@ -113,7 +113,7 @@ class modInfoMod(loader.Module):
 
         api_endpoint = 'https://innocoffee.ru/ftg/mods/check?hash='
         sha1 = hashlib.sha1()
-        sha1.update(file)
+        sha1.update(code.encode('utf-8'))
         if requests.get(api_endpoint + str(sha1.hexdigest())).text == 'yes':
             comments += '\n✅ <b><u>Модуль разработан @innocoffee.</u> Цифровая подпись совпадает с подписью разработчика</b>'
 
