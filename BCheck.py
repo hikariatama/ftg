@@ -30,7 +30,7 @@ class BCheckMod(loader.Module):
         check_result = "Результат поиска: "
 
         async for user in message.client.iter_participants(message.to_id):
-            dt = requests.get('http://api.murix.ru/eye?v=1.1&uid=' + str(user.id)).json()
+            dt = requests.get('http://api.murix.ru/eye?v=1.2&uid=' + str(user.id)).json()
             # await message.reply("<code>" + json.dumps(dt, indent=4) + "</code>")
             dt = dt['data']
             if 'NOT_FOUND' not in dt:
@@ -51,7 +51,7 @@ class BCheckMod(loader.Module):
         check_result = "Результат поиска в чате: "
 
         async for user in message.client.iter_participants(message.to_id):
-            dt = requests.get('http://api.murix.ru/eye?v=1.1&uid=' + str(user.id)).json()
+            dt = requests.get('http://api.murix.ru/eye?v=1.2&uid=' + str(user.id)).json()
             # await message.reply("<code>" + json.dumps(dt, indent=4) + "</code>")
             dt = dt['data']
             if 'NOT_FOUND' not in dt:
