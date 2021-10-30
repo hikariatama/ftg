@@ -16,7 +16,7 @@
 
 #<3 title: Statuses
 #<3 pic: https://img.icons8.com/fluency/48/000000/envelope-number.png
-#<3 desc: Установить статус, отключить уведомление, собрать все сообщения в канал.
+#<3 desc: Установить статус, отключить уведомления
 
 from .. import loader, utils
 import asyncio
@@ -44,7 +44,7 @@ class statusesMod(loader.Module):
                 return
 
             await utils.answer(message, self.db.get('Statuses', 'texts', {'': ''})[self.db.get('Statuses', 'status', '')])
-            if self.db.get('Statuses', 'notif', {'': False})[self.db.get('Statuses', 'status', '')]:
+            if not self.db.get('Statuses', 'notif', {'': False})[self.db.get('Statuses', 'status', '')]:
                 await message.client.send_read_acknowledge(message.chat_id)
 
     async def statuscmd(self, message):
