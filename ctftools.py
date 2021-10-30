@@ -7,6 +7,11 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: CTF Toolkit
+#<3 pic: https://img.icons8.com/fluency/48/000000/user-credentials.png
+#<3 desc: Базовые инструменты, которые могут пригодиться на низкосортных CTF соревах
+
+
 from .. import loader, utils
 import os
 import time

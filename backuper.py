@@ -7,6 +7,10 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: Backuper
+#<3 pic: https://img.icons8.com/fluency/48/000000/sync-settings.png
+#<3 desc: Сделать резервную копию базы данных FTG, а в будущем и всех модулей, заметок и др.
+
 from .. import loader, utils
 import asyncio
 import datetime

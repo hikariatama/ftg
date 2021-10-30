@@ -7,6 +7,9 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: PoliteInsult
+#<3 pic: https://img.icons8.com/fluency/48/000000/angry.png
+#<3 desc: Когда хочешь накричать на человека, но оставаться интеллигентом
 
 from .. import loader, utils
 

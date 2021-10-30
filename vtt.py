@@ -7,6 +7,9 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: vtt
+#<3 pic: https://img.icons8.com/fluency/48/000000/voice-id.png
+#<3 desc: Автоматическое распознавание голосовых сообщений. Нужен ffmpeg
 
 from .. import loader, utils
 from telethon import events

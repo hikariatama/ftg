@@ -7,6 +7,10 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: FlashCards
+#<3 pic: https://img.icons8.com/fluency/48/000000/cards.png
+#<3 desc: Поможет быстро запомнить информацию, подготовиться к зачету
+
 from .. import loader, utils
 import asyncio
 from random import randint

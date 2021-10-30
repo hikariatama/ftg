@@ -7,6 +7,11 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: http_status_codes
+#<3 pic: https://img.icons8.com/fluency/48/000000/nas.png
+#<3 desc: Статус коды HTTP
+
+
 from .. import loader, utils
 from asyncio import sleep
 

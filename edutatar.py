@@ -7,6 +7,9 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: eduTatar
+#<3 pic: https://img.icons8.com/fluency/48/000000/dictionary.png
+#<3 desc: Удобный клиент edu.tatar.ru прямо в Telegram
 
 from .. import loader, utils
 import asyncio

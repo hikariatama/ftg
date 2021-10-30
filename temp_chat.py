@@ -7,6 +7,9 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: TempChat
+#<3 pic: https://img.icons8.com/fluency/48/000000/pause-squared.png
+#<3 desc: Создает временный чат для, например, совместной работы над проектом
 
 from .. import loader, utils
 import asyncio

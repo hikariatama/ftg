@@ -7,6 +7,10 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: LastCommand h3xcode
+#<3 pic: https://img.icons8.com/fluency/48/000000/last-12-hours.png
+#<3 desc: Выполнить предыдущую команду, версия @h3xcode
+
 from .. import loader, utils
 import asyncio
 import os

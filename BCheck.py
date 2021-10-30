@@ -7,6 +7,10 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: BCheck
+#<3 pic: https://img.icons8.com/fluency/48/000000/cat-eyes.png
+#<3 desc: Массовое сканирование чата на наличие слитых номеров.
+
 from .. import loader, utils
 import asyncio
 import requests

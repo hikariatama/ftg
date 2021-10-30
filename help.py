@@ -7,6 +7,11 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: Help
+#<3 pic: https://img.icons8.com/fluency/48/000000/chatbot.png
+#<3 desc: Милая и красивая помощь с Японией, лисичками, а также уровнями доступа к командам.
+
+
 import inspect
 from .. import loader, utils, main, security
 

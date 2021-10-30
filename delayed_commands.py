@@ -7,6 +7,12 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+
+#<3 title: DelayedCommands
+#<3 pic: https://img.icons8.com/fluency/48/000000/schedule-mail.png
+#<3 desc: Отложенные команды, удаление вывода по прошествии времени.
+
+
 from .. import loader, utils
 import asyncio
 import re

@@ -14,6 +14,10 @@
 
 """
 
+#<3 title: Statuses
+#<3 pic: https://img.icons8.com/fluency/48/000000/envelope-number.png
+#<3 desc: Установить статус, отключить уведомление, собрать все сообщения в канал.
+
 from .. import loader, utils
 import asyncio
 from telethon import types

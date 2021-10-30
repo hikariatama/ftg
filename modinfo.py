@@ -7,6 +7,9 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: ModuleInfo
+#<3 pic: https://img.icons8.com/fluency/48/000000/info.png
+#<3 desc: Информация о модуле, включая зависимости, фильтры и бот-абьюз
 
 from .. import loader, utils
 from time import time

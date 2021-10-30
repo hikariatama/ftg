@@ -7,6 +7,11 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: Ghoul
+#<3 pic: https://img.icons8.com/fluency/48/000000/dota.png
+#<3 desc: Покажет участникам чата, что ты - гуль!
+
+
 import io, inspect
 from .. import loader, utils
 from asyncio import sleep

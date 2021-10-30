@@ -7,6 +7,11 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
+#<3 title: HomeWork
+#<3 pic: https://img.icons8.com/fluency/48/000000/khan-academy.png
+#<3 desc: Планнер домашних заданий поможет лучше учиться
+
+
 from .. import loader, utils
 import asyncio
 from random import randint
