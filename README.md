@@ -1,2 +1,1 @@
-# ftg
-innocoffee.ru/ftg
+# //todo: readme
