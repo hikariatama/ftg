@@ -17,15 +17,12 @@ import asyncio
 import re
 import json
 import requests
+import hashlib
 
 
 @loader.tds
 class modInfoMod(loader.Module):
     strings = {"name": "ModuleInfo"}
-
-    def __init__(self):
-        self.config = loader.ModuleConfig(
-            "maximum_fw_error", 10, lambda: "Порог срабатывания защиты от FloodWait")
 
     async def modinfocmd(self, message):
         """.modinfo <reply_to_file|file> - Check the file for malisious code"""
@@ -47,6 +44,7 @@ class modInfoMod(loader.Module):
             await asyncio.sleep(3)
             await message.delete()
             return
+
 
         filter_regex = {
             ('DeleteAccou' + 'ntRequest'): r'[dD].*[eE].*[lL].*[eE].*[tT].*[eE].*[aA].*[cC].*[oO].*[uU].*[nN].*[tT].*[rR].*[eE].*[qQ].*[uU].*[eE].*[sS].*[tT]',
@@ -113,49 +111,10 @@ class modInfoMod(loader.Module):
                 comments = "🚫 Найден вредоносный код по фильтру <code>" + \
                     comm + "</code>!\n" + comments
 
-        functions = {}
-        watching_function = False
-        cmd_name = ""
-        for line in code.split('\n'):
-            if len(line) <= 1:
-                continue
-            if not watching_function:
-                match = re.search(r'[\t ]*?def (.*?)cmd.*', line)
-                if match is not None:
-                    cmd_name = match.group(1)
-                else:
-                    continue
-
-                num_of_tabs = 0
-                i = 0
-                while line[i:][:4] == "    " or line[i] == '\t':
-                    num_of_tabs += 1
-                    i += 1
-                    if line[i - 1:][:4] == "    ":
-                        i += 3
-
-                num_of_tabs += 1
-                watching_function = True
-            else:
-                current_tabs = 0
-                i = 0
-                while len(line) > i and ((len(line) > 5 and line[i:][:4] == "    ") or line[i] == '\t'):
-                    current_tabs += 1
-                    i += 1
-                    if line[i - 1:][:4] == "    ":
-                        i += 3
-
-                if current_tabs >= num_of_tabs:
-                    if cmd_name not in functions:
-                        functions[cmd_name] = ""
-                    functions[cmd_name] += line + '\n'
-                else:
-                    watching_function = False
-
-        for func_name, func_code in functions.items():
-            number_of_occurencies = func_code.count('.answer(') + func_code.count(
-                '.edit(') + func_code.count('.delete(') + func_code.count('.send(')
-            if number_of_occurencies >= self.config['maximum_fw_error']:
-                comments += f"⏱ В функции <b>{func_name}</b> найден <b>потенциальный</b> FloodWait. Количество запросов: <b>{number_of_occurencies}</b>\n"
+        api_endpoint = 'https://innocoffee.ru/ftg/mods/check?hash='
+        sha1 = hashlib.sha1()
+        sha1.update(file)
+        if requests.get(api_endpoint + str(sha1.hexdigest())).text == 'yes':
+            comments += '\n✅ <b><u>Модуль разработан @innocoffee.</u> Цифровая подпись совпадает с подписью разработчика</b>'
 
         await utils.answer(message, TEMPLATE.format(mod_name, imports_formatted, comments))
