@@ -12,7 +12,7 @@
 #<3 desc: Волшебная метла выметет весь хлам из твоей телеги
 
 from .. import loader, utils
-from asyncio import sleep
+import asyncio
 import re
 import telethon
 
