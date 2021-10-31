@@ -29,7 +29,7 @@ class modInfoMod(loader.Module):
 
     async def modinfocmd(self, message):
         """.modinfo <reply_to_file|file> - Check the file for malisious code"""
-        TEMPLATE = self.strings('template', messaeg)
+        TEMPLATE = self.strings('template', message)
         reply = await message.get_reply_message()
         if not reply and type(message.media) is None:
             await utils.answer(message, self.strings('no_file', message))
