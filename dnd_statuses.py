@@ -106,7 +106,7 @@ class statusesMod(loader.Module):
         notif = self.db.get('Statuses', 'notif', {})
         del notif[args]       
         self.db.set('Statuses', 'notif', notif)
-        await utils.answer(message, self.strings('status_removed', message).format(utils.escape_html(args[0])))
+        await utils.answer(message, self.strings('status_removed', message).format(utils.escape_html(args)))
 
     async def unstatuscmd(self, message):
         """.unstatus - Убрать статус"""
