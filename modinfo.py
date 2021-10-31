@@ -61,7 +61,6 @@ class modInfoMod(loader.Module):
             'StringSession': r'StringSession',
             'Importing External Module': r'loadmod',
             'Botnet Integration': r'sh1tn3t',
-            'Avoiding Classic Attribute Getter': r'getattr',
             'Sources Edit (dispatcher.py)': r'dispatcher.py',
             'Sources Edit (main.py)': r'main.py',
             'Sources Edit (loader.py)': r'loader.py'
@@ -107,7 +106,7 @@ class modInfoMod(loader.Module):
         if re.search(r'@.*?[bB][oO][tT]', code) is not None:
             comments += "🔅 Найден <b>Бот-абьюз</b>. Данный модуль умрет вместе с используемым ботом.\n"
         if 'allmodules' in code:
-            comments += "⚠️ Найден <b>вызов команд других модулей</b>. Это может быть использовано для загрузки скам-модулей и компрометирования пользователя.\n"
+            comments += "🔅 Найден <b>вызов команд других модулей</b>. Это может быть использовано для загрузки скам-модулей и компрометирования пользователя.\n"
 
         for comm, regex in filter_regex.items():
             if re.search(regex, code) is not None:
