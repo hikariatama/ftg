@@ -58,7 +58,7 @@ class statusesMod(loader.Module):
     async def statuscmd(self, message):
         args = utils.get_args_raw(message)
         if args not in self.db.get('Statuses', 'texts', {}):
-            await tuils.answer(message, self.strings('status_not_found', message))
+            await utils.answer(message, self.strings('status_not_found', message))
             await asyncio.sleep(3)
             await message.delete()
             return
