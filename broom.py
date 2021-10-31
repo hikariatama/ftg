@@ -65,6 +65,9 @@ class MagicBroomMod(loader.Module):
         dialogs = await self.client.get_dialogs()
         todel = []
         for dialog in dialogs:
+            if 'friendly' in dialog.name.lower():
+                continue
+
             if scam and getattr(dialog.entity, "scam", False) or restricted and getattr(dialog.entity, "restricted", False) or deleted and getattr(dialog.entity, "deleted", False) or query and (query.lower() in dialog.name.lower() or re.match(query, dialog.name) is not None):
                 todel.append(dialog)
 
