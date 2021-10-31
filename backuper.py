@@ -125,6 +125,7 @@ class BackuperMod(loader.Module):
         txt = io.BytesIO(data.encode('utf-8'))
         txt.name = f"ftg-mods-{datetime.datetime.now().strftime('%d-%m-%Y-%H-%M')}.mods"
         await self.client.send_file(utils.get_chat_id(message), txt, caption=f'🦊 <b>Резервная копия модулей ({len(self.db.get("friendly-telegram.modules.loader", "loaded_modules", []))})</b>')
+        await message.delete()
 
     async def restoremodscmd(self, message):
         """.restoremods <reply to file> - Восстановить моды из резервной копии"""
@@ -149,6 +150,7 @@ class BackuperMod(loader.Module):
         txt = io.BytesIO(data.encode('utf-8'))
         txt.name = f"ftg-notes-{datetime.datetime.now().strftime('%d-%m-%Y-%H-%M')}.notes"
         await self.client.send_file(utils.get_chat_id(message), txt, caption=f'🦊 <b>Резервная копия заметок ({len(self.db.get("friendly-telegram.modules.notes", "notes", []))})</b>')
+        await message.delete()
 
     async def restorenotescmd(self, message):
         """.restorenotes <reply to file> - Восстановить заметки из резервной копии"""
