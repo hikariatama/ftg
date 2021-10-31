@@ -9,7 +9,7 @@
 
 #<3 title: Backuper
 #<3 pic: https://img.icons8.com/fluency/48/000000/sync-settings.png
-#<3 desc: Сделать резервную копию базы данных FTG, а в будущем и всех модулей, заметок и др.
+#<3 desc: Сделать резервную копию базы данных FTG, модулей, заметок и др. Почистить базу данных от мертвых репо и другого хлама
 
 from .. import loader, utils
 import asyncio
@@ -118,5 +118,51 @@ class BackuperMod(loader.Module):
 
         self.db.save()
         await utils.answer(message, res)
+
+    async def backupmodscmd(self, message):
+        """.backupmods - Сделать резервную копию загруженных и выгруженных модулей"""
+        data = json.dumps({'loaded': self.db.get("friendly-telegram.modules.loader", "loaded_modules", []), 'unloaded': self.db.get("friendly-telegram.modules.loader", "unloaded_modules", [])})
+        txt = io.BytesIO(data.encode('utf-8'))
+        txt.name = f"ftg-mods-{datetime.datetime.now().strftime('%d-%m-%Y-%H-%M')}.mods"
+        await self.client.send_file(utils.get_chat_id(message), txt, caption=f'🦊 <b>Резервная копия модулей ({len(self.db.get("friendly-telegram.modules.loader", "loaded_modules", []))})</b>')
+
+    async def restoremodscmd(self, message):
+        """.restoremods <reply to file> - Восстановить моды из резервной копии"""
+        reply = await message.get_reply_message()
+        if not reply or not reply.media:
+            await utils.answer(message, '<b>Reply to .mods file</b>')
+            await asyncio.sleep(3)
+            await message.delete()
+            return
+
+        file = await message.client.download_file(reply.media)
+        decoded_text = json.loads(file.decode('utf-8'))
+        self.db.set("friendly-telegram.modules.loader", "loaded_modules", decoded_text['loaded'])
+        self.db.set("friendly-telegram.modules.loader", "unloaded_modules", decoded_text['unloaded'])
+        self.db.save()
+        await utils.answer(message, '🦊 <b>Моды восстановлены, перезагружаюсь</b>')
+        await self.allmodules.commands['restart'](await message.respond('_'))
+
+    async def backupnotescmd(self, message):
+        """.backupnotes - Сделать резервную копию заметок"""
+        data = json.dumps(self.db.get("friendly-telegram.modules.notes", "notes", []))
+        txt = io.BytesIO(data.encode('utf-8'))
+        txt.name = f"ftg-notes-{datetime.datetime.now().strftime('%d-%m-%Y-%H-%M')}.notes"
+        await self.client.send_file(utils.get_chat_id(message), txt, caption=f'🦊 <b>Резервная копия заметок ({len(self.db.get("friendly-telegram.modules.notes", "notes", []))})</b>')
+
+    async def restorenotescmd(self, message):
+        """.restorenotes <reply to file> - Восстановить заметки из резервной копии"""
+        reply = await message.get_reply_message()
+        if not reply or not reply.media:
+            await utils.answer(message, '<b>Reply to .notes file</b>')
+            await asyncio.sleep(3)
+            await message.delete()
+            return
+
+        file = await message.client.download_file(reply.media)
+        decoded_text = json.loads(file.decode('utf-8'))
+        self.db.set("friendly-telegram.modules.notes", "notes", decoded_text)
+        self.db.save()
+        await utils.answer(message, '🦊 <b>Заметки восстановлены</b>')
 
 
