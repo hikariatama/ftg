@@ -59,5 +59,5 @@ class WelcomeMod(loader.Module):
 		if getattr(message, "user_joined", False) or getattr(message, "user_added", False):
 			user = await message.get_user()
 			chat = await message.get_chat()
-			await self.client.send_message(cid, self.welcome[cid].replace('{user}', user.first_name).replace('{chat}', chat.title))
+			await self.client.send_message(cid, self.welcome[cid].replace('{user}', user.first_name).replace('{chat}', chat.title).replace('{mention}', '<a href="tg://user?id=' + str(user.id) + '">' + user.first_name + '</a>'))
 			await message.delete()

@@ -25,13 +25,14 @@ from telethon import types
 @loader.tds
 class statusesMod(loader.Module):
     strings = {"name": "Statuses", 
-    'status_not_found': '<b>Статус не найден</b>',
-    'status_set': '<b>Статус установлен\n</b><code>{}</code>\nNotify: {}', 
-    'pzd_with_args': '<b>PZD with args</b>',
-    'status_created': '<b>Статус {} создан\n</b><code>{}</code>\nNotify: {}',
-    'status_removed': '<b>Статус {} удален</b>',
-    'no_status': '<b>Сейчас не стоит никакой статус</b>',
-    'status_unset': '<b>Статус убран</b>'}
+    'status_not_found': '<b>🦊 Статус не найден</b>',
+    'status_set': '<b>🦊 Статус установлен\n</b><code>{}</code>\nNotify: {}', 
+    'pzd_with_args': '<b>🦊 PZD with args</b>',
+    'status_created': '<b>🦊 Статус {} создан\n</b><code>{}</code>\nNotify: {}',
+    'status_removed': '<b>🦊 Статус {} удален</b>',
+    'no_status': '<b>🦊 Сейчас не стоит никакой статус</b>',
+    'status_unset': '<b>🦊 Статус убран</b>',
+    'available_statuses': '<b>🦊 Доступные статусы:</b>\n\n'}
 
     async def client_ready(self, client, db):
         self.db = db
@@ -117,3 +118,11 @@ class statusesMod(loader.Module):
 
         self.db.set('Statuses', 'status', False)
         await utils.answer(message, self.strings('status_unset', message))
+
+    async def statusescmd(self, message):
+        """.statuses - Показать доступные статусы"""
+        res = self.strings('available_statuses', message)
+        for short_name, status in self.db.get('Statuses', 'texts', {}).items():
+            res += f"<b><u>{short_name}</u></b> | Notify: <b>{self.db.get('Statuses', 'notif', {})[short_name]}</b>\n{status}\n➖➖➖➖➖➖➖➖➖\n"
+
+        await utils.answer(message, res)
