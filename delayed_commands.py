@@ -22,7 +22,9 @@ import re
 @loader.tds
 class DelayedMod(loader.Module):
     """Delayed commands"""
-    strings = {'name': 'DelayedCommands'}
+    strings = {'name': 'DelayedCommands',
+    'no_such_command': '<b>No such command</b>',
+    'output_will_be_removed_in': '{}\n\nThis output will be removed in {} sec(s)'}
 
     async def client_ready(self, client, db):
         self.db = db
@@ -77,7 +79,7 @@ class DelayedMod(loader.Module):
             command = command[1:]
 
         if command.split()[0] not in self.allmodules.commands:
-            await utils.answer(message, '<b>No such command</b>')
+            await utils.answer(message, self.strings('no_such_command', message))
             await asyncio.sleep(3)
             await message.delete()
             return
@@ -100,7 +102,7 @@ class DelayedMod(loader.Module):
             command = command[1:]
 
         if command.split()[0] not in self.allmodules.commands:
-            await utils.answer(message, '<b>No such command</b>')
+            await utils.answer(message, self.strings('no_such_command', message))
             await asyncio.sleep(3)
             await message.delete()
             return
@@ -120,11 +122,11 @@ class DelayedMod(loader.Module):
         await self.allmodules.commands[command.split()[0]](msg)
         await asyncio.sleep(1)
         delay = self.s2time(args.split()[0]) - 1
-        await msg.edit(msg.text + '\n\nThis output will be removed in ' + str(delay) + ' sec(s)')
+        await msg.edit(self.strings('output_will_be_removed_in', message).format(msg.text, str(delay)))
         if delay > 10:
             await asyncio.sleep(delay)
         else:
             for i in range(delay):
-                await msg.edit('\n'.join(msg.text.split('\n')[:-2]) + '\n\nThis output will be removed in ' + str(delay - i + 1) + ' sec(s)')
+                await msg.edit('\n'.join(self.strings('output_will_be_removed_in', message).format(msg.text.split('\n')[:-2]), str(delay - i + 1)))
                 await asyncio.sleep(1)
         await msg.delete()

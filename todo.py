@@ -22,7 +22,10 @@ import json
 @loader.tds
 class TodoMod(loader.Module):
     """ToDo List"""
-    strings = {'name': 'ToDo'}
+    strings = {'name': 'ToDo', 
+    'task_removed': '<b>✅ Задача удалена</b>', 
+    'task_not_found': '<b>🚫 Задача не найдена</b', 
+    'new_task': "<b>Задача </b><code>#{}</code>:\n<pre>{}</pre>\n{}"}
 
     async def client_ready(self, client, db):
         self.db = db
@@ -64,7 +67,7 @@ class TodoMod(loader.Module):
         self.todolist[random_id] = [task, importance]
 
         self.db.set("ToDo", "todo", json.dumps(self.todolist))
-        await utils.answer(message, "<b>Задача </b><code>#" + random_id + "</code>:\n<pre>" + str(task) + '</pre>\n' + self.imp_levels[importance])
+        await utils.answer(message, self.strings('new_task', message).format(random_id, str(task), self.imp_levels[importance]))
 
     async def tdlcmd(self, message):
         """.tdl - Показать активные задачи"""
@@ -93,13 +96,13 @@ class TodoMod(loader.Module):
             args = args[1:]
 
         if args not in self.todolist:
-            await utils.answer(message, '<b>🚫 Задача не найдена</b')
+            await utils.answer(message, self.strings('task_not_found', message))
             await asyncio.sleep(2)
             await message.delete()
             return
 
         del self.todolist[args]
         self.db.set("ToDo", "todo", json.dumps(self.todolist))
-        await utils.answer(message, '<b>✅ Задача удалена</b>')
+        await utils.answer(message, self.strings('task_removed', message))
         await asyncio.sleep(2)
         await message.delete()

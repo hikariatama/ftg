@@ -22,14 +22,17 @@ import hashlib
 
 @loader.tds
 class modInfoMod(loader.Module):
-    strings = {"name": "ModuleInfo"}
+    strings = {"name": "ModuleInfo", 
+    'template': "👮‍♂️ <b>Информация о {0}</b>\n\n<b>👀 Зависимости:</b>\n{1}\n{2}", 
+    'no_file': '<b>Мне какой файл проверять, не подскажешь?... 🗿</b>', 
+    'cannot_check_file': '<b>Не могу проверить файл...</b>'}
 
     async def modinfocmd(self, message):
         """.modinfo <reply_to_file|file> - Check the file for malisious code"""
-        TEMPLATE = "👮‍♂️ <b>Информация о {0}</b>\n\n<b>👀 Зависимости:</b>\n{1}\n{2}"
+        TEMPLATE = self.strings('template', messaeg)
         reply = await message.get_reply_message()
         if not reply and type(message.media) is None:
-            await message.edit("<b>Мне какой файл проверять, не подскажешь?... 🗿</b>")
+            await utils.answer(message, self.strings('no_file', message))
             return
         if not reply:
             media = message.media
@@ -40,7 +43,7 @@ class modInfoMod(loader.Module):
         try:
             code = file.decode('utf-8').replace('\r\n', '\n')
         except:
-            await message.edit('<b>Не могу проверить файл...</b>')
+            await utils.answer(message, self.strings('cannot_check_file', message))
             await asyncio.sleep(3)
             await message.delete()
             return

@@ -18,7 +18,11 @@ import os
 @loader.tds
 class LastCommandMod(loader.Module):
     """Execute last command"""
-    strings = {'name': 'LastCommand'}
+    strings = {'name': 'LastCommand',
+    'modified': '<b>Successfully modified dispatcher.py and main.py. Restarting userbot</b>',
+    'uninstalled': '<b>Successfully modified dispatcher.py and main.py. Uninstalling mod and restarting userbot</b>', 
+    'no_command': '<b>No command to execute</b>',
+    'already_installed': '<b>Module is already installed. No changes occured</b>'}
 
     async def client_ready(self, client, db):
         self.lc = False
@@ -56,10 +60,10 @@ class LastCommandMod(loader.Module):
             main = '#modded by @innocoffee\'s mod\n\n' + main
             open('friendly-telegram/main.py', 'w').write(main)
         if edited:
-            await utils.answer(message, '<b>Successfully modified dispatcher.py and main.py. Restarting userbot</b>')
+            await utils.answer(message, self.strings('modified', message))
             await self.allmodules.commands['restart'](await self.client.send_message('me', 'restarting'))
         else:
-            await utils.answer(message, '<b>Module is already installed. No changes occured</b>')
+            await utils.answer(message, self.strings('already_installed', message))
             await asyncio.sleep(3)
             await message.delete()
             return
@@ -69,7 +73,7 @@ class LastCommandMod(loader.Module):
             message.text = loader.dispatcher.last_command_msg.text
             await loader.dispatcher.last_command(message)
         else:
-            await utils.answer(message, '<b>No command to execute</b>')
+            await utils.answer(message, self.strings('no_command', message))
             await asyncio.sleep(3)
             await message.delete()
             return
@@ -102,6 +106,6 @@ class LastCommandMod(loader.Module):
             main = main.replace('#modded by @innocoffee\'s mod\n\n', '')
             open('friendly-telegram/main.py', 'w').write(main)
         
-        await utils.answer(message, '<b>Successfully modified dispatcher.py and main.py. Uninstalling mod and restarting userbot</b>')
+        await utils.answer(message, self.strings('uninstalled', message))
         # await self.allmodules.commands['unloadmod'](await self.client.send_message('me', '.unloadmod LastCommand'))
         # await self.allmodules.commands['restart'](await self.client.send_message('me', 'restarting'))

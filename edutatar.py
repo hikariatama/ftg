@@ -45,7 +45,11 @@ filters = {
 
 @loader.tds
 class eduTatarMod(loader.Module):
-    strings = {"name": "eduTatar"}
+    strings = {"name": "eduTatar",
+    'login_pass_not_specified': '<b>Необходимо указать логин и пароль от edu.tatar.ru в конфиге</b>',
+    'loading_info': "<b>Гружу информацию с edu.tatar.ru, пять сек...</b>",
+    'host_error': 'Error occured while parsing. Maybe edutatar host is down?',
+    'no_hw': "Нет д\\з"}
 
     def __init__(self):
         self.config = loader.ModuleConfig("edu_tatar_login", False, lambda: "Login from edu.tatar.ru", "edu_tatar_pass", False, lambda: "Password from edu.tatar.ru",
@@ -68,19 +72,19 @@ class eduTatarMod(loader.Module):
     async def eduweekcmd(self, message):
         """.eduweek - Show schedule for a week"""
         if not self.config['edu_tatar_login'] or not self.config['edu_tatar_pass']:
-            await utils.answer(message, '<b>Необходимо указать логин и пароль от edu.tatar.ru в конфиге</b>')
+            await utils.answer(message, self.strings('login_pass_not_specified', message))
             await asyncio.sleep(3)
             await message.delete()
             return
 
-        await utils.answer(message, "<b>Гружу информацию с edu.tatar.ru, пять сек...</b>")
+        await utils.answer(message, self.strings('loading_info', message))
         data = await self.scrape_week()
         await utils.answer(message, data)
 
     async def edudaycmd(self, message):
         """.eduday <day:integer{0,}> - Show schedule for today"""
         if not self.config['edu_tatar_login'] or not self.config['edu_tatar_pass']:
-            await utils.answer(message, '<b>Необходимо указать логин и пароль от edu.tatar.ru в конфиге</b>')
+            await utils.answer(message, self.strings('login_pass_not_specified', message))
             await asyncio.sleep(3)
             await message.delete()
             return
@@ -100,7 +104,7 @@ class eduTatarMod(loader.Module):
                                 minutes=now.minute, seconds=now.second)
         day = time.mktime(today.timetuple()) + offset
         day_datetime = datetime.utcfromtimestamp(day)
-        await utils.answer(message, "<b>Гружу информацию с edu.tatar.ru, пять сек...</b>")
+        await utils.answer(message, self.strings('loading_info', message))
         weekdays = ['Monday', 'Tuesday', 'Wednesday',
                     'Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday']
         data = f'📚 <b>{weekdays[day_datetime.weekday() + 1]}</b> 📚\n\n' + await self.scrape_date(day)
@@ -109,12 +113,12 @@ class eduTatarMod(loader.Module):
     async def edutermcmd(self, message):
         """.eduterm - Get term grades"""
         if not self.config['edu_tatar_login'] or not self.config['edu_tatar_pass']:
-            await utils.answer(message, '<b>Необходимо указать логин и пароль от edu.tatar.ru в конфиге</b>')
+            await utils.answer(message, self.string('login_pass_not_specified', message))
             await asyncio.sleep(3)
             await message.delete()
             return
 
-        await utils.answer(message, "<b>Гружу информацию с edu.tatar.ru, пять сек...</b>")
+        await utils.answer(message, self.strings('loading_info', message))
         data = await self.scrape_term(utils.get_args_raw(message))
         await utils.answer(message, data)
 
@@ -141,7 +145,7 @@ class eduTatarMod(loader.Module):
                 'Accept-Language': 'en-US,en;q=0.9'
             }, data={'main_login2': self.config['edu_tatar_login'], 'main_password2': self.config['edu_tatar_pass']}, allow_redirects=True, proxies=proxy)
         except requests.exceptions.ProxyError:
-            return 'Error occured while parsing. Maybe edutatar host is down?'
+            return self.strings('host_error')
 
         if 'DNSID' in dict(answ.cookies):
             self.sess = dict(answ.cookies)
@@ -192,7 +196,7 @@ class eduTatarMod(loader.Module):
                 'Accept-Language': 'en-US,en;q=0.9'
             }, proxies=proxy)
         except requests.exceptions.ProxyError:
-            return 'Error occured while parsing. Maybe edutatar host is down?'
+            return self.strings('host_error')
 
         day = re.findall(
             r'<td style=.vertical.*?>.*?<td style=.vertical.*?middle.*?>(.*?)</td>.*?<p>(.*?)</p>.*?</tr>', answ.text.replace('\n', ''))
@@ -203,7 +207,7 @@ class eduTatarMod(loader.Module):
         for sub in day:
             hw = sub[1].strip()
             if hw == "":
-                hw = "Нет д\\з"
+                hw = self.strings('no_hw')
             subject = sub[0].strip()
             for from_, to_ in filters.items():
                 subject = subject.replace(from_, to_)
@@ -244,7 +248,7 @@ class eduTatarMod(loader.Module):
                 'Accept-Language': 'en-US,en;q=0.9'
             }, proxies=proxy)
         except requests.exceptions.ProxyError:
-            return "Error occured while parsing. Maybe edutatar host is down?"
+            return self.strings('host_error')
 
         term = "<b>={ Табель успеваемости }=</b>\n"
         rows = re.findall(r'<tr>.*?<td>(.*?)</td>(.*?)</tr>',
@@ -288,7 +292,7 @@ class eduTatarMod(loader.Module):
         # print(maxelem)
         offset = " " * (maxelem - 7)
         if '-n' in args:
-            term += f'<code>  Subject{offset}  5 | 4 | 3 | 2 | Result</code>\n<code>' + ('=' * (maxelem - 7 + 33)) + '</code>\n'
+            term += f'<code>  Subject{offset}   5 | 4 | 3 | 2 | Result</code>\n<code>' + ('=' * (maxelem - 7 + 33)) + '</code>\n'
         else:
             term += "\n"
 

@@ -24,7 +24,14 @@ from telethon import types
 
 @loader.tds
 class statusesMod(loader.Module):
-    strings = {"name": "Statuses"}
+    strings = {"name": "Statuses", 
+    'status_not_found': '<b>Статус не найден</b>',
+    'status_set': '<b>Статус установлен\n</b><code>{}</code>\nNotify: {}', 
+    'pzd_with_args': '<b>PZD with args</b>',
+    'status_created': '<b>Статус {} создан\n</b><code>{}</code>\nNotify: {}',
+    'status_removed': '<b>Статус {} удален</b>',
+    'no_status': '<b>Сейчас не стоит никакой статус</b>',
+    'status_unset': '<b>Статус убран</b>'}
 
     async def client_ready(self, client, db):
         self.db = db
@@ -50,20 +57,20 @@ class statusesMod(loader.Module):
     async def statuscmd(self, message):
         args = utils.get_args_raw(message)
         if args not in self.db.get('Statuses', 'texts', {}):
-            await tuils.answer(message, '<b>Статус не найден</b>')
+            await tuils.answer(message, self.strings('status_not_found', message))
             await asyncio.sleep(3)
             await message.delete()
             return
 
         self.db.set('Statuses', 'status', args)
-        await utils.answer(message, '<b>Статус установлен\n</b><code>' + utils.escape_html(self.db.get('Statuses', 'texts', {})[args]) + '</code>\nNotify: ' + str(self.db.get('Statuses', 'notif')[args]))
+        await utils.answer(message, self.strings('status_set', message).format(utils.escape_html(self.db.get('Statuses', 'texts', {})[args]), str(self.db.get('Statuses', 'notif')[args])))
 
     async def newstatuscmd(self, message):
         """.newstatus <short_name> <notif|0/1> <text> - Новый статус"""
         args = utils.get_args_raw(message)
         args = args.split(' ', 2)
         if len(args) < 3:
-            await utils.answer(message, '<b>PZD with args</b>')
+            await utils.answer(message, self.strings('pzd_with_args', message))
             await asyncio.sleep(3)
             await message.delete()
             return
@@ -80,13 +87,13 @@ class statusesMod(loader.Module):
         notif = self.db.get('Statuses', 'notif', {})
         notif[args[0]] = args[1]        
         self.db.set('Statuses', 'notif', notif)
-        await utils.answer(message, '<b>Статус ' + utils.escape_html(args[0]) + ' создан\n</b><code>' + utils.escape_html(args[2]) + '</code>\nNotify: ' + str(args[1]))
+        await utils.answer(message, self.strings('status_created', message).format(utils.escape_html(args[0]), utils.escape_html(args[2])))
 
     async def delstatuscmd(self, message):
         """.delstatus <short_name> - Удалить статус"""
         args = utils.get_args_raw(message)
         if args not in self.db.get('Statuses', 'texts', {}):
-            await utils.answer(message, '<b>Статус не найден</b>')
+            await utils.answer(message, self.strings('status_not_found', message))
             await asyncio.sleep(3)
             await message.delete()
             return
@@ -98,15 +105,15 @@ class statusesMod(loader.Module):
         notif = self.db.get('Statuses', 'notif', {})
         del notif[args]       
         self.db.set('Statuses', 'notif', notif)
-        await utils.answer(message, '<b>Статус ' + utils.escape_html(args[0]) + ' удален</b>')
+        await utils.answer(message, self.strings('status_removed', message).format(utils.escape_html(args[0])))
 
     async def unstatuscmd(self, message):
         """.unstatus - Убрать статус"""
         if not self.db.get('Statuses', 'status', False):
-            await utils.answer(message, '<b>Сейчас не стоит никакой статус</b>')
+            await utils.answer(message, self.strings('no_status', message))
             await asyncio.sleep(3)
             await message.delete()
             return
 
         self.db.set('Statuses', 'status', False)
-        await utils.answer(message, '<b>Статус убран</b>')
+        await utils.answer(message, self.strings('status_unset', message))

@@ -190,7 +190,15 @@ TEMPLATE = """
 @loader.tds
 class FlashCardsMod(loader.Module):
     """Flash cards for learning"""
-    strings = {'name': 'FlashCards'}
+    strings = {'name': 'FlashCards',
+    'deck_not_found': '<b>🚫 Deck not found</b', 
+    'no_deck_name': '<b>You haven\'t provided deck name</b>',
+    'deck_created': "#Deck <code>#{}</code> <b>{}</b> successfully created!",
+    'deck_removed': '<b>🚫 Deck removed</b>',
+    'save_deck_no_reply': '<b>🚫 This command should be used in reply to message with deck items.</b>',
+    'deck_saved': '✅ <b>Deck saved!</b>', 
+    'generating_page': '<b>⚙️ Generating page, please wait ...</b>',
+    'offline_testing': "<b>📖 Offline testing, based on deck {}</b>"}
 
     async def client_ready(self, client, db):
         self.db = db
@@ -244,7 +252,7 @@ class FlashCardsMod(loader.Module):
             args = self.get_fucking_deck_from_fucking_reply(await message.get_reply_message(), int_args)
 
         if not args or args not in self.decks:
-            await utils.answer(message, '<b>🚫 Deck not found</b')
+            await utils.answer(message, self.strings('deck_not_found', message))
             await asyncio.sleep(2)
             await message.delete()
             return False
@@ -257,7 +265,7 @@ class FlashCardsMod(loader.Module):
 
         args = utils.get_args_raw(message)
         if args == "":
-            await utils.answer(message, '<b>You haven\'t provided deck name</b>')
+            await utils.answer(message, self.strings('no_deck_name', message))
             await asyncio.sleep(2)
             await message.delete()
             return
@@ -270,7 +278,7 @@ class FlashCardsMod(loader.Module):
         }
 
         self.db.set("FlashCards", "decks", json.dumps(self.decks))
-        await utils.answer(message, f"#Deck <code>#{random_id}</code> <b>{args}</b> successfully created!")
+        await utils.answer(message, self.strings('deck_created', message).format(random_id, args))
 
     async def deckscmd(self, message):
         """.decks - List decks"""
@@ -302,8 +310,8 @@ class FlashCardsMod(loader.Module):
         if reply and '#Decks' in reply.text:
             await self.deckscmd(reply)
         elif reply and '#Deck' in reply.text:
-            await reply.edit(reply.text + '\n<b>🚫 Deck removed</b>')
-        await utils.answer(message, '<b>✅ Deck removed</b>')
+            await reply.edit(reply.text + '\n' + self.strings('deck_removed', message))
+        await utils.answer(message, self.strings('deck_removed', message))
         await asyncio.sleep(2)
         await message.delete()
 
@@ -345,7 +353,7 @@ class FlashCardsMod(loader.Module):
         """.savedeck <reply> - Save deck. Do not use if you don't know what is this"""
         reply = await message.get_reply_message()
         if not reply or '#Editing' not in reply.text:
-            await utils.answer(message, '<b>🚫 This command should be used in reply to message with deck items.</b')
+            await utils.answer(message, self.strings('save_deck_no_reply', message))
             await asyncio.sleep(2)
             await message.delete()
             return False
@@ -374,7 +382,7 @@ class FlashCardsMod(loader.Module):
             res += f"\n<b>{i}. {front} - {back}</b>"
             i += 1
 
-        res += "\n➖➖➖➖➖➖➖➖➖➖\n✅ <b>Deck saved!</b>"
+        res += "\n➖➖➖➖➖➖➖➖➖➖\n" + self.strings('deck_saved', message)
 
         await utils.answer(reply, res)
         await message.delete()
@@ -386,7 +394,7 @@ class FlashCardsMod(loader.Module):
             return
 
         deck = self.decks[deck_id]
-        await utils.answer(message, '<b>⚙️ Generating page, please wait ...</b>')
+        await utils.answer(message, self.strings('generating_page', message))
         deck_name = deck['name']
         loc_cards = deck['cards'].copy()
         cards = {}
@@ -396,7 +404,7 @@ class FlashCardsMod(loader.Module):
         txt = io.BytesIO(TEMPLATE.replace('^title_deck_name^', deck_name).replace('^deck_name^', deck_name).replace('^json_cards^', json_cards).encode('utf-8'))
         txt.name = "testing.html"
         await message.delete()
-        await message.client.send_file(message.to_id, txt, caption=f"<b>📖 Offline testing, based on deck {deck_name}</b>")
+        await message.client.send_file(message.to_id, txt, caption=self.strings('offline_testing', message).format(deck_name))
 
 
 

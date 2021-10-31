@@ -21,13 +21,16 @@ import io
 @loader.tds
 class CTFToolsMod(loader.Module):
     """CTF Toolkit."""
-    strings = {"name": "CTF Toolkit"}
+    strings = {"name": "CTF Toolkit", 
+    'processing': "<b>📤 Обработка...</b>",
+    'file_not_specified': "<b>Мне какой файл читать, не подскажешь?... 🗿</b>",
+    'read_error': '<b>🗿 Ошибка чтения файла</b>'}
     async def filetypecmd(self, message):
         """Linux File command wrapper"""
-        await message.edit("<b>📤 Обработка...</b>")
         reply = await message.get_reply_message()
+        message = await utils.answer(message, self.strings('processing', message))
         if not reply and type(message.media) is None:
-            await utils.answer(message, "<b>Мне какой файл читать, не подскажешь?... 🗿</b>")
+            await utils.answer(message, self.strings('file_not_specified', message))
             return
         if not reply:
             media = message.media
@@ -46,11 +49,11 @@ class CTFToolsMod(loader.Module):
 
             await utils.answer(message, '<code>' + res + '</code>')
         except:
-            await utils.answer(message, '<b>🗿 Ошибка чтения файла</b>')
+            await utils.answer(message, self.strings('read_error', message))
 
     async def stringscmd(self, message):
         """Linux Strings | grep . command wrapper"""
-        await utils.answer(message, "<b>📤 Обработка...</b>")
+        await utils.answer(message, self.strings('processing', message))
         args = utils.get_args_raw(message)
         if args == '':
             grep = ''
@@ -58,7 +61,7 @@ class CTFToolsMod(loader.Module):
             grep = ' | grep ' + args
         reply = await message.get_reply_message()
         if not reply and type(message.media) is None:
-            await utils.answer(message, "<b>Мне какой файл читать, не подскажешь?... 🗿</b>")
+            await utils.answer(message, self.strings('file_not_specified', message))
             return
         if not reply:
             media = message.media
@@ -82,4 +85,4 @@ class CTFToolsMod(loader.Module):
                 await message.delete()
                 await message.client.send_file(message.to_id, txt)
         except:
-            await utils.answer(message, '<b>🗿 Ошибка чтения файла</b>')
+            await utils.answer(message, self.strings('read_error', message))

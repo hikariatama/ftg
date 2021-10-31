@@ -23,7 +23,11 @@ import json
 @loader.tds
 class HomeworkMod(loader.Module):
     """Simple Homework planner"""
-    strings = {'name': 'HomeWork'}
+    strings = {'name': 'HomeWork',
+    'no_hometask': '<b>You haven\'t provided hometask</b>',
+    'new_hometask': "<b>Hometask </b><code>#{}</code>:\n<pre>{}</pre>", 
+    'not_found': '<b>🚫 Hometask not found</b',
+    'removed': '<b>✅ Hometask removed</b>'}
 
     async def client_ready(self, client, db):
         self.db = db
@@ -38,7 +42,7 @@ class HomeworkMod(loader.Module):
         args = utils.get_args_raw(message)
         reply = await message.get_reply_message()
         if args == "" and not reply:
-            await utils.answer(message, '<b>You haven\'t provided hometask</b>')
+            await utils.answer(message, self.strings('no_hometask'))
             await asyncio.sleep(2)
             await message.delete()
             return
@@ -51,7 +55,7 @@ class HomeworkMod(loader.Module):
         self.hw[random_id] = args
 
         self.db.set("HomeWork", "hw", json.dumps(self.hw))
-        await utils.answer(message, "<b>Hometask </b><code>#" + random_id + "</code>:\n<pre>" + str(args) + '</pre>')
+        await utils.answer(message, self.strings('new_hometask', message).format(random_id, str(args)))
 
     async def hwlcmd(self, message):
         """.hwl - List of hometasks"""
@@ -67,13 +71,13 @@ class HomeworkMod(loader.Module):
             args = args[1:]
 
         if args not in self.hw:
-            await utils.answer(message, '<b>🚫 Hometask not found</b')
+            await utils.answer(message, self.strings('not_found', message))
             await asyncio.sleep(2)
             await message.delete()
             return
 
         del self.hw[args]
         self.db.set("HomeWork", "hw", json.dumps(self.hw))
-        await utils.answer(message, '<b>✅ Hometask removed</b>')
+        await utils.answer(message, self.strings('removed', message))
         await asyncio.sleep(2)
         await message.delete()

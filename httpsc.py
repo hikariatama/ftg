@@ -18,7 +18,11 @@ from asyncio import sleep
 
 @loader.tds
 class HttpErrorsMod(loader.Module):
-    strings = {"name": "http_status_codes"}
+    strings = {"name": "http_status_codes",
+    'args_incorrect': '<b>Статус-код - число. Попробуйте еще раз</b>',
+    'not_found': '<b>Статус-код не найден</b>',
+    'syntax_error': '<b>Синтаксис: [prefix]httpsc [error_code]</b>',
+    'scode': '<b>{} {}</b>\n⚜️ Описание кода: <i>{}</i>'}
 
     @loader.owner
     async def httpsccmd(self, message):
@@ -71,12 +75,12 @@ class HttpErrorsMod(loader.Module):
         }
 
         if len(args) == 0:
-            await message.edit('<b>Синтаксис: [prefix]httpsc [error_code]</b>')
+            await message.edit(self.strings('syntax_error', message))
 
         try:
             if int(args[0]) not in responses:
-                await message.edit('<b>Статус-код не найден</b>')
+                await message.edit(self.strings('not_found', message))
         except ValueError:
-            await message.edit('<b>Статус-код - число. Попробуйте еще раз</b>')
+            await message.edit(self.strings('args_incorrect', message))
 
-        await message.edit('<b>' + responses[int(args[0])][0] + ' ' + args[0] + '</b>\n⚜️ Описание кода: <i>' + responses[int(args[0])][1] + '</i>')
+        await message.edit(self.strings('scode', message).format(responses[int(args[0])][0], args[0], responses[int(args[0])][1]))

@@ -25,7 +25,13 @@ import telethon
 @loader.tds
 class TempChatMod(loader.Module):
     """Creates temprorary chats to avoid trashcans in TG."""
-    strings = {"name": "TempChat"}
+    strings = {"name": "TempChat", 
+    'chat_is_being_removed': '<b>🚫 This chat is being removed...</b>', 
+    'args': '<b>PZD with args: </b><code>.help TempChat</code>', 
+    'chat_not_found': '<b>Chat not found</b>',
+    'tmp_cancelled': '<b>Chat </b><code>{}</code><b> will now live forever!</b>', 
+    'delete_error': '<b>An error occured while deleting this temp chat. Remove it manually.</b>', 
+    'temp_chat_header': '<b>⚠️ This chat</b> (<code>{}</code>)<b> is temporary and will be removed {}.</b>'}
 
     @staticmethod
     def s2time(temp_time):
@@ -74,13 +80,13 @@ class TempChatMod(loader.Module):
             for chat, info in self.chats.items():
                 if int(info[0]) <= time.time():
                     try:
-                        await self.client.send_message(int(chat), '<b>🚫 This chat is being removed...</b>')
+                        await self.client.send_message(int(chat), self.strings('chat_is_being_removed', message))
                         async for user in self.client.iter_participants(int(chat), limit=50):
                             await self.client.kick_participant(int(chat), user.id)
                         await self.client.delete_dialog(int(chat))
                     except:
                         try:
-                            await self.client.send_message(int(chat), '<b>An error occured while deleting this temp chat. Remove it manually. @innocoffee</b>')
+                            await self.client.send_message(int(chat), self.strings('delete_error', message))
                         except:
                             pass
 
@@ -99,16 +105,15 @@ class TempChatMod(loader.Module):
         """.tmpchat <time> <title> - Create new temp chat
 You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
 30 secods, 30 minutes, 1 hour, 1 day, 1 week, 1 month"""
-        await utils.answer(message, '<b>Reading args</b>')
         args = utils.get_args_raw(message)
         if args == "":
-            await utils.answer(message, '<b>PZD with args. Refer to </b><code>.help TempChat</code>')
+            await utils.answer(message, self.strings('args', message))
             await asyncio.sleep(3)
             await message.delete()
             return
 
         if len(args.split()) < 2:
-            await utils.answer(message, '<b>PZD with args: </b><code>.help TempChat</code>')
+            await utils.answer(message, self.strings('args', message))
             await asyncio.sleep(3)
             await message.delete()
             return
@@ -118,7 +123,7 @@ You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
 
         until = self.s2time(temp_time)
         if until == round(time.time()):
-            await utils.answer(message, '<b>PZD with args: </b><code>.help TempChat</code>')
+            await utils.answer(message, self.strings('args', message))
             await asyncio.sleep(3)
             await message.delete()
             return
@@ -127,7 +132,7 @@ You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
         await message.delete()
         cid = res.chats[0].id
 
-        await message.client.send_message(cid, f'<b>⚠️ This chat</b> (<code>{cid}</code>)<b> is temporary and will be removed {datetime.datetime.utcfromtimestamp(until).strftime("%d.%m.%Y %H:%M:%S")}.</b>')
+        await message.client.send_message(cid, self.strings('temp_chat_header', message).format(cid, datetime.datetime.utcfromtimestamp(until).strftime("%d.%m.%Y %H:%M:%S")))
         self.chats[str(cid)] = [until, tit]
         self.db.set("TempChat", "chats", self.chats)
 
@@ -149,12 +154,12 @@ You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
             args = str(utils.get_chat_id(message))
 
         if args not in self.chats:
-            await utils.answer(message, '<b>Chat not found in temp db</b>')
+            await utils.answer(message, self.strings('chat_not_found', message))
             await asyncio.sleep(3)
             await message.delete()
             return
 
-        await utils.answer(message, f'<b>Chat </b><code>{self.chats[args][1]}</code><b> will now live forever!</b>')
+        await utils.answer(message, self.strings('tmp_cancelled', message).format(self.chats[args][1]))
         del self.chats[args]
         self.db.set("TempChat", "chats", json.dumps(self.chats))
 
@@ -162,14 +167,14 @@ You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
         """.tmpctime <chat_id> <new_time>"""
         args = utils.get_args_raw(message)
         if args == "":
-            await utils.answer(message, '<b>PZD with args: </b><code>.help TempChat</code>')
+            await utils.answer(message, self.strings('args', message))
             await asyncio.sleep(3)
             await message.delete()
             return
 
         args = args.split()
         if len(args) == 0:
-            await utils.answer(message, '<b>PZD with args: </b><code>.help TempChat</code>')
+            await utils.answer(message, self.strings('args', message))
             await asyncio.sleep(3)
             await message.delete()
             return
@@ -182,7 +187,7 @@ You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
             new_time = self.s2time(args[0])
 
         if chat not in list(self.chats.keys()):
-            await utils.answer(message, '<b>No such chat</b>')
+            await utils.answer(message, self.strings('chat_not_found', message))
             await asyncio.sleep(3)
             await message.delete()
             return

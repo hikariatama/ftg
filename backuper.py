@@ -22,7 +22,14 @@ import re
 @loader.tds
 class BackuperMod(loader.Module):
     """Backup everything and anything"""
-    strings = {"name":"Backuper"}
+    strings = {"name":"Backuper",
+    'backup_caption': '☝️ <b>Это - бекап базы данных. Никому его не передавай</b>', 
+    'reply_to_file': '<b>Reply to .{} file</b>', 
+    'db_restored': '<b>База данных обновлена. Перезапускаю юзербот...</b>', 
+    'modules_backup': '🦊 <b>Резервная копия модулей ({})</b>',
+    'notes_backup': '🦊 <b>Резервная копия заметок ({})</b>', 
+    'mods_restored': '🦊 <b>Моды восстановлены, перезагружаюсь</b>', 
+    'notes_restored': '🦊 <b>Заметки восстановлены</b>'}
 
     async def client_ready(self, client, db):
         self.db = db
@@ -32,15 +39,14 @@ class BackuperMod(loader.Module):
         """.backupdb - Создать бекап базы данных фтг"""
         txt = io.BytesIO(json.dumps(self.db).encode('utf-8'))
         txt.name = f"ftg-db-backup-{datetime.datetime.now().strftime('%d-%m-%Y-%H-%M')}.db"
-        await self.client.send_file('me', txt)
-        await self.client.send_message('me', '☝️ <b>Это - бекап базы данных. Никому его не передавай</b>')
+        await self.client.send_file('me', txt, caption=self.strings('backup_caption'))
         await message.delete()
 
     async def restoredbcmd(self, message):
         """.restoredb <key> - Восстановить базу данных из файла"""
         reply = await message.get_reply_message()
         if not reply or not reply.media:
-            await utils.answer(message, '<b>Reply to .db file</b>')
+            await utils.answer(message, self.strings('reply_to_file', message).format('db'))
             await asyncio.sleep(3)
             await message.delete()
             return
@@ -51,87 +57,23 @@ class BackuperMod(loader.Module):
         self.db.update(**decoded_text)
         self.db.save()
         # print(decoded_text)
-        await utils.answer(message, '<b>База данных обновлена. Перезапускаю юзербот...</b>')
+        await utils.answer(message, self.strings('db_restored', message))
         await self.allmodules.commands['restart'](await message.respond('_'))
 
-    async def washdbcmd(self, message):
-        """.wasdb <arg> - Помыть базу данных
-        -1 --filemods - Убрать конфиги модулей, загруженных из файла
-        -2 --deadrepos - Убрать мертвые репозитории
-        -3 --refactorrepos - Заменить ссылки githubusercontent ссылки на нормальные
-        -4 --deleteconf - Удалить конфиги выгруженных модулей
-        -a --all - Применить все фильтры"""
-
-        await self.backupdbcmd(await message.respond('_'))
-
-        args = utils.get_args_raw(message)
-
-        if '-a' in args or '--all' in args:
-            args = '-1 -2 -3 -4'
-
-        res = ""
-        if '--filemods' in args or '-1' in args:
-            todel = []
-            for x in self.db.keys(): 
-                if "__extmod" in x:
-                    todel.append(x)
-
-            for delete in todel:
-                self.db.pop(delete)
-
-            res += f"\n✅ Удалено {len(todel)} конфигов модулей, загруженных из файла"
-
-        if '--deadrepos' in args or '-2' in args:
-            counter = 0
-            mods = []
-            for mod in self.db.get("friendly-telegram.modules.loader", "loaded_modules"):
-                if ('http://' in mod or 'https://' in mod) and requests.get(mod).status_code == 404:
-                    counter += 1
-                else:
-                    mods.append(mod)
-
-            self.db.set('friendly-telegram.modules.loader', 'loaded_modules', mods)
-            res += f"\n✅ Удалено {counter} мертвых репо"
-
-        if '--refactorrepos' in args or '-3' in args:
-            counter = json.dumps(self.db).count('githubusercontent')
-            mods = re.sub(r'http[s]?:\/\/raw\.githubusercontent\.com\/([^\/]*?\/[^\/]*?)(\/[^\"\']*)', r'https://github.com/\1/raw\2', re.sub(r'http[s]?:\/\/raw%dgithubusercontent%dcom\/([^\/]*?\/[^\/]*?)(\/[^\"\']*)', r'https://github%dcom/\1/raw\2', json.dumps(self.db), flags=re.S), flags=re.S)
-            self.db.clear()
-            self.db.update(**json.loads(mods))
-
-            res += f"\n✅ Заменено {counter} мертвых репо"
-
-        if '--deleteconf' in args or '-4' in args:
-            counter = 0
-            todel = []
-            for x in self.db.keys(): 
-                if x.startswith('friendly-telegram.modules.'):
-                    link = x.split('.', 3)[2].replace('%d', '.')
-                    if link not in self.db.get("friendly-telegram.modules.loader", "loaded_modules") and link != 'loader':
-                        todel.append(x)
-
-            for delete in todel:
-                self.db.pop(delete)
-
-
-            res += f"\n✅ Удалено {len(todel)} конфигов выгруженных модулей"
-
-        self.db.save()
-        await utils.answer(message, res)
 
     async def backupmodscmd(self, message):
         """.backupmods - Сделать резервную копию загруженных и выгруженных модулей"""
         data = json.dumps({'loaded': self.db.get("friendly-telegram.modules.loader", "loaded_modules", []), 'unloaded': self.db.get("friendly-telegram.modules.loader", "unloaded_modules", [])})
         txt = io.BytesIO(data.encode('utf-8'))
         txt.name = f"ftg-mods-{datetime.datetime.now().strftime('%d-%m-%Y-%H-%M')}.mods"
-        await self.client.send_file(utils.get_chat_id(message), txt, caption=f'🦊 <b>Резервная копия модулей ({len(self.db.get("friendly-telegram.modules.loader", "loaded_modules", []))})</b>')
+        await self.client.send_file(utils.get_chat_id(message), txt, caption=self.strings('modules_backup', message).format(len(self.db.get("friendly-telegram.modules.loader", "loaded_modules", []))))
         await message.delete()
 
     async def restoremodscmd(self, message):
         """.restoremods <reply to file> - Восстановить моды из резервной копии"""
         reply = await message.get_reply_message()
         if not reply or not reply.media:
-            await utils.answer(message, '<b>Reply to .mods file</b>')
+            await utils.answer(message, self.strings('reply_to_file', message).format('mods'))
             await asyncio.sleep(3)
             await message.delete()
             return
@@ -141,7 +83,7 @@ class BackuperMod(loader.Module):
         self.db.set("friendly-telegram.modules.loader", "loaded_modules", decoded_text['loaded'])
         self.db.set("friendly-telegram.modules.loader", "unloaded_modules", decoded_text['unloaded'])
         self.db.save()
-        await utils.answer(message, '🦊 <b>Моды восстановлены, перезагружаюсь</b>')
+        await utils.answer(message, self.strings('mods_restored', message))
         await self.allmodules.commands['restart'](await message.respond('_'))
 
     async def backupnotescmd(self, message):
@@ -149,14 +91,14 @@ class BackuperMod(loader.Module):
         data = json.dumps(self.db.get("friendly-telegram.modules.notes", "notes", []))
         txt = io.BytesIO(data.encode('utf-8'))
         txt.name = f"ftg-notes-{datetime.datetime.now().strftime('%d-%m-%Y-%H-%M')}.notes"
-        await self.client.send_file(utils.get_chat_id(message), txt, caption=f'🦊 <b>Резервная копия заметок ({len(self.db.get("friendly-telegram.modules.notes", "notes", []))})</b>')
+        await self.client.send_file(utils.get_chat_id(message), txt, caption=self.strings('notes_backup', message).format(len(self.db.get("friendly-telegram.modules.notes", "notes", []))))
         await message.delete()
 
     async def restorenotescmd(self, message):
         """.restorenotes <reply to file> - Восстановить заметки из резервной копии"""
         reply = await message.get_reply_message()
         if not reply or not reply.media:
-            await utils.answer(message, '<b>Reply to .notes file</b>')
+            await utils.answer(message, self.strings('reply_to_file', message).format('notes'))
             await asyncio.sleep(3)
             await message.delete()
             return
@@ -165,6 +107,6 @@ class BackuperMod(loader.Module):
         decoded_text = json.loads(file.decode('utf-8'))
         self.db.set("friendly-telegram.modules.notes", "notes", decoded_text)
         self.db.save()
-        await utils.answer(message, '🦊 <b>Заметки восстановлены</b>')
+        await utils.answer(message, self.strings('notes_restored', message))
 
 

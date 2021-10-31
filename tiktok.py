@@ -16,14 +16,16 @@ import asyncio
 
 class TikTokMod(loader.Module):
     """Скачивает видео из TikTok без watermark"""
-    strings = {'name': 'TikTok'}
+    strings = {'name': 'TikTok', 
+    'loading': "<b>🦊 Подгружаю видосик с ТикТока</b>", 
+    'no_link': "<b>🦊 Ты не указал ссылку</b>"}
 
     async def ttcmd(self, message):
         """.tt <link> - Скачать видео с ТикТок без рекламы"""
-        await utils.answer(message, "<b>🦊 Подгружаю видосик с ТикТока</b>")
+        await utils.answer(message, self.strings('loading', message))
         args = utils.get_args_raw(message)
         if not args:
-            await utils.answer(message, "<b>🦊 Ты не указал ссылку</b>")
+            await utils.answer(message, self.strings('no_link', message))
             await asyncio.sleep(3)
             await message.delete()
             return
