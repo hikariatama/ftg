@@ -88,7 +88,7 @@ class statusesMod(loader.Module):
         notif = self.db.get('Statuses', 'notif', {})
         notif[args[0]] = args[1]        
         self.db.set('Statuses', 'notif', notif)
-        await utils.answer(message, self.strings('status_created', message).format(utils.escape_html(args[0]), args[1], utils.escape_html(args[2])))
+        await utils.answer(message, self.strings('status_created', message).format(utils.escape_html(args[0]), utils.escape_html(args[2]), args[1]))
 
     async def delstatuscmd(self, message):
         """.delstatus <short_name> - Удалить статус"""
