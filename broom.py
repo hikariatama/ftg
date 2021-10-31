@@ -77,7 +77,7 @@ class MagicBroomMod(loader.Module):
             return
         if len(ans) > 0:
             chats = "\n   🔸 ".join([d.name for d in ans])
-            await utils.answer(message, self.strings('will_be_removed', message).format(chats, message.text[7:]))
+            await utils.answer(message, self.strings('will_be_removed', message).format(len(ans), chats, message.text[7:]))
         else:
             await utils.answer(message, self.strings('nothing_will_be_removed', message))
 
