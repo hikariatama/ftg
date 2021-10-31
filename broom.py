@@ -15,6 +15,7 @@ from .. import loader, utils
 import asyncio
 import re
 import telethon
+import requests
 
 
 @loader.tds
