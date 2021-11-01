@@ -31,15 +31,17 @@ class modInfoMod(loader.Module):
         """.modinfo <reply_to_file|file> - Check the file for malisious code"""
         TEMPLATE = self.strings('template', message)
         reply = await message.get_reply_message()
-        if not reply and type(message.media) is None:
-            await utils.answer(message, self.strings('no_file', message))
-            return
+
         if not reply:
             media = message.media
         else:
             media = reply.media
 
-        file = await message.client.download_file(media)
+        try:
+            file = await message.client.download_file(media)
+        except:
+            await utils.answer(message, self.strings('no_file', message))
+            return
         try:
             code = file.decode('utf-8').replace('\r\n', '\n')
         except:
