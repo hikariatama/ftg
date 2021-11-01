@@ -31,7 +31,9 @@ class TempChatMod(loader.Module):
     'chat_not_found': '<b>Chat not found</b>',
     'tmp_cancelled': '<b>Chat </b><code>{}</code><b> will now live forever!</b>', 
     'delete_error': '<b>An error occured while deleting this temp chat. Remove it manually.</b>', 
-    'temp_chat_header': '<b>⚠️ This chat</b> (<code>{}</code>)<b> is temporary and will be removed {}.</b>'}
+    'temp_chat_header': '<b>⚠️ This chat</b> (<code>{}</code>)<b> is temporary and will be removed {}.</b>', 
+    'chat_created': '<b>Chat have been created</b>',
+    'delete_error_me': '<b>Error occured while deleting chat {}</b>'}
 
     @staticmethod
     def s2time(temp_time):
@@ -75,30 +77,33 @@ class TempChatMod(loader.Module):
         return round(time.time() + seconds + minutes + hours + days + weeks + months)
 
     async def chats_handler_async(self):
-        while True:
+        while self.db.get('TempChat', 'loop', False):
             # await self.client.send_message('me', 'testing')
             for chat, info in self.chats.items():
                 if int(info[0]) <= time.time():
                     try:
-                        await self.client.send_message(int(chat), self.strings('chat_is_being_removed', message))
+                        await self.client.send_message(int(chat), self.strings('chat_is_being_removed'))
                         async for user in self.client.iter_participants(int(chat), limit=50):
                             await self.client.kick_participant(int(chat), user.id)
                         await self.client.delete_dialog(int(chat))
                     except:
                         try:
-                            await self.client.send_message(int(chat), self.strings('delete_error', message))
+                            await self.client.send_message(int(chat), self.strings('delete_error'))
                         except:
-                            pass
+                            await self.client.send_message('me', self.strings('delete_error_me').format(info[1]))
 
                     del self.chats[chat]
                     self.db.set("TempChat", "chats", self.chats)
                     break
-            await asyncio.sleep(3)
+            await asyncio.sleep(.5)
 
     async def client_ready(self, client, db):
         self.db = db
         self.chats = self.db.get("TempChat", "chats", {})
         self.client = client
+        self.db.set('TempChat', 'loop', False)
+        await asyncio.sleep(1)
+        self.db.set('TempChat', 'loop', True)
         asyncio.ensure_future(self.chats_handler_async())
 
     async def tmpchatcmd(self, message):
@@ -128,21 +133,44 @@ You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
             await message.delete()
             return
 
-        res = await message.client(telethon.functions.messages.CreateChatRequest(users=['kanekiguard_tests_bot'], title=tit))
-        await message.delete()
+        res = await self.client(telethon.functions.messages.CreateChatRequest(users=['kanekiguard_tests_bot'], title=tit))
+        await utils.answer(message, self.strings('chat_created', message))
         cid = res.chats[0].id
 
-        await message.client.send_message(cid, self.strings('temp_chat_header', message).format(cid, datetime.datetime.utcfromtimestamp(until).strftime("%d.%m.%Y %H:%M:%S")))
+        await self.client.send_message(cid, self.strings('temp_chat_header', message).format(cid, datetime.datetime.utcfromtimestamp(until + 10800).strftime("%d.%m.%Y %H:%M:%S")))
         self.chats[str(cid)] = [until, tit]
         self.db.set("TempChat", "chats", self.chats)
 
-        await self.start_handler()
+    async def tmpcurrentcmd(self, message):
+        """.tmpcurrent <time> - Create current chat temporary
+You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
+30 secods, 30 minutes, 1 hour, 1 day, 1 week, 1 month"""
+        args = utils.get_args_raw(message)
+        if not args:
+            await utils.answer(message, self.strings('args', message))
+            await asyncio.sleep(3)
+            await message.delete()
+            return
+
+        until = self.s2time(args)
+        if until == round(time.time()):
+            await utils.answer(message, self.strings('args', message))
+            await asyncio.sleep(3)
+            await message.delete()
+            return
+
+        cid = utils.get_chat_id(message)
+
+        await utils.answer(message, self.strings('temp_chat_header', message).format(cid, datetime.datetime.utcfromtimestamp(until + 10800).strftime("%d.%m.%Y %H:%M:%S")))
+        self.chats[str(cid)] = [until, (await self.client.get_entity(cid)).title]
+        self.db.set("TempChat", "chats", self.chats)
+
 
     async def tmpchatscmd(self, message):
         """.tmpchats - List temp chats"""
         res = "<b>= Temporary Chats =</b>\n<s>==================</s>\n"
         for chat, info in self.chats.items():
-            res += f'<b>{info[1]}</b> (<code>{chat}</code>)<b>: {datetime.datetime.utcfromtimestamp(info[0]).strftime("%d.%m.%Y %H:%M:%S")}.</b>\n'
+            res += f'<b>{info[1]}</b> (<code>{chat}</code>)<b>: {datetime.datetime.utcfromtimestamp(info[0] + 10800).strftime("%d.%m.%Y %H:%M:%S")}.</b>\n'
         res += "<s>==================</s>"
 
         await utils.answer(message, res)
