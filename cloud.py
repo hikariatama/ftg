@@ -111,4 +111,4 @@ class modCloudMod(loader.Module):
             commands += '<code>.' + command + '</code>\n'
 
         await message.delete()
-        await self.client.send_file('t.me/innomods_database', x0_file, caption=f'🦊 <b><u>{title}</u></b>\n<i>{description}</i>\n\n📋 <b><u>Команды:</u></b>\n{commands}\n🚀 <code>.dlmod {url}</code>')
+        await self.client.send_file('t.me/innomods_database', x0_file, caption=f'🦊 <b><u>{title}</u></b>\n<i>{description}</i>\n\n📋 <b><u>Команды:</u></b>\n{commands}\n🚀 <code>.dlmod {url}</code>\n' + '#'.join(tags.split(',')))
