@@ -7,9 +7,9 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
-#<3 title: Web2Zip
-#<3 pic: https://img.icons8.com/fluency/48/000000/winrar.png
-#<3 desc: Скачивает файл из ссылки и отправляет в виде архива
+#<3 title: Web2file
+#<3 pic: https://img.icons8.com/fluency/48/000000/archive.png
+#<3 desc: Скачивает контент из ссылки и отправляет в виде файла
 
 
 from .. import loader, utils
@@ -17,15 +17,15 @@ import io
 import requests
 
 @loader.tds
-class Web2zipMod(loader.Module):
-	"""Пакует файл из ссылки в архив"""
-	strings = {'name': 'Web2zip',
+class Web2fileMod(loader.Module):
+	"""Скачивает контент из ссылки и отправляет в виде файла"""
+	strings = {'name': 'Web2file',
 	'no_args': '🦊 <b>Укажи ссылку</b>',
 	'fetch_error': '🦊 <b>Ошибка скачивания файла</b>',
 	'loading': '🦊 <b>Загрузка...</b>'}
 
-	async def web2zipcmd(self, message):
-		""".web2zip <ссылка на сайт> - Запаковать файл из сайта в архив"""
+	async def web2filecmd(self, message):
+		""".web2file <ссылка на сайт> - Запаковать файл из сайта в файл"""
 		website = utils.get_args_raw(message)
 		if not website:
 			await utils.answer(message, self.strings('no_args', message))
