@@ -23,7 +23,7 @@ except ImportError:
 class TikTokMod(loader.Module):
     """Отправить ссылку на оплату Yoomoney"""
     strings = {'name': 'Yoomoney', 
-    'payme': "<b>🦊 {}\n   💳<a href=\"{}\">Оплатить {} RUB 💳</a></b>", 
+    'payme': "<b>🦊 {}\n💳<a href=\"{}\">Оплатить {} RUB 💳</a></b>", 
     'args': "<b>🦊 Неверные аргументы</b>", 
     'no_account': "<b>🦊 Тебе нужно указать счет ЮМани в конфиге модуля</b>"}
 
