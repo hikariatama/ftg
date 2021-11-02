@@ -51,10 +51,11 @@ class HelpMod(loader.Module):
         cats = self.db.get('Help', 'cats', {})
         if cat == "":
             del cats[module_args]
+            cat = "default"
         else:
             cats[module_args] = cat
         self.db.set('Help', 'cats', cats)
-        await utils.answer(message, self.strings('set_cat', message).format(*args))
+        await utils.answer(message, self.strings('set_cat', message).format(module_args, cat))
 
     @loader.unrestricted
     async def helpcmd(self, message):
