@@ -52,7 +52,7 @@ class vttMod(loader.Module):
             with sr.AudioFile(filename + '.wav') as source:
                 audio_data = r.record(source)
                 text = r.recognize_google(audio_data, language='ru-RU')
-                await utils.answer(event, self.strings('covnerted', event).format(text))
+                await utils.answer(event, self.strings('converted', event).format(text))
         except Exception as e:
             if 'ffprobe' in str(e):
                 await utils.answer(event, self.strings('no_ffmpeg', event))

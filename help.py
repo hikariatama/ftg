@@ -55,7 +55,7 @@ class HelpMod(loader.Module):
         else:
             cats[module_args] = cat
         self.db.set('Help', 'cats', cats)
-        await utils.answer(message, self.strings('set_cat', message).format(module_args, cat))
+        await utils.answer(message, self.strings('set_cat', message).format(cat, module_args))
 
     @loader.unrestricted
     async def helpcmd(self, message):
