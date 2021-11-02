@@ -55,9 +55,9 @@ class vttMod(loader.Module):
                 await utils.answer(event, self.strings('covnerted', event).format(text))
         except Exception as e:
             if 'ffprobe' in str(e):
-                await utils.answer(msg, self.strings('no_ffmpeg', event))
+                await utils.answer(event, self.strings('no_ffmpeg', event))
             else:
-                await msg.delete()
+                await event.delete()
 
     @loader.owner
     async def voicycmd(self, message):
