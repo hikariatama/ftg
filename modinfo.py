@@ -29,6 +29,8 @@ class modInfoMod(loader.Module):
 
     async def modinfocmd(self, message):
         """.modinfo <reply_to_file|file> - Check the file for malisious code"""
+        # await utils.answer(message, '<code>Got command</code>')
+
         TEMPLATE = self.strings('template', message)
         reply = await message.get_reply_message()
 
@@ -42,6 +44,8 @@ class modInfoMod(loader.Module):
         except:
             await utils.answer(message, self.strings('no_file', message))
             return
+        # await utils.answer(message, '<code>Parsing file</code>')
+
         try:
             code = file.decode('utf-8').replace('\r\n', '\n')
         except:
@@ -49,6 +53,8 @@ class modInfoMod(loader.Module):
             await asyncio.sleep(3)
             await message.delete()
             return
+
+        # await utils.answer(message, '<code>File parsed</code>')
 
 
         filter_regex = {
@@ -74,6 +80,9 @@ class modInfoMod(loader.Module):
         except:
             mod_name = "Unknown"
 
+        # await utils.answer(message, '<code>Got mod name</code>')
+
+
         import_regex = [r'^[^#]rom ([^\n\r]*) import [^\n\r]*$',
                         r'^[^#]mport ([^\n\r]*)[^\n\r]*$', r"""__import__[(]['"]([^'"]*)['"][)]"""]
         imports = []
@@ -90,6 +99,9 @@ class modInfoMod(loader.Module):
 
         if len(imports) == 0:
             imports_formatted = "<i>Нет</i>"
+
+        # await utils.answer(message, '<code>Parsed imports</code>')
+
 
         comments = ""
 
@@ -110,15 +122,24 @@ class modInfoMod(loader.Module):
         if 'allmodules' in code:
             comments += "🔅 Найден <b>вызов команд других модулей</b>. Это может быть использовано для загрузки скам-модулей и компрометирования пользователя.\n"
 
+        # await utils.answer(message, '<code>Parsed commands</code>')
+
+
         for comm, regex in filter_regex.items():
             if re.search(regex, code) is not None:
                 comments = "🚫 Найден вредоносный код по фильтру <code>" + \
                     comm + "</code>!\n" + comments
+
+        # await utils.answer(message, '<code>Parsed malicious</code>')
+
 
         api_endpoint = 'https://innocoffee.ru/ftg/mods/check?hash='
         sha1 = hashlib.sha1()
         sha1.update(code.encode('utf-8'))
         if requests.get(api_endpoint + str(sha1.hexdigest())).text == 'yes':
             comments += '\n✅ <b><u>Модуль разработан @innocoffee.</u> Цифровая подпись совпадает с подписью разработчика</b>'
+
+        # await utils.answer(message, '<code>Sending report</code>')
+
 
         await utils.answer(message, TEMPLATE.format(mod_name, imports_formatted, comments))
