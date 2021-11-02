@@ -25,17 +25,17 @@ try:
 except:
     os.popen('python3 -m pip install hashlib').read()
     import hashlib
-try:
-    from PIL import Image
-except:
-    os.popen('python3 -m pip install Pillow').read()
-    from PIL import Image
-import imghdr
-try:
-    import magic
-except:
-    os.popen('python3 -m pip install python-magic').read()
-    import magic
+# try:
+#     from PIL import Image
+# except:
+#     os.popen('python3 -m pip install Pillow').read()
+#     from PIL import Image
+# import imghdr
+# try:
+#     import magic
+# except:
+#     os.popen('python3 -m pip install python-magic').read()
+#     import magic
 #requires: hashlib Pillow
 
 
