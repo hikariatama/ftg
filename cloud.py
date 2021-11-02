@@ -37,7 +37,7 @@ class modCloudMod(loader.Module):
         self.client = client
 
     async def addmodcmd(self, message):
-        """.addmod <reply_to_file|file> - Send module to @innomods_check_requests to add to database"""
+        """.addmod <reply_to_file|file> - Send module to @innomods_support to add to database"""
         reply = await message.get_reply_message()
         if not reply:
             media = message.media
@@ -52,8 +52,8 @@ class modCloudMod(loader.Module):
             return
 
         async def send(client):
-            await client.forward_messages('t.me/innomods_check_requests', [msid], utils.get_chat_id(message))
-            await client.send_message('t.me/innomods_check_requests', self.strings('tag', message))
+            await client.forward_messages('t.me/innomods_support', [msid], utils.get_chat_id(message))
+            await client.send_message('t.me/innomods_support', self.strings('tag', message))
             await utils.answer(message, self.strings('sent', message))
 
         # await send(self.client)
@@ -62,7 +62,7 @@ class modCloudMod(loader.Module):
             await send(self.client)
         except:
             try:
-                await self.client(telethon.tl.functions.channels.JoinChannelRequest(await self.client.get_entity('t.me/innomods_check_requests')))
+                await self.client(telethon.tl.functions.channels.JoinChannelRequest(await self.client.get_entity('t.me/innomods_support')))
             except:
                 await utils.answer(message, self.strings('cannot_join', message))
                 return
