@@ -29,7 +29,7 @@ class TikTokMod(loader.Module):
 
 
     def __init__(self):
-        self.config = loader.ModuleConfig("account", '4100116399134842', lambda: "Счет Yoomoney (16 цифр)")
+        self.config = loader.ModuleConfig("account", '', lambda: "Счет Yoomoney (16 цифр)")
 
 
     async def yoopaycmd(self, message):
