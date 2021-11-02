@@ -84,8 +84,12 @@ class modInfoMod(loader.Module):
             else:
                 imports_formatted += f"    ▫️ <code>{dependency}</code>\n"
 
-        if len(imports) == 0:
+        if imports_formatted == "":
             imports_formatted = "<i>No</i>"
+
+        if safe_imports == "":
+            safe_imports = "<i>No</i>"
+
 
         # await utils.answer(message, '<code>Parsed imports</code>')
 
