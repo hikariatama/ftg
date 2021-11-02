@@ -32,7 +32,9 @@ class MagicBroomMod(loader.Module):
     'broom_file': "\n✅ Удалено {} конфигов модулей, загруженных из файла", 
     'broom_deadrepos': "\n✅ Удалено {} мертвых репо", 
     'broom_refactorrepos': "\n✅ Заменено {} старых репо", 
-    'broom_deletedconfs': "\n✅ Удалено {} конфигов выгруженных модулей"
+    'broom_deletedconfs': "\n✅ Удалено {} конфигов выгруженных модулей",
+    'processing': '<b>🦊 Секунду...</b>',
+    'result': '<b>🦊 Результат:</b>\n'
     }
     
     async def client_ready(self, client, db):
@@ -111,13 +113,14 @@ class MagicBroomMod(loader.Module):
         -3 --refactorrepos - Заменить ссылки githubusercontent ссылки на нормальные
         -4 --deleteconf - Удалить конфиги выгруженных модулей
         -a --all - Применить все фильтры"""
-
         args = utils.get_args_raw(message)
+        await utils.answer(message, self.strings('processing', message))
+
 
         if '-a' in args or '--all' in args:
             args = '-1 -2 -3 -4'
 
-        res = ""
+        res = self.strings('result')
         if '--filemods' in args or '-1' in args:
             todel = []
             for x in self.db.keys(): 
@@ -162,6 +165,9 @@ class MagicBroomMod(loader.Module):
 
 
             res += self.strings('broom_deletedconfs', message).format(len(todel))
+
+        if res == self.strings('result'):
+            res += "Ничего не изменилось"
 
         self.db.save()
         await utils.answer(message, res)
