@@ -83,9 +83,8 @@ class CarbonMod(loader.Module):
     async def carboncmd(self, message):
         """.carbon <code> - Сделать красивую фотку кода"""
         args = utils.get_args_raw(message)
-        await utils.answer(message, self.strings('loading', message))
+        message = await utils.answer(message, self.strings('loading', message))
         # await utils.answer(message, createURLString(args))
         img = await get_response(createURLString(args), str(time.time()).replace('.', '') + '.png')
-        await message.delete()
         await message.client.send_message(utils.get_chat_id(message), file=img)
-
+        await message.delete()
