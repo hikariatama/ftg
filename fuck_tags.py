@@ -29,6 +29,7 @@ class FuckTagsMod(loader.Module):
     async def client_ready(self, client, db):
         self.db = db
         self.client = client
+        self._ratelimit = []
 
     async def fucktagscmd(self, message):
         """.fucktags <chat|optional> - Включить \\ выключить возможность тегать вас"""
@@ -37,6 +38,8 @@ class FuckTagsMod(loader.Module):
             cid = (await self.client.get_entity(args)).id
         except:
             cid = utils.get_chat_id(message)
+
+        self._ratelimit = list(set(self._ratelimit) - set([cid]))
 
         if cid not in self.db.get('FuckTags', 'tags', []):
             self.db.set('FuckTags', 'tags', self.db.get('FuckTags', 'tags', []) + [cid])
@@ -63,7 +66,9 @@ class FuckTagsMod(loader.Module):
     async def watcher(self, message):
         if utils.get_chat_id(message) in self.db.get('FuckTags', 'tags', []) and message.mentioned:
             await self.client.send_read_acknowledge(message.chat_id, message, clear_mentions=True)
-            await utils.answer(message, self.strings('do_not_tag_me', message))
+            if utils.get_chat_id(message) not in self._ratelimit:
+                await utils.answer(message, self.strings('do_not_tag_me', message))
+                self._ratelimit.append(utils.get_chat_id(message))
         elif utils.get_chat_id(message) in self.db.get('FuckTags', 'strict', []):
             await self.client.send_read_acknowledge(message.chat_id, message)
 

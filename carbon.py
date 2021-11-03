@@ -80,11 +80,19 @@ class CarbonMod(loader.Module):
         'args': '🦊 <b>No args specified</b>',
         'loading': '🦊 <b>Loading...</b>'
     }
+
+    async def client_ready(self, client, db):
+        self.client = client
+
     async def carboncmd(self, message):
         """.carbon <code> - Сделать красивую фотку кода"""
         args = utils.get_args_raw(message)
         message = await utils.answer(message, self.strings('loading', message))
+        try:
+            message = message[0]
+        except:
+            pass
         # await utils.answer(message, createURLString(args))
         img = await get_response(createURLString(args), str(time.time()).replace('.', '') + '.png')
-        await message.client.send_message(utils.get_chat_id(message), file=img)
+        await self.client.send_message(utils.get_chat_id(message), file=img)
         await message.delete()

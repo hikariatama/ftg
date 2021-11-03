@@ -19,6 +19,10 @@ import json
 import requests
 import telethon
 import io
+import hashlib
+import base64
+
+#requires: hashlib base64
 
 
 @loader.tds
@@ -135,13 +139,13 @@ class modCloudMod(loader.Module):
         TOKEN = open('/root/ftg/git.token', 'r').read()
         USERNAME = 'innocoffee-ftg'
         REPO = 'host'
-        url = f'https://api.github.com/repos/{USERNAME}/{REPO}/contents/{fname}'
+        url = f'https://api.github.com/repos/{USERNAME}/{REPO}/contents/{filename}'
         head = {"Authorization": f"token {TOKEN}", "Accept": "application/vnd.github.v3+json"}
         git_data = '{"message": "Upload file", "content":' + '"' + stout + '"' + '}'
         r = requests.put(url, headers=head, data=git_data)
         if int(r.status_code) == 201:
             uploaded_to = f'https://github.com/{USERNAME}/{REPO}'
-            url = uploaded_to + f'/raw/master/{fname}'
+            url = uploaded_to + f'/raw/master/{filename}'
         else:
             await utils.answer(message, self.strings('upload_error', message))
 
