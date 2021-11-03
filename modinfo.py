@@ -114,8 +114,12 @@ class modInfoMod(loader.Module):
         api_endpoint = 'https://innocoffee.ru/ftg/mods/check?hash='
         sha1 = hashlib.sha1()
         sha1.update(code.encode('utf-8'))
-        if requests.get(api_endpoint + str(sha1.hexdigest())).text == 'yes':
+        check_res = requests.get(api_endpoint + str(sha1.hexdigest())).text
+        if check_res == 'yes':
             comments += '\n✅ <b><u>Module is created by @innocoffee.</u> Hash confirmed</b>'
+        elif check_res == 'db':
+            comments += '\n✅ <b><u>Module is downloaded from @innomods_database and does not contain scam.</u> Hash confirmed</b>'
+
 
         # await utils.answer(message, '<code>Sending report</code>')
 

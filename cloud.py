@@ -29,7 +29,9 @@ class modCloudMod(loader.Module):
     'cannot_join': '<b>Не могу вступить в чат. Может, ты в бане?</b>',
     'sent': '<b>Файл отправлен на проверку</b>',
     'tag': '<b>🦊 @innocoffee_alt, модуль на добавление в базу</b>',
-    'upload_error': '🦊 <b>Upload error</b>'
+    'upload_error': '🦊 <b>Upload error</b>',
+    'args': '🦊 <b>Args not specified</b>',
+    'mod404': '🦊 <b>No results found in database</b>'
     }
 
 
@@ -70,6 +72,35 @@ class modCloudMod(loader.Module):
 
             await send(self.client)
 
+
+    async def cloudcmd(self, message):
+        """.cloud <command \\ mod_name> - Lookup mod in @innomods_database"""
+        args = utils.get_args_raw(message)
+        if not args:
+            await utils.answer(message, self.strings('args', message))
+            return
+
+        entity = await self.client.get_entity("@innomods_database")
+        try:
+            msgs = await self.client.get_messages(entity, limit=100)
+        except:
+            try:
+                await self.client(telethon.tl.functions.channels.JoinChannelRequest(entity))
+            except:
+                await utils.answer(message, self.strings('cannot_join', message))
+                return
+            msgs = await self.client.get_messages(entity, limit=100)
+
+        for msg in msgs:
+            if args.lower() in re.sub(r'<.*?>', '', msg.text.lower()):
+                await self.client.forward_messages(utils.get_chat_id(message), [msg.id], entity)
+                await message.delete()
+                return
+
+        await utils.answer(message, self.strings('mod404', message))
+
+
+
     async def verifmodcmd(self, message):
         """.verifmod <filename>;<title>;<description>;<tags> - Verfiy module [only for @innomods admins]"""
         args = utils.get_args_raw(message).split(';')
@@ -93,6 +124,11 @@ class modCloudMod(loader.Module):
             await message.delete()
             return
 
+
+        sha1 = hashlib.sha1()
+        sha1.update(code.encode('utf-8'))
+        file_hash = str(sha1.hexdigest())
+        open('/root/ftg/verified_mods.db', 'a').write(file_hash + '\n')
 
         encoded_string = base64.b64encode(file)
         stout = encoded_string.decode("utf-8")
