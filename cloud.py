@@ -28,7 +28,8 @@ class modCloudMod(loader.Module):
     'cannot_check_file': '<b>Не могу прочитать файл...</b>',
     'cannot_join': '<b>Не могу вступить в чат. Может, ты в бане?</b>',
     'sent': '<b>Файл отправлен на проверку</b>',
-    'tag': '<b>🦊 @innocoffee_alt, модуль на добавление в базу</b>'
+    'tag': '<b>🦊 @innocoffee_alt, модуль на добавление в базу</b>',
+    'upload_error': '🦊 <b>Upload error</b>'
     }
 
 
@@ -93,15 +94,20 @@ class modCloudMod(loader.Module):
             return
 
 
-        open('/tmp/cloud_file.py', 'wb').write(file)
-
-        x0_file = io.BytesIO(file)
-        x0_file.name = filename
-        try:
-            x0at = requests.post('https://x0.at', files={'file': x0_file})
-            url = x0at.text
-        except ConnectionError as e:
-            url = ''
+        encoded_string = base64.b64encode(file)
+        stout = encoded_string.decode("utf-8")
+        TOKEN = open('/root/ftg/git.token', 'r').read()
+        USERNAME = 'innocoffee-ftg'
+        REPO = 'host'
+        url = f'https://api.github.com/repos/{USERNAME}/{REPO}/contents/{fname}'
+        head = {"Authorization": f"token {TOKEN}", "Accept": "application/vnd.github.v3+json"}
+        git_data = '{"message": "Upload file", "content":' + '"' + stout + '"' + '}'
+        r = requests.put(url, headers=head, data=git_data)
+        if int(r.status_code) == 201:
+            uploaded_to = f'https://github.com/{USERNAME}/{REPO}'
+            url = uploaded_to + f'/raw/master/{fname}'
+        else:
+            await utils.answer(message, self.strings('upload_error', message))
 
         x0_file = io.BytesIO(file)
         x0_file.name = filename
