@@ -9,7 +9,7 @@
 
 #<3 title: Carbon
 #<3 pic: https://img.icons8.com/fluency/48/000000/code.png
-#<3 desc: Делает красивые Code Сниппеты. Не работает на Хероку.
+#<3 desc: Делает красивые Code Сниппеты.
 
 import os
 from .. import loader, utils
