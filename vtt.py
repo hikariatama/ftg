@@ -48,6 +48,10 @@ class vttMod(loader.Module):
             song = AudioSegment.from_ogg(filename + '.ogg')
             song.export(filename + '.wav', format="wav")
             event = await utils.answer(event, self.strings('converting', event))
+            try:
+                event = event[0]
+            except:
+                pass
             r = sr.Recognizer()
             with sr.AudioFile(filename + '.wav') as source:
                 audio_data = r.record(source)
