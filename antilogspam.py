@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 @loader.tds
 class AntiLogspamMod(loader.Module):
-    """Банит челов, которые срут в логах. Для старта нужно выполнить команду"""
+    """Банит челов, которые срут в логах"""
     strings = {
         'name': 'AntiLogspam', 
         'als_on': '🦊 <b>AntiLogspam On (Maximum {} edits per {} seconds)</b>',
@@ -50,21 +50,8 @@ class AntiLogspamMod(loader.Module):
             open('innoconfig/AntiLogspam.json', 'w').write('{}')
             logger.debug('[AntiLogspam]: Starting with clear config')
 
-        main_py = open('friendly-telegram/main.py', 'r').read()
-        if 'loader.dispatcher' not in main_py:
-            logger.debug('[AntiLogspam]: Installing update for main.py... Backup saved as main.py.backup')
-            os.popen('cp friendly-telegram/main.py friendly-telegram/main.py.backup').read()
-            content = main_py.replace('dispatcher = CommandDispatcher(modules, db, is_bot, __debug__ and arguments.self_test)\n            if', 'dispatcher = CommandDispatcher(modules, db, is_bot, __debug__ and arguments.self_test)\n            loader.dispatcher = dispatcher\n            if')
-            if 'loader.dispatcher' not in content:
-                logger.error('[AntiLogspam]: Installation failed.')
-                return
 
-            open('friendly-telegram/main.py', 'w').write(content)
-            logger.debug('[AntiLogspam]: Installed successfully')
-
-        original_handler = loader.dispatcher.handle_command
-
-        async def _dispatcher_wrapper(event):
+        async def event_handler(event):
             cid = str(utils.get_chat_id(event.message))
             user = str(event.message.from_id)
             if user != me:
@@ -115,12 +102,14 @@ class AntiLogspamMod(loader.Module):
             else:
                 logger.debug('[AntiLogspam]: Message from owner, ignoring...')
 
-            return await original_handler(event)
 
         logger.debug('[AntiLogspam]: Updating handlers')
-        client.remove_event_handler(loader.dispatcher.handle_command, telethon.events.MessageEdited())
-        loader.dispatcher.handle_command = _dispatcher_wrapper
-        client.add_event_handler(loader.dispatcher.handle_command, telethon.events.MessageEdited())
+        try:
+            client.remove_event_handler(loader.logspam_edit_handler, telethon.events.MessageEdited())
+        except:
+            pass
+        loader.logspam_edit_handler = event_handler
+        client.add_event_handler(loader.logspam_edit_handler, telethon.events.MessageEdited())
         logger.debug('[AntiLogspam]: Successfully started')
 
     async def antilogspamcmd(self, message):
