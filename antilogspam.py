@@ -20,15 +20,6 @@ import time
 
 logger = logging.getLogger(__name__)
 
-"""
-
-.eval content = open('friendly-telegram/main.py', 'r').read().replace('dispatcher = CommandDispatcher(modules, db, is_bot, __debug__ and arguments.self_test)\n            if', 'dispatcher = CommandDispatcher(modules, db, is_bot, __debug__ and arguments.self_test)\n            loader.dispatcher = dispatcher\n            if')
-if 'loader.dispatcher' not in content: return 'ERROR!'
-open('friendly-telegram/main.py', 'w').write(content)
-return 'OK'
-
-
-"""
 
 @loader.tds
 class AntiLogspamMod(loader.Module):
