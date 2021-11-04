@@ -40,5 +40,5 @@ class CarbonMod(loader.Module):
             message = message[0]
         except:
             pass
-        await self.client.send_message(utils.get_chat_id(message), file=requests.get('https://carbonnowsh.herokuapp.com/?code=' + urllib.parse.quote_plus(args)).content)
+        await self.client.send_message(utils.get_chat_id(message), file=requests.get('https://carbonnowsh.herokuapp.com/?code=' + urllib.parse.quote_plus(args).replace('%0A', '%250A')).content)
         await message.delete()
