@@ -143,18 +143,11 @@ class modCloudMod(loader.Module):
         head = {"Authorization": f"token {TOKEN}", "Accept": "application/vnd.github.v3+json"}
         git_data = '{"message": "Upload file", "content":' + '"' + stout + '"' + '}'
         r = requests.put(url, headers=head, data=git_data)
-        if int(r.status_code) == 201:
-            uploaded_to = f'https://github.com/{USERNAME}/{REPO}'
-            url = uploaded_to + f'/raw/master/{filename}'
-        else:
-            await utils.answer(message, self.strings('upload_error', message))
-
-        x0_file = io.BytesIO(file)
-        x0_file.name = filename
+        url = f'https://github.com/innocoffee-ftg/host/raw/master/{filename}'
 
         commands = ""
         for command in re.findall(r'[\n][ \t]+async def (.*?)cmd', code):
             commands += '<code>.' + command + '</code>\n'
 
         await message.delete()
-        await self.client.send_file('t.me/innomods_database', x0_file, caption=f'🦊 <b><u>{title}</u></b>\n<i>{description}</i>\n\n📋 <b><u>Команды:</u></b>\n{commands}\n🚀 <code>.dlmod {url}</code>\n#' + ' #'.join(tags.split(',')))
+        await self.client.send_message('t.me/innomods_database', f'🦊 <b><u>{title}</u></b>\n<i>{description}</i>\n\n📋 <b><u>Команды:</u></b>\n{commands}\n🚀 <code>.dlmod {url}</code>\n\n#' + ' #'.join(tags.split(',')))
