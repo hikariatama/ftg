@@ -15,62 +15,10 @@ import os
 from .. import loader, utils
 import time
 
-try:
-    from pyppeteer import launch
-except:
-    os.popen('python3 -m pip install pyppeteer').read()
-    from pyppeteer import launch
+import urllib.parse
+import requests
 
-
-try:
-    import urllib.parse
-except:
-    os.popen('python3 -m pip install urllib').read()
-    import urllib.parse
-
-
-
-def hex2rgb(h):
-    h = h.lstrip('#')
-    return ('rgb'+str(tuple(int(h[i:i+2], 16) for i in (0, 2, 4))))
-
-def checkHex(s):
-    for ch in s:
-        if ((ch < '0' or ch > '9') and (ch < 'A' or ch > 'F')):  
-            return False
-    return True
-
-
-def createURLString(code):
-    base_url = "https://carbon.now.sh/"
-    first = True
-    base_url += "?code=" + urllib.parse.quote_plus(code)
-    return base_url
-
-async def open_carbonnowsh(url):
-    browser = await launch(defaultViewPort=None,
-                           handleSIGINT=False,
-                           handleSIGTERM=False,
-                           handleSIGHUP=False,
-                           headless=True,
-                           args=['--no-sandbox', '--disable-setuid-sandbox'])
-    page = await browser.newPage()
-    await page._client.send('Page.setDownloadBehavior', {
-        'behavior': 'allow',
-        'downloadPath': '/tmp/'
-    })
-    await page.goto(url, timeout=20000)
-    return browser, page
-
-
-async def get_response(url, path):
-    browser, page = await open_carbonnowsh(url)
-    element = await page.querySelector("#export-container  .container-bg")
-    img = await element.screenshot({'path': '/tmp/' + path})
-    await browser.close()
-    img = open('/tmp/' + path, 'rb').read()
-    os.popen('rm /tmp/' + path)
-    return img
+#requires: urllib requests
 
 
 @loader.tds
@@ -92,7 +40,5 @@ class CarbonMod(loader.Module):
             message = message[0]
         except:
             pass
-        # await utils.answer(message, createURLString(args))
-        img = await get_response(createURLString(args), str(time.time()).replace('.', '') + '.png')
-        await self.client.send_message(utils.get_chat_id(message), file=img)
+        await self.client.send_message(utils.get_chat_id(message), file=requests.get('https://carbonnowsh.herokuapp.com/?code=' + urllib.parse.quote_plus(args)).content)
         await message.delete()

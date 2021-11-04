@@ -20,7 +20,7 @@ class RPMod(loader.Module):
         'name': 'RPMod',
         'args': '🦊 <b>Incorrect args</b>',
         'success': '🦊 <b>Success</b>',
-        'rplist': '🦊 <b>Current RP commands</b>\n\n'
+        'rplist': '🦊 <b>Current RP commands</b>\n\n{}'
     }
 
     async def client_ready(self, client, db):
@@ -51,9 +51,9 @@ class RPMod(loader.Module):
 
     async def rptogglecmd(self, message):
         """.rptoggle - Toggle RP Mode in current chat"""
-        cid = utils.get_chat_id(message)
+        cid = str(utils.get_chat_id(message))
         if cid in self.chats:
-            del self.chats[cid]
+            self.chats.remove(cid)
         else:
             self.chats.append(cid)
         self.db.set('RPMod', 'active', self.chats)
@@ -66,35 +66,38 @@ class RPMod(loader.Module):
 
     
     async def watcher(self, message):
-        cid = utils.get_chat_id(message)
-        if cid not in self.chats:
-            return
-
-        if message.text.split(' ', 1)[0] not in self.rp:
-            return
-
-        cmd = message.text.split(' ', 1)[0]
-        msg = self.rp[cmd]
-
-        entity = None
         try:
-            entity = await self.client.get_entity(message.text.split(' ', 2)[1])
+            cid = str(utils.get_chat_id(message))
+            if cid not in self.chats:
+                return
+
+            if message.text.split(' ', 1)[0] not in self.rp:
+                return
+
+            cmd = message.text.split(' ', 1)[0]
+            msg = self.rp[cmd]
+
+            entity = None
+            try:
+                entity = await self.client.get_entity(message.text.split(' ', 2)[1])
+            except:
+                pass
+
+            reply = await message.get_reply_message()
+
+            try:
+                reply = await self.client.get_entity(reply.sender_id)
+            except:
+                pass
+
+            if not reply and not entity:
+                return
+
+            if reply and entity or not reply and entity:
+                reply = entity
+
+            sender = await self.client.get_entity(message.sender_id)
+
+            await utils.answer(message, f'🦊 <a href="tg://user?id={sender.id}">{sender.first_name}</a> <b>{msg}</b> <a href="tg://user?id={reply.id}">{reply.first_name}</a>')
         except:
             pass
-
-        reply = await message.get_reply_message()
-
-        try:
-            reply = await self.client.get_entity(reply.sender_id)
-        except:
-            pass
-
-        if not reply and not entity:
-            return
-
-        if reply and entity or not reply and entity:
-            reply = entity
-
-        sender = await self.client.get_entity(message.sender_id)
-
-        await utils.answer(message, f'🦊 <a href="tg://user?id={sender.id}">{sender.first_name}</a> <b>{msg}</b> <a href="tg://user?id={reply.id}">{reply.first_name}</a>')
