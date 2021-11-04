@@ -41,10 +41,10 @@ class AntiLogspamMod(loader.Module):
     }
     
     def __init__(self):
-        self.config = loader.ModuleConfig("detection_range", 2, lambda: "Number of edits per time range", 
-                                        "detection_interval", 60, lambda: "Detection interval in seconds",
+        self.config = loader.ModuleConfig("detection_range", 10, lambda: "Number of edits per time range", 
+                                        "detection_interval", 30, lambda: "Detection interval in seconds",
                                         "action", 'delmsg', lambda: "Action on limit: delmsg/mute/kick/ban", 
-                                        "cooldown", 20, lambda: "Cooldown of warning message in chat")
+                                        "cooldown", 15, lambda: "Cooldown of warning message in chat")
 
     async def client_ready(self, client, db):
         self.db = db
