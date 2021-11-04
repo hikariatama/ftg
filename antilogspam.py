@@ -83,14 +83,14 @@ class AntiLogspamMod(loader.Module):
                             if action == "delmsg":
                                 await client.send_message(int(cid), self.strings('dont_spam').format(user, user_name, 'deleted message'))
                             elif action == "mute":
-                                await client(telethon.tl.functions.channels.EditBannedRequest(cid, user, telethon.tl.types.ChatBannedRights(until_date=time.time() + int(n), send_messages=True)))
-                                await client.send_message(int(cid), self.strings('dont_spam').format(user, user_name, 'muted him'))
+                                await client(telethon.tl.functions.channels.EditBannedRequest(int(cid), int(user), telethon.tl.types.ChatBannedRights(until_date=time.time() + 15 * 60, send_messages=True)))
+                                await client.send_message(int(cid), self.strings('dont_spam').format(user, user_name, 'muted him for 15 mins'))
                             elif action == "kick":
-                                await client.kick_participant(cid, user)
+                                await client.kick_participant(int(cid), int(user))
                                 await client.send_message(int(cid), self.strings('dont_spam').format(user, user_name, 'kicked him'))
                             elif action == "ban":
-                                await client(telethon.tl.functions.channels.EditBannedRequest(cid, user, telethon.tl.types.ChatBannedRights(until_date=None, view_messages=True, send_messages=True, send_media=True, send_stickers=True, send_gifs=True, send_games=True, send_inline=True, embed_links=True)))
-                                await client.send_message(int(cid), self.strings('dont_spam').format(user, user_name, 'banned him'))
+                                await client(telethon.tl.functions.channels.EditBannedRequest(int(cid), int(user), telethon.tl.types.ChatBannedRights(until_date=time.time() + 15 * 60, view_messages=True, send_messages=True, send_media=True, send_stickers=True, send_gifs=True, send_games=True, send_inline=True, embed_links=True)))
+                                await client.send_message(int(cid), self.strings('dont_spam').format(user, user_name, 'banned him for 15 mins'))
 
                             self.chats[cid]['cooldown'] = round(time.time()) + self.config['cooldown']
 
