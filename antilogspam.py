@@ -17,6 +17,7 @@ import json
 import logging
 import os
 import time
+from subprocess import DEVNULL, STDOUT, check_call
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ class AntiLogspamMod(loader.Module):
         self.client = client
         me = (await client.get_me()).id
         try:
-            os.popen('mkdir innoconfig').read()
+            check_call(['mkdir', 'innoconfig'], stdout=DEVNULL, stderr=STDOUT)
         except:
             pass
         try:
