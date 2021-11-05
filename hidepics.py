@@ -168,7 +168,7 @@ class HidePicsMod(loader.Module):
             if type(entity) is not telethon.tl.types.PeerChannel:
                 return
 
-            title = self.chats[entity.channel_id]
+            title = self.chats[str(entity.channel_id)]
             if not title.startswith('ftg-hidepics-'):
                 return
         except:
