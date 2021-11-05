@@ -79,7 +79,7 @@ class AntiLogspamMod(loader.Module):
                         await event.message.delete()
                         if int(self.chats[cid]['cooldown']) <= time.time():
                             try:
-                                user_name = (await client.get_input_entity(int(user))).first_name
+                                user_name = (await client.get_entity(int(user))).first_name
                             except:
                                 user_name = "Brother"
                             if action == "delmsg":
