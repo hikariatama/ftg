@@ -58,11 +58,6 @@ class AntiLogspamMod(loader.Module):
             cid = str(utils.get_chat_id(event.message))
             user = str(event.message.from_id)
             if user != me:
-                try:
-                    user_name = (await client.get_entity(int(user))).first_name
-                except:
-                    user_name = "Brother"
-
                 if cid in self.chats:
                     changes = False
                     if user not in self.chats[cid]:
@@ -83,6 +78,10 @@ class AntiLogspamMod(loader.Module):
                         action = self.config['action']
                         await event.message.delete()
                         if int(self.chats[cid]['cooldown']) <= time.time():
+                            try:
+                                user_name = (await client.get_entity(int(user))).first_name
+                            except:
+                                user_name = "Brother"
                             if action == "delmsg":
                                 await client.send_message(int(cid), self.strings('dont_spam').format(user, user_name, 'deleted message'))
                             elif action == "mute":
