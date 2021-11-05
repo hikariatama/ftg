@@ -17,9 +17,11 @@ import time
 
 import urllib.parse
 import requests
+import logging
 
 #requires: urllib requests
 
+logger = logging.getLogger(__name__)
 
 @loader.tds
 class CarbonMod(loader.Module):
@@ -40,5 +42,9 @@ class CarbonMod(loader.Module):
             message = message[0]
         except:
             pass
-        await self.client.send_message(utils.get_chat_id(message), file=requests.get('https://carbonnowsh.herokuapp.com/?code=' + urllib.parse.quote_plus(args).replace('%0A', '%250A')).content)
+
+        url = 'https://carbonnowsh.herokuapp.com/?code=' + urllib.parse.quote_plus(args).replace('%0A', '%250A').replace('%23', '%2523').replace('%2F', '%252f')
+        logger.info('[Carbon]: Fetching url ' + url)
+
+        await self.client.send_message(utils.get_chat_id(message), file=requests.get(url).content)
         await message.delete()

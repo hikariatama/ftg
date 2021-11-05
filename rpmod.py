@@ -79,7 +79,7 @@ class RPMod(loader.Module):
 
             entity = None
             try:
-                entity = await self.client.get_entity(message.text.split(' ', 2)[1])
+                entity = await self.client.get_input_entity(message.text.split(' ', 2)[1])
             except:
                 pass
 

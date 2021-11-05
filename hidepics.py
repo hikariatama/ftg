@@ -159,7 +159,7 @@ class HidePicsMod(loader.Module):
 
     async def watcher(self, message):
         try:
-            entity = await self.client.get_entity(message.peer_id)
+            entity = await self.client.get_input_entity(message.peer_id)
             if type(entity) is not telethon.tl.types.Channel and type(entity) is not telethon.tl.types.Chat:
                 return
 
