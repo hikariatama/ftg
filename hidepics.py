@@ -158,12 +158,15 @@ class HidePicsMod(loader.Module):
         
 
     async def watcher(self, message):
-        entity = await self.client.get_entity(message.peer_id)
-        if type(entity) is not telethon.tl.types.Channel and type(entity) is not telethon.tl.types.Chat:
-            return
+        try:
+            entity = await self.client.get_entity(message.peer_id)
+            if type(entity) is not telethon.tl.types.Channel and type(entity) is not telethon.tl.types.Chat:
+                return
 
-        title = entity.title
-        if not title.startswith('ftg-hidepics-'):
+            title = entity.title
+            if not title.startswith('ftg-hidepics-'):
+                return
+        except:
             return
 
         while self.db.get('HidePics', 'wait', False):
