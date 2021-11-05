@@ -41,8 +41,10 @@ class AntiLogspamMod(loader.Module):
         self.db = db
         self.client = client
         me = (await client.get_me()).id
-        
-        os.popen('mkdir innoconfig').read()
+        try:
+            os.popen('mkdir innoconfig').read()
+        except:
+            pass
         try:
             self.chats = json.loads(open('innoconfig/AntiLogspam.json', 'r').read())
         except:

@@ -26,7 +26,6 @@ class LastCommandMod(loader.Module):
 
         def _disp_wrap(command):
             txt, func = orig_dispatch(command)
-            print('txt', 'lc' in txt)
             if "lc" not in txt:
                 self.allmodules.last_command = func
             return txt, func
