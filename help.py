@@ -55,14 +55,14 @@ class HelpMod(loader.Module):
         else:
             cats[module_args] = cat
         self.db.set('Help', 'cats', cats)
-        await utils.answer(message, self.strings('set_cat', message).format(cat, module_args))
+        await utils.answer(message, self.strings('set_cat', message).format(module_args, cat))
 
     @loader.unrestricted
     async def helpcmd(self, message):
         """.help [module] [-f] [-c <category>] - Show help"""
         args = utils.get_args_raw(message)
         force = False
-        print(args)
+        # print(args)
         if '-f' in args:
             args = args.replace(' -f', '').replace('-f', '')
             force = True
