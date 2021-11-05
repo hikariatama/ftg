@@ -202,11 +202,7 @@ class FlashCardsMod(loader.Module):
 
     async def client_ready(self, client, db):
         self.db = db
-        try:
-            self.decks = json.loads(self.db.get("FlashCards", "decks"))
-        except:
-            self.decks = {}
-
+        self.decks = self.db.get("FlashCards", "decks", {})
 
     def get_fucking_deck_from_fucking_reply(self, fucking_reply, fucking_limit=None):
         if fucking_reply == None:
@@ -277,7 +273,7 @@ class FlashCardsMod(loader.Module):
             'cards': [('sample', 'sample')]
         }
 
-        self.db.set("FlashCards", "decks", json.dumps(self.decks))
+        self.db.set("FlashCards", "decks", self.decks)
         await utils.answer(message, self.strings('deck_created', message).format(random_id, args))
 
     async def deckscmd(self, message):
@@ -305,7 +301,7 @@ class FlashCardsMod(loader.Module):
             return
 
         del self.decks[deck_id]
-        self.db.set("FlashCards", "decks", json.dumps(self.decks))
+        self.db.set("FlashCards", "decks", self.decks)
         reply = await message.get_reply_message()
         if reply and '#Decks' in reply.text:
             await self.deckscmd(reply)
@@ -374,7 +370,7 @@ class FlashCardsMod(loader.Module):
         except:
             pass
 
-        self.db.set("FlashCards", "decks", json.dumps(self.decks))
+        self.db.set("FlashCards", "decks", self.decks)
 
         res = f"📋#Deck #{deck_id} <b>{deck['name']}</b>:\n➖➖➖➖➖➖➖➖➖➖"
         i = 1

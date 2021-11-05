@@ -14,9 +14,6 @@
 from .. import loader, utils
 import asyncio
 from random import randint
-import json
-
-# requires: random json
 
 
 @loader.tds
@@ -29,10 +26,7 @@ class TodoMod(loader.Module):
 
     async def client_ready(self, client, db):
         self.db = db
-        try:
-            self.todolist = json.loads(self.db.get("ToDo", "todo"))
-        except:
-            self.todolist = {}
+        self.todolist = self.db.get("ToDo", "todo", {})
 
         self.imp_levels = ['🌌 Watchlist', '💻 Proging',
                            '⌚️ Work', '🎒 Family', '🚫 Private']
@@ -66,7 +60,7 @@ class TodoMod(loader.Module):
 
         self.todolist[random_id] = [task, importance]
 
-        self.db.set("ToDo", "todo", json.dumps(self.todolist))
+        self.db.set("ToDo", "todo", self.todolist)
         await utils.answer(message, self.strings('new_task', message).format(random_id, str(task), self.imp_levels[importance]))
 
     async def tdlcmd(self, message):
@@ -102,7 +96,7 @@ class TodoMod(loader.Module):
             return
 
         del self.todolist[args]
-        self.db.set("ToDo", "todo", json.dumps(self.todolist))
+        self.db.set("ToDo", "todo", self.todolist)
         await utils.answer(message, self.strings('task_removed', message))
         await asyncio.sleep(2)
         await message.delete()

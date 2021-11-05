@@ -15,9 +15,6 @@
 from .. import loader, utils
 import asyncio
 from random import randint
-import json
-
-# requires: random json
 
 
 @loader.tds
@@ -31,10 +28,7 @@ class HomeworkMod(loader.Module):
 
     async def client_ready(self, client, db):
         self.db = db
-        try:
-            self.hw = json.loads(self.db.get("HomeWork", "hw"))
-        except:
-            self.hw = {}
+        self.hw = self.db.get("HomeWork", "hw", {})
 
     async def hwcmd(self, message):
         """.hw <item> - New hometask"""
@@ -54,7 +48,7 @@ class HomeworkMod(loader.Module):
 
         self.hw[random_id] = args
 
-        self.db.set("HomeWork", "hw", json.dumps(self.hw))
+        self.db.set("HomeWork", "hw", self.hw)
         await utils.answer(message, self.strings('new_hometask', message).format(random_id, str(args)))
 
     async def hwlcmd(self, message):
@@ -77,7 +71,7 @@ class HomeworkMod(loader.Module):
             return
 
         del self.hw[args]
-        self.db.set("HomeWork", "hw", json.dumps(self.hw))
+        self.db.set("HomeWork", "hw", self.hw)
         await utils.answer(message, self.strings('removed', message))
         await asyncio.sleep(2)
         await message.delete()
