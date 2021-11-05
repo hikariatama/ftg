@@ -146,7 +146,7 @@ class modCloudMod(loader.Module):
         url = f'https://github.com/innocoffee-ftg/host/raw/master/{filename}'
 
         commands = ""
-        for command in re.findall(r'[\n][ \t]+async def (.*?)cmd', code):
+        for command in re.findall(r'[\n][ \t]+async def ([^\(]*?)cmd', code):
             commands += '<code>.' + command + '</code>\n'
 
         await message.delete()
