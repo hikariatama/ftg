@@ -98,7 +98,7 @@ class RPMod(loader.Module):
             if cid not in self.chats:
                 return
 
-            if message.text.split(' ', 1)[0] not in self.rp:
+            if message.text.split(' ', 1)[0].lower() not in self.rp:
                 return
 
             cmd = message.text.split(' ', 1)[0].lower()
