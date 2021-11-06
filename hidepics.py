@@ -158,7 +158,7 @@ class HidePicsMod(loader.Module):
             await utils.answer(message, self.strings('args', message))
             return
         hash_object = hashlib.md5(args.encode('utf-8'))
-        self.db.set('HidePicks', 'key', str(hash_object.hexdigest()))
+        self.db.set('HidePics', 'key', str(hash_object.hexdigest()))
         await utils.answer(message, self.strings('key_updated', message))
         
 
@@ -181,7 +181,7 @@ class HidePicsMod(loader.Module):
         await message.delete()
 
         hash_object = hashlib.md5(message.text.encode('utf-8'))
-        if self.db.get('HidePicks', 'key', '') == str(hash_object.hexdigest()):
+        if self.db.get('HidePics', 'key', '') == str(hash_object.hexdigest()):
             # html = io.BytesIO(TEMPLATE.replace('^s^', ','.join(['"https://x0.at/' + _ + '.jpg"' for _ in (await self.find_db(entity)).split('|')])).encode('utf-8'))
             # html.name = 'output.html'
             # msg = await self.client.send_file(entity, html)
@@ -200,7 +200,7 @@ class HidePicsMod(loader.Module):
                 file = r.content
             except Exception as e:
                 await self.client.send_message(entity, self.strings('read_error', message).format(e))
-                self.db.set('HidePics', 'waif', False)
+                self.db.set('HidePics', 'wait', False)
                 return
         else:
             self.db.set('HidePics', 'wait', False)
