@@ -38,7 +38,7 @@ class AntiLogspamMod(loader.Module):
                                         "action", 'delmsg', lambda: "Action on limit: delmsg/mute/kick/ban/warn. (Warn only works if my Warn module is installed)", 
                                         "cooldown", 15, lambda: "Cooldown of warning message in chat")
 
-    async def check_user(self, cid, user, event_type):
+    async def check_user(self, cid, user, event_type, event=None):
         if user != self.me:
             if cid in self.chats:
                 changes = False
@@ -160,7 +160,7 @@ class AntiLogspamMod(loader.Module):
         async def edited_handler(event):
             cid = str(utils.get_chat_id(event.message))
             user = str(event.message.from_id)
-            await self.check_user(cid, user, 'edited')
+            await self.check_user(cid, user, 'edited', event)
 
         try:
             client.remove_event_handler(loader.logspam_edit_handler, telethon.events.MessageEdited())
