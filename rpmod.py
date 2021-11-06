@@ -106,7 +106,7 @@ class RPMod(loader.Module):
 
             entity = None
             try:
-                entity = await self.client.get_input_entity(message.text.split(' ', 2)[1])
+                entity = await self.client.get_entity(message.text.split(' ', 2)[1])
             except:
                 pass
 
@@ -127,4 +127,4 @@ class RPMod(loader.Module):
 
             await utils.answer(message, f'🦊 <a href="tg://user?id={sender.id}">{sender.first_name}</a> <b>{msg}</b> <a href="tg://user?id={reply.id}">{reply.first_name}</a>')
         except:
-            pass
+            return
