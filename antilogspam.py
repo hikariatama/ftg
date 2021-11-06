@@ -284,21 +284,24 @@ class AntiLogspamMod(loader.Module):
         open('innoconfig/AntiLogspam_cache.json', 'w').write(json.dumps(self.cache))
 
     async def watcher(self, message):
-        cid = str(utils.get_chat_id(message))
-        if str(message.from_id) == self.me:
-            return
+        try:
+            cid = str(utils.get_chat_id(message))
+            if str(message.from_id) == self.me:
+                return
 
-        if cid not in self.chats:
-            return
+            if cid not in self.chats:
+                return
 
-        msid = message.id
+            msid = message.id
 
-        logger.debug(f'[AntiLogspam]: Adding message {msid} to cache (from user: {message.from_id})')
+            logger.debug(f'[AntiLogspam]: Adding message {msid} to cache (from user: {message.from_id})')
 
-        self.cache[cid + "_" + str(msid)] = (message.from_id, round(time.time()) - self.correction)
+            self.cache[cid + "_" + str(msid)] = (message.from_id, round(time.time()) - self.correction)
 
-        for key, info in self.cache.copy().items():
-            if time.time() - info[1] - self.correction >= 86400:
-                del self.cache[key]
+            for key, info in self.cache.copy().items():
+                if time.time() - info[1] - self.correction >= 86400:
+                    del self.cache[key]
 
-        self.save_cache()
+            self.save_cache()
+        except:
+            pass
