@@ -22,6 +22,8 @@ class RPMod(loader.Module):
         'name': 'RPMod',
         'args': '🦊 <b>Incorrect args</b>',
         'success': '🦊 <b>Success</b>',
+        'rp_on': '🦊 <b>RPM on</b>',
+        'rp_off': '🦊 <b>RPM off</b>',
         'rplist': '🦊 <b>Current RP commands</b>\n\n{}',
         'backup_caption': '🦊 <b>My RP commands. Restore with </b><code>.rprestore</code>', 
         'no_file': '🦊 <b>Reply to file</b>',
@@ -60,10 +62,11 @@ class RPMod(loader.Module):
         cid = str(utils.get_chat_id(message))
         if cid in self.chats:
             self.chats.remove(cid)
+            await utils.answer(message, self.strings('rp_off', message))
         else:
             self.chats.append(cid)
+            await utils.answer(message, self.strings('rp_on', message))
         self.db.set('RPMod', 'active', self.chats)
-        await utils.answer(message, self.strings('success', message))
 
 
     async def rplistcmd(self, message):
