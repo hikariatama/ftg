@@ -12,6 +12,8 @@
 #<3 desc: RPMod от Innomods
 
 from .. import loader, utils
+import io
+import json
 
 @loader.tds
 class RPMod(loader.Module):
@@ -20,7 +22,10 @@ class RPMod(loader.Module):
         'name': 'RPMod',
         'args': '🦊 <b>Incorrect args</b>',
         'success': '🦊 <b>Success</b>',
-        'rplist': '🦊 <b>Current RP commands</b>\n\n{}'
+        'rplist': '🦊 <b>Current RP commands</b>\n\n{}',
+        'backup_caption': '🦊 <b>My RP commands. Restore with </b><code>.rprestore</code>', 
+        'no_file': '🦊 <b>Reply to file</b>',
+        'restored': '🦊 <b>RP Commands restored. See them with </b><code>.rplist</code>'
     }
 
     async def client_ready(self, client, db):
@@ -63,6 +68,27 @@ class RPMod(loader.Module):
     async def rplistcmd(self, message):
         """.rplist - List RP Commands"""
         await utils.answer(message, self.strings('rplist').format('\n'.join([f"    🇨🇭 {command} - {msg}" for command, msg in self.rp.items()])))
+
+
+    async def rpbackupcmd(self, message):
+        """.rpbackup - Backup RP Commands to file"""
+        file = io.BytesIO(json.dumps(self.rp).encode('utf-8'))
+        file.name = 'rp-backup.json'
+        await self.client.send_file(utils.get_chat_id(message), file, caption=self.strings('backup_caption'))
+        await message.delete()
+
+    async def rprestorecmd(self, message):
+        """.rprestore - Restore RP Commands from file"""
+        reply = await message.get_reply_message()
+        if not reply or not reply.media:
+            await utils.answer(message, self.strings('no_file'))
+            return
+
+        file = (await self.client.download_file(reply.media)).decode('utf-8')
+        self.rp = json.loads(file)
+        self.db.set('RPMod', 'rp', self.rp)
+        await utils.answer(message, self.strings('restored'))
+
 
     
     async def watcher(self, message):
