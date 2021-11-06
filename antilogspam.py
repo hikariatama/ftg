@@ -27,16 +27,13 @@ class AntiLogspamMod(loader.Module):
     """Банит челов, которые срут в логах"""
     strings = {
         'name': 'AntiLogspam', 
-        'als_on': '🦊 <b>AntiLogspam On (Maximum {} edits per {} seconds)</b>',
+        'als_on': '🦊 <b>AntiLogspam On (Maximum {} per {} seconds)\nAction: {}</b>',
         'als_off': '🦊 <b>AntiLogspam Off</b>',
-        'dont_spam': '🦊 <b>Seems like <a href="tg://user?id={}">{}</a> is LogSpamming. Action: I {}</b>'
+        'dont_spam': '🦊 <b>Seems like <a href="tg://user?id={}">{}</a> is LogSpamming. Action: I {}</b>', 
+        'args': '🦊 <b>Args are incorrect</b>',
+        'action_set': '🦊 <b>Action set to "{}"</b>',
+        'range_set': '🦊 <b>Current limit is {} per {}</b>'
     }
-    
-    def __init__(self):
-        self.config = loader.ModuleConfig("detection_range", 10, lambda: "Number of edits per time range", 
-                                        "detection_interval", 30, lambda: "Detection interval in seconds",
-                                        "action", 'delmsg', lambda: "Action on limit: delmsg/mute/kick/ban/warn. (Warn only works if my Warn module is installed)", 
-                                        "cooldown", 15, lambda: "Cooldown of warning message in chat")
 
     async def check_user(self, cid, user, event_type, event=None):
         if user != self.me:
@@ -49,22 +46,22 @@ class AntiLogspamMod(loader.Module):
                 self.chats[cid][user].append(round(time.time()))
 
                 for u, timings in self.chats[cid].items():
-                    if u == 'cooldown': continue
+                    if u == 'settings': continue
                     loc_timings = timings.copy()
                     for timing in loc_timings:
-                        if timing + self.config['detection_interval'] <= time.time():
+                        if timing + self.chats[cid]['settings']['detection_interval'] <= time.time():
                             self.chats[cid][u].remove(timing)
                             changes = True
 
-                if len(self.chats[cid][user]) >= self.config['detection_range']:
-                    action = self.config['action']
+                if len(self.chats[cid][user]) >= self.chats[cid]['settings']['detection_range']:
+                    action = self.chats[cid]['settings']['action']
                     if event_type != 'deleted':
                         try:
                             await event.message.delete()
                         except:
                             logger.exception(f'[AntiLogspam]: Error deleting logspam message')
 
-                    if int(self.chats[cid]['cooldown']) <= time.time():
+                    if int(self.chats[cid]['settings']['cooldown']) <= time.time():
                         try:
                             user_name = (await self.client.get_entity(int(user))).first_name
                         except:
@@ -92,7 +89,7 @@ class AntiLogspamMod(loader.Module):
                                 await self.client.send_message(int(cid), self.strings('dont_spam').format(user, user_name, 'warned him'))
 
 
-                        self.chats[cid]['cooldown'] = round(time.time()) + self.config['cooldown']
+                        self.chats[cid]['settings']['cooldown'] = round(time.time()) + 15
 
                     self.chats[cid][user] = []
                     changes = True
@@ -201,8 +198,14 @@ class AntiLogspamMod(loader.Module):
         """.antilogspam - Toggle LogSpam protection in current chat"""
         chat = str(utils.get_chat_id(message))
         if chat not in self.chats:
-            self.chats[chat] = {'cooldown': 0}
-            await utils.answer(message, self.strings('als_on', message).format(self.config['detection_range'], self.config['detection_interval']))
+            self.chats[chat] = {'settings': {
+                    'cooldown': 0,
+                    'detection_range': 5, 
+                    'detection_interval': 15,
+                    'action': 'delmsg'
+                }
+            }
+            await utils.answer(message, self.strings('als_on', message).format(self.chats[chat]['settings']['detection_range'], self.chats[chat]['settings']['detection_interval'], self.chats[chat]['settings']['action']))
         else:
             del self.chats[chat]
             await utils.answer(message, self.strings('als_off', message))
@@ -210,6 +213,72 @@ class AntiLogspamMod(loader.Module):
         await self.update_handlers()
 
         open('innoconfig/AntiLogspam.json', 'w').write(json.dumps(self.chats))
+
+    async def alsactioncmd(self, message):
+        """.alsaction <mute | ban | kick | warn | delmsg> - Set action raised on limit for current chat"""
+        args = utils.get_args_raw(message)
+        chat = str(utils.get_chat_id(message))
+        if args not in ['warn', 'ban', 'kick', 'mute', 'delmsg']:
+            await utils.answer(message, self.strings('args', message))
+            return
+
+        if chat not in self.chats:
+            self.chats[chat] = {'settings': {
+                    'cooldown': 0,
+                    'detection_range': 5, 
+                    'detection_interval': 15,
+                    'action': 'delmsg'
+                }
+            }
+
+        if 'settings' not in self.chats[chat]:
+            self.chats[chat]['settings'] = {
+                    'cooldown': 0,
+                    'detection_range': 5, 
+                    'detection_interval': 15,
+                    'action': 'delmsg'
+                }
+
+        self.chats[chat]['settings']['action'] = args
+        open('innoconfig/AntiLogspam.json', 'w').write(json.dumps(self.chats))
+        await utils.answer(message, self.strings('action_set', message).format(args))
+
+
+    async def alssetcmd(self, message):
+        """.alsset <limit> <range (time sample)> - Set limit and time sample for current chat"""
+        args = utils.get_args_raw(message)
+        chat = str(utils.get_chat_id(message))
+        if not args or len(args.split()) != 2:
+            await utils.answer(message, self.strings('args', message))
+            return
+
+        try:
+            limit, time_sample = list(map(int, args))
+        except:
+            await utils.answer(message, self.strings('args', message))
+            return
+
+        if chat not in self.chats:
+            self.chats[chat] = {'settings': {
+                    'cooldown': 0,
+                    'detection_range': 5, 
+                    'detection_interval': 15,
+                    'action': 'delmsg'
+                }
+            }
+
+        if 'settings' not in self.chats[chat]:
+            self.chats[chat]['settings'] = {
+                    'cooldown': 0,
+                    'detection_range': 5, 
+                    'detection_interval': 15,
+                    'action': 'delmsg'
+                }
+
+        self.chats[chat]['settings']['detection_range'], self.chats[chat]['settings']['detection_interval'] = limit, time_sample
+        open('innoconfig/AntiLogspam.json', 'w').write(json.dumps(self.chats))
+        await utils.answer(message, self.strings('range_set', message).format(limit, time_sample))
+
 
     def save_cache(self):
         open('innoconfig/AntiLogspam_cache.json', 'w').write(json.dumps(self.cache))
