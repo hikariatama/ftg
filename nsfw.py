@@ -50,6 +50,8 @@ class NSFWMod(loader.Module):
                 quantity = 1
 
             args = args[:args.find('-n')]
+        else:
+            quantity = 1
 
         args = args.strip()
 
@@ -59,6 +61,11 @@ class NSFWMod(loader.Module):
         subreddit = f"/r/{args}"
 
         logger.info(f'[NSFW]: Fetching {quantity} photos from {subreddit}')
+
+        ans = requests.get(f'https://api.scrolller.com{subreddit}')
+        if ans.status_code != 200:
+            await utils.answer(message, self.strings('sreddit404', message))
+            return
 
         ans = requests.get('https://api.scrolller.com/api/v2/graphql', json={"query": " query SubredditQuery( $url: String! $filter: SubredditPostFilter $iterator: String ) { getSubreddit(url: $url) { children( limit: " + str(quantity) + " iterator: $iterator filter: $filter ) { iterator items { __typename url title subredditTitle subredditUrl redditPath isNsfw albumUrl isFavorite mediaSources { url width height isOptimized } } } } } ","variables":{"filter":None, "url": subreddit},"authorization":None}).json()
         posts = ans['data']['getSubreddit']['children']['items']
