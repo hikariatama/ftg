@@ -101,7 +101,7 @@ class RPMod(loader.Module):
             if message.text.split(' ', 1)[0] not in self.rp:
                 return
 
-            cmd = message.text.split(' ', 1)[0]
+            cmd = message.text.split(' ', 1)[0].lower()
             msg = self.rp[cmd]
 
             entity = None
