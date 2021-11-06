@@ -38,7 +38,8 @@ class RPMod(loader.Module):
         """.rp <command> <message> - Add RP Command. If message unspecified, remove command"""
         args = utils.get_args_raw(message)
         try:
-            command, msg = args.split(' ', 1)
+            command = args.split(' ', 1)[0]
+            msg = args.split(' ', 1)[1]
         except:
             if not args or command not in self.rp:
                 await utils.answer(message, self.strings('args', message))
