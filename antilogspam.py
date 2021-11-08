@@ -246,6 +246,23 @@ class AntiLogspamMod(loader.Module):
         await utils.answer(message, self.strings('action_set', message).format(args))
 
 
+    async def alschatscmd(self, message):
+        """.alschats - List chats, where ALS is active"""
+        res = f"🦊 <b>ALS is active in {len(self.chats)} chats:</b>\n\n"
+        for chat in self.chats:
+            chat_obj = await self.client.get_entity(int(chat))
+            if getattr(chat_obj, 'title', False):
+                chat_name = chat_obj.title
+            else:
+                chat_name = chat_obj.first_name
+
+            res += "    👮‍♂️ " + chat_name + "\n"
+
+        await utils.answer(message, res)
+
+    
+
+
     async def alssetcmd(self, message):
         """.alsset <limit> <range (time sample)> - Set limit and time sample for current chat"""
         args = utils.get_args_raw(message)
