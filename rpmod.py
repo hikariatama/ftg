@@ -93,6 +93,19 @@ class RPMod(loader.Module):
         self.db.set('RPMod', 'rp', self.rp)
         await utils.answer(message, self.strings('restored'))
 
+    async def rpchatscmd(self, message):
+        """.rpchats - List chats, where RPM is active"""
+        res = f"🦊 <b>RPM is active in {len(self.chats)} chats:</b>\n\n"
+        for chat in self.chats:
+            chat_obj = await self.client.get_entity(int(chat))
+            if getattr(chat_obj, 'title', False):
+                chat_name = chat_obj.title
+            else:
+                chat_name = chat_obj.first_name
+
+            res += "    🇯🇵 " + chat_name + "\n"
+
+        await utils.answer(message, res)
 
     
     async def watcher(self, message):
