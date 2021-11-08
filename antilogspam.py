@@ -29,7 +29,7 @@ class AntiLogspamMod(loader.Module):
         'name': 'AntiLogspam', 
         'als_on': '🦊 <b>AntiLogspam On (Maximum {} per {} seconds)\nAction: {}</b>',
         'als_off': '🦊 <b>AntiLogspam Off</b>',
-        'dont_spam': '🦊 <b>Seems like <a href="tg://user?id={}">{}</a> is LogSpamming. Action: I {}</b>', 
+        'dont_spam': '🦊 <b>Seems like <a href="tg://user?id={}">{}</a> is LogSpamming.\n👊 Action: I {}</b>', 
         'args': '🦊 <b>Args are incorrect</b>',
         'action_set': '🦊 <b>Action set to "{}"</b>',
         'range_set': '🦊 <b>Current limit is {} per {}</b>'
@@ -77,16 +77,18 @@ class AntiLogspamMod(loader.Module):
                         elif action == "ban":
                             await self.client(telethon.tl.functions.channels.EditBannedRequest(int(cid), int(user), telethon.tl.types.ChatBannedRights(until_date=time.time() + 15 * 60, view_messages=True, send_messages=True, send_media=True, send_stickers=True, send_gifs=True, send_games=True, send_inline=True, embed_links=True)))
                             await self.client.send_message(int(cid), self.strings('dont_spam').format(user, user_name, 'banned him for 15 mins'))
-                        elif action == "mute" or not self.warn and event_type == 'deleted':
+                        elif action == "mute":
                             await self.client(telethon.tl.functions.channels.EditBannedRequest(int(cid), int(user), telethon.tl.types.ChatBannedRights(until_date=time.time() + 15 * 60, send_messages=True)))
                             await self.client.send_message(int(cid), self.strings('dont_spam').format(user, user_name, 'muted him for 15 mins'))
-                        elif action == "warn" or event_type == 'deleted':
+                        elif action == "warn":
                             if not self.warn:
                                 await self.client.send_message(int(cid), self.strings('dont_spam').format(user, user_name, 'should have warned him, but Warns is not installed'))
                             else:
                                 warn_msg = await self.client.send_message(int(cid), f'.warn {user} logspam')
                                 await self.allmodules.commands['warn'](warn_msg)
                                 await self.client.send_message(int(cid), self.strings('dont_spam').format(user, user_name, 'warned him'))
+                        else:
+                            await self.client.send_message(int(cid), self.strings('dont_spam').format(user, user_name, 'just chill 😶‍🌫️ '))
 
 
                         self.chats[cid]['settings']['cooldown'] = round(time.time()) + 15
@@ -202,7 +204,7 @@ class AntiLogspamMod(loader.Module):
                     'cooldown': 0,
                     'detection_range': 5, 
                     'detection_interval': 15,
-                    'action': 'delmsg'
+                    'action': 'nothing'
                 }
             }
             await utils.answer(message, self.strings('als_on', message).format(self.chats[chat]['settings']['detection_range'], self.chats[chat]['settings']['detection_interval'], self.chats[chat]['settings']['action']))
@@ -215,10 +217,10 @@ class AntiLogspamMod(loader.Module):
         open('innoconfig/AntiLogspam.json', 'w').write(json.dumps(self.chats))
 
     async def alsactioncmd(self, message):
-        """.alsaction <mute | ban | kick | warn | delmsg> - Set action raised on limit for current chat"""
+        """.alsaction <mute | ban | kick | warn | delmsg | nothing> - Set action raised on limit for current chat"""
         args = utils.get_args_raw(message)
         chat = str(utils.get_chat_id(message))
-        if args not in ['warn', 'ban', 'kick', 'mute', 'delmsg']:
+        if args not in ['warn', 'ban', 'kick', 'mute', 'delmsg', 'nothing']:
             await utils.answer(message, self.strings('args', message))
             return
 
@@ -227,7 +229,7 @@ class AntiLogspamMod(loader.Module):
                     'cooldown': 0,
                     'detection_range': 5, 
                     'detection_interval': 15,
-                    'action': 'delmsg'
+                    'action': 'nothing'
                 }
             }
 
@@ -236,7 +238,7 @@ class AntiLogspamMod(loader.Module):
                     'cooldown': 0,
                     'detection_range': 5, 
                     'detection_interval': 15,
-                    'action': 'delmsg'
+                    'action': 'nothing'
                 }
 
         self.chats[chat]['settings']['action'] = args
@@ -263,7 +265,7 @@ class AntiLogspamMod(loader.Module):
                     'cooldown': 0,
                     'detection_range': 5, 
                     'detection_interval': 15,
-                    'action': 'delmsg'
+                    'action': 'nothing'
                 }
             }
 
@@ -272,7 +274,7 @@ class AntiLogspamMod(loader.Module):
                     'cooldown': 0,
                     'detection_range': 5, 
                     'detection_interval': 15,
-                    'action': 'delmsg'
+                    'action': 'nothing'
                 }
 
         self.chats[chat]['settings']['detection_range'], self.chats[chat]['settings']['detection_interval'] = limit, time_sample
