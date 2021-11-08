@@ -7,13 +7,6 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
-"""
-
-    THIS VERSION IS ONLY FOR BETA TESTING
-    DO NOT LOAD IT
-
-"""
-
 #<3 title: Statuses
 #<3 pic: https://img.icons8.com/fluency/48/000000/envelope-number.png
 #<3 desc: Установить статус, отключить уведомления
@@ -38,6 +31,7 @@ class statusesMod(loader.Module):
         self.db = db
         self.client = client
         self._me = await client.get_me(True)
+        self.ratelimit = []
 
     async def watcher(self, message):
         if not isinstance(message, types.Message):
@@ -48,12 +42,17 @@ class statusesMod(loader.Module):
 
         if getattr(message.to_id, "user_id", None) == self._me.user_id:
             user = await utils.get_user(message)
+            if user in self.ratelimit:
+                return
+
             if user.is_self or user.bot or user.verified:
                 return
 
             await utils.answer(message, self.db.get('Statuses', 'texts', {'': ''})[self.db.get('Statuses', 'status', '')])
             if not self.db.get('Statuses', 'notif', {'': False})[self.db.get('Statuses', 'status', '')]:
                 await message.client.send_read_acknowledge(message.chat_id)
+
+            self.ratelimit.append(user)
 
     async def statuscmd(self, message):
         args = utils.get_args_raw(message)
@@ -64,6 +63,7 @@ class statusesMod(loader.Module):
             return
 
         self.db.set('Statuses', 'status', args)
+        self.ratelimit = []
         await utils.answer(message, self.strings('status_set', message).format(utils.escape_html(self.db.get('Statuses', 'texts', {})[args]), str(self.db.get('Statuses', 'notif')[args])))
 
     async def newstatuscmd(self, message):
@@ -117,6 +117,7 @@ class statusesMod(loader.Module):
             return
 
         self.db.set('Statuses', 'status', False)
+        self.ratelimit = []
         await utils.answer(message, self.strings('status_unset', message))
 
     async def statusescmd(self, message):
