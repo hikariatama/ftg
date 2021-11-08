@@ -50,9 +50,20 @@ class statusesMod(loader.Module):
 
             await utils.answer(message, self.db.get('Statuses', 'texts', {'': ''})[self.db.get('Statuses', 'status', '')])
             if not self.db.get('Statuses', 'notif', {'': False})[self.db.get('Statuses', 'status', '')]:
-                await message.client.send_read_acknowledge(message.chat_id)
+                await message.client.send_read_acknowledge(message.chat_id, clear_mentions=True)
 
             self.ratelimit.append(user)
+        elif message.mentioned:
+            chat = utils.get_chat_id(message)
+
+            if chat in self.ratelimit:
+                return
+
+            await utils.answer(message, self.db.get('Statuses', 'texts', {'': ''})[self.db.get('Statuses', 'status', '')])
+            if not self.db.get('Statuses', 'notif', {'': False})[self.db.get('Statuses', 'status', '')]:
+                await message.client.send_read_acknowledge(message.chat_id, clear_mentions=True)
+
+            self.ratelimit.append(chat)
 
     async def statuscmd(self, message):
         args = utils.get_args_raw(message)
