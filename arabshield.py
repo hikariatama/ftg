@@ -42,7 +42,7 @@ class ArabShieldMod(loader.Module):
 
 
     async def arabshieldcmd(self, message):
-        """.antilogspam - Toggle arab shield in current chat"""
+        """.arabshield - Toggle arab shield in current chat"""
         chat = str(utils.get_chat_id(message))
         if chat not in self.chats:
             self.chats[chat] = 'delmsg'
