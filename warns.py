@@ -65,7 +65,13 @@ class InnoWarnsMod(loader.Module):
                 reason = self.strings('no_reason')
         else:
             try:
-                user = await self.client.get_entity(args.split(maxsplit=1)[0])
+                u = args.split(maxsplit=1)[0]
+                try:
+                    u = int(u)
+                except TypeError:
+                    pass
+
+                user = await self.client.get_entity(u)
             except IndexError:
                 return await utils.answer(message, self.strings('args', message))
 
