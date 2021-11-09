@@ -83,7 +83,10 @@ class AntiHelpMod(loader.Module):
                 logger.debug(f'[AntiHelp]: Removing 1 message from {cid}')
                 await message.delete()
                 if tagged:
-                    await self.allmodules.commands['warn'](await self.client.send_message(message.peer_id, f'.warn {message.from_id} calling help of another member'))
+                    try:
+                        await self.allmodules.commands['warn'](await self.client.send_message(message.peer_id, f'.warn {message.from_id} calling help of another member'))
+                    except:
+                        pass
                     await asyncio.sleep(2)
                     async for msg in self.client.iter_messages(int(cid), offset_id=message.id, reverse=True):
                         if msg is telethon.tl.types.Message and msg.reply_to.reply_to_msg_id == message.id:
