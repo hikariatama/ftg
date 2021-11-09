@@ -97,8 +97,9 @@ class modCloudMod(loader.Module):
 
         for msg in msgs:
             if args.lower() in re.sub(r'<.*?>', '', msg.text.lower()):
-                await self.client.forward_messages(utils.get_chat_id(message), [msg.id], entity)
-                await message.delete()
+                await utils.answer(message, msg.text)
+                # await self.client.forward_messages(utils.get_chat_id(message), [msg.id], entity)
+                # await message.delete()
                 return
 
         await utils.answer(message, self.strings('mod404', message))
