@@ -93,8 +93,8 @@ class ArabShieldMod(loader.Module):
             user = message.from_id
 
             user_obj = await self.client.get_entity(int(user))
-            user_name = getattr(user_obj, 'first_name', '') + ' ' + getattr(user_obj, 'last_name', '')
-            to_check = user_name + getattr(message, 'text', '') + getattr(message, 'caption', '')
+            user_name = getattr(user_obj, 'first_name', '') + ' ' + (user_obj.last_name if getattr(user_obj, 'last_name', '') is not None else '')
+            to_check = getattr(message, 'text', '') + getattr(message, 'caption', '')
             if  len(re.findall('[\u4e00-\u9fff]+', to_check)) == 0 and len(re.findall('[\u0621-\u064A]+', to_check)) == 0:
                 return
 
@@ -126,4 +126,5 @@ class ArabShieldMod(loader.Module):
             else:
                 await self.client.send_message(int(cid), self.strings('arab_detected').format(user, user_name, 'just chill 😶‍🌫️ '))
         except:
+            logger.exception('error')
             pass
