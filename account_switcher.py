@@ -72,8 +72,8 @@ class AccountSwitcherMod(loader.Module):
             return await utils.answer(message, self.strings('reply_required'))
 
         chat = await reply.get_chat()
-        if chat.title != "acc-switcher-db":
-            return await utils.answer(message, self.strings('reply_required'))
+        # if chat.title != "acc-switcher-db":
+        #     return await utils.answer(message, self.strings('reply_required'))
 
         log = ""
 
