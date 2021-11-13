@@ -104,33 +104,36 @@ class KeywordMod(loader.Module):
             return await utils.answer(message, self.strings('bl_removed'))
 
     async def watcher(self, message):
-        cid = utils.get_chat_id(message)
-        if cid in self.bl:
-            return
-
-        for kw, ph in self.keywords.items():
-            kws = [_.strip() for _ in ([kw] if '&' not in kw else kw.split('&'))]
-            trigger = False
-            for k in kws:
-                if k in message.text:
-                    trigger = True
-                    if not ph[1]:
-                        break
-                elif k not in message.text and ph[1]:
-                    trigger = False
-                    break
-
-            if not trigger:
+        try:
+            cid = utils.get_chat_id(message)
+            if cid in self.bl:
                 return
 
-            if ph[2]:
-                await self.client.send_read_acknowledge(cid, clear_mentions=True)
+            for kw, ph in self.keywords.items():
+                kws = [_.strip() for _ in ([kw] if '&' not in kw else kw.split('&'))]
+                trigger = False
+                for k in kws:
+                    if k in message.text:
+                        trigger = True
+                        if not ph[1]:
+                            break
+                    elif k not in message.text and ph[1]:
+                        trigger = False
+                        break
 
-            if ph[3]:
-                chat = await message.get_chat()
-                ch = (message.first_name if getattr(message, 'first_name', None) is not None else '')
-                if not ch:
-                    ch = (chat.title if getattr(message, 'title', None) is not None else '')
-                await self.client.send_message('me', self.strings('sent').format(ch, kw, ph[0]))
+                if not trigger:
+                    return
 
-            return await utils.answer(message, ph[0])
+                if ph[2]:
+                    await self.client.send_read_acknowledge(cid, clear_mentions=True)
+
+                if ph[3]:
+                    chat = await message.get_chat()
+                    ch = (message.first_name if getattr(message, 'first_name', None) is not None else '')
+                    if not ch:
+                        ch = (chat.title if getattr(message, 'title', None) is not None else '')
+                    await self.client.send_message('me', self.strings('sent').format(ch, kw, ph[0]))
+
+                return await utils.answer(message, ph[0])
+        except:
+            pass
