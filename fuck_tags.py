@@ -35,6 +35,10 @@ class FuckTagsMod(loader.Module):
         """.fucktags <chat|optional> - Включить \\ выключить возможность тегать вас"""
         args = utils.get_args_raw(message)
         try:
+            try:
+                args = int(args)
+            except:
+                pass
             cid = (await self.client.get_entity(args)).id
         except:
             cid = utils.get_chat_id(message)
@@ -52,6 +56,10 @@ class FuckTagsMod(loader.Module):
         """.fuckall <chat|optional> - Включить \\ выключить режим авточтения в чате"""
         args = utils.get_args_raw(message)
         try:
+            try:
+                args = int(args)
+            except:
+                pass
             cid = (await self.client.get_entity(args)).id
         except:
             cid = utils.get_chat_id(message)
@@ -62,6 +70,27 @@ class FuckTagsMod(loader.Module):
         else:
             self.db.set('FuckTags', 'strict', list(set(self.db.get('FuckTags', 'strict', [])) - set([cid])))
             await utils.answer(message, self.strings('off_strict', message))
+
+    async def fuckchatscmd(self, message):
+        """.fuckchats - Показать активные авточтения в чатах"""
+        res = "<b>== FuckTags ==</b>\n"
+        for chat in self.db.get('FuckTags', 'tags', []):
+            try:
+                c = await self.client.get_entity(chat)
+                res += (c.title if c.title is not None else c.first_name) + '\n'
+            except:
+                res += str(chat) + '\n'
+
+        res += "\n<b>== FuckMessages ==</b>\n"
+        for chat in self.db.get('FuckTags', 'strict', []):
+            try:
+                c = await self.client.get_entity(chat)
+                res += (c.title if c.title is not None else c.first_name) + '\n'
+            except:
+                res += str(chat) + '\n'
+
+        await utils.answer(message, res)
+
 
     async def watcher(self, message):
         try:
