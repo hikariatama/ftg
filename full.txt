@@ -1,4 +1,8 @@
+account_switcher
+antihelp
 antilogspam
+antitagall
+arabshield
 backuper
 BCheck
 broom
@@ -17,14 +21,17 @@ hidepics
 httpsc
 hw
 insult
+keyword
 lastcommand
 lastcommand_h3xcode
 modinfo
+nsfw
 rpmod
 temp_chat
 tiktok
 todo
 vtt
+warns
 web2file
 welcome
 yoopay
