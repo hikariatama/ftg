@@ -126,7 +126,6 @@ class AntiLogspamMod(loader.Module):
         self.correction = 1636106678
 
         async def deleted_handler(event):
-            #logger.info(f'[AntiLogspam]: {event}')
             for msid in event.deleted_ids:
                 logger.debug(f'[AntiLogspam]: Looking for message {msid}')
 
@@ -272,7 +271,7 @@ class AntiLogspamMod(loader.Module):
             return
 
         try:
-            limit, time_sample = list(map(int, args))
+            limit, time_sample = list(map(int, args.split()))
         except:
             await utils.answer(message, self.strings('args', message))
             return
