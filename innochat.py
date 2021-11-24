@@ -859,6 +859,10 @@ This script is made by @innomods"""
 
         cid = utils.get_chat_id(message)
 
+        if str(cid) not in self.warns:
+            return await utils.answer(message, self.strings('chat_not_in_db', message))
+
+
         async def check_admin(user_id):
             async for member in self.client.iter_participants(cid, filter=telethon.tl.types.ChannelParticipantsAdmins):
                 if member.id == user_id:
@@ -882,7 +886,7 @@ This script is made by @innomods"""
             reply = await message.get_reply_message()
             args = utils.get_args_raw(message)
             if not reply and not args:
-                res = self.strings('warns_adm', message)
+                res = self.strings('warns_adm', message) 
                 for user, warns in self.warns[str(cid)]['w'].items():
                     user_obj = await self.client.get_entity(user)
                     res += "🐺 <b><a href=\"tg://user?id=" + str(user_obj.id) + "\">" + getattr(user_obj, 'first_name', '') + ' ' + (
