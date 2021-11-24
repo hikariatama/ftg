@@ -91,8 +91,6 @@ This script is made by @innomods"""
         'kick': '👾 <b><a href="tg://user?id={}">{}</a> kicked. Reason: {}</b>',
         'unmuted': '👾 <b><a href="tg://user?id={}">{}</a> unmuted</b>',
         'unban': '👾 <b><a href="tg://user?id={}">{}</a> unbanned</b>'
-
-
     }
 
     async def client_ready(self, client, db):
@@ -107,6 +105,7 @@ This script is made by @innomods"""
             self.cache = {}
 
         self.correction = 1636106678
+
 
         async def deleted_handler(event):
             for msid in event.deleted_ids:
@@ -1058,7 +1057,7 @@ This script is made by @innomods"""
 
                     return
 
-            elif 'antisex' in self.chats[cid]:
+            if 'antisex' in self.chats[cid]:
                 if getattr(message, "user_joined", False) or getattr(message, "user_added", False):
                     user = await message.get_user()
                     chat = await message.get_chat()
@@ -1095,11 +1094,13 @@ This script is made by @innomods"""
 
                         return
 
-            elif 'welcome' in self.chats[cid]:
+            if 'welcome' in self.chats[cid]:
                 if getattr(message, "user_joined", False) or getattr(message, "user_added", False):
                     user = await message.get_user()
                     chat = await message.get_chat()
-                    await self.client.send_message(cid, self.chats[cid]['welcome'].replace('{user}', user.first_name).replace('{chat}', chat.title).replace('{mention}', '<a href="tg://user?id=' + str(user.id) + '">' + user.first_name + '</a>'), reply_to=message.action_message.id)
+                    await self.client.send_message(int(cid), self.chats[cid]['welcome'].replace('{user}', user.first_name).replace('{chat}', chat.title).replace('{mention}', '<a href="tg://user?id=' + str(user.id) + '">' + user.first_name + '</a>'), reply_to=message.action_message.id)
+                    
+                    return
 
             user = message.from_id if getattr(
                 message, 'from_id', None) is not None else None
