@@ -22,7 +22,7 @@ class HelpMod(loader.Module):
     strings = {"name": "Help",
                "bad_module": '<b>🦊 I don\'t know what</b> "<code>{}</code>" <b>is!</b>',
                "single_mod_header": "<b>🦊 Info about</b> <u>{}</u>:",
-               "single_cmd": "\n🧊 {}\n",
+               "single_cmd": "\n🧊 <code>{}{}</code> 👉🏻 ",
                "undoc_cmd": "🦊 No docs",
                "all_header": '🦊 <b>{} mods available:</b>',
                "mod_tmpl": '\n🇯🇵 <code>{}</code>',
@@ -86,14 +86,16 @@ class HelpMod(loader.Module):
                 name = module.strings("name", message)
             except KeyError:
                 name = getattr(module, "name", "ERROR")
-            reply = self.strings("single_mod_header", message).format(utils.escape_html(name), utils.escape_html((self.db.get(main.__name__, "command_prefix", False) or ".")[0]))
+
+            prefix = utils.escape_html((self.db.get(main.__name__, "command_prefix", False) or ".")[0])
+            reply = self.strings("single_mod_header", message).format(utils.escape_html(name))
             if module.__doc__:
-                reply += "<i>\nℹ️ " +  "\n".join("  " + t for t in utils.escape_html(inspect.getdoc(module)).split("\n")) + "\n</i>"
+                reply += "<i>\nℹ️ " + utils.escape_html(inspect.getdoc(module)) + "\n</i>"
             commands = {name: func for name, func in module.commands.items() if await self.allmodules.check_security(message, func)}
             for name, fun in commands.items():
-                reply += self.strings("single_cmd", message).format(name)
+                reply += self.strings("single_cmd", message).format(prefix, name)
                 if fun.__doc__:
-                    reply += utils.escape_html("\n".join("    " + t for t in inspect.getdoc(fun).split("\n")))
+                    reply += utils.escape_html(inspect.getdoc(fun))
                 else:
                     reply += self.strings("undoc_cmd", message)
         else:

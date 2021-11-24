@@ -70,11 +70,14 @@ class ArabShieldMod(loader.Module):
         """List chats, where Arab shield is active"""
         res = f"🦊 <b>Arab shield is active in {len(self.chats)} chats:</b>\n\n"
         for chat in self.chats:
-            chat_obj = await self.client.get_entity(int(chat))
-            if getattr(chat_obj, 'title', False):
-                chat_name = chat_obj.title
-            else:
-                chat_name = chat_obj.first_name
+            try:
+                chat_obj = await self.client.get_entity(int(chat))
+                if getattr(chat_obj, 'title', False):
+                    chat_name = chat_obj.title
+                else:
+                    chat_name = chat_obj.first_name
+            except:
+                chat_name = str(chat)
 
             res += "    🧕 " + chat_name + "\n"
 
