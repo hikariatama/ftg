@@ -364,7 +364,7 @@ This script is made by @innomods"""
             return
 
     async def unbancmd(self, message):
-        """<reply | user> - Remove prefix"""
+        """<reply | user> - Unban user"""
         chat = await message.get_chat()
         if message.is_private:
             await message.delete()
@@ -782,8 +782,6 @@ This script is made by @innomods"""
             await self.client.send_message(cid, self.strings(violation).format(user, user_name, 'just chill 😶‍🌫️ '))
 
     def save_cache(self):
-        
-
         open('als_cache.json', 'w').write(json.dumps(self.cache))
 
     async def warncmd(self, message):
