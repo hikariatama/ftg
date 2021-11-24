@@ -175,7 +175,12 @@ This script is made by @innomods"""
                 user = await self.client.get_entity(reply.from_id)
                 reason = args if args else self.strings('no_reason')
             else:
-                user = await self.client.get_entity(args.split(maxsplit=1)[0])
+                uid = args.split(maxsplit=1)[0]
+                try:
+                    uid = int(uid)
+                except:
+                    pass
+                user = await self.client.get_entity(uid)
                 reason = args.split(maxsplit=1)[1] if len(
                     args.split(maxsplit=1)) > 1 else self.strings('no_reason')
         except:
@@ -212,7 +217,11 @@ This script is made by @innomods"""
                     reason = args if args else self.strings('no_reason')
 
             else:
-                user = await self.client.get_entity(args.split(maxsplit=1)[0])
+                uid = args.split(maxsplit=1)[0]
+                try:
+                    uid = int(uid)
+                except: pass
+                user = await self.client.get_entity(uid)
                 reason = args.split(maxsplit=1)[1] if len(
                     args.split(maxsplit=1)) > 1 else self.strings('no_reason')
         except:
@@ -252,7 +261,11 @@ This script is made by @innomods"""
                     reason = args if args else self.strings('no_reason')
 
             else:
-                user = await self.client.get_entity(args.split(maxsplit=1)[0])
+                uid = args.split(maxsplit=1)[0]
+                try:
+                    uid = int(uid)
+                except: pass
+                user = await self.client.get_entity(uid)
                 reason = args.split(maxsplit=1)[1] if len(
                     args.split(maxsplit=1)) > 1 else self.strings('no_reason')
         except:
@@ -288,7 +301,12 @@ This script is made by @innomods"""
                 user = await self.client.get_entity(reply.from_id)
                 prefix = args if args else self.strings('no_reason')
             else:
-                user = await self.client.get_entity(args.split(maxsplit=1)[0])
+                uid = args.split(maxsplit=1)[0]
+                try:
+                    uid = int(uid)
+                except:
+                    pass
+                user = await self.client.get_entity(uid)
                 prefix = args.split(maxsplit=1)[1] if len(
                     args.split(maxsplit=1)) > 1 else None
         except:
@@ -320,6 +338,9 @@ This script is made by @innomods"""
             if reply:
                 user = await self.client.get_entity(reply.from_id)
             else:
+                try:
+                    args = int(args)
+                except: pass
                 user = await self.client.get_entity(args)
         except:
             await utils.answer(message, self.strings('args', message))
@@ -350,6 +371,9 @@ This script is made by @innomods"""
             if reply:
                 user = await self.client.get_entity(reply.from_id)
             else:
+                try:
+                    args = int(args)
+                except: pass
                 user = await self.client.get_entity(args)
         except:
             await utils.answer(message, self.strings('args', message))
@@ -380,6 +404,9 @@ This script is made by @innomods"""
             if reply:
                 user = await self.client.get_entity(reply.from_id)
             else:
+                try:
+                    args = int(args)
+                except: pass
                 user = await self.client.get_entity(args)
         except:
             await utils.answer(message, self.strings('args', message))
@@ -912,6 +939,10 @@ This script is made by @innomods"""
             user = await self.client.get_entity(reply.from_id)
         else:
             try:
+                args = int(args)
+            except: pass
+
+            try:
                 user = await self.client.get_entity(args)
             except IndexError:
                 return await utils.answer(message, self.strings('args', message))
@@ -939,6 +970,10 @@ This script is made by @innomods"""
         if reply:
             user = await self.client.get_entity(reply.from_id)
         else:
+            try:
+                args = int(args)
+            except: pass
+        
             try:
                 user = await self.client.get_entity(args)
             except IndexError:
