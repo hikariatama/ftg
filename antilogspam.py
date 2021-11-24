@@ -196,7 +196,7 @@ class AntiLogspamMod(loader.Module):
         logger.info(f'[AntiLogspam]: Successfully started for {len(self.chats)} chats: {", ".join(self.chats)}')
 
     async def antilogspamcmd(self, message):
-        """.antilogspam - Toggle LogSpam protection in current chat"""
+        """Toggle LogSpam protection in current chat"""
         chat = str(utils.get_chat_id(message))
         if chat not in self.chats:
             self.chats[chat] = {'settings': {
@@ -216,7 +216,7 @@ class AntiLogspamMod(loader.Module):
         open('innoconfig/AntiLogspam.json', 'w').write(json.dumps(self.chats))
 
     async def alsactioncmd(self, message):
-        """.alsaction <mute | ban | kick | warn | delmsg | nothing> - Set action raised on limit for current chat"""
+        """<mute | ban | kick | warn | delmsg | nothing> - Set action raised on limit for current chat"""
         args = utils.get_args_raw(message)
         chat = str(utils.get_chat_id(message))
         if args not in ['warn', 'ban', 'kick', 'mute', 'delmsg', 'nothing']:
@@ -246,7 +246,7 @@ class AntiLogspamMod(loader.Module):
 
 
     async def alschatscmd(self, message):
-        """.alschats - List chats, where ALS is active"""
+        """List chats, where ALS is active"""
         res = f"🦊 <b>ALS is active in {len(self.chats)} chats:</b>\n\n"
         for chat in self.chats:
             chat_obj = await self.client.get_entity(int(chat))
@@ -263,7 +263,7 @@ class AntiLogspamMod(loader.Module):
 
 
     async def alssetcmd(self, message):
-        """.alsset <limit> <range (time sample)> - Set limit and time sample for current chat"""
+        """<limit> <range (time sample)> - Set limit and time sample for current chat"""
         args = utils.get_args_raw(message)
         chat = str(utils.get_chat_id(message))
         if not args or len(args.split()) != 2:

@@ -44,7 +44,7 @@ class modCloudMod(loader.Module):
         self.client = client
 
     async def addmodcmd(self, message):
-        """.addmod <reply_to_file|file> - Send module to @innomods_support to add to database"""
+        """<reply_to_file|file> - Send module to @innomods_support to add to database"""
         reply = await message.get_reply_message()
         if not reply:
             media = message.media
@@ -78,7 +78,7 @@ class modCloudMod(loader.Module):
 
 
     async def cloudcmd(self, message):
-        """.cloud <command \\ mod_name> - Lookup mod in @innomods_database"""
+        """<command \\ mod_name> - Lookup mod in @innomods_database"""
         args = utils.get_args_raw(message)
         if not args:
             await utils.answer(message, self.strings('args', message))
@@ -107,7 +107,7 @@ class modCloudMod(loader.Module):
 
 
     async def verifmodcmd(self, message):
-        """.verifmod <filename>;<title>;<description>;<tags> - Verfiy module [only for @innomods admins]"""
+        """<filename>;<title>;<description>;<tags> - Verfiy module [only for @innomods admins]"""
         args = utils.get_args_raw(message).split(';')
         filename, title, description, tags = args
         reply = await message.get_reply_message()

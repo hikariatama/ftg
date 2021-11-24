@@ -78,7 +78,7 @@ class MagicBroomMod(loader.Module):
         return todel
 
     async def broompcmd(self, message):
-        """.broomp <args> - Волшебная чистка телеги (предпросмотр чатов, которые будут удалены)"""
+        """<args> - Волшебная чистка телеги (предпросмотр чатов, которые будут удалены)"""
         ans = await self.broom(message)
         if ans is False:
             return
@@ -89,7 +89,7 @@ class MagicBroomMod(loader.Module):
             await utils.answer(message, self.strings('nothing_will_be_removed', message))
 
     async def broomcmd(self, message):
-        """.broom <args> - Волшебная чистка телеги
+        """<args> - Волшебная чистка телеги
         -d - Удалить переписки с удаленными аккаунтами
         -b - Удалить переписки с заблокированными аккаунтами
         -s - Удалить переписки со скам аккаунтами
@@ -107,7 +107,7 @@ class MagicBroomMod(loader.Module):
 
 
     async def washdbcmd(self, message):
-        """.wasdb <arg> - Помыть базу данных (рекомендуется .backupdb)
+        """<arg> - Помыть базу данных (рекомендуется .backupdb)
         -1 --filemods - Убрать конфиги модулей, загруженных из файла
         -2 --deadrepos - Убрать мертвые репозитории
         -3 --refactorrepos - Заменить ссылки githubusercontent ссылки на нормальные
@@ -174,7 +174,7 @@ class MagicBroomMod(loader.Module):
 
 
     async def pbancmd(self, message):
-        """.pban <в чате> <args> - Удаляет чат \\ блокирует бота \\ блокирует человека
+        """<в чате> <args> - Удаляет чат \\ блокирует бота \\ блокирует человека
         -h - Удалить историю
         -hh - Удалить историю для обоих собеседников"""
         args = utils.get_args_raw(message)

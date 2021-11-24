@@ -257,7 +257,7 @@ class FlashCardsMod(loader.Module):
 
 
     async def newdeckcmd(self, message):
-        """.newdeck <name> - New deck of cards"""
+        """<name> - New deck of cards"""
 
         args = utils.get_args_raw(message)
         if args == "":
@@ -277,7 +277,7 @@ class FlashCardsMod(loader.Module):
         await utils.answer(message, self.strings('deck_created', message).format(random_id, args))
 
     async def deckscmd(self, message):
-        """.decks - List decks"""
+        """List decks"""
         res = "<b>#Decks:</b>\n\n"
         counter = 1
         for item_id, item in self.decks.items():
@@ -295,7 +295,7 @@ class FlashCardsMod(loader.Module):
         await utils.answer(message, res)
 
     async def deletedeckcmd(self, message):
-        """.deletedeck <id> - Delete deck"""
+        """<id> - Delete deck"""
         deck_id = await self.get_from_fucking_message(message)
         if not deck_id:
             return
@@ -313,7 +313,7 @@ class FlashCardsMod(loader.Module):
 
 
     async def listdeckcmd(self, message):
-        """.listdeck <id> - List deck items"""
+        """<id> - List deck items"""
         deck_id = await self.get_from_fucking_message(message)
         if not deck_id:
             return
@@ -328,7 +328,7 @@ class FlashCardsMod(loader.Module):
         await utils.answer(message, res)
 
     async def editdeckcmd(self, message):
-        """.editdeck <id> - Edit deck items"""
+        """<id> - Edit deck items"""
         deck_id = await self.get_from_fucking_message(message)
         if not deck_id:
             return
@@ -346,7 +346,7 @@ class FlashCardsMod(loader.Module):
         return re.sub(r'<.*?>', '', text)
 
     async def savedeckcmd(self, message):
-        """.savedeck <reply> - Save deck. Do not use if you don't know what is this"""
+        """<reply> - Save deck. Do not use if you don't know what is this"""
         reply = await message.get_reply_message()
         if not reply or '#Editing' not in reply.text:
             await utils.answer(message, self.strings('save_deck_no_reply', message))
@@ -384,7 +384,7 @@ class FlashCardsMod(loader.Module):
         await message.delete()
 
     async def htmldeckcmd(self, message):
-        """.htmldeck <id> - Generates the page with specified deck"""
+        """<id> - Generates the page with specified deck"""
         deck_id = await self.get_from_fucking_message(message)
         if not deck_id:
             return

@@ -42,7 +42,7 @@ class ArabShieldMod(loader.Module):
 
 
     async def arabshieldcmd(self, message):
-        """.arabshield - Toggle arab shield in current chat"""
+        """Toggle arab shield in current chat"""
         chat = str(utils.get_chat_id(message))
         if chat not in self.chats:
             self.chats[chat] = 'delmsg'
@@ -54,7 +54,7 @@ class ArabShieldMod(loader.Module):
         self.db.set('ArabShield', 'chats', self.chats)
 
     async def arabactioncmd(self, message):
-        """.arabaction <mute | ban | kick | warn | delmsg> - Set action raised on limit for current chat"""
+        """<mute | ban | kick | warn | delmsg> - Set action raised on limit for current chat"""
         args = utils.get_args_raw(message)
         chat = str(utils.get_chat_id(message))
         if args not in ['warn', 'ban', 'kick', 'mute', 'delmsg']:
@@ -67,7 +67,7 @@ class ArabShieldMod(loader.Module):
 
 
     async def arabchatscmd(self, message):
-        """.arabchats - List chats, where Arab shield is active"""
+        """List chats, where Arab shield is active"""
         res = f"🦊 <b>Arab shield is active in {len(self.chats)} chats:</b>\n\n"
         for chat in self.chats:
             chat_obj = await self.client.get_entity(int(chat))

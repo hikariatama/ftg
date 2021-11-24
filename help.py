@@ -32,7 +32,7 @@ class HelpMod(loader.Module):
                "set_cat": "🦊 <b>{} -> {}</b>"}
 
     async def helpcatcmd(self, message):
-        """.helpcat <module>: <category> - Set category for module"""
+        """<module>: <category> - Set category for module"""
         args = utils.get_args_raw(message).split(':')
         if len(args) != 2:
             await utils.answer(message, self.strings('args', message))
@@ -59,7 +59,7 @@ class HelpMod(loader.Module):
 
     @loader.unrestricted
     async def helpcmd(self, message):
-        """.help [module] [-f] [-c <category>] - Show help"""
+        """[module] [-f] [-c <category>] - Show help"""
         args = utils.get_args_raw(message)
         force = False
         # print(args)

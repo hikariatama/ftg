@@ -35,7 +35,7 @@ class NSFWMod(loader.Module):
         self.client = client
 
     async def nsfwcmd(self, message):
-        """.nsfw <subreddit | default> [-n <quantity | 1 by default>] - Send random NSFW picture"""
+        """<subreddit | default> [-n <quantity | 1 by default>] - Send random NSFW picture"""
         args = utils.get_args_raw(message)
         message = await utils.answer(message, self.strings('loading', message))
         try:
@@ -89,7 +89,7 @@ class NSFWMod(loader.Module):
         await message.delete()
 
     async def nsfwcatcmd(self, message):
-        """.nsfwcat <subreddit> - Set new default subreddit"""
+        """<subreddit> - Set new default subreddit"""
         args = utils.get_args_raw(message)
         if not args:
             args = "nsfw"

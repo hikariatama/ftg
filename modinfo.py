@@ -28,7 +28,7 @@ class modInfoMod(loader.Module):
     'cannot_check_file': '<b>Cannot check file...</b>'}
 
     async def modinfocmd(self, message):
-        """.modinfo <reply_to_file|file> - Check the file for malisious code"""
+        """<reply_to_file|file> - Check the file for malisious code"""
         # await utils.answer(message, '<code>Got command</code>')
 
         TEMPLATE = self.strings('template', message)

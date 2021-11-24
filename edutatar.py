@@ -70,7 +70,7 @@ class eduTatarMod(loader.Module):
             await asyncio.sleep(self.config['marks_parse_delay'])
 
     async def eduweekcmd(self, message):
-        """.eduweek - Show schedule for a week"""
+        """Show schedule for a week"""
         if not self.config['edu_tatar_login'] or not self.config['edu_tatar_pass']:
             await utils.answer(message, self.strings('login_pass_not_specified', message))
             await asyncio.sleep(3)
@@ -82,7 +82,7 @@ class eduTatarMod(loader.Module):
         await utils.answer(message, data)
 
     async def edudaycmd(self, message):
-        """.eduday <day:integer{0,}> - Show schedule for today"""
+        """<day:integer{0,}> - Show schedule for today"""
         if not self.config['edu_tatar_login'] or not self.config['edu_tatar_pass']:
             await utils.answer(message, self.strings('login_pass_not_specified', message))
             await asyncio.sleep(3)
@@ -111,7 +111,7 @@ class eduTatarMod(loader.Module):
         await utils.answer(message, data)
 
     async def edutermcmd(self, message):
-        """.eduterm - Get term grades"""
+        """Get term grades"""
         if not self.config['edu_tatar_login'] or not self.config['edu_tatar_pass']:
             await utils.answer(message, self.string('login_pass_not_specified', message))
             await asyncio.sleep(3)

@@ -30,7 +30,7 @@ class LastCommandMod(loader.Module):
         self.client = client
 
     async def install_lccmd(self, message):
-        """.install_lc - Should be performed only once. EDITS dispatcher.py AND main.py, BE CAREFUL!"""
+        """Should be performed only once. EDITS dispatcher.py AND main.py, BE CAREFUL!"""
         edited = False
         disp = open('friendly-telegram/dispatcher.py', 'r').read()
         if 'modded by @innocoffee\'s mod' not in disp:
@@ -79,7 +79,7 @@ class LastCommandMod(loader.Module):
             return
 
     async def uninstall_lccmd(self, message):
-        """.uninstall_lc - Should be performed only once. EDITS dispatcher.py AND main.py, BE CAREFUL!"""
+        """Should be performed only once. EDITS dispatcher.py AND main.py, BE CAREFUL!"""
         disp = open('friendly-telegram/dispatcher.py', 'r').read()
         if 'modded by @innocoffee\'s mod' not in disp:
             disp = disp.replace("""

@@ -37,7 +37,7 @@ class RPMod(loader.Module):
         self.chats = db.get('RPMod', 'active', [])
 
     async def rpcmd(self, message):
-        """.rp <command> <message> - Add RP Command. If message unspecified, remove command"""
+        """<command> <message> - Add RP Command. If message unspecified, remove command"""
         args = utils.get_args_raw(message)
         try:
             command = args.split(' ', 1)[0]
@@ -58,7 +58,7 @@ class RPMod(loader.Module):
 
 
     async def rptogglecmd(self, message):
-        """.rptoggle - Toggle RP Mode in current chat"""
+        """Toggle RP Mode in current chat"""
         cid = str(utils.get_chat_id(message))
         if cid in self.chats:
             self.chats.remove(cid)
@@ -70,19 +70,19 @@ class RPMod(loader.Module):
 
 
     async def rplistcmd(self, message):
-        """.rplist - List RP Commands"""
+        """List RP Commands"""
         await utils.answer(message, self.strings('rplist').format('\n'.join([f"    🇨🇭 {command} - {msg}" for command, msg in self.rp.items()])))
 
 
     async def rpbackupcmd(self, message):
-        """.rpbackup - Backup RP Commands to file"""
+        """Backup RP Commands to file"""
         file = io.BytesIO(json.dumps(self.rp).encode('utf-8'))
         file.name = 'rp-backup.json'
         await self.client.send_file(utils.get_chat_id(message), file, caption=self.strings('backup_caption'))
         await message.delete()
 
     async def rprestorecmd(self, message):
-        """.rprestore - Restore RP Commands from file"""
+        """Restore RP Commands from file"""
         reply = await message.get_reply_message()
         if not reply or not reply.media:
             await utils.answer(message, self.strings('no_file'))
@@ -94,7 +94,7 @@ class RPMod(loader.Module):
         await utils.answer(message, self.strings('restored'))
 
     async def rpchatscmd(self, message):
-        """.rpchats - List chats, where RPM is active"""
+        """List chats, where RPM is active"""
         res = f"🦊 <b>RPM is active in {len(self.chats)} chats:</b>\n\n"
         for chat in self.chats:
             chat_obj = await self.client.get_entity(int(chat))

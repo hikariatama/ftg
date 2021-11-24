@@ -78,7 +78,7 @@ class statusesMod(loader.Module):
         await utils.answer(message, self.strings('status_set', message).format(utils.escape_html(self.db.get('Statuses', 'texts', {})[args]), str(self.db.get('Statuses', 'notif')[args])))
 
     async def newstatuscmd(self, message):
-        """.newstatus <short_name> <notif|0/1> <text> - Новый статус"""
+        """<short_name> <notif|0/1> <text> - Новый статус"""
         args = utils.get_args_raw(message)
         args = args.split(' ', 2)
         if len(args) < 3:
@@ -102,7 +102,7 @@ class statusesMod(loader.Module):
         await utils.answer(message, self.strings('status_created', message).format(utils.escape_html(args[0]), utils.escape_html(args[2]), args[1]))
 
     async def delstatuscmd(self, message):
-        """.delstatus <short_name> - Удалить статус"""
+        """<short_name> - Удалить статус"""
         args = utils.get_args_raw(message)
         if args not in self.db.get('Statuses', 'texts', {}):
             await utils.answer(message, self.strings('status_not_found', message))
@@ -120,7 +120,7 @@ class statusesMod(loader.Module):
         await utils.answer(message, self.strings('status_removed', message).format(utils.escape_html(args)))
 
     async def unstatuscmd(self, message):
-        """.unstatus - Убрать статус"""
+        """Убрать статус"""
         if not self.db.get('Statuses', 'status', False):
             await utils.answer(message, self.strings('no_status', message))
             await asyncio.sleep(3)
@@ -132,7 +132,7 @@ class statusesMod(loader.Module):
         await utils.answer(message, self.strings('status_unset', message))
 
     async def statusescmd(self, message):
-        """.statuses - Показать доступные статусы"""
+        """Показать доступные статусы"""
         res = self.strings('available_statuses', message)
         for short_name, status in self.db.get('Statuses', 'texts', {}).items():
             res += f"<b><u>{short_name}</u></b> | Notify: <b>{self.db.get('Statuses', 'notif', {})[short_name]}</b>\n{status}\n➖➖➖➖➖➖➖➖➖\n"

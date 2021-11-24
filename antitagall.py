@@ -42,7 +42,7 @@ class AntiTagAllMod(loader.Module):
 
 
     async def antitagallcmd(self, message):
-        """.antitagall - Toggle antitagall in current chat"""
+        """Toggle antitagall in current chat"""
         chat = str(utils.get_chat_id(message))
         if chat not in self.chats:
             self.chats[chat] = 'delmsg'
@@ -54,7 +54,7 @@ class AntiTagAllMod(loader.Module):
         self.db.set('AntiTagAll', 'chats', self.chats)
 
     async def atagallactioncmd(self, message):
-        """.atagallaction <mute | ban | kick | warn | delmsg> - Set action raised on tagall for current chat"""
+        """<mute | ban | kick | warn | delmsg> - Set action raised on tagall for current chat"""
         args = utils.get_args_raw(message)
         chat = str(utils.get_chat_id(message))
         if args not in ['warn', 'ban', 'kick', 'mute', 'delmsg']:
@@ -67,7 +67,7 @@ class AntiTagAllMod(loader.Module):
 
 
     async def atagallchatscmd(self, message):
-        """.atagallchats - List chats, where antitagall is active"""
+        """List chats, where antitagall is active"""
         res = f"🦊 <b>AntiTagAll is active in {len(self.chats)} chats:</b>\n\n"
         for chat in self.chats:
             chat_obj = await self.client.get_entity(int(chat))

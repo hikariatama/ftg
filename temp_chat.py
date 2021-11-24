@@ -107,7 +107,7 @@ class TempChatMod(loader.Module):
         asyncio.ensure_future(self.chats_handler_async())
 
     async def tmpchatcmd(self, message):
-        """.tmpchat <time> <title> - Create new temp chat
+        """<time> <title> - Create new temp chat
 You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
 30 secods, 30 minutes, 1 hour, 1 day, 1 week, 1 month"""
         args = utils.get_args_raw(message)
@@ -142,7 +142,7 @@ You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
         self.db.set("TempChat", "chats", self.chats)
 
     async def tmpcurrentcmd(self, message):
-        """.tmpcurrent <time> - Create current chat temporary
+        """<time> - Create current chat temporary
 You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
 30 secods, 30 minutes, 1 hour, 1 day, 1 week, 1 month"""
         args = utils.get_args_raw(message)
@@ -167,7 +167,7 @@ You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
 
 
     async def tmpchatscmd(self, message):
-        """.tmpchats - List temp chats"""
+        """List temp chats"""
         res = "<b>= Temporary Chats =</b>\n<s>==================</s>\n"
         for chat, info in self.chats.items():
             res += f'<b>{info[1]}</b> (<code>{chat}</code>)<b>: {datetime.datetime.utcfromtimestamp(info[0] + 10800).strftime("%d.%m.%Y %H:%M:%S")}.</b>\n'
@@ -176,7 +176,7 @@ You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
         await utils.answer(message, res)
 
     async def tmpcancelcmd(self, message):
-        """.tmpcancel <chat-id | optional> - Disable deleting chat by id, or current chat if unspecified."""
+        """<chat-id | optional> - Disable deleting chat by id, or current chat if unspecified."""
         args = utils.get_args_raw(message)
         if args not in self.chats:
             args = str(utils.get_chat_id(message))
@@ -192,7 +192,7 @@ You can specified time only in this format: 30s, 30min, 1h, 1d, 1w, 1m
         self.db.set("TempChat", "chats", json.dumps(self.chats))
 
     async def tmpctimecmd(self, message):
-        """.tmpctime <chat_id> <new_time>"""
+        """<chat_id> <new_time>"""
         args = utils.get_args_raw(message)
         if args == "":
             await utils.answer(message, self.strings('args', message))

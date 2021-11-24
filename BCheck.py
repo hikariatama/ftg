@@ -29,7 +29,7 @@ class BCheckMod(loader.Module):
     'check_started': 'Начинаю проверку в чате'}
 
     async def bcheckcmd(self, message):
-        """.bcheck - Проверить всех участников чата"""
+        """Проверить всех участников чата"""
         await utils.answer(message, self.strings('checking'))
 
         check_result = self.strings('search_header', message)
@@ -50,7 +50,7 @@ class BCheckMod(loader.Module):
         await message.edit(check_result) 
 
     async def bchecksilentcmd(self, message):
-        """.bchecksilent - Проверить всех участников чата (Тихий режим)"""
+        """Проверить всех участников чата (Тихий режим)"""
         await message.delete()
         msg = await message.client.send_message('me', self.strings('check_started', message))
         check_result = self.strings('search_header', message)

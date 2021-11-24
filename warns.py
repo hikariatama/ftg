@@ -48,7 +48,7 @@ class InnoWarnsMod(loader.Module):
 
 
     async def warncmd(self, message):
-        """.warn <reply | user_id | username> <reason | optional> - Warn specified user"""
+        """<reply | user_id | username> <reason | optional> - Warn specified user"""
         if message.is_private:
             await message.delete()
             return
@@ -113,7 +113,7 @@ class InnoWarnsMod(loader.Module):
 
     @loader.unrestricted
     async def warnscmd(self, message):
-        """.warns <reply | user_id | username | optional> - Show warns in chat, or for specified user"""
+        """<reply | user_id | username | optional> - Show warns in chat, or for specified user"""
         if message.is_private:
             await message.delete()
             return
@@ -157,7 +157,7 @@ class InnoWarnsMod(loader.Module):
                 await send_user_warns(args)
 
     async def dwarncmd(self, message):
-        """.dwarn <reply | user_id | username> - Remove last warn from user"""
+        """<reply | user_id | username> - Remove last warn from user"""
         if message.is_private:
             await message.delete()
             return
@@ -185,7 +185,7 @@ class InnoWarnsMod(loader.Module):
         self.db.set('InnoWarns', 'chats', self.chats)
 
     async def clrwarnscmd(self, message):
-        """.clrwarns <reply | user_id | username> - Remove all warns from user"""
+        """<reply | user_id | username> - Remove all warns from user"""
         if message.is_private:
             await message.delete()
             return
@@ -213,7 +213,7 @@ class InnoWarnsMod(loader.Module):
         self.db.set('InnoWarns', 'chats', self.chats)
 
     async def warnsactioncmd(self, message):
-        """.warnsaction <mute | kick | ban> - Action when warns limit is reached"""
+        """<mute | kick | ban> - Action when warns limit is reached"""
         if message.is_private:
             await message.delete()
             return
@@ -235,7 +235,7 @@ class InnoWarnsMod(loader.Module):
         await utils.answer(message, self.strings('new_a', message).format(args))
 
     async def warnslimitcmd(self, message):
-        """.warnslimit <limit:int> - Warns limit for current chat"""
+        """<limit:int> - Warns limit for current chat"""
         if message.is_private:
             await message.delete()
             return

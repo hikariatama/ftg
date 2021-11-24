@@ -21,7 +21,7 @@ class TikTokMod(loader.Module):
     'no_link': "<b>🦊 Ты не указал ссылку</b>"}
 
     async def ttcmd(self, message):
-        """.tt <link> - Скачать видео с ТикТок без рекламы"""
+        """<link> - Скачать видео с ТикТок без рекламы"""
         await utils.answer(message, self.strings('loading', message))
         args = utils.get_args_raw(message)
         if not args:

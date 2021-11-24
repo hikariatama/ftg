@@ -90,7 +90,7 @@ class vttMod(loader.Module):
         await self.recognize(event)
 
     async def autovoicecmd(self, message):
-        """.autovoice - Напиши это в чате, чтобы автоматически распознавать в нем голосовые. Если написать ее повторно, распознавание будет отключено."""
+        """Напиши это в чате, чтобы автоматически распознавать в нем голосовые. Если написать ее повторно, распознавание будет отключено."""
         chat_id = utils.get_chat_id(message)
         if chat_id in self.chats:
             self.chats.remove(chat_id)

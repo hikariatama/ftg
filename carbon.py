@@ -35,7 +35,7 @@ class CarbonMod(loader.Module):
         self.client = client
 
     async def carboncmd(self, message):
-        """.carbon <code> - Сделать красивую фотку кода"""
+        """<code> - Сделать красивую фотку кода"""
         args = utils.get_args_raw(message)
         message = await utils.answer(message, self.strings('loading', message))
         try:

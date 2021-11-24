@@ -33,7 +33,7 @@ class TikTokMod(loader.Module):
 
 
     async def yoopaycmd(self, message):
-        """.yoopay <sum> <title>;<comment> - Отправить ссылку на оплату
+        """<sum> <title>;<comment> - Отправить ссылку на оплату
 Пример: .yoopay 100 На кофе;Братан, купи мне кофе, вот ссылка"""
         if len(self.config['account']) != 16:
             await utils.answer(message, self.strings('no_account', message))

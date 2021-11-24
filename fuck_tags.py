@@ -32,7 +32,7 @@ class FuckTagsMod(loader.Module):
         self._ratelimit = []
 
     async def fucktagscmd(self, message):
-        """.fucktags <chat|optional> - Включить \\ выключить возможность тегать вас"""
+        """<chat|optional> - Включить \\ выключить возможность тегать вас"""
         args = utils.get_args_raw(message)
         try:
             try:
@@ -53,7 +53,7 @@ class FuckTagsMod(loader.Module):
             await utils.answer(message, self.strings('off', message))
 
     async def fuckallcmd(self, message):
-        """.fuckall <chat|optional> - Включить \\ выключить режим авточтения в чате"""
+        """<chat|optional> - Включить \\ выключить режим авточтения в чате"""
         args = utils.get_args_raw(message)
         try:
             try:
@@ -72,7 +72,7 @@ class FuckTagsMod(loader.Module):
             await utils.answer(message, self.strings('off_strict', message))
 
     async def fuckchatscmd(self, message):
-        """.fuckchats - Показать активные авточтения в чатах"""
+        """Показать активные авточтения в чатах"""
         res = "<b>== FuckTags ==</b>\n"
         for chat in self.db.get('FuckTags', 'tags', []):
             try:

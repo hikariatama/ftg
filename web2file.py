@@ -25,7 +25,7 @@ class Web2fileMod(loader.Module):
 	'loading': '🦊 <b>Загрузка...</b>'}
 
 	async def web2filecmd(self, message):
-		""".web2file <ссылка на сайт> - Запаковать файл из сайта в файл"""
+		"""<ссылка на сайт> - Запаковать файл из сайта в файл"""
 		website = utils.get_args_raw(message)
 		if not website:
 			await utils.answer(message, self.strings('no_args', message))

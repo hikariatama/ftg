@@ -71,7 +71,7 @@ class DelayedMod(loader.Module):
 
 
     async def dcmd(self, message):
-        """.d <time (1d 2min etc)> <cmd> - Delay command for specified time. Resets when module or ub are restarted"""
+        """<time (1d 2min etc)> <cmd> - Delay command for specified time. Resets when module or ub are restarted"""
         args = utils.get_args_raw(message)
 
         command = args.split(' ', 1)[1]
@@ -94,7 +94,7 @@ class DelayedMod(loader.Module):
         await self.allmodules.commands[command.split()[0]](await message.client.send_message(utils.get_chat_id(message), '.' + command, reply_to=reply))
 
     async def adcmd(self, message):
-        """.ad <time (1d 2min etc)> <cmd> - Execute command, and delete output after some time. WORKS NOT WITH ALL MODULES"""
+        """<time (1d 2min etc)> <cmd> - Execute command, and delete output after some time. WORKS NOT WITH ALL MODULES"""
         args = utils.get_args_raw(message)
 
         command = args.split(' ', 1)[1]

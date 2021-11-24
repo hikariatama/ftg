@@ -39,7 +39,7 @@ class AntiHelpMod(loader.Module):
 
 
     async def antihelpcmd(self, message):
-        """.antihelp - Toggle antihelp in current chat"""
+        """Toggle antihelp in current chat"""
         chat = str(utils.get_chat_id(message))
         if chat not in self.chats:
             self.chats.append(chat)
@@ -51,7 +51,7 @@ class AntiHelpMod(loader.Module):
         self.db.set('AntiHelp', 'chats', self.chats)
 
     async def antihelpchatscmd(self, message):
-        """.antihelpchats - List chats, where antihelp is active"""
+        """List chats, where antihelp is active"""
         res = f"🦊 <b>AntiHelp is active in {len(self.chats)} chats:</b>\n\n"
         for chat in self.chats:
             chat_obj = await self.client.get_entity(int(chat))

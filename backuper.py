@@ -36,14 +36,14 @@ class BackuperMod(loader.Module):
         self.client = client
 
     async def backupdbcmd(self, message):
-        """.backupdb - Создать бекап базы данных фтг"""
+        """Создать бекап базы данных фтг"""
         txt = io.BytesIO(json.dumps(self.db).encode('utf-8'))
         txt.name = f"ftg-db-backup-{datetime.datetime.now().strftime('%d-%m-%Y-%H-%M')}.db"
         await self.client.send_file('me', txt, caption=self.strings('backup_caption'))
         await message.delete()
 
     async def restoredbcmd(self, message):
-        """.restoredb <key> - Восстановить базу данных из файла"""
+        """<key> - Восстановить базу данных из файла"""
         reply = await message.get_reply_message()
         if not reply or not reply.media:
             await utils.answer(message, self.strings('reply_to_file', message).format('db'))
@@ -62,7 +62,7 @@ class BackuperMod(loader.Module):
 
 
     async def backupmodscmd(self, message):
-        """.backupmods - Сделать резервную копию загруженных и выгруженных модулей"""
+        """Сделать резервную копию загруженных и выгруженных модулей"""
         data = json.dumps({'loaded': self.db.get("friendly-telegram.modules.loader", "loaded_modules", []), 'unloaded': self.db.get("friendly-telegram.modules.loader", "unloaded_modules", [])})
         txt = io.BytesIO(data.encode('utf-8'))
         txt.name = f"ftg-mods-{datetime.datetime.now().strftime('%d-%m-%Y-%H-%M')}.mods"
@@ -70,7 +70,7 @@ class BackuperMod(loader.Module):
         await message.delete()
 
     async def restoremodscmd(self, message):
-        """.restoremods <reply to file> - Восстановить моды из резервной копии"""
+        """<reply to file> - Восстановить моды из резервной копии"""
         reply = await message.get_reply_message()
         if not reply or not reply.media:
             await utils.answer(message, self.strings('reply_to_file', message).format('mods'))
@@ -87,7 +87,7 @@ class BackuperMod(loader.Module):
         await self.allmodules.commands['restart'](await message.respond('_'))
 
     async def backupnotescmd(self, message):
-        """.backupnotes - Сделать резервную копию заметок"""
+        """Сделать резервную копию заметок"""
         data = json.dumps(self.db.get("friendly-telegram.modules.notes", "notes", []))
         txt = io.BytesIO(data.encode('utf-8'))
         txt.name = f"ftg-notes-{datetime.datetime.now().strftime('%d-%m-%Y-%H-%M')}.notes"
@@ -95,7 +95,7 @@ class BackuperMod(loader.Module):
         await message.delete()
 
     async def restorenotescmd(self, message):
-        """.restorenotes <reply to file> - Восстановить заметки из резервной копии"""
+        """<reply to file> - Восстановить заметки из резервной копии"""
         reply = await message.get_reply_message()
         if not reply or not reply.media:
             await utils.answer(message, self.strings('reply_to_file', message).format('notes'))
