@@ -9,20 +9,23 @@
 
 #<3 title: TikTok
 #<3 pic: https://img.icons8.com/fluency/48/000000/tiktok.png
-#<3 desc: Скачивает видосы из ТикТок без watermark
+#<3 desc: Скачивает видосы TikTok nwm
 
 from .. import loader, utils
 import asyncio
+import requests
 
 class TikTokMod(loader.Module):
-    """Скачивает видео из TikTok без watermark"""
+    """Download TikTok video w\\o watermark"""
     strings = {'name': 'TikTok', 
-    'loading': "<b>🦊 Подгружаю видосик с ТикТока</b>", 
-    'no_link': "<b>🦊 Ты не указал ссылку</b>"}
+    'loading': "<b>🦊 Download in progress...</b>", 
+    'no_link': "<b>🦊 No link specified!</b>"}
+
+    async def client_ready(self, client, db):
+        self.client = client
 
     async def ttcmd(self, message):
-        """<link> - Скачать видео с ТикТок без рекламы"""
-        await utils.answer(message, self.strings('loading', message))
+        """<link> - Download TikTok video nwm"""
         args = utils.get_args_raw(message)
         if not args:
             await utils.answer(message, self.strings('no_link', message))
@@ -30,6 +33,20 @@ class TikTokMod(loader.Module):
             await message.delete()
             return
 
-        cb_query = await message.client.inline_query('tikdobot', args)
-        await message.client.send_file(message.to_id, cb_query[1].result.content.url)
+        message = await utils.answer(message, self.strings('loading', message))
+        try:
+            message = message[0]
+        except: pass
+
+        ans = requests.get('https://snaptik.cc').text
+
+        def trim(string, f, t):
+            begin = string.find(f) + len(f)
+            return string[begin:string.find('"', begin)]
+
+        token = trim(ans, '="_token_" content="', '"')
+        res = requests.get(f'https://snaptik.cc/api/v1/fetch?url={args}', headers={'token': token}).json()
+
+        await self.client.send_file(message.peer_id, res['url_nwm'])
         await message.delete()
+
