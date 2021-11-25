@@ -15,9 +15,9 @@ from .. import loader, utils
 import requests
 import random
 import io
-import struct
 from pydub import AudioSegment
 
+#requires: pydub python-ffmpeg
 
 @loader.tds
 class KeywordMod(loader.Module):
