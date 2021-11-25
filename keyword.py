@@ -111,7 +111,7 @@ class KeywordMod(loader.Module):
             if cid in self.bl: return
 
             for kw, ph in self.keywords.items():
-                kws = [_.strip() for _ in ([kw] if '&' not in kw else kw.split('&'))]
+                kws = [_.strip(t) for _ in ([kw] if '&' not in kw else kw.split('&'))]
                 trigger = False
                 for k in kws:
                     if k in message.text:
