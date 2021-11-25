@@ -15,6 +15,7 @@ from .. import loader, utils
 import requests
 import json
 from urllib.parse import quote_plus
+import asyncio
 
 #requires: urllib requests
 
@@ -65,9 +66,18 @@ class NekosLifeMod(loader.Module):
 
             args = args.text
 
-        args = quote_plus(args)
+        if len(args) > 180:
+            message = await utils.answer(message, '<b>OwOifying...</b>')
+            try:
+                message = message[0]
+            except: pass
 
-        await utils.answer(message, (await utils.run_sync(requests.get, f"{self.endpoints['owoify']}{args}")).json()['owo'])
+        args = quote_plus(args)
+        owo = ""
+        for chunk in chunks(args, 180):
+            owo += (await utils.run_sync(requests.get, f"{self.endpoints['owoify']}{chunk}")).json()['owo']
+            await asyncio.sleep(0.1)
+        await utils.answer(message, owo)
 
 
     @loader.unrestricted
