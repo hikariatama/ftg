@@ -14,6 +14,9 @@
 from .. import loader, utils
 import requests
 import json
+from urllib.parse import quote_plus
+
+#requires: urllib requests
 
 def chunks(lst, n):
     return [lst[i:i + n] for i in range(0, len(lst), n)]
@@ -61,6 +64,8 @@ class NekosLifeMod(loader.Module):
                 return
 
             args = args.text
+
+        args = quote_plus(args)
 
         await utils.answer(message, (await utils.run_sync(requests.get, f"{self.endpoints['owoify']}{args}")).json()['owo'])
 
