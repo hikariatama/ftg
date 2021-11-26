@@ -141,7 +141,7 @@ class RateModuleMod(loader.Module):
             check_res = ""
 
         if check_res in ['yes', 'db']:
-            comments += "🔸 {+1.0} Module is verified"
+            comments += "🔸 <code>{+1.0}</code> <b>Module is verified</b> <i>[there is no scam]</i>\n"
             score += 1.0
 
         score = round(score, 1)
