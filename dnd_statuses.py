@@ -9,7 +9,7 @@
 
 #<3 title: Statuses
 #<3 pic: https://img.icons8.com/fluency/48/000000/envelope-number.png
-#<3 desc: Установить статус, отключить уведомления
+#<3 desc: Установить статус, отключить уведомления. Аналог мода AFK, но более продвинутый
 
 from .. import loader, utils
 import asyncio
@@ -66,6 +66,7 @@ class statusesMod(loader.Module):
             self.ratelimit.append(chat)
 
     async def statuscmd(self, message):
+        """<short_name> - Установить статус"""
         args = utils.get_args_raw(message)
         if args not in self.db.get('Statuses', 'texts', {}):
             await utils.answer(message, self.strings('status_not_found', message))
@@ -78,7 +79,8 @@ class statusesMod(loader.Module):
         await utils.answer(message, self.strings('status_set', message).format(utils.escape_html(self.db.get('Statuses', 'texts', {})[args]), str(self.db.get('Statuses', 'notif')[args])))
 
     async def newstatuscmd(self, message):
-        """<short_name> <notif|0/1> <text> - Новый статус"""
+        """<short_name> <notif|0/1> <text> - Новый статус
+Пример: .newstatus test 1 Привет!"""
         args = utils.get_args_raw(message)
         args = args.split(' ', 2)
         if len(args) < 3:

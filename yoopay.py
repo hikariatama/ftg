@@ -7,9 +7,9 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
-#<3 title: TikTok
-#<3 pic: https://img.icons8.com/fluency/48/000000/tiktok.png
-#<3 desc: Скачивает видосы из ТикТок без watermark
+#<3 title: YooMoney
+#<3 pic: https://img.icons8.com/fluency/48/000000/coin-wallet.png
+#<3 desc: Отправить ссылку на оплату на твой ЮМани кошелек
 
 from .. import loader, utils
 import asyncio
