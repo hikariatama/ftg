@@ -134,13 +134,13 @@ class modCloudMod(loader.Module):
         sha1 = hashlib.sha1()
         sha1.update(code.encode('utf-8'))
         file_hash = str(sha1.hexdigest())
-        open('/root/ftg/verified_mods.db', 'a').write(file_hash + '\n')
+        open('/home/ftg/verified_mods.db', 'a').write(file_hash + '\n')
         if 'innomods' in tags:
             url = f'https://github.com/innocoffee-ftg/ftg/raw/master/{filename}'
         else:
             encoded_string = base64.b64encode(file)
             stout = encoded_string.decode("utf-8")
-            TOKEN = open('/root/ftg/git.token', 'r').read()
+            TOKEN = open('/home/ftg/git.token', 'r').read()
             USERNAME = 'innocoffee-ftg'
             REPO = 'host'
             url = f'https://api.github.com/repos/{USERNAME}/{REPO}/contents/{filename}'
