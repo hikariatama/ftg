@@ -95,14 +95,14 @@ class RateModuleMod(loader.Module):
             comments += "🔻 <code>{-0.3}</code> <b>Classic edits</b> <i>[module won't work with twinks]</i>\n"
             score -= .3
         if '.client' in code.replace('self.client', ''):
-            comments += "🔻 <code>{-0.5}</code> <b>message.client</b> <i>[module won't work with twinks]</i>\n"
-            score -= .5
+            comments += "🔻 <code>{deprecated}</code> <b>message.client</b> <i><s>[module won't work with twinks]</s></i>\n"
+            score -= 0
         if re.search(r'@.*?[bB][oO][tT]', code) is not None:
             bots = ' | '.join(re.findall(r'@.*?[bB][oO][tT]', code))
             comments += f"🔻 <code>{{-0.5}}</code> <b>Bot abuse (</b><code>{bots}</code><b>)</b> <i>[module will die with abusing bot]</i>\n"
             score -= .5
         if re.search(r'[ \t]+async def .*?cmd.*\n[ \t]+[^" \t]', code) is not None:
-            undoc = ' | '.join([_.group(1) for _ in re.findall(r'[ \t]+async def (.*?)cmd.*\n[ \t]+[^" \t]', code)])
+            undoc = ' | '.join([_ for _ in re.findall(r'[ \t]+async def (.*?)cmd.*\n[ \t]+[^" \t]', code)])
             comments += f"🔻 <code>{{-0.5}}</code> <b>No docs (</b><code>{undoc}</code><b>)</b> <i>[all commands should be documented]</i>\n"
             score -= .5
         if 'time.sleep' in code or 'from time import sleep' in code:
@@ -136,7 +136,6 @@ class RateModuleMod(loader.Module):
         sha1 = hashlib.sha1()
         sha1.update(code.encode('utf-8'))
         try:
-            0/0
             check_res = (await utils.run_sync(requests.get, api_endpoint + str(sha1.hexdigest()))).text
         except:
             check_res = ""
