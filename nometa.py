@@ -44,5 +44,5 @@ class NoMetaMod(loader.Module):
         ]
 
         if message.raw_text.lower() in meta:
-            await self.client.send_message(message.peer_id, self.strings('no_meta'), reply_to=getattr(message, 'reply_to_msg_id', None))
+            await self.client.send_message(message.peer_id, self.strings('no_meta'), reply_to=message.id)
             await self.client.send_read_acknowledge(message.chat_id, clear_mentions=True)
