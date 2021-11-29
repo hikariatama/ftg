@@ -23,8 +23,9 @@ class SilentTagsMod(loader.Module):
 
     strings = {
         "name": "SilentTags",
-        "no_tags": "<b>👺 <u>Please!</u></b>\n<b>Do not tag</b> me via classic tags.\nIf you need to call me in chat, type #{}, and wait.",
-        "tagged": "<b>👋🏻 You have been tagged in <a href=\"tg://chat?id={}\">{}</a> by <a href=\"tg://user?id={}\">{}</a></b>\n<code>Message:</code>\n{}"
+        "tagged": "<b>👋🏻 Тебя отметили в <a href=\"{}\">{}</a> by <a href=\"tg://user?id={}\">{}</a></b>\n<code>Message:</code>\n{}",
+        "tag_mentioned": "<b>👾 [Silent Tags]: Пользователь не получил уведомление об этом упоминании. Дождитесь ответа.</b>", 
+        "stags_status": "<b>👾 Silent Tags are {}</b>"
     }
 
     async def find_db(self):
@@ -32,11 +33,13 @@ class SilentTagsMod(loader.Module):
             if d.title == "silent-tags-log":
                 return d.entity
 
-        return (await self.client(CreateChannelRequest("silent-tags-log", f"Messages with #{self.un} will appear here", megagroup=True))).chats[0]
+        return (await self.client(CreateChannelRequest("silent-tags-log", f"Messages with @{self.un} will appear here", megagroup=True))).chats[0]
 
 
     async def client_ready(self, client, db):
         self.client = client
+        self.db = db
+        self.stags = db.get('SilentTags', 'stags', False)
         self.un = (await client.get_me()).username
         if self.un is None:
             raise Exception('You cannot load this module because you do not have username')
@@ -44,15 +47,30 @@ class SilentTagsMod(loader.Module):
 
         self.c = await self.find_db()
 
+    async def stagscmd(self, message):
+        """<on\\off> - Toggle notifications about tags"""
+        args = utils.get_args_raw(message)
+
+        if args not in ["on", "off"]:
+            await utils.answer(message, self.strings("stags_status", message).format('active' if self.stags else 'inactive'))
+            return
+
+        args = True if args == "on" else False
+        self.db.set('SilentTags', "stags", args)
+        self.stags = args
+        await utils.answer(message, self.strings('stags_status').format("now on" if args else "now off", message))
+
     async def watcher(self, message):
         try:
-            if '#' + self.un in message.raw_text:
+            if message.mentioned and self.stags:
+                await self.client.send_read_acknowledge(message.chat_id, clear_mentions=True)
                 cid = utils.get_chat_id(message)
 
                 if message.is_private:
                     ctitle = 'pm'
                 else:
                     chat = await message.get_chat()
+                    grouplink = f'https://t.me/{chat.username}' if getattr(chat, "username", None) is not None else ""
                     ctitle = chat.title if getattr(chat, 'title', None) is not None else chat.first_name
 
                 uid = message.from_id
@@ -63,14 +81,7 @@ class SilentTagsMod(loader.Module):
                 except:
                     uname = 'Unknown user'
 
-                await self.client.send_message(self.c, self.strings('tagged').format(cid, ctitle, uid, uname, message.text))
+                await self.client.send_message(self.c, self.strings('tagged').format(grouplink, ctitle, uid, uname, message.text), link_preview=False)
+                await utils.answer(message, self.strings('tag_mentioned'))
         except Exception as e:
             logger.exception(e)
-
-        try:
-            if not message.mentioned: return
-        except: return
-
-        await self.client.send_read_acknowledge(message.chat_id, clear_mentions=True)
-        if '@' + self.un in message.raw_text:
-            await utils.answer(message, self.strings('no_tags').format(self.un))
