@@ -101,7 +101,7 @@ class RateModuleMod(loader.Module):
             bots = ' | '.join(re.findall(r'@.*?[bB][oO][tT]', code))
             comments += f"🔻 <code>{{-0.5}}</code> <b>Bot abuse (</b><code>{bots}</code><b>)</b> <i>[module will die with abusing bot]</i>\n"
             score -= .5
-        if re.search(r'[ \t]+async def .*?cmd.*\n[ \t]+[^" \t]', code) is not None:
+        if re.search(r'[ \t]+async def .*?cmd.*\n[ \t]+[^\'" \t]', code) is not None:
             undoc = ' | '.join([_ for _ in re.findall(r'[ \t]+async def (.*?)cmd.*\n[ \t]+[^" \t]', code)])
             comments += f"🔻 <code>{{-0.5}}</code> <b>No docs (</b><code>{undoc}</code><b>)</b> <i>[all commands should be documented]</i>\n"
             score -= .5
@@ -121,7 +121,7 @@ class RateModuleMod(loader.Module):
         if 'utils.answer' in code:
             comments += "🔸 <code>{+0.3}</code> <b>utils.answer</b> <i>[compatibility with twinks]</i>\n"
             score += .3
-        if re.search(r'[ \t]+async def .*?cmd.*\n[ \t]+[^" \t]', code) is None:
+        if re.search(r'[ \t]+async def .*?cmd.*\n[ \t]+[^\'" \t]', code) is None:
             comments += "🔸 <code>{+0.2}</code> <b>Full docstrings</b> <i>[all commands are documented]</i>\n"
             score += .2
         if 'self.client' in code:
