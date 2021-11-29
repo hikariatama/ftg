@@ -71,7 +71,7 @@ class SilentTagsMod(loader.Module):
                 else:
                     chat = await message.get_chat()
                     grouplink = f'https://t.me/{chat.username}' if getattr(chat, "username", None) is not None else ""
-                    ctitle = chat.title if getattr(chat, 'title', None) is not None else chat.first_name
+                    ctitle = chat.title
 
                 uid = message.from_id
 
