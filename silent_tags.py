@@ -46,7 +46,7 @@ class SilentTagsMod(loader.Module):
 
     async def watcher(self, message):
         try:
-            if '#' in message.raw_text:
+            if '#' + self.un in message.raw_text:
                 cid = utils.get_chat_id(message)
 
                 if message.is_private:
