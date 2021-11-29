@@ -94,9 +94,6 @@ class RateModuleMod(loader.Module):
         if '.edit(' in code:
             comments += "🔻 <code>{-0.3}</code> <b>Classic edits</b> <i>[module won't work with twinks]</i>\n"
             score -= .3
-        if '.client' in code.replace('self.client', ''):
-            comments += "🔻 <code>{deprecated}</code> <b>message.client</b> <i><s>[module won't work with twinks]</s></i>\n"
-            score -= 0
         if re.search(r'@.*?[bB][oO][tT]', code) is not None:
             bots = ' | '.join(re.findall(r'@.*?[bB][oO][tT]', code))
             comments += f"🔻 <code>{{-0.5}}</code> <b>Bot abuse (</b><code>{bots}</code><b>)</b> <i>[module will die with abusing bot]</i>\n"
