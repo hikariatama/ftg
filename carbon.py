@@ -37,14 +37,26 @@ class CarbonMod(loader.Module):
     async def carboncmd(self, message):
         """<code> - Сделать красивую фотку кода"""
         args = utils.get_args_raw(message)
+        
+        try:
+            code_from_message = (await self.client.download_file(message.media)).decode('utf-8')
+        except:
+            code_from_message = ""
+        
+
+        try:
+            reply = await message.get_reply_message()
+            code_from_reply = (await self.client.download_file(reply.media)).decode('utf-8')
+        except:
+            code_from_reply = ""
+        
+        args = args or code_from_message or code_from_reply
+
         message = await utils.answer(message, self.strings('loading', message))
         try:
             message = message[0]
         except:
             pass
 
-        url = 'https://carbonnowsh.herokuapp.com/?code=' + urllib.parse.quote_plus(args).replace('%0A', '%250A').replace('%23', '%2523').replace('%2F', '%252f')
-        logger.info('[Carbon]: Fetching url ' + url)
-
-        await self.client.send_message(utils.get_chat_id(message), file=requests.get(url).content)
+        await self.client.send_message(utils.get_chat_id(message), file=(await utils.run_sync(requests.post, 'https://carbonara-42.herokuapp.com/api/cook', json={'code': args})).content)
         await message.delete()
