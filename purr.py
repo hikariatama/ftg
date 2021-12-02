@@ -33,6 +33,7 @@ class KeywordMod(loader.Module):
     @loader.unrestricted
     async def purrcmd(self, message):
         """Sends 'purr' voice message"""
+        args = utils.get_args_raw(message) or "<i>🐈 Purrr-r-r-r...</i>"
         purrs = [
             'https://x0.at/KFx1.mp3',
             'https://x0.at/jsMN.mp3',
@@ -53,5 +54,5 @@ class KeywordMod(loader.Module):
         random_begin = 0 if end < 0 else random_begin
         segm[random_begin:min(len(segm), random_begin + random_duration)].export(byte, format="ogg")
         byte.name = 'purr.ogg'
-        await self.client.send_file(message.peer_id, byte, caption="<i>🐈 Prrr-r-r-r...</i>", voice_note=True, reply_to=message.reply_to_msg_id)
+        await self.client.send_file(message.peer_id, byte, caption=args, voice_note=True, reply_to=message.reply_to_msg_id)
         await message.delete()
