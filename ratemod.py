@@ -115,6 +115,12 @@ class RateModuleMod(loader.Module):
         if splitted:
             comments += f"🔻 <code>{{-0.3}}</code> <b>Long 'if' trees (</b><code>{' | '.join([f'{chain} in {fun}' for chain, fun in splitted])}</code><b>)</b> <i>[affects readability and runtime]</i>\n"
             score -= .3
+        if '== None' or '==None' in code:
+            comments += f"🔻 <code>{{-0.3}}</code> <b>Type comparsation via ==</b> <i>[affects code quality and runtime]</i>\n"
+            score -= .3
+        if 'is not None else' in code:
+            comments += f"🔻 <code>{{-0.2}}</code> <b>Unrelevant usage of ternary operator (</b><code>if some_var is not None else another</code> <b>-></b> <code>some_var or another</code><b>)</b> <i>[affects code quality and runtime]</i>\n"
+            score -= .2
         if 'utils.answer' in code:
             comments += "🔸 <code>{+0.3}</code> <b>utils.answer</b> <i>[compatibility with twinks]</i>\n"
             score += .3
