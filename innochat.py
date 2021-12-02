@@ -888,10 +888,7 @@ This script is made by @innomods"""
 
 
         async def check_admin(user_id):
-            async for member in self.client.iter_participants(cid, filter=telethon.tl.types.ChannelParticipantsAdmins):
-                if member.id == user_id:
-                    return True
-            return False
+            return (await self.client.get_permissions(cid, user_id)).is_admin
 
         async def send_user_warns(usid):
             if str(cid) not in self.warns:
@@ -1070,6 +1067,10 @@ This script is made by @innomods"""
 
             if cid not in self.chats or not self.chats[cid]:
                 return
+
+            try:
+                if (await self.client.get_permissions(int(cid), message.from_id)).is_admin: return
+            except: pass
 
             # Anti Raid:
 
