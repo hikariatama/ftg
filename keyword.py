@@ -12,7 +12,9 @@
 # <3 desc: Отвечать на определенные сообщения заданной фразой
 
 from .. import loader, utils
+import logging
 
+logger = logging.getLogger(__name__)
 
 @loader.tds
 class KeywordMod(loader.Module):
@@ -105,13 +107,14 @@ class KeywordMod(loader.Module):
 
     async def watcher(self, message):
         try:
+            # logger.debug(message)
             if message.out: return
 
             cid = utils.get_chat_id(message)
             if cid in self.bl: return
 
             for kw, ph in self.keywords.items():
-                kws = [_.strip(t) for _ in ([kw] if '&' not in kw else kw.split('&'))]
+                kws = [_.strip() for _ in ([kw] if '&' not in kw else kw.split('&'))]
                 trigger = False
                 for k in kws:
                     if k in message.text:
@@ -123,7 +126,7 @@ class KeywordMod(loader.Module):
                         break
 
                 if not trigger:
-                    return
+                    continue
 
                 if ph[2]:
                     await self.client.send_read_acknowledge(cid, clear_mentions=True)
@@ -136,5 +139,5 @@ class KeywordMod(loader.Module):
                     await self.client.send_message('me', self.strings('sent').format(ch, kw, ph[0]))
 
                 return await utils.answer(message, ph[0])
-        except:
-            pass
+        except Exception as e:
+            logger.debug(e)
