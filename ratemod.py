@@ -22,16 +22,16 @@ URL_REGEX = r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,
 class RateModuleMod(loader.Module):
     strings = {
         "name": "RateMod", 
-        'template': "👮‍♂️ <b>Module </b><code>{}</code><b> score:</b>\n{} {} <b>[{}]</b>\n\n{}", 
-        'no_file': '<b>What should I check?... 🗿</b>', 
-        'cannot_check_file': '<b>Cannot check file...</b>'
+        'template': "👮‍♂️ <b>Оценка модуля </b><code>{}</code><b>:</b>\n{} {} <b>[{}]</b>\n\n{}", 
+        'no_file': '<b>А какой модуль проверять?... 🗿</b>', 
+        'cannot_check_file': '<b>Ошибка проверки</b>'
     }
 
     async def client_ready(self, client, db):
         self.client = client
 
     async def ratemodcmd(self, message):
-        """<reply_to_file|file|link> - Rate code"""
+        """<reply_to_file|file|link> - Оценить код, а также дать рекомендации по исправлениям в коде"""
         args = utils.get_args_raw(message)
         reply = await message.get_reply_message()
         if not reply and not getattr(reply, 'media', None) and not getattr(message, 'media', None) and not args and not re.match(URL_REGEX, args):
@@ -83,52 +83,52 @@ class RateModuleMod(loader.Module):
 
         score = 4.6
         if len(imports) > 10:
-            comments += f"🔻 <code>{{-0.1}}</code> <b>A lot of imports ({len(imports)}) </b><i>[affects memory usage]</i>\n"
+            comments += f"🔻 <code>{{-0.1}}</code> <b>Большое кол-во зависимостей ({len(imports)}) </b><i>[занимает память]</i>\n"
             score -= .1
         if 'requests' in imports and 'utils.run_sync' not in code:
-            comments += "🔻 <code>{-0.5}</code> <b>Synchronous requests</b> <i>[stops runtime]</i>\n"
+            comments += "🔻 <code>{-0.5}</code> <b>Синхронные запросы</b> <i>[останавливает выполнение]</i>\n"
             score -= .5
         if 'while True' in code or 'while 1' in code:
-            comments += "🔻 <code>{-0.1}</code> <b>Infinite loop</b> <i>[could stop runtime]</i>\n"
+            comments += "🔻 <code>{-0.1}</code> <b>Бесконечный цикл</b> <i>[останавливает выполнение*]</i>\n"
             score -= .1
         if '.edit(' in code:
-            comments += "🔻 <code>{-0.3}</code> <b>Classic edits</b> <i>[module won't work with twinks]</i>\n"
+            comments += "🔻 <code>{-0.3}</code> <b>Классическое message.edit</b> <i>[модуль не будет работать с твинков]</i>\n"
             score -= .3
         if re.search(r'@.*?[bB][oO][tT]', code) is not None:
             bots = ' | '.join(re.findall(r'@.*?[bB][oO][tT]', code))
-            comments += f"🔻 <code>{{-0.2}}</code> <b>Bot abuse (</b><code>{bots}</code><b>)</b> <i>[module will die with abusing bot]</i>\n"
+            comments += f"🔻 <code>{{-0.2}}</code> <b>Бот-абьюз (</b><code>{bots}</code><b>)</b> <i>[модуль умрет вместе с используемым ботом]</i>\n"
             score -= .2
         if re.search(r'[ \t]+async def .*?cmd.*\n[ \t]+[^\'" \t]', code) is not None:
             undoc = ' | '.join([_ for _ in re.findall(r'[ \t]+async def (.*?)cmd.*\n[ \t]+[^" \t]', code)])
-            comments += f"🔻 <code>{{-0.4}}</code> <b>No docs (</b><code>{undoc}</code><b>)</b> <i>[all commands should be documented]</i>\n"
+            comments += f"🔻 <code>{{-0.4}}</code> <b>Нет докстрингов (</b><code>{undoc}</code><b>)</b> <i>[все команды должны быть задокументированы]</i>\n"
             score -= .4
         if 'time.sleep' in code or 'from time import sleep' in code:
-            comments += "🔻 <code>{-0.5}</code> <b>Synchronous sleep (</b><code>time.sleep</code><b>) should be replaced with (</b><code>await asyncio.sleep</code><b>)</b> <i>[stops runtime]</i>\n"
+            comments += "🔻 <code>{-0.5}</code> <b>Синхронный сон (</b><code>time.sleep</code><b>) замените на (</b><code>await asyncio.sleep</code><b>)</b> <i>[останавливает выполнение]</i>\n"
             score -= .5
         if [_ for _ in code.split('\n') if len(_) > 300]:
             ll = max([len(_) for _ in code.split('\n') if len(_) > 300])
-            comments += f"🔻 <code>{{-0.1}}</code> <b>Long lines ({ll})</b> <i>[affects code readability]</i>\n"
+            comments += f"🔻 <code>{{-0.1}}</code> <b>Длинные строки ({ll})</b> <i>[влияет на читаемость]</i>\n"
             score -= .1
         if re.search(r'[\'"] ?\+ ?.*? ?\+ ?[\'"]', code) is not None:
-            comments += "🔻 <code>{-0.1}</code> <b>Avoiding f-strings</b> <i>[can cause exceptions, affects readability]</i>\n"
+            comments += "🔻 <code>{-0.1}</code> <b>Избегание f-строк</b> <i>[вызывает проблемы, влияет на читаемость]</i>\n"
             score -= .1
         if splitted:
-            comments += f"🔻 <code>{{-0.2}}</code> <b>Long 'if' trees (</b><code>{' | '.join([f'{chain} in {fun}' for chain, fun in splitted])}</code><b>)</b> <i>[affects readability and runtime]</i>\n"
+            comments += f"🔻 <code>{{-0.2}}</code> <b>Большие 'if' деревья (</b><code>{' | '.join([f'{chain} в {fun}' for chain, fun in splitted])}</code><b>)</b> <i>[влияет на читаемость и выполнение]</i>\n"
             score -= .2
         if '== None' in code or '==None' in code:
-            comments += f"🔻 <code>{{-0.3}}</code> <b>Type comparsation via ==</b> <i>[affects code quality and runtime]</i>\n"
+            comments += f"🔻 <code>{{-0.3}}</code> <b>Сравнение типов через ==</b> <i>[влияет на качество кода, вызывает проблемы]</i>\n"
             score -= .3
         if 'is not None else' in code:
-            comments += f"🔻 <code>{{-0.1}}</code> <b>Unrelevant usage of ternary operator (</b><code>if some_var is not None else another</code> <b>-></b> <code>some_var or another</code><b>)</b> <i>[affects code quality and runtime]</i>\n"
+            comments += f"🔻 <code>{{-0.1}}</code> <b>Неуместное использование тернарного оператора (</b><code>if some_var is not None else another</code> <b>-></b> <code>some_var or another</code><b>)</b> <i>[влияет на качество кода]</i>\n"
             score -= .1
-        if 'utils.answer' in code:
-            comments += "🔸 <code>{+0.3}</code> <b>utils.answer</b> <i>[compatibility with twinks]</i>\n"
+        if 'utils.answer' in code and '.edit(' not in code:
+            comments += "🔸 <code>{+0.3}</code> <b>utils.answer</b> <i>[совместимость с твинками]</i>\n"
             score += .3
         if re.search(r'[ \t]+async def .*?cmd.*\n[ \t]+[^\'" \t]', code) is None:
-            comments += "🔸 <code>{+0.3}</code> <b>Full docstrings</b> <i>[all commands are documented]</i>\n"
+            comments += "🔸 <code>{+0.3}</code> <b>Докстринги</b> <i>[все команды задокументированы]</i>\n"
             score += .3
         if 'requests' in imports and 'utils.run_sync' in code or 'aiohttp' in imports:
-            comments += "🔸 <code>{+0.3}</code> <b>Asynchronous requests</b> <i>[don't stop runtime]</i>\n"
+            comments += "🔸 <code>{+0.3}</code> <b>Асинхронные запросы</b> <i>[не останавливает выполнение]</i>\n"
             score += .3
 
 
@@ -141,10 +141,10 @@ class RateModuleMod(loader.Module):
             check_res = ""
 
         if check_res in ['yes', 'db']:
-            comments += "🔸 <code>{+1.0}</code> <b>Module is verified</b> <i>[there is no scam]</i>\n"
+            comments += "🔸 <code>{+1.0}</code> <b>Модуль верифицирован</b> <i>[в нем нет скама]</i>\n"
             score += 1.0
 
         score = round(score, 1)
 
         score = min(score, 5.)
-        await utils.answer(message, self.strings('template').format(mod_name, '⭐️' * round(score), score, ['Trash', 'Very Bad', 'Bad', 'Moderate', 'Good', 'Perfect'][round(score)], comments))
+        await utils.answer(message, self.strings('template').format(mod_name, '⭐️' * round(score), score, ['Говнище', 'Очень плохо', 'Плохо', 'К пиву пойдет', 'Нормально', 'Четко'][round(score)], comments))
