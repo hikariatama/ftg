@@ -81,7 +81,7 @@ class RateModuleMod(loader.Module):
 
         comments = ""
 
-        score = 5.
+        score = 4.6
         if len(imports) > 10:
             comments += f"🔻 <code>{{-0.1}}</code> <b>A lot of imports ({len(imports)}) </b><i>[affects memory usage]</i>\n"
             score -= .1
@@ -89,44 +89,44 @@ class RateModuleMod(loader.Module):
             comments += "🔻 <code>{-0.5}</code> <b>Synchronous requests</b> <i>[stops runtime]</i>\n"
             score -= .5
         if 'while True' in code or 'while 1' in code:
-            comments += "🔻 <code>{-0.5}</code> <b>Infinite loop</b> <i>[could stop runtime]</i>\n"
-            score -= .5
+            comments += "🔻 <code>{-0.1}</code> <b>Infinite loop</b> <i>[could stop runtime]</i>\n"
+            score -= .1
         if '.edit(' in code:
             comments += "🔻 <code>{-0.3}</code> <b>Classic edits</b> <i>[module won't work with twinks]</i>\n"
             score -= .3
         if re.search(r'@.*?[bB][oO][tT]', code) is not None:
             bots = ' | '.join(re.findall(r'@.*?[bB][oO][tT]', code))
-            comments += f"🔻 <code>{{-0.5}}</code> <b>Bot abuse (</b><code>{bots}</code><b>)</b> <i>[module will die with abusing bot]</i>\n"
-            score -= .5
+            comments += f"🔻 <code>{{-0.2}}</code> <b>Bot abuse (</b><code>{bots}</code><b>)</b> <i>[module will die with abusing bot]</i>\n"
+            score -= .2
         if re.search(r'[ \t]+async def .*?cmd.*\n[ \t]+[^\'" \t]', code) is not None:
             undoc = ' | '.join([_ for _ in re.findall(r'[ \t]+async def (.*?)cmd.*\n[ \t]+[^" \t]', code)])
-            comments += f"🔻 <code>{{-0.5}}</code> <b>No docs (</b><code>{undoc}</code><b>)</b> <i>[all commands should be documented]</i>\n"
-            score -= .5
+            comments += f"🔻 <code>{{-0.4}}</code> <b>No docs (</b><code>{undoc}</code><b>)</b> <i>[all commands should be documented]</i>\n"
+            score -= .4
         if 'time.sleep' in code or 'from time import sleep' in code:
-            comments += "🔻 <code>{-0.5}</code> <b>Synchronous sleep</b> <i>[stops runtime]</i>\n"
+            comments += "🔻 <code>{-0.5}</code> <b>Synchronous sleep (</b><code>time.sleep</code><b>) should be replaced with (</b><code>await asyncio.sleep</code><b>)</b> <i>[stops runtime]</i>\n"
             score -= .5
         if [_ for _ in code.split('\n') if len(_) > 300]:
             ll = max([len(_) for _ in code.split('\n') if len(_) > 300])
             comments += f"🔻 <code>{{-0.1}}</code> <b>Long lines ({ll})</b> <i>[affects code readability]</i>\n"
             score -= .1
         if re.search(r'[\'"] ?\+ ?.*? ?\+ ?[\'"]', code) is not None:
-            comments += "🔻 <code>{-0.2}</code> <b>Avoiding f-strings</b> <i>[can cause exceptions, affects readability]</i>\n"
-            score -= .2
+            comments += "🔻 <code>{-0.1}</code> <b>Avoiding f-strings</b> <i>[can cause exceptions, affects readability]</i>\n"
+            score -= .1
         if splitted:
-            comments += f"🔻 <code>{{-0.3}}</code> <b>Long 'if' trees (</b><code>{' | '.join([f'{chain} in {fun}' for chain, fun in splitted])}</code><b>)</b> <i>[affects readability and runtime]</i>\n"
-            score -= .3
+            comments += f"🔻 <code>{{-0.2}}</code> <b>Long 'if' trees (</b><code>{' | '.join([f'{chain} in {fun}' for chain, fun in splitted])}</code><b>)</b> <i>[affects readability and runtime]</i>\n"
+            score -= .2
         if '== None' in code or '==None' in code:
             comments += f"🔻 <code>{{-0.3}}</code> <b>Type comparsation via ==</b> <i>[affects code quality and runtime]</i>\n"
             score -= .3
         if 'is not None else' in code:
-            comments += f"🔻 <code>{{-0.2}}</code> <b>Unrelevant usage of ternary operator (</b><code>if some_var is not None else another</code> <b>-></b> <code>some_var or another</code><b>)</b> <i>[affects code quality and runtime]</i>\n"
-            score -= .2
+            comments += f"🔻 <code>{{-0.1}}</code> <b>Unrelevant usage of ternary operator (</b><code>if some_var is not None else another</code> <b>-></b> <code>some_var or another</code><b>)</b> <i>[affects code quality and runtime]</i>\n"
+            score -= .1
         if 'utils.answer' in code:
             comments += "🔸 <code>{+0.3}</code> <b>utils.answer</b> <i>[compatibility with twinks]</i>\n"
             score += .3
         if re.search(r'[ \t]+async def .*?cmd.*\n[ \t]+[^\'" \t]', code) is None:
-            comments += "🔸 <code>{+0.2}</code> <b>Full docstrings</b> <i>[all commands are documented]</i>\n"
-            score += .2
+            comments += "🔸 <code>{+0.3}</code> <b>Full docstrings</b> <i>[all commands are documented]</i>\n"
+            score += .3
         if 'requests' in imports and 'utils.run_sync' in code or 'aiohttp' in imports:
             comments += "🔸 <code>{+0.3}</code> <b>Asynchronous requests</b> <i>[don't stop runtime]</i>\n"
             score += .3
@@ -146,5 +146,5 @@ class RateModuleMod(loader.Module):
 
         score = round(score, 1)
 
-        score = min(score, 5.0)
-        await utils.answer(message, self.strings('template').format(mod_name, '⭐️' * round(score), score, ['Very bad', 'Bad', 'Moderate', 'Middle', 'Good', 'Perfect'][round(score)], comments))
+        score = min(score, 5.)
+        await utils.answer(message, self.strings('template').format(mod_name, '⭐️' * round(score), score, ['Trash', 'Very Bad', 'Bad', 'Moderate', 'Good', 'Perfect'][round(score)], comments))
