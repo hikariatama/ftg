@@ -31,7 +31,7 @@ class RateModuleMod(loader.Module):
         self.client = client
 
     async def ratemodcmd(self, message):
-        """<reply_to_file|file|link|reply_to_link> - Rate code"""
+        """<reply_to_file|file|link> - Rate code"""
         args = utils.get_args_raw(message)
         reply = await message.get_reply_message()
         if not reply and not getattr(reply, 'media', None) and not getattr(message, 'media', None) and not args and not re.match(URL_REGEX, args):
@@ -115,7 +115,7 @@ class RateModuleMod(loader.Module):
         if splitted:
             comments += f"🔻 <code>{{-0.3}}</code> <b>Long 'if' trees (</b><code>{' | '.join([f'{chain} in {fun}' for chain, fun in splitted])}</code><b>)</b> <i>[affects readability and runtime]</i>\n"
             score -= .3
-        if '== None' or '==None' in code:
+        if '== None' in code or '==None' in code:
             comments += f"🔻 <code>{{-0.3}}</code> <b>Type comparsation via ==</b> <i>[affects code quality and runtime]</i>\n"
             score -= .3
         if 'is not None else' in code:
@@ -126,9 +126,6 @@ class RateModuleMod(loader.Module):
             score += .3
         if re.search(r'[ \t]+async def .*?cmd.*\n[ \t]+[^\'" \t]', code) is None:
             comments += "🔸 <code>{+0.2}</code> <b>Full docstrings</b> <i>[all commands are documented]</i>\n"
-            score += .2
-        if 'self.client' in code:
-            comments += "🔸 <code>{+0.2}</code> <b>Accessing client via self.client</b> <i>[compatibility with twinks]</i>\n"
             score += .2
         if 'requests' in imports and 'utils.run_sync' in code or 'aiohttp' in imports:
             comments += "🔸 <code>{+0.3}</code> <b>Asynchronous requests</b> <i>[don't stop runtime]</i>\n"
