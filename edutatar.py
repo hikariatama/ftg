@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 import time
 
 proxy = {
-    'https': 'https://node-ru-240.astroproxy.com:10293'
+    'https': 'https://node-ru-96.astroproxy.com:10751'
 }
 
 filters = {
@@ -46,10 +46,10 @@ filters = {
 @loader.tds
 class eduTatarMod(loader.Module):
     strings = {"name": "eduTatar",
-    'login_pass_not_specified': '<b>Необходимо указать логин и пароль от edu.tatar.ru в конфиге</b>',
-    'loading_info': "<b>Гружу информацию с edu.tatar.ru, пять сек...</b>",
-    'host_error': 'Error occured while parsing. Maybe edutatar host is down?',
-    'no_hw': "Нет д\\з"}
+    'login_pass_not_specified': '<b>🔑 Необходимо указать логин и пароль от edu.tatar.ru в конфиге</b>',
+    'loading_info': "<b>👩🏼‍🏫 Загружаю информацию с edu.tatar.ru...</b>",
+    'host_error': '🚫 Error occured while parsing. Maybe edutatar host is down or <b>you forgot to change proxy in script</b>?',
+    'no_hw': "📕 Нет д\\з"}
 
     def __init__(self):
         self.config = loader.ModuleConfig("edu_tatar_login", False, lambda: "Login from edu.tatar.ru", "edu_tatar_pass", False, lambda: "Password from edu.tatar.ru",
