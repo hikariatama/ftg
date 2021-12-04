@@ -14,6 +14,7 @@
 from .. import loader, utils
 from telethon.tl.functions.channels import CreateChannelRequest
 import logging
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +83,9 @@ class SilentTagsMod(loader.Module):
                     uname = 'Unknown user'
 
                 await self.client.send_message(self.c, self.strings('tagged').format(grouplink, ctitle, uid, uname, message.text, cid, message.id), link_preview=False)
-                await utils.answer(message, self.strings('tag_mentioned'))
+                ms = (await utils.answer(message, self.strings('tag_mentioned')))
+                ms = ms[0] if isinstance(ms, list) else ms
+                await asyncio.sleep(5)
+                await ms.delete()
         except Exception as e:
             logger.exception(e)
