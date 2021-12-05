@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 @loader.tds
 class Img2PdfMod(loader.Module):
-    """Pack images to pdf"""
+    """Packs images to pdf"""
     strings = {
         "name":"Img2Pdf"
     }
@@ -32,6 +32,7 @@ class Img2PdfMod(loader.Module):
 
     @loader.unrestricted
     async def img2pdfcmd(self, message):
+        """<filename | optional> - Pack images into pdf"""
         try:
             start_offset = message.id if message.media else (await message.get_reply_message()).id
         except:
