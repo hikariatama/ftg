@@ -68,11 +68,10 @@ class RPMod(loader.Module):
             await utils.answer(message, self.strings('rp_on', message))
         self.db.set('RPMod', 'active', self.chats)
 
-
+    @loader.unrestricted
     async def rplistcmd(self, message):
         """List RP Commands"""
         await utils.answer(message, self.strings('rplist').format('\n'.join([f"    🇨🇭 {command} - {msg}" for command, msg in self.rp.items()])))
-
 
     async def rpbackupcmd(self, message):
         """Backup RP Commands to file"""

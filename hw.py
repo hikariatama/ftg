@@ -7,9 +7,9 @@
     free to contact Dan by sending pm to @innocoffee_alt.
 """
 
-#<3 title: HomeWork
-#<3 pic: https://img.icons8.com/fluency/48/000000/khan-academy.png
-#<3 desc: Планнер домашних заданий поможет лучше учиться
+# <3 title: HomeWork
+# <3 pic: https://img.icons8.com/fluency/48/000000/khan-academy.png
+# <3 desc: Планнер домашних заданий поможет лучше учиться
 
 
 from .. import loader, utils
@@ -21,10 +21,10 @@ from random import randint
 class HomeworkMod(loader.Module):
     """Simple Homework planner"""
     strings = {'name': 'HomeWork',
-    'no_hometask': '<b>You haven\'t provided hometask</b>',
-    'new_hometask': "<b>Hometask </b><code>#{}</code>:\n<pre>{}</pre>", 
-    'not_found': '<b>🚫 Hometask not found</b',
-    'removed': '<b>✅ Hometask removed</b>'}
+               'no_hometask': '<b>You haven\'t provided hometask</b>',
+               'new_hometask': "<b>Hometask </b><code>#{}</code>:\n<pre>{}</pre>",
+               'not_found': '<b>🚫 Hometask not found</b',
+               'removed': '<b>✅ Hometask removed</b>'}
 
     async def client_ready(self, client, db):
         self.db = db
@@ -51,6 +51,7 @@ class HomeworkMod(loader.Module):
         self.db.set("HomeWork", "hw", self.hw)
         await utils.answer(message, self.strings('new_hometask', message).format(random_id, str(args)))
 
+    @loader.unrestricted
     async def hwlcmd(self, message):
         """List of hometasks"""
         res = "<b>#HW:</b>\n\n"

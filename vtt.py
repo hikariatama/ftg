@@ -63,7 +63,7 @@ class vttMod(loader.Module):
             else:
                 await event.delete()
 
-    @loader.owner
+    @loader.unrestricted
     async def voicycmd(self, message):
         reply = await message.get_reply_message()
         if not reply or not reply.media or not reply.media.document.attributes[0].voice:
@@ -75,7 +75,6 @@ class vttMod(loader.Module):
         await self.recognize(reply)
         await message.delete()
 
-    @loader.owner
     async def watcher(self, event):
         chat_id = utils.get_chat_id(event)
         if chat_id not in self.chats:

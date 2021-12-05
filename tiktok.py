@@ -24,6 +24,7 @@ class TikTokMod(loader.Module):
     async def client_ready(self, client, db):
         self.client = client
 
+    @loader.unrestricted
     async def ttcmd(self, message):
         """<link> - Download TikTok video nwm"""
         args = utils.get_args_raw(message)

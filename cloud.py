@@ -76,7 +76,7 @@ class modCloudMod(loader.Module):
 
             await send(self.client)
 
-
+    @loader.unrestricted
     async def cloudcmd(self, message):
         """<command \\ mod_name> - Lookup mod in @innomods_database"""
         args = utils.get_args_raw(message)

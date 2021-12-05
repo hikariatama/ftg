@@ -25,6 +25,7 @@ class NoMetaMod(loader.Module):
     async def client_ready(self, client, db):
         self.client = client
 
+    @loader.unrestricted
     async def nometacmd(self, message):
         """Если кто-то отправил мету по типу 'Привет', эта команда его вразумит"""
         await self.client.send_message(message.peer_id, self.strings('no_meta'), reply_to=getattr(message, 'reply_to_msg_id', None))
@@ -35,6 +36,8 @@ class NoMetaMod(loader.Module):
             text = message.raw_text
         except:
             return
+
+        if not message.is_private: return
 
         meta = [
             'привет', 'хай', 'hi', 'hello', 'хелло', 'хеллоу', 'хэллоу',

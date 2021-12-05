@@ -30,6 +30,7 @@ class RateModuleMod(loader.Module):
     async def client_ready(self, client, db):
         self.client = client
 
+    @loader.unrestricted
     async def ratemodcmd(self, message):
         """<reply_to_file|file|link> - Оценить код, а также дать рекомендации по исправлениям в коде"""
         args = utils.get_args_raw(message)

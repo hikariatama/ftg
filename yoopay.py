@@ -31,7 +31,7 @@ class TikTokMod(loader.Module):
     def __init__(self):
         self.config = loader.ModuleConfig("account", '', lambda: "Счет Yoomoney (16 цифр)")
 
-
+    @loader.unrestricted
     async def yoopaycmd(self, message):
         """<sum> <title>;<comment> - Отправить ссылку на оплату
 Пример: .yoopay 100 На кофе;Братан, купи мне кофе, вот ссылка"""

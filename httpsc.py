@@ -24,7 +24,7 @@ class HttpErrorsMod(loader.Module):
     'syntax_error': '<b>Синтаксис: [prefix]httpsc [error_code]</b>',
     'scode': '<b>{} {}</b>\n⚜️ Описание кода: <i>{}</i>'}
 
-    @loader.owner
+    @loader.unrestricted
     async def httpsccmd(self, message):
         args = utils.get_args(message)
         responses = {

@@ -156,6 +156,7 @@ This script is made by @innomods"""
 
         await self.update_handlers()
 
+    @loader.group_admin_ban_users
     async def kickcmd(self, message):
         """<reply | user> <reason | optional> - Kick user"""
         chat = await message.get_chat()
@@ -194,6 +195,7 @@ This script is made by @innomods"""
             await utils.answer(message, self.strings('not_admin', message))
             return
 
+    @loader.group_admin_ban_users
     async def bancmd(self, message):
         """<reply | user> <time | 0 for infinity> <reason | optional> - Ban user"""
         chat = await message.get_chat()
@@ -238,6 +240,7 @@ This script is made by @innomods"""
             await utils.answer(message, self.strings('not_admin', message))
             return
 
+    @loader.group_admin_ban_users
     async def mutecmd(self, message):
         """<reply | user> <time | 0 for infinity> <reason | optional> - Mute user"""
         chat = await message.get_chat()
@@ -282,6 +285,7 @@ This script is made by @innomods"""
             await utils.answer(message, self.strings('not_admin', message))
             return
 
+    @loader.group_admin_add_admins
     async def setprefcmd(self, message):
         """<reply | user> <prefix> - Set prefix w\\o admin rights"""
         chat = await message.get_chat()
@@ -320,6 +324,7 @@ This script is made by @innomods"""
             await utils.answer(message, self.strings('not_admin', message))
             return
 
+    @loader.group_admin_add_admins
     async def delprefcmd(self, message):
         """<reply | user> - Remove prefix"""
         chat = await message.get_chat()
@@ -353,6 +358,7 @@ This script is made by @innomods"""
             await utils.answer(message, self.strings('not_admin', message))
             return
 
+    @loader.group_admin_ban_users
     async def unmutecmd(self, message):
         """<reply | user> - Unmute user"""
         chat = await message.get_chat()
@@ -386,6 +392,7 @@ This script is made by @innomods"""
             await utils.answer(message, self.strings('not_admin', message))
             return
 
+    @loader.group_admin_ban_users
     async def unbancmd(self, message):
         """<reply | user> - Unban user"""
         chat = await message.get_chat()
@@ -419,6 +426,7 @@ This script is made by @innomods"""
             await utils.answer(message, self.strings('not_admin', message))
             return
 
+    @loader.group_owner
     async def asexcmd(self, message):
         """<mute | kick | ban | no to disable> - Toggle antisex"""
         
@@ -439,6 +447,7 @@ This script is made by @innomods"""
 
         self.db.set('InnoChats', 'chats', self.chats)
 
+    @loader.group_owner
     async def araidcmd(self, message):
         """<mute | kick | ban | no to disable> - Toggle antiraid"""
         
@@ -459,6 +468,7 @@ This script is made by @innomods"""
 
         self.db.set('InnoChats', 'chats', self.chats)
 
+    @loader.group_owner
     async def atagallcmd(self, message):
         """Toggle AntiTagAll"""
         
@@ -476,6 +486,7 @@ This script is made by @innomods"""
 
         self.db.set('InnoChats', 'chats', self.chats)
 
+    @loader.group_owner
     async def atagallactioncmd(self, message):
         """<mute | ban | kick | warn | delmsg> - Set action raised on tagall"""
         
@@ -493,6 +504,7 @@ This script is made by @innomods"""
         self.db.set('InnoChats', 'chats', self.chats)
         await utils.answer(message, self.strings('atagall_action_set', message).format(args))
 
+    @loader.group_owner
     async def antihelpcmd(self, message):
         """Toggle AntiHelp"""
         
@@ -510,6 +522,7 @@ This script is made by @innomods"""
 
         self.db.set('InnoChats', 'chats', self.chats)
 
+    @loader.group_owner
     async def arabcmd(self, message):
         """Toggle AntiArab"""
         
@@ -527,6 +540,7 @@ This script is made by @innomods"""
 
         self.db.set('InnoChats', 'chats', self.chats)
 
+    @loader.group_owner
     async def arabactioncmd(self, message):
         """<mute | ban | kick | warn | delmsg> - Set action raised on arab"""
         
@@ -544,6 +558,7 @@ This script is made by @innomods"""
         self.db.set('InnoChats', 'chats', self.chats)
         await utils.answer(message, self.strings('arab_action_set', message).format(args))
 
+    @loader.group_owner
     async def alscmd(self, message):
         """Toggle LogSpam"""
         
@@ -567,6 +582,7 @@ This script is made by @innomods"""
         self.db.set('InnoChats', 'chats', self.chats)
         await self.update_handlers()
 
+    @loader.group_owner
     async def alsactioncmd(self, message):
         """<mute | ban | kick | warn | delmsg | nothing> - Set action raised on limit"""
         
@@ -595,6 +611,7 @@ This script is made by @innomods"""
         self.db.set('InnoChats', 'chats', self.chats)
         await utils.answer(message, self.strings('als_action_set', message).format(args))
 
+    @loader.group_owner
     async def alssetcmd(self, message):
         """<limit> <time sample> - Set limit and time sample"""
         
@@ -629,6 +646,7 @@ This script is made by @innomods"""
         self.db.set('InnoChats', 'chats', self.chats)
         await utils.answer(message, self.strings('als_range_set', message).format(limit, time_sample))
 
+    @loader.group_owner
     async def update_handlers(self):
         # logger.info('[AntiLogspam]: Updating handlers')
         
@@ -655,6 +673,7 @@ This script is made by @innomods"""
 
         # logger.info(f'[AntiLogspam]: Successfully started for {len(self.chats)} chats: {", ".join(self.chats)}')
 
+    @loader.group_owner
     async def check_user(self, cid, user, event_type, event=None):
         
 
@@ -705,6 +724,7 @@ This script is made by @innomods"""
         else:
             logger.debug('[AntiLogspam]: Message from owner, ignoring...')
 
+    @loader.group_owner
     async def protectscmd(self, message):
         """List available filters"""
         await utils.answer(message, self.strings('protections', message))
@@ -749,6 +769,7 @@ This script is made by @innomods"""
 
         await utils.answer(message, res)
 
+    @loader.group_owner
     async def pchatcmd(self, message):
         """List protection for current chat"""
         
@@ -810,6 +831,8 @@ This script is made by @innomods"""
     def save_cache(self):
         open('als_cache.json', 'w').write(json.dumps(self.cache))
 
+
+    @loader.group_admin_ban_users
     async def warncmd(self, message):
         """<reply | user_id | username> <reason | optional> - Warn user"""
         if message.is_private:
@@ -922,6 +945,7 @@ This script is made by @innomods"""
             elif args:
                 await send_user_warns(args)
 
+    @loader.group_admin_ban_users
     async def dwarncmd(self, message):
         """<reply | user_id | username> - Remove last warn"""
         if message.is_private:
@@ -954,6 +978,7 @@ This script is made by @innomods"""
         await utils.answer(message, self.strings('dwarn', message).format(user.id, user.first_name))
         self.db.set('InnoChats', 'warns', self.warns)
 
+    @loader.group_admin_ban_users
     async def clrwarnscmd(self, message):
         """<reply | user_id | username> - Remove all warns from user"""
         if message.is_private:
@@ -986,6 +1011,7 @@ This script is made by @innomods"""
         await utils.answer(message, self.strings('clrwarns', message).format(user.id, user.first_name))
         self.db.set('InnoChats', 'warns', self.warns)
 
+    @loader.group_admin_ban_users
     async def warnsactioncmd(self, message):
         """<mute | kick | ban> - Set action when limit is reached"""
         if message.is_private:
@@ -1008,6 +1034,7 @@ This script is made by @innomods"""
         self.warns[str(cid)]['a'] = args
         await utils.answer(message, self.strings('new_a', message).format(args))
 
+    @loader.group_admin_ban_users
     async def warnslimitcmd(self, message):
         """<limit:int> - Set warns limit"""
         if message.is_private:
@@ -1032,6 +1059,7 @@ This script is made by @innomods"""
         self.warns[str(cid)]['l'] = args
         await utils.answer(message, self.strings('new_l', message).format(args))
 
+    @loader.group_owner
     async def welcomecmd(self, message):
         """<text> - Change welcome text"""
         cid = str(utils.get_chat_id(message))
@@ -1043,6 +1071,7 @@ This script is made by @innomods"""
         self.db.set('InnoChats', 'chats', self.chats)
         await utils.answer(message, self.strings('welcome', message))
 
+    @loader.group_owner
     async def unwelcomecmd(self, message):
         """Disable greeting"""
         cid = str(utils.get_chat_id(message))
