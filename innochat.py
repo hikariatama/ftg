@@ -679,7 +679,8 @@ This script is made by @innomods"""
 
     @loader.group_owner
     async def check_user(self, cid, user, event_type, event=None):
-        
+        if cid in self.chats and self.chats[cid] and 'defense' in self.chats[cid] and self.chats[cid]['defense'] and user in self.chats[cid]['defense']:
+            return
 
         if user != self.me:
             if cid in self.chats:
