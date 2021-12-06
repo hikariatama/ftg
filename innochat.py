@@ -1256,13 +1256,9 @@ This script is made by @innomods"""
             # AntiTagAll:
 
             if 'antitagall' in self.chats[cid]:
-                if getattr(message, 'entities', None) is not None:
-                    mentions = [_ for _ in message.entities if type(_) is telethon.tl.types.MessageEntityMention or type(
-                        _) is telethon.tl.types.MessageEntityMentionName]
-
-                    if len(mentions) >= 5:
-                        violation = 'tagall'
-                        action = self.chats[cid]['antitagall']
+                if message.text.count('tg://user?id=') >= 5:
+                    violation = 'tagall'
+                    action = self.chats[cid]['antitagall']
 
             # AntiHelp:
             if 'antihelp' in self.chats[cid]:
