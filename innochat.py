@@ -90,7 +90,11 @@ This script is made by @innomods"""
         'ban': '👾 <b><a href="tg://user?id={}">{}</a> banned {}. Reason: {}</b>',
         'kick': '👾 <b><a href="tg://user?id={}">{}</a> kicked. Reason: {}</b>',
         'unmuted': '👾 <b><a href="tg://user?id={}">{}</a> unmuted</b>',
-        'unban': '👾 <b><a href="tg://user?id={}">{}</a> unbanned</b>'
+        'unban': '👾 <b><a href="tg://user?id={}">{}</a> unbanned</b>',
+
+        'defense': '🛡 <b>Shield for <a href="tg://user?id={}">{}</a> is now {}</b>',
+        'no_defense': '🛡 <b>I don\'t protect any users in this chat right now</b>',
+        'defense_list': '🛡 <b>Invulnerable users in current chat:</b>\n{}'
     }
 
     async def client_ready(self, client, db):
@@ -1088,6 +1092,64 @@ This script is made by @innomods"""
         self.db.set('InnoChats', 'chats', self.chats)
         await utils.answer(message, self.strings('unwelcome', message))
 
+    @loader.group_owner
+    async def defensecmd(self, message):
+        """<user | reply> - Toggle user invulnerability"""
+        if message.is_private:
+            await message.delete()
+            return
+
+        cid = str(utils.get_chat_id(message))
+        args = utils.get_args_raw(message)
+        reply = await message.get_reply_message()
+        user = None
+        if reply:
+            user = await self.client.get_entity(reply.from_id)
+        else:
+            try:
+                args = int(args)
+            except: pass
+
+            try:
+                user = await self.client.get_entity(args)
+            except IndexError:
+                return await utils.answer(message, self.strings('args', message))
+
+        if cid not in self.chats:
+            self.chats[cid] = {}
+
+        if 'defense' not in self.chats[cid]:
+            self.chats[cid]['defense'] = []
+
+        if user.id not in self.chats[cid]['defense']:
+            self.chats[cid]['defense'].append(user.id)
+            await utils.answer(message, self.strings('defense', message).format(user.id, user.first_name, 'on'))
+        else:
+            self.chats[cid]['defense'].remove(user.id)
+            await utils.answer(message, self.strings('defense', message).format(user.id, user.first_name, 'off'))
+
+        self.db.set('InnoChats', 'chats', self.chats)
+
+    @loader.group_owner
+    async def defenselistcmd(self, message):
+        chat = str(utils.get_chat_id(message))
+        if chat not in self.chats or not self.chats[chat] or 'defense' not in self.chats[chat] or not self.chats[chat]['defense']:
+            return await utils.answer(message, self.strings('no_defense', message))
+
+        res = ""
+        defense = self.chats[chat]['defense']
+        for user in defense.copy():
+            try:
+                u = await self.client.get_entity(user)
+            except:
+                self.chats[chat]['defense'].remove(user)
+                continue
+
+            res += f"  🇻🇦 <a href=\"tg://user?id={u.id}\">{u.first_name}{(' ' + u.last_name) if getattr(u, 'last_name', None) is not None else ''}</a>\n"
+
+        return await utils.answer(message, self.strings('defense_list').format(res))
+
+
     async def watcher(self, message):
         
 
@@ -1095,6 +1157,10 @@ This script is made by @innomods"""
             cid = str(utils.get_chat_id(message))
 
             if cid not in self.chats or not self.chats[cid]:
+                return
+
+            user = message.from_id
+            if 'defense' in self.chats[cid] and user in self.chats[cid]['defense']:
                 return
 
             try:
