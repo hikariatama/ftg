@@ -35,12 +35,11 @@ class KeywordMod(loader.Module):
         """Sends 'purr' voice message"""
         args = utils.get_args_raw(message) or "<i>🐈 Purrr-r-r-r...</i>"
         purrs = [
-            'https://x0.at/KFx1.mp3',
-            'https://x0.at/jsMN.mp3',
-            'https://x0.at/M7ne.mp3',
-            'https://x0.at/vB7r.mp3',
-            'https://x0.at/RePK.mp3',
-            'https://x0.at/7ZEI.mp3'
+            'https://x0.at/ne6O.mp3',
+            'https://x0.at/Kc0L.mp3',
+            'https://x0.at/rGdI.mp3',
+            'https://x0.at/3mtz.mp3',
+            'https://x0.at/3U9J.mp3'
         ]
 
         voice = (await utils.run_sync(requests.get, random.choice(purrs))).content
