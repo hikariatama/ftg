@@ -8,7 +8,7 @@
 """
 
 # <3 title: YouTube
-# <3 pic: https://img.icons8.com/fluency/48/000000/bank-card-back-side.png
+# <3 pic: https://img.icons8.com/fluency/50/000000/youtube.png
 # <3 desc: Скачать видео с YouTube
 
 from .. import loader, utils
@@ -36,7 +36,7 @@ class YouTubeMod(loader.Module):
 
     @loader.unrestricted
     async def ytcmd(self, message):
-        """Download video from youtube"""
+        """[mp3] <link> - Download video from youtube"""
         args = utils.get_args_raw(message)
         ext = False
         if len(args.split()) > 1:
