@@ -38,6 +38,10 @@ class YouTubeMod(loader.Module):
     async def ytcmd(self, message):
         """[mp3] <link> - Download video from youtube"""
         args = utils.get_args_raw(message)
+        message = await utils.answer(message, self.strings('downloading'))
+        try:
+            message = message[0]
+        except: pass
         ext = False
         if len(args.split()) > 1:
             ext, args = args.split(maxsplit=1)
