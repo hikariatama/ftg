@@ -1142,10 +1142,10 @@ This script is made by @innomods"""
 
         if user.id not in self.chats[cid]['defense']:
             self.chats[cid]['defense'].append(user.id)
-            await utils.answer(message, self.strings('defense', message).format(user.id, user.first_name, 'on'))
+            await utils.answer(message, self.strings('defense', message).format(user.id, user.first_name if getattr(user, 'first_name', None) is not None else user.title, 'on'))
         else:
             self.chats[cid]['defense'].remove(user.id)
-            await utils.answer(message, self.strings('defense', message).format(user.id, user.first_name, 'off'))
+            await utils.answer(message, self.strings('defense', message).format(user.id, user.first_name if getattr(user, 'first_name', None) is not None else user.title, 'off'))
 
         self.db.set('InnoChats', 'chats', self.chats)
 
@@ -1164,7 +1164,8 @@ This script is made by @innomods"""
                 self.chats[chat]['defense'].remove(user)
                 continue
 
-            res += f"  🇻🇦 <a href=\"tg://user?id={u.id}\">{u.first_name}{(' ' + u.last_name) if getattr(u, 'last_name', None) is not None else ''}</a>\n"
+            tit = u.first_name if getattr(u, 'first_name', None) is not None else u.title
+            res += f"  🇻🇦 <a href=\"tg://user?id={u.id}\">{tit}{(' ' + u.last_name) if getattr(u, 'last_name', None) is not None else ''}</a>\n"
 
         return await utils.answer(message, self.strings('defense_list').format(res))
 
@@ -1179,6 +1180,9 @@ This script is made by @innomods"""
                 return
 
             user = message.from_id
+            if user < 0:
+                user = int(str(user)[4:])
+            # logger.info(user)
             if 'defense' in self.chats[cid] and user in self.chats[cid]['defense']:
                 return
 
