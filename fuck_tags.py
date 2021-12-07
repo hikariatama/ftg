@@ -97,8 +97,15 @@ class FuckTagsMod(loader.Module):
             if utils.get_chat_id(message) in self.db.get('FuckTags', 'tags', []) and message.mentioned:
                 await self.client.send_read_acknowledge(message.chat_id, message, clear_mentions=True)
                 if utils.get_chat_id(message) not in self._ratelimit:
-                    await utils.answer(message, self.strings('do_not_tag_me', message))
+                    msg = await utils.answer(message, self.strings('do_not_tag_me', message))
                     self._ratelimit.append(utils.get_chat_id(message))
+                    await asyncio.sleep(3)
+                    try:
+                        msg = msg[0]
+                    except:
+                        pass
+
+                    await msg.delete()
             elif utils.get_chat_id(message) in self.db.get('FuckTags', 'strict', []):
                 await self.client.send_read_acknowledge(message.chat_id, message)
         except:
