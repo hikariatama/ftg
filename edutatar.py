@@ -19,9 +19,7 @@ import requests
 from datetime import datetime, timedelta
 import time
 
-proxy = {
-    'https': 'https://node-ru-96.astroproxy.com:10751'
-}
+
 
 filters = {
     'Иностранный язык (английский)': '🇺🇸 Англ',
@@ -52,8 +50,10 @@ class eduTatarMod(loader.Module):
     'no_hw': "📕 Нет д\\з"}
 
     def __init__(self):
-        self.config = loader.ModuleConfig("edu_tatar_login", False, lambda: "Login from edu.tatar.ru", "edu_tatar_pass", False, lambda: "Password from edu.tatar.ru",
-                                          "marks_parse_delay", 300, lambda: "Delay for parsing new marks in seconds")
+        self.config = loader.ModuleConfig("edu_tatar_login", False, lambda: "Login from edu.tatar.ru",
+                                        "edu_tatar_pass", False, lambda: "Password from edu.tatar.ru",
+                                        "marks_parse_delay", 300, lambda: "Delay for parsing new marks in seconds",
+                                        "proxy", '', lambda: "Proxy for correct work of module")
 
     async def client_ready(self, client, db):
         self.db = db
@@ -143,7 +143,7 @@ class eduTatarMod(loader.Module):
                 'Referer': 'https://edu.tatar.ru/logon',
                 'Accept-Encoding': 'gzip, deflate, br',
                 'Accept-Language': 'en-US,en;q=0.9'
-            }, data={'main_login2': self.config['edu_tatar_login'], 'main_password2': self.config['edu_tatar_pass']}, allow_redirects=True, proxies=proxy)
+            }, data={'main_login2': self.config['edu_tatar_login'], 'main_password2': self.config['edu_tatar_pass']}, allow_redirects=True, proxies=self.config['proxy'])
         except requests.exceptions.ProxyError:
             return self.strings('host_error')
 
@@ -194,7 +194,7 @@ class eduTatarMod(loader.Module):
                 'Referer': 'https://edu.tatar.ru/user/diary/week',
                 'Accept-Encoding': 'gzip, deflate, br',
                 'Accept-Language': 'en-US,en;q=0.9'
-            }, proxies=proxy)
+            }, proxies=self.config['proxy'])
         except requests.exceptions.ProxyError:
             return self.strings('host_error')
 
@@ -246,7 +246,7 @@ class eduTatarMod(loader.Module):
                 'Referer': 'https://edu.tatar.ru/user/diary/week',
                 'Accept-Encoding': 'gzip, deflate, br',
                 'Accept-Language': 'en-US,en;q=0.9'
-            }, proxies=proxy)
+            }, proxies=self.config['proxy'])
         except requests.exceptions.ProxyError:
             return self.strings('host_error')
 
