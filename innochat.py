@@ -94,7 +94,9 @@ This script is made by @innomods"""
 
         'defense': '🛡 <b>Shield for <a href="tg://user?id={}">{}</a> is now {}</b>',
         'no_defense': '🛡 <b>I don\'t protect any users in this chat right now</b>',
-        'defense_list': '🛡 <b>Invulnerable users in current chat:</b>\n{}'
+        'defense_list': '🛡 <b>Invulnerable users in current chat:</b>\n{}',
+
+        'antichannel': '📯 <b>AntiChannel is now {} in this chat</b>'
     }
 
     async def client_ready(self, client, db):
@@ -738,7 +740,7 @@ This script is made by @innomods"""
         """List protections"""
         
 
-        res = f"<b><u>🦊 @innomods Chat Protection</u></b> <i>{version}</i>\n\n<i>🐼 - AntiLogspam\n🐺 - AntiHelp\n🐻 - AntiArab\n🐵 - AntiTagAll\n💋 - AntiSex\n🚪 - AntiRaid\n\n👋 - Welcome\n👮‍♂️ - Warns</i>\n\n🦊 <b><u>Chats:</u></b>\n"
+        res = f"<b><u>🦊 @innomods Chat Protection</u></b> <i>{version}</i>\n\n<i>🐼 - AntiLogspam\n🐺 - AntiHelp\n🐻 - AntiArab\n🐵 - AntiTagAll\n💋 - AntiSex\n🚪 - AntiRaid\n📯 - AntiChannel\n\n👋 - Welcome\n👮‍♂️ - Warns</i>\n\n🦊 <b><u>Chats:</u></b>\n"
         changes = False
         for chat, obj in self.chats.copy().items():
             try:
@@ -759,6 +761,7 @@ This script is made by @innomods"""
             line += "🐵" if 'antitagall' in obj else ""
             line += "💋" if 'antisex' in obj else ""
             line += "🚪" if 'antiraid' in obj else ""
+            line += "📯" if 'antichannel' in obj else ""
             line += "👋" if 'welcome' in obj else ""
             line += "👮‍♂️" if chat in self.warns else ""
 
@@ -799,6 +802,7 @@ This script is made by @innomods"""
             obj['als']['settings']['action'], obj['als']['settings']['detection_range'], obj['als']['settings']['detection_interval']) if 'als' in obj else ""
         line += "\n💋 <b>AntiSex</b> Action: <b>{}</b>".format(obj['antisex']) if 'antisex' in obj else ""
         line += "\n🚪 <b>AntiRaid</b> Action: <b>{} all joined</b>".format(obj['antiraid']) if 'antiraid' in obj else ""
+        line += "\n📯 <b>AntiChannel.</b>" if 'antichannel' in obj else ""
         line += "\n👋 <b>Welcome.</b> \n<code>    </code>{}".format(
             obj['welcome'].replace('\n', '\n<code>    </code>')) if 'welcome' in obj else ""
         line += "\n👮‍♂️ <b>Warns.</b>" if cid in self.warns else ""
@@ -1094,6 +1098,20 @@ This script is made by @innomods"""
         await utils.answer(message, self.strings('unwelcome', message))
 
     @loader.group_owner
+    async def antichannelcmd(self, message):
+        """Toggle messages removal from channels"""
+        cid = str(utils.get_chat_id(message))
+        if cid not in self.chats:
+            self.chats[cid] = {}
+
+        if 'antichannel' not in self.chats[cid]:
+            self.chats[cid]['antichannel'] = True
+            await utils.answer(message, self.strings('antichannel').format('on'))
+        else:
+            del self.chats[cid]['antichannel']
+            await utils.answer(message, self.strings('antichannel').format('off'))
+
+    @loader.group_owner
     async def defensecmd(self, message):
         """<user | reply> - Toggle user invulnerability"""
         if message.is_private:
@@ -1234,8 +1252,16 @@ This script is made by @innomods"""
                     
                     return
 
-            user = message.from_id if getattr(
-                message, 'from_id', None) is not None else None
+            user = message.from_id or None
+
+            # AntiChannel:
+
+            if 'antichannel' in self.chats[cid]:
+                if user < 0:
+                    await message.delete()
+                    return
+
+            # AntiLogSpam:
 
             if 'als' in self.chats[cid]:
                 if user is not None and str(user) != self.me:

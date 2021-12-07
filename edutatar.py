@@ -143,7 +143,7 @@ class eduTatarMod(loader.Module):
                 'Referer': 'https://edu.tatar.ru/logon',
                 'Accept-Encoding': 'gzip, deflate, br',
                 'Accept-Language': 'en-US,en;q=0.9'
-            }, data={'main_login2': self.config['edu_tatar_login'], 'main_password2': self.config['edu_tatar_pass']}, allow_redirects=True, proxies=self.config['proxy'])
+            }, data={'main_login2': self.config['edu_tatar_login'], 'main_password2': self.config['edu_tatar_pass']}, allow_redirects=True, proxies={'https': self.config['proxy']})
         except requests.exceptions.ProxyError:
             return self.strings('host_error')
 
@@ -194,7 +194,7 @@ class eduTatarMod(loader.Module):
                 'Referer': 'https://edu.tatar.ru/user/diary/week',
                 'Accept-Encoding': 'gzip, deflate, br',
                 'Accept-Language': 'en-US,en;q=0.9'
-            }, proxies=self.config['proxy'])
+            }, proxies={'https': self.config['proxy']})
         except requests.exceptions.ProxyError:
             return self.strings('host_error')
 
@@ -246,7 +246,7 @@ class eduTatarMod(loader.Module):
                 'Referer': 'https://edu.tatar.ru/user/diary/week',
                 'Accept-Encoding': 'gzip, deflate, br',
                 'Accept-Language': 'en-US,en;q=0.9'
-            }, proxies=self.config['proxy'])
+            }, proxies={'https': self.config['proxy']})
         except requests.exceptions.ProxyError:
             return self.strings('host_error')
 
