@@ -22,10 +22,26 @@ import requests
 import string
 
 
+_client = None
+
+old_utils = utils.answer
+async def new_answer(message, text, *args, **kwargs):
+    for inst in re.findall(r'tg://user\?id=([0-9]*)', text) or []:
+        t = int(inst)
+        try:
+            if isinstance(await _client.get_input_entity(t), telethon.tl.types.InputPeerChannel):
+                try:
+                    username = (await _client.get_entity(t)).username
+                except: username = ''
+                text = text.replace(f'tg://user?id={t}', f'https://t.me/{username}' if username else '')
+        except: pass
+
+    return await old_utils(message, text, *args, **kwargs)
+
 logger = logging.getLogger(__name__)
 
 
-version = "v3.4"
+version = "v3.6"
 
 
 @loader.tds
@@ -100,8 +116,10 @@ This script is made by @innomods"""
     }
 
     async def client_ready(self, client, db):
+        global _client
         self.db = db
         self.client = client
+        _client = client
         self.me = str((await client.get_me()).id)
         self.chats = db.get('InnoChats', 'chats', {})
         self.warns = db.get('InnoChats', 'warns', {})
@@ -171,7 +189,7 @@ This script is made by @innomods"""
             return
 
         if not chat.admin_rights and not chat.creator:
-            return await utils.answer(message, self.strings('not_admin', message))
+            return await new_answer(message, self.strings('not_admin', message))
 
         reply = await message.get_reply_message()
         args = utils.get_args_raw(message)
@@ -191,14 +209,14 @@ This script is made by @innomods"""
                 reason = args.split(maxsplit=1)[1] if len(
                     args.split(maxsplit=1)) > 1 else self.strings('no_reason')
         except:
-            await utils.answer(message, self.strings('args', message))
+            await new_answer(message, self.strings('args', message))
             return
 
         try:
             await self.client.kick_participant(utils.get_chat_id(message), user)
-            await utils.answer(message, self.strings('kick', message).format(user.id, user.first_name, reason))
+            await new_answer(message, self.strings('kick', message).format(user.id, user.first_name, reason))
         except telethon.errors.UserAdminInvalidError:
-            await utils.answer(message, self.strings('not_admin', message))
+            await new_answer(message, self.strings('not_admin', message))
             return
 
     @loader.group_admin_ban_users
@@ -233,17 +251,17 @@ This script is made by @innomods"""
                 reason = args.split(maxsplit=1)[1] if len(
                     args.split(maxsplit=1)) > 1 else self.strings('no_reason')
         except:
-            await utils.answer(message, self.strings('args', message))
+            await new_answer(message, self.strings('args', message))
             return
 
         if not chat.admin_rights and not chat.creator:
-            return await utils.answer(message, self.strings('not_admin', message))
+            return await new_answer(message, self.strings('not_admin', message))
 
         try:
             await self.client.edit_permissions(chat, user, until_date=time.time() + t * 60, view_messages=False, send_messages=False, send_media=False, send_stickers=False, send_gifs=False, send_games=False, send_inline=False, send_polls=False, change_info=False, invite_users=False)
-            await utils.answer(message, self.strings('ban', message).format(user.id, user.first_name, f'for {t}min(-s)' if t != 0 else 'forever', reason))
+            await new_answer(message, self.strings('ban', message).format(user.id, user.first_name, f'for {t}min(-s)' if t != 0 else 'forever', reason))
         except telethon.errors.UserAdminInvalidError:
-            await utils.answer(message, self.strings('not_admin', message))
+            await new_answer(message, self.strings('not_admin', message))
             return
 
     @loader.group_admin_ban_users
@@ -278,17 +296,17 @@ This script is made by @innomods"""
                 reason = args.split(maxsplit=1)[1] if len(
                     args.split(maxsplit=1)) > 1 else self.strings('no_reason')
         except:
-            await utils.answer(message, self.strings('args', message))
+            await new_answer(message, self.strings('args', message))
             return
 
         if not chat.admin_rights and not chat.creator:
-            return await utils.answer(message, self.strings('not_admin', message))
+            return await new_answer(message, self.strings('not_admin', message))
 
         try:
             await self.client.edit_permissions(chat, user, until_date=time.time() + t * 60, send_messages=False)
-            await utils.answer(message, self.strings('mute', message).format(user.id, user.first_name, f'for {t}min(-s)' if t != 0 else 'forever', reason))
+            await new_answer(message, self.strings('mute', message).format(user.id, user.first_name, f'for {t}min(-s)' if t != 0 else 'forever', reason))
         except telethon.errors.UserAdminInvalidError:
-            await utils.answer(message, self.strings('not_admin', message))
+            await new_answer(message, self.strings('not_admin', message))
             return
 
     @loader.group_admin_add_admins
@@ -300,7 +318,7 @@ This script is made by @innomods"""
             return
 
         if not chat.admin_rights and not chat.creator:
-            return await utils.answer(message, self.strings('not_admin', message))
+            return await new_answer(message, self.strings('not_admin', message))
 
         reply = await message.get_reply_message()
         args = utils.get_args_raw(message)
@@ -320,14 +338,14 @@ This script is made by @innomods"""
                 prefix = args.split(maxsplit=1)[1] if len(
                     args.split(maxsplit=1)) > 1 else None
         except:
-            await utils.answer(message, self.strings('args', message))
+            await new_answer(message, self.strings('args', message))
             return
 
         try:
             await self.client(telethon.functions.channels.EditAdminRequest(message.peer_id, user, telethon.tl.types.ChatAdminRights(change_info=False, delete_messages=False, ban_users=False, pin_messages=False, add_admins=False, manage_call=False, anonymous=False, invite_users=True), prefix))
-            await utils.answer(message, self.strings('prefix_set', message).format(user.id, user.first_name, prefix))
+            await new_answer(message, self.strings('prefix_set', message).format(user.id, user.first_name, prefix))
         except telethon.errors.UserAdminInvalidError:
-            await utils.answer(message, self.strings('not_admin', message))
+            await new_answer(message, self.strings('not_admin', message))
             return
 
     @loader.group_admin_add_admins
@@ -339,7 +357,7 @@ This script is made by @innomods"""
             return
 
         if not chat.admin_rights and not chat.creator:
-            return await utils.answer(message, self.strings('not_admin', message))
+            return await new_answer(message, self.strings('not_admin', message))
 
         reply = await message.get_reply_message()
         args = utils.get_args_raw(message)
@@ -354,14 +372,14 @@ This script is made by @innomods"""
                 except: pass
                 user = await self.client.get_entity(args)
         except:
-            await utils.answer(message, self.strings('args', message))
+            await new_answer(message, self.strings('args', message))
             return
 
         try:
             await self.client(telethon.functions.channels.EditAdminRequest(message.peer_id, user, telethon.tl.types.ChatAdminRights(change_info=False, delete_messages=False, ban_users=False, pin_messages=False, add_admins=False, manage_call=False, anonymous=False, invite_users=False), ''))
-            await utils.answer(message, self.strings('prefix_removed', message).format(user.id, user.first_name))
+            await new_answer(message, self.strings('prefix_removed', message).format(user.id, user.first_name))
         except telethon.errors.UserAdminInvalidError:
-            await utils.answer(message, self.strings('not_admin', message))
+            await new_answer(message, self.strings('not_admin', message))
             return
 
     @loader.group_admin_ban_users
@@ -373,7 +391,7 @@ This script is made by @innomods"""
             return
 
         if not chat.admin_rights and not chat.creator:
-            return await utils.answer(message, self.strings('not_admin', message))
+            return await new_answer(message, self.strings('not_admin', message))
 
         reply = await message.get_reply_message()
         args = utils.get_args_raw(message)
@@ -388,14 +406,14 @@ This script is made by @innomods"""
                 except: pass
                 user = await self.client.get_entity(args)
         except:
-            await utils.answer(message, self.strings('args', message))
+            await new_answer(message, self.strings('args', message))
             return
 
         try:
             await self.client.edit_permissions(chat, user, until_date=0, send_messages=True)
-            await utils.answer(message, self.strings('unmuted', message).format(user.id, user.first_name))
+            await new_answer(message, self.strings('unmuted', message).format(user.id, user.first_name))
         except telethon.errors.UserAdminInvalidError:
-            await utils.answer(message, self.strings('not_admin', message))
+            await new_answer(message, self.strings('not_admin', message))
             return
 
     @loader.group_admin_ban_users
@@ -407,7 +425,7 @@ This script is made by @innomods"""
             return
 
         if not chat.admin_rights and not chat.creator:
-            return await utils.answer(message, self.strings('not_admin', message))
+            return await new_answer(message, self.strings('not_admin', message))
 
         reply = await message.get_reply_message()
         args = utils.get_args_raw(message)
@@ -422,14 +440,14 @@ This script is made by @innomods"""
                 except: pass
                 user = await self.client.get_entity(args)
         except:
-            await utils.answer(message, self.strings('args', message))
+            await new_answer(message, self.strings('args', message))
             return
 
         try:
             await self.client.edit_permissions(chat, user, until_date=0, view_messages=True, send_messages=True, send_media=True, send_stickers=True, send_gifs=True, send_games=True, send_inline=True, send_polls=True, change_info=True, invite_users=True)
-            await utils.answer(message, self.strings('unban', message).format(user.id, user.first_name))
+            await new_answer(message, self.strings('unban', message).format(user.id, user.first_name))
         except telethon.errors.UserAdminInvalidError:
-            await utils.answer(message, self.strings('not_admin', message))
+            await new_answer(message, self.strings('not_admin', message))
             return
 
     @loader.group_owner
@@ -445,11 +463,11 @@ This script is made by @innomods"""
 
         if args in ['mute', 'ban', 'kick']:
             self.chats[chat]['antisex'] = args
-            await utils.answer(message, self.strings('antisex_on', message).format(args))
+            await new_answer(message, self.strings('antisex_on', message).format(args))
         else:
             if 'antisex' in self.chats[chat]:
                 del self.chats[chat]['antisex']
-            await utils.answer(message, self.strings('antisex_off', message))
+            await new_answer(message, self.strings('antisex_off', message))
 
         self.db.set('InnoChats', 'chats', self.chats)
 
@@ -466,11 +484,11 @@ This script is made by @innomods"""
 
         if args in ['mute', 'ban', 'kick']:
             self.chats[chat]['antiraid'] = args
-            await utils.answer(message, self.strings('ar_on', message).format(args))
+            await new_answer(message, self.strings('ar_on', message).format(args))
         else:
             if 'antiraid' in self.chats[chat]:
                 del self.chats[chat]['antiraid']
-            await utils.answer(message, self.strings('ar_off', message))
+            await new_answer(message, self.strings('ar_off', message))
 
         self.db.set('InnoChats', 'chats', self.chats)
 
@@ -485,10 +503,10 @@ This script is made by @innomods"""
 
         if 'antitagall' not in self.chats[chat]:
             self.chats[chat]['antitagall'] = 'mute'
-            await utils.answer(message, self.strings('atagall_on', message).format('mute'))
+            await new_answer(message, self.strings('atagall_on', message).format('mute'))
         else:
             del self.chats[chat]['antitagall']
-            await utils.answer(message, self.strings('atagall_off', message))
+            await new_answer(message, self.strings('atagall_off', message))
 
         self.db.set('InnoChats', 'chats', self.chats)
 
@@ -500,7 +518,7 @@ This script is made by @innomods"""
         args = utils.get_args_raw(message)
         chat = str(utils.get_chat_id(message))
         if args not in ['warn', 'ban', 'kick', 'mute', 'delmsg']:
-            await utils.answer(message, self.strings('args', message))
+            await new_answer(message, self.strings('args', message))
             return
 
         if chat not in self.chats:
@@ -508,7 +526,7 @@ This script is made by @innomods"""
 
         self.chats[chat]['antitagall'] = args
         self.db.set('InnoChats', 'chats', self.chats)
-        await utils.answer(message, self.strings('atagall_action_set', message).format(args))
+        await new_answer(message, self.strings('atagall_action_set', message).format(args))
 
     @loader.group_owner
     async def antihelpcmd(self, message):
@@ -521,10 +539,10 @@ This script is made by @innomods"""
 
         if 'antihelp' not in self.chats[chat]:
             self.chats[chat]['antihelp'] = True
-            await utils.answer(message, self.strings('antihelp_on', message).format('mute'))
+            await new_answer(message, self.strings('antihelp_on', message).format('mute'))
         else:
             del self.chats[chat]['antihelp']
-            await utils.answer(message, self.strings('antihelp_off', message))
+            await new_answer(message, self.strings('antihelp_off', message))
 
         self.db.set('InnoChats', 'chats', self.chats)
 
@@ -539,10 +557,10 @@ This script is made by @innomods"""
 
         if 'arabshield' not in self.chats[chat]:
             self.chats[chat]['arabshield'] = 'mute'
-            await utils.answer(message, self.strings('as_on', message).format('mute'))
+            await new_answer(message, self.strings('as_on', message).format('mute'))
         else:
             del self.chats[chat]['arabshield']
-            await utils.answer(message, self.strings('as_off', message))
+            await new_answer(message, self.strings('as_off', message))
 
         self.db.set('InnoChats', 'chats', self.chats)
 
@@ -554,7 +572,7 @@ This script is made by @innomods"""
         args = utils.get_args_raw(message)
         chat = str(utils.get_chat_id(message))
         if args not in ['warn', 'ban', 'kick', 'mute', 'delmsg']:
-            await utils.answer(message, self.strings('args', message))
+            await new_answer(message, self.strings('args', message))
             return
 
         if chat not in self.chats:
@@ -562,7 +580,7 @@ This script is made by @innomods"""
 
         self.chats[chat]['arabshield'] = args
         self.db.set('InnoChats', 'chats', self.chats)
-        await utils.answer(message, self.strings('arab_action_set', message).format(args))
+        await new_answer(message, self.strings('arab_action_set', message).format(args))
 
     @loader.group_owner
     async def alscmd(self, message):
@@ -580,10 +598,10 @@ This script is made by @innomods"""
                 'action': 'nothing'
             }
             }
-            await utils.answer(message, self.strings('als_on', message).format(self.chats[chat]['als']['settings']['detection_range'], self.chats[chat]['als']['settings']['detection_interval'], self.chats[chat]['als']['settings']['action']))
+            await new_answer(message, self.strings('als_on', message).format(self.chats[chat]['als']['settings']['detection_range'], self.chats[chat]['als']['settings']['detection_interval'], self.chats[chat]['als']['settings']['action']))
         else:
             del self.chats[chat]['als']
-            await utils.answer(message, self.strings('als_off', message))
+            await new_answer(message, self.strings('als_off', message))
 
         self.db.set('InnoChats', 'chats', self.chats)
         await self.update_handlers()
@@ -596,7 +614,7 @@ This script is made by @innomods"""
         args = utils.get_args_raw(message)
         chat = str(utils.get_chat_id(message))
         if args not in ['warn', 'ban', 'kick', 'mute', 'delmsg', 'nothing']:
-            await utils.answer(message, self.strings('args', message))
+            await new_answer(message, self.strings('args', message))
             return
 
         if chat not in self.chats:
@@ -615,7 +633,7 @@ This script is made by @innomods"""
 
         self.chats[chat]['als']['settings']['action'] = args
         self.db.set('InnoChats', 'chats', self.chats)
-        await utils.answer(message, self.strings('als_action_set', message).format(args))
+        await new_answer(message, self.strings('als_action_set', message).format(args))
 
     @loader.group_owner
     async def alssetcmd(self, message):
@@ -625,13 +643,13 @@ This script is made by @innomods"""
         args = utils.get_args_raw(message)
         chat = str(utils.get_chat_id(message))
         if not args or len(args.split()) != 2:
-            await utils.answer(message, self.strings('args', message))
+            await new_answer(message, self.strings('args', message))
             return
 
         try:
             limit, time_sample = list(map(int, args.split()))
         except:
-            await utils.answer(message, self.strings('args', message))
+            await new_answer(message, self.strings('args', message))
             return
 
         if chat not in self.chats:
@@ -650,7 +668,7 @@ This script is made by @innomods"""
 
         self.chats[chat]['als']['settings']['detection_range'], self.chats[chat]['als']['settings']['detection_interval'] = limit, time_sample
         self.db.set('InnoChats', 'chats', self.chats)
-        await utils.answer(message, self.strings('als_range_set', message).format(limit, time_sample))
+        await new_answer(message, self.strings('als_range_set', message).format(limit, time_sample))
 
     @loader.group_owner
     async def update_handlers(self):
@@ -734,7 +752,7 @@ This script is made by @innomods"""
     @loader.group_owner
     async def protectscmd(self, message):
         """List available filters"""
-        await utils.answer(message, self.strings('protections', message))
+        await new_answer(message, self.strings('protections', message))
 
     async def pchatscmd(self, message):
         """List protections"""
@@ -775,7 +793,7 @@ This script is made by @innomods"""
         if changes:
             self.db.set('InnoChats', 'chats', self.chats)
 
-        await utils.answer(message, res)
+        await new_answer(message, res)
 
     @loader.group_owner
     async def pchatcmd(self, message):
@@ -785,7 +803,7 @@ This script is made by @innomods"""
         cid = str(utils.get_chat_id(message))
 
         if cid not in self.chats or not self.chats[cid]:
-            return await utils.answer(message, self.strings('chat404', message))
+            return await new_answer(message, self.strings('chat404', message))
 
         res = f"<b><u>🦊 @innomods Chat Protection</u></b> <i>{version}</i>\n"
 
@@ -809,7 +827,7 @@ This script is made by @innomods"""
 
         res += line
 
-        await utils.answer(message, res)
+        await new_answer(message, res)
 
     async def punish(self, cid, user, violation, action, user_name):
         
@@ -868,7 +886,7 @@ This script is made by @innomods"""
 
                 user = await self.client.get_entity(u)
             except IndexError:
-                return await utils.answer(message, self.strings('args', message))
+                return await new_answer(message, self.strings('args', message))
 
             try:
                 reason = args.split(maxsplit=1)[1]
@@ -903,7 +921,7 @@ This script is made by @innomods"""
             await message.delete()
             self.warns[cid]['w'][user] = []
         else:
-            await utils.answer(message, self.strings('warn', message).format(user.id, user.first_name, len(self.warns[cid]['w'][user.id]), self.warns[cid]['l'], reason))
+            await new_answer(message, self.strings('warn', message).format(user.id, user.first_name, len(self.warns[cid]['w'][user.id]), self.warns[cid]['l'], reason))
         self.db.set('InnoChats', 'warns', self.warns)
 
     @loader.unrestricted
@@ -916,7 +934,7 @@ This script is made by @innomods"""
         cid = utils.get_chat_id(message)
 
         if str(cid) not in self.warns:
-            return await utils.answer(message, self.strings('chat_not_in_db', message))
+            return await new_answer(message, self.strings('chat_not_in_db', message))
 
 
         async def check_admin(user_id):
@@ -924,14 +942,14 @@ This script is made by @innomods"""
 
         async def send_user_warns(usid):
             if str(cid) not in self.warns:
-                await utils.answer(message, self.strings('chat_not_in_db', message))
+                await new_answer(message, self.strings('chat_not_in_db', message))
                 return
             elif usid not in self.warns[str(cid)]['w'] or len(self.warns[str(cid)]['w'][usid]) == 0:
                 user_obj = await self.client.get_entity(usid)
-                await utils.answer(message, self.strings('no_warns', message).format(user_obj.id, user_obj.first_name))
+                await new_answer(message, self.strings('no_warns', message).format(user_obj.id, user_obj.first_name))
             else:
                 user_obj = await self.client.get_entity(usid)
-                await utils.answer(message, self.strings('warns', message).format(user_obj.id, user_obj.first_name, len(self.warns[str(cid)]['w'][usid]), self.warns[str(cid)]['l'], '\n    🏴󠁧󠁢󠁥󠁮󠁧󠁿 '.join(self.warns[str(cid)]['w'][usid])))
+                await new_answer(message, self.strings('warns', message).format(user_obj.id, user_obj.first_name, len(self.warns[str(cid)]['w'][usid]), self.warns[str(cid)]['l'], '\n    🏴󠁧󠁢󠁥󠁮󠁧󠁿 '.join(self.warns[str(cid)]['w'][usid])))
 
         if not await check_admin(message.from_id):
             await send_user_warns(message.from_id)
@@ -947,7 +965,7 @@ This script is made by @innomods"""
                     for warn in warns:
                         res += "<code>   </code>🏴󠁧󠁢󠁥󠁮󠁧󠁿 <i>" + warn + '</i>\n'
 
-                await utils.answer(message, res)
+                await new_answer(message, res)
                 return
             elif reply:
                 await send_user_warns(reply.from_id)
@@ -975,16 +993,16 @@ This script is made by @innomods"""
             try:
                 user = await self.client.get_entity(args)
             except IndexError:
-                return await utils.answer(message, self.strings('args', message))
+                return await new_answer(message, self.strings('args', message))
 
         if cid not in self.warns:
-            return await utils.answer(message, self.strings('chat_not_in_db', message))
+            return await new_answer(message, self.strings('chat_not_in_db', message))
 
         if user.id not in self.warns[cid]['w']:
-            return await utils.answer(message, self.strings('no_warns', user.id, user.first_name))
+            return await new_answer(message, self.strings('no_warns', user.id, user.first_name))
 
         del self.warns[cid]['w'][user.id][-1]
-        await utils.answer(message, self.strings('dwarn', message).format(user.id, user.first_name))
+        await new_answer(message, self.strings('dwarn', message).format(user.id, user.first_name))
         self.db.set('InnoChats', 'warns', self.warns)
 
     @loader.group_admin_ban_users
@@ -1008,16 +1026,16 @@ This script is made by @innomods"""
             try:
                 user = await self.client.get_entity(args)
             except IndexError:
-                return await utils.answer(message, self.strings('args', message))
+                return await new_answer(message, self.strings('args', message))
 
         if cid not in self.warns:
-            return await utils.answer(message, self.strings('chat_not_in_db', message))
+            return await new_answer(message, self.strings('chat_not_in_db', message))
 
         if user.id not in self.warns[cid]['w']:
-            return await utils.answer(message, self.strings('no_warns').format(user.id, user.first_name))
+            return await new_answer(message, self.strings('no_warns').format(user.id, user.first_name))
 
         del self.warns[cid]['w'][user.id]
-        await utils.answer(message, self.strings('clrwarns', message).format(user.id, user.first_name))
+        await new_answer(message, self.strings('clrwarns', message).format(user.id, user.first_name))
         self.db.set('InnoChats', 'warns', self.warns)
 
     @loader.group_admin_ban_users
@@ -1029,7 +1047,7 @@ This script is made by @innomods"""
 
         args = utils.get_args_raw(message)
         if not args or args not in ['mute', 'kick', 'ban']:
-            return await utils.answer(message, self.strings('args', message))
+            return await new_answer(message, self.strings('args', message))
 
         cid = utils.get_chat_id(message)
 
@@ -1041,7 +1059,7 @@ This script is made by @innomods"""
             }
 
         self.warns[str(cid)]['a'] = args
-        await utils.answer(message, self.strings('new_a', message).format(args))
+        await new_answer(message, self.strings('new_a', message).format(args))
 
     @loader.group_admin_ban_users
     async def warnslimitcmd(self, message):
@@ -1054,7 +1072,7 @@ This script is made by @innomods"""
         try:
             args = int(args)
         except:
-            return await utils.answer(message, self.strings('args', message))
+            return await new_answer(message, self.strings('args', message))
 
         cid = utils.get_chat_id(message)
 
@@ -1066,7 +1084,7 @@ This script is made by @innomods"""
             }
 
         self.warns[str(cid)]['l'] = args
-        await utils.answer(message, self.strings('new_l', message).format(args))
+        await new_answer(message, self.strings('new_l', message).format(args))
 
     @loader.group_owner
     async def welcomecmd(self, message):
@@ -1078,7 +1096,7 @@ This script is made by @innomods"""
 
         self.chats[cid]['welcome'] = args
         self.db.set('InnoChats', 'chats', self.chats)
-        await utils.answer(message, self.strings('welcome', message))
+        await new_answer(message, self.strings('welcome', message))
 
     @loader.group_owner
     async def unwelcomecmd(self, message):
@@ -1090,12 +1108,12 @@ This script is made by @innomods"""
             self.chats[cid] = {}
 
         if 'welcome' not in self.chats[cid]:
-            await utils.answer(message, self.strings('chat_not_found', message))
+            await new_answer(message, self.strings('chat_not_found', message))
             return
 
         del self.chats[cid]['welcome']
         self.db.set('InnoChats', 'chats', self.chats)
-        await utils.answer(message, self.strings('unwelcome', message))
+        await new_answer(message, self.strings('unwelcome', message))
 
     @loader.group_owner
     async def antichannelcmd(self, message):
@@ -1106,10 +1124,10 @@ This script is made by @innomods"""
 
         if 'antichannel' not in self.chats[cid]:
             self.chats[cid]['antichannel'] = True
-            await utils.answer(message, self.strings('antichannel').format('on'))
+            await new_answer(message, self.strings('antichannel').format('on'))
         else:
             del self.chats[cid]['antichannel']
-            await utils.answer(message, self.strings('antichannel').format('off'))
+            await new_answer(message, self.strings('antichannel').format('off'))
 
     @loader.group_owner
     async def defensecmd(self, message):
@@ -1132,7 +1150,7 @@ This script is made by @innomods"""
             try:
                 user = await self.client.get_entity(args)
             except IndexError:
-                return await utils.answer(message, self.strings('args', message))
+                return await new_answer(message, self.strings('args', message))
 
         if cid not in self.chats:
             self.chats[cid] = {}
@@ -1142,10 +1160,10 @@ This script is made by @innomods"""
 
         if user.id not in self.chats[cid]['defense']:
             self.chats[cid]['defense'].append(user.id)
-            await utils.answer(message, self.strings('defense', message).format(user.id, user.first_name if getattr(user, 'first_name', None) is not None else user.title, 'on'))
+            await new_answer(message, self.strings('defense', message).format(user.id, user.first_name if getattr(user, 'first_name', None) is not None else user.title, 'on'))
         else:
             self.chats[cid]['defense'].remove(user.id)
-            await utils.answer(message, self.strings('defense', message).format(user.id, user.first_name if getattr(user, 'first_name', None) is not None else user.title, 'off'))
+            await new_answer(message, self.strings('defense', message).format(user.id, user.first_name if getattr(user, 'first_name', None) is not None else user.title, 'off'))
 
         self.db.set('InnoChats', 'chats', self.chats)
 
@@ -1153,7 +1171,7 @@ This script is made by @innomods"""
     async def defenselistcmd(self, message):
         chat = str(utils.get_chat_id(message))
         if chat not in self.chats or not self.chats[chat] or 'defense' not in self.chats[chat] or not self.chats[chat]['defense']:
-            return await utils.answer(message, self.strings('no_defense', message))
+            return await new_answer(message, self.strings('no_defense', message))
 
         res = ""
         defense = self.chats[chat]['defense']
@@ -1167,7 +1185,7 @@ This script is made by @innomods"""
             tit = u.first_name if getattr(u, 'first_name', None) is not None else u.title
             res += f"  🇻🇦 <a href=\"tg://user?id={u.id}\">{tit}{(' ' + u.last_name) if getattr(u, 'last_name', None) is not None else ''}</a>\n"
 
-        return await utils.answer(message, self.strings('defense_list').format(res))
+        return await new_answer(message, self.strings('defense_list').format(res))
 
 
     async def watcher(self, message):
