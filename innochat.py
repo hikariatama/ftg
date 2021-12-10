@@ -1197,7 +1197,7 @@ This script is made by @innomods"""
             if cid not in self.chats or not self.chats[cid]:
                 return
 
-            user = message.from_id
+            user = message.from_id if getattr(message, 'from_id', None) is not None else 0
             if user < 0:
                 user = int(str(user)[4:])
             # logger.info(user)
@@ -1348,5 +1348,5 @@ This script is made by @innomods"""
                 pass
 
         except:
-            # logger.exception('error')
+            logger.debug('INNOCHAT')
             pass
