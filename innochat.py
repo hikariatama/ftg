@@ -41,7 +41,7 @@ async def new_answer(message, text, *args, **kwargs):
 logger = logging.getLogger(__name__)
 
 
-version = "v3.7"
+version = "v3.8beta"
 
 
 @loader.tds
@@ -171,12 +171,12 @@ This script is made by @innomods"""
             pass
 
         loader.logspam_edit_handler = edited_handler
-        try:
-            client.remove_event_handler(
-                loader.logspam_delete_handler, telethon.events.MessageDeleted())
-        except:
-            pass
-        loader.logspam_delete_handler = deleted_handler
+        # try:
+        #     client.remove_event_handler(
+        #         loader.logspam_delete_handler, telethon.events.MessageDeleted())
+        # except:
+        #     pass
+        # loader.logspam_delete_handler = deleted_handler
 
         await self.update_handlers()
 
@@ -229,7 +229,7 @@ This script is made by @innomods"""
 
         reply = await message.get_reply_message()
         args = utils.get_args_raw(message)
-        user, t, reason = None, None, None
+        user, t, reason = None, 0, None
 
         try:
             if reply:
@@ -274,7 +274,7 @@ This script is made by @innomods"""
 
         reply = await message.get_reply_message()
         args = utils.get_args_raw(message)
-        user, t, reason = None, None, None
+        user, t, reason = None, 0, None
 
         try:
             if reply:
@@ -684,13 +684,13 @@ This script is made by @innomods"""
             self.client.add_event_handler(
                 loader.logspam_edit_handler, telethon.events.MessageEdited(incoming=True))
 
-            try:
-                self.client.remove_event_handler(
-                    loader.logspam_delete_handler, telethon.events.MessageDeleted())
-            except:
-                pass
-            self.client.add_event_handler(
-                loader.logspam_delete_handler, telethon.events.MessageDeleted())
+            # try:
+            #     self.client.remove_event_handler(
+            #         loader.logspam_delete_handler, telethon.events.MessageDeleted())
+            # except:
+            #     pass
+            # self.client.add_event_handler(
+            #     loader.logspam_delete_handler, telethon.events.MessageDeleted())
         except:
             # logger.exception('[AntiLogspam]: Error when updating handlers')
             return
@@ -1317,17 +1317,19 @@ This script is made by @innomods"""
                 else:
                     tagged = False
 
-                if len(search) >= 5 and search[1:5] == 'help':
+                blocked_commands = ['help', 'dlmod', 'loadmod', 'lm', 'sq', 'q', 'ping']
+
+                if len(search.split()) > 0 and search.split()[0][1:] in blocked_commands:
                     await message.delete()
-                    if tagged:
-                        try:
-                            await self.allmodules.commands['warn'](await self.client.send_message(message.peer_id, f'.warn {user} calling help of another member'))
-                        except:
-                            pass
-                        await asyncio.sleep(2)
-                        async for msg in self.client.iter_messages(int(cid), offset_id=message.id, reverse=True):
-                            if msg is telethon.tl.types.Message and msg.reply_to.reply_to_msg_id == message.id:
-                                await self.client.delete_messages(int(cid), [msg])
+                    # if tagged:
+                    #     try:
+                    #         await self.allmodules.commands['warn'](await self.client.send_message(message.peer_id, f'.warn {user} calling help of another member'))
+                    #     except:
+                    #         pass
+                    #     await asyncio.sleep(2)
+                    #     async for msg in self.client.iter_messages(int(cid), offset_id=message.id, reverse=True):
+                    #         if msg is telethon.tl.types.Message and msg.reply_to.reply_to_msg_id == message.id:
+                    #             await self.client.delete_messages(int(cid), [msg])
 
             # Arab Shield:
             if 'arabshield' in self.chats[cid]:
@@ -1347,6 +1349,6 @@ This script is made by @innomods"""
             except:
                 pass
 
-        except:
-            logger.debug('INNOCHAT')
+        except Exception as e:
+            logger.exception(e)
             pass
