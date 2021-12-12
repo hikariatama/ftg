@@ -84,7 +84,7 @@ class DelayedMod(loader.Module):
             await message.delete()
             return
 
-        print(args.split())
+        # print(args.split())
 
         reply = await message.get_reply_message()
 
@@ -107,26 +107,26 @@ class DelayedMod(loader.Module):
             await message.delete()
             return
 
-        print(args.split())
+        # print(args.split())
 
         reply = await message.get_reply_message()
 
         await message.delete()
         # await message.client.send_message('me', '.help')
         msg = await message.client.send_message(utils.get_chat_id(message), '.' + command, reply_to=reply)
-        def _loc_edit(*args, **kwargs):
-            msg.text = kwargs.get("text", None) or args[0]
-            return msg._old_edit(*args, **kwargs)
-        msg._old_edit = msg.edit
-        msg.edit = _loc_edit
+        # def _loc_edit(*args, **kwargs):
+            # msg.text = kwargs.get("text", None) or args[0]
+            # return msg._old_edit(*args, **kwargs)
+        # msg._old_edit = msg.edit
+        # msg.edit = _loc_edit
         await self.allmodules.commands[command.split()[0]](msg)
-        await asyncio.sleep(1)
-        delay = self.s2time(args.split()[0]) - 1
-        await msg.edit(self.strings('output_will_be_removed_in', message).format(msg.text, str(delay)))
-        if delay > 10:
-            await asyncio.sleep(delay)
-        else:
-            for i in range(delay):
-                await msg.edit('\n'.join(self.strings('output_will_be_removed_in', message).format(msg.text.split('\n')[:-2]), str(delay - i + 1)))
-                await asyncio.sleep(1)
+        # await asyncio.sleep(1)
+        delay = self.s2time(args.split()[0])
+        # await msg.edit(self.strings('output_will_be_removed_in', message).format(msg.text, str(delay)))
+        # if delay > 10:
+        await asyncio.sleep(delay)
+        # else:
+        #     for i in range(delay):
+        #         await msg.edit('\n'.join(self.strings('output_will_be_removed_in', message).format(msg.text.split('\n')[:-2]), str(delay - i + 1)))
+        #         await asyncio.sleep(1)
         await msg.delete()
