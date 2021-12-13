@@ -41,7 +41,7 @@ async def new_answer(message, text, *args, **kwargs):
 logger = logging.getLogger(__name__)
 
 
-version = "v3.8beta"
+version = "v3.8"
 
 
 @loader.tds
@@ -1350,5 +1350,5 @@ This script is made by @innomods"""
                 pass
 
         except Exception as e:
-            logger.exception(e)
+            # logger.exception(e)
             pass
