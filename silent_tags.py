@@ -42,6 +42,7 @@ class SilentTagsMod(loader.Module):
         self.db = db
         self.stags = db.get('SilentTags', 'stags', False)
         self.un = (await client.get_me()).username
+        self._ratelimit = []
         if self.un is None:
             raise Exception('You cannot load this module because you do not have username')
             return
@@ -59,6 +60,7 @@ class SilentTagsMod(loader.Module):
         args = True if args == "on" else False
         self.db.set('SilentTags', "stags", args)
         self.stags = args
+        self._ratelimit = []
         await utils.answer(message, self.strings('stags_status').format("now on" if args else "now off", message))
 
     async def watcher(self, message):
@@ -83,9 +85,11 @@ class SilentTagsMod(loader.Module):
                     uname = 'Unknown user'
 
                 await self.client.send_message(self.c, self.strings('tagged').format(grouplink, ctitle, uid, uname, message.text, cid, message.id), link_preview=False)
-                ms = (await utils.answer(message, self.strings('tag_mentioned')))
-                ms = ms[0] if isinstance(ms, list) else ms
-                await asyncio.sleep(5)
-                await ms.delete()
+                if cid not in self._ratelimit:
+                    self._ratelimit.append(cid)
+                    ms = (await utils.answer(message, self.strings('tag_mentioned')))
+                    ms = ms[0] if isinstance(ms, list) else ms
+                    await asyncio.sleep(5)
+                    await ms.delete()
         except Exception as e:
-            logger.exception(e)
+            pass
