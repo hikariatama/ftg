@@ -140,4 +140,4 @@ class KeywordMod(loader.Module):
 
                 return await utils.answer(message, ph[0])
         except Exception as e:
-            logger.debug(e)
+            pass
