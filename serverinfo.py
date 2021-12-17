@@ -23,6 +23,8 @@ def b2mb(b):
 
 def find_lib(lib):
     try:
+        if lib == 'Telethon':
+            lib = 'Telethon | grep -v Telethon-Mod'
         ver = os.popen('python3 -m pip freeze | grep ' + lib).read().split('==')[1]
         if '\n' in ver:
             return ver.split('\n')[0]
