@@ -19,7 +19,8 @@ class NoMetaMod(loader.Module):
 
     strings = {
         "name": "NoMeta",
-        "no_meta": "<b>👾 <u>Please!</u></b>\n<b>NoMeta</b> aka <i>'Hello', 'Hi' etc.</i>\nAsk <b>directly</b>, what you want from me."
+        "no_meta": "<b>👾 <u>Please!</u></b>\n<b>NoMeta</b> aka <i>'Hello', 'Hi' etc.</i>\nAsk <b>directly</b>, what you want from me.",
+        "no_meta_ru": "<b>👾 <u>Пожалуйста!</u></b>\n<b>Не нужно лишних сообщений</b> по типу <i>'Привет', 'Хай' и др.</i>\nСпрашивай(-те) <b>конкретно</b>, что от меня нужно."
     }
 
     async def client_ready(self, client, db):
@@ -40,12 +41,21 @@ class NoMetaMod(loader.Module):
         if not message.is_private: return
 
         meta = [
-            'привет', 'хай', 'hi', 'hello', 'хелло', 'хеллоу', 'хэллоу',
-            'коничива', 'konichiwa', 'алоха', 'слушай', 'о', 'слуш',
-            'м?', 'а?', 'hey', 'хей', 'хэй', 'hey there', 'йо', 'йоу',
+            'привет', 'хай', 'hi', 'hello', 'hey there',
+            'konichiwa', 'hey'
+        ]
+
+        meta_ru = [
+            'хелло', 'хеллоу', 'хэллоу',
+            'коничива', 'алоха', 'слушай', 'о', 'слуш',
+            'м?', 'а?', 'хей', 'хэй', 'йо', 'йоу',
             'прив', 'дан', 'yo'
         ]
 
         if message.raw_text.lower() in meta:
             await self.client.send_message(message.peer_id, self.strings('no_meta'), reply_to=message.id)
+            await self.client.send_read_acknowledge(message.chat_id, clear_mentions=True)
+
+        if message.raw_text.lower() in meta_ru:
+            await self.client.send_message(message.peer_id, self.strings('no_meta_ru'), reply_to=message.id)
             await self.client.send_read_acknowledge(message.chat_id, clear_mentions=True)
