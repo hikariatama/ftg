@@ -30,7 +30,8 @@ class KeywordMod(loader.Module):
         'bl_added': '🦊 <b>This chat is now blacklisted for Keywords</b>',
         'bl_removed': '🦊 <b>This chat is now whitelisted for Keywords</b>',
         'sent': '🦊 <b>[Keywords]: Sent message to {}, triggered by {}:\n{}</b>',
-        'kwords': '🦊 <b>Current keywords:\n</b>{}'
+        'kwords': '🦊 <b>Current keywords:\n</b>{}',
+        'no_command': '🦊 <b>Execution of command forbidden, because message contains reply</b>'
     }
 
     async def client_ready(self, client, db):
@@ -185,7 +186,10 @@ class KeywordMod(loader.Module):
                         ch = (chat.title if getattr(message, 'title', None) is not None else '')
                     await self.client.send_message('me', self.strings('sent').format(ch, kw, ph[0]))
 
-                ms = await utils.answer(message, ph[0])
+                if not message.reply_to_msg_id:
+                    ms = await utils.answer(message, ph[0])
+                else:
+                    ms = await message.respond(ph[0])
 
                 try:
                     ms = ms[0]
@@ -194,9 +198,12 @@ class KeywordMod(loader.Module):
                 ms.text = ph[0][2:]
 
                 if len(ph) > 5 and ph[5]:
-                    cmd = ph[0][offset:].split()[0]
-                    if cmd in self.allmodules.commands:
-                        await self.allmodules.commands[cmd](ms)
+                    if not message.reply_to_msg_id:
+                        cmd = ph[0][offset:].split()[0]
+                        if cmd in self.allmodules.commands:
+                            await self.allmodules.commands[cmd](ms)
+                    else:
+                        await ms.respond(self.strings('no_command'))
 
         except Exception as e:
             logger.exception(e)
