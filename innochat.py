@@ -41,7 +41,7 @@ async def new_answer(message, text, *args, **kwargs):
 logger = logging.getLogger(__name__)
 
 
-version = "v3.8"
+version = "v3.9"
 
 
 @loader.tds
@@ -1167,8 +1167,43 @@ This script is made by @innomods"""
 
         self.db.set('InnoChats', 'chats', self.chats)
 
+
+
+    @loader.group_owner
+    async def gdefensecmd(self, message):
+        """<user | reply> - Toggle global user invulnerability"""
+        if message.is_private:
+            await message.delete()
+            return
+
+        args = utils.get_args_raw(message)
+        reply = await message.get_reply_message()
+        user = None
+        if reply:
+            user = await self.client.get_entity(reply.from_id)
+        else:
+            try:
+                args = int(args)
+            except: pass
+
+            try:
+                user = await self.client.get_entity(args)
+            except IndexError:
+                return await new_answer(message, self.strings('args', message))
+
+        if user.id not in self.db.get('InnoChats', 'gdefense', []):
+            self.db.set('InnoChats', 'gdefense', self.db.get('InnoChats', 'gdefense', []) + [user.id])
+            await new_answer(message, self.strings('defense', message).format(user.id, user.first_name if getattr(user, 'first_name', None) is not None else user.title if getattr(user, 'first_name', None) is not None else user.title, 'on'))
+        else:
+            self.db.set('InnoChats', 'gdefense', list(set(self.db.get('InnoChats', 'gdefense', [])) - set([user.id])))
+            await new_answer(message, self.strings('defense', message).format(user.id, user.first_name if getattr(user, 'first_name', None) is not None else user.title if getattr(user, 'first_name', None) is not None else user.title, 'off'))
+
+        self.db.set('InnoChats', 'chats', self.chats)
+
+
     @loader.group_owner
     async def defenselistcmd(self, message):
+        """Show invulnerable users"""
         chat = str(utils.get_chat_id(message))
         if chat not in self.chats or not self.chats[chat] or 'defense' not in self.chats[chat] or not self.chats[chat]['defense']:
             return await new_answer(message, self.strings('no_defense', message))
@@ -1188,6 +1223,29 @@ This script is made by @innomods"""
         return await new_answer(message, self.strings('defense_list').format(res))
 
 
+
+    @loader.group_owner
+    async def gdefenselistcmd(self, message):
+        """Show global invulnerable users"""
+        if not self.db.get('InnoChats', 'gdefense', []):
+            return await new_answer(message, self.strings('no_defense', message))
+
+        res = ""
+        defense = self.db.get('InnoChats', 'gdefense', [])
+        for user in defense.copy():
+            try:
+                u = await self.client.get_entity(user)
+            except:
+                self.db.set('InnoChats', 'gdefense', list(set(self.db.get('InnoChats', 'gdefense', [])) - set([user])))
+                continue
+
+            tit = u.first_name if getattr(u, 'first_name', None) is not None else u.title
+            res += f"  🇻🇦 <a href=\"tg://user?id={u.id}\">{tit}{(' ' + u.last_name) if getattr(u, 'last_name', None) is not None else ''}</a>\n"
+
+        return await new_answer(message, self.strings('defense_list').replace('in current chat', '').format(res))
+
+
+
     async def watcher(self, message):
         
 
@@ -1202,6 +1260,9 @@ This script is made by @innomods"""
                 user = int(str(user)[4:])
             # logger.info(user)
             if 'defense' in self.chats[cid] and user in self.chats[cid]['defense']:
+                return
+
+            if user in self.db.get('InnoChats', 'gdefense', []):
                 return
 
             try:
