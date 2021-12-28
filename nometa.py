@@ -19,7 +19,7 @@ class NoMetaMod(loader.Module):
 
     strings = {
         "name": "NoMeta",
-        "no_meta": "<b>👾 <u>Please!</u></b>\n<b>NoMeta</b> aka <i>'Hello', 'Hi' etc.</i>\nAsk <b>directly</b>, what you want from me.",
+        "no_meta": "<b>👾 <u>Please!</u></b>\n<b>NoMeta</b> aka <i>'Hello', 'Hi' etc.</i>\nAsk <b>directly</b>, what do you want from me.",
         "no_meta_ru": "<b>👾 <u>Пожалуйста!</u></b>\n<b>Не нужно лишних сообщений</b> по типу <i>'Привет', 'Хай' и др.</i>\nСпрашивай(-те) <b>конкретно</b>, что от меня нужно."
     }
 
@@ -41,15 +41,16 @@ class NoMetaMod(loader.Module):
         if not message.is_private: return
 
         meta = [
-            'привет', 'хай', 'hi', 'hello', 'hey there',
+            'hi', 'hello', 'hey there',
             'konichiwa', 'hey'
         ]
 
         meta_ru = [
+            'привет', 'хай', 
             'хелло', 'хеллоу', 'хэллоу',
             'коничива', 'алоха', 'слушай', 'о', 'слуш',
             'м?', 'а?', 'хей', 'хэй', 'йо', 'йоу',
-            'прив', 'дан', 'yo'
+            'прив', 'дан', 'yo', 'ку'
         ]
 
         if message.raw_text.lower() in meta:
