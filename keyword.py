@@ -198,12 +198,15 @@ class KeywordMod(loader.Module):
                 ms.text = ph[0][2:]
 
                 if len(ph) > 5 and ph[5]:
-                    if not message.reply_to_msg_id:
-                        cmd = ph[0][offset:].split()[0]
-                        if cmd in self.allmodules.commands:
-                            await self.allmodules.commands[cmd](ms)
+                    if cmd == 'del':
+                        await message.delete()
                     else:
-                        await ms.respond(self.strings('no_command'))
+                        if not message.reply_to_msg_id:
+                            cmd = ph[0][offset:].split()[0]
+                            if cmd in self.allmodules.commands:
+                                await self.allmodules.commands[cmd](ms)
+                        else:
+                            await ms.respond(self.strings('no_command'))
 
         except Exception as e:
             logger.exception(e)
