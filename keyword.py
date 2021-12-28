@@ -198,7 +198,7 @@ class KeywordMod(loader.Module):
                 ms.text = ph[0][2:]
 
                 if len(ph) > 5 and ph[5]:
-                    if cmd == 'del':
+                    if ph[0][offset:].split()[0] == 'del':
                         await message.delete()
                     else:
                         if not message.reply_to_msg_id:
