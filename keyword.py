@@ -200,6 +200,7 @@ class KeywordMod(loader.Module):
                 if len(ph) > 5 and ph[5]:
                     if ph[0][offset:].split()[0] == 'del':
                         await message.delete()
+                        await ms.delete()
                     else:
                         if not message.reply_to_msg_id:
                             cmd = ph[0][offset:].split()[0]
