@@ -24,7 +24,7 @@ import io
 
 logger = logging.getLogger(__name__)
 
-version = "v4.5a4"
+version = "v5.0a2"
 
 
 @loader.tds
@@ -65,12 +65,17 @@ This script is made by @innomods"""
 
         'no_reason': 'Not specified',
         'warn': '👮‍♂️ <b><a href="tg://user?id={}">{}</a></b> got {}/{} warn\nReason: <b>{}</b>',
+        'fwarn': '👮‍♂️💼 <b><a href="tg://user?id={}">{}</a></b> got {}/{} federative warn\nReason: <b>{}</b>',
         'chat_not_in_db': '👮‍♂️ <b>This chat has no warns yet</b>',
+        'no_fed_warns': '👮‍♂️ <b>This federation has no warns yet</b>',
         'no_warns': '👮‍♂️ <b><a href="tg://user?id={}">{}</a> has no warns yet</b>',
         'warns': '👮‍♂️ <b><a href="tg://user?id={}">{}</a> has {}/{} warns</b>\n    🏴󠁧󠁢󠁥󠁮󠁧󠁿 <i>{}</i>',
         'warns_adm': '👮‍♂️ <b>Warns in this chat</b>:\n',
+        'warns_adm_fed': '👮‍♂️ <b>Warns in this federation</b>:\n',
         'dwarn': '👮‍♂️ <b>Removed last warn from <a href="tg://user?id={}">{}</a></b>',
+        'dwarn_fed': '👮‍♂️ <b>Removed last federative warn from <a href="tg://user?id={}">{}</a></b>',
         'clrwarns': '👮‍♂️ <b>Removed all warns from <a href="tg://user?id={}">{}</a></b>',
+        'clrwarns_fed': '👮‍♂️ <b>Removed all federative warns from <a href="tg://user?id={}">{}</a></b>',
         'new_a': '👮‍♂️ <b>New action when warns limit is reached for this chat: "{}"</b>',
         'new_l': '👮‍♂️ <b>New warns limit for this chat: "{}"</b>',
         'warns_limit': '👮‍♂️ <b><a href="tg://user?id={}">{}</a> reached warns limit.\nAction: I {}</b>',
@@ -80,7 +85,7 @@ This script is made by @innomods"""
         'unwelcome': '👋 <b>Not I will not greet people in this chat</b>',
 
         'chat404': '🦊 <b>I am not protecting this chat yet.</b>\n',
-        'protections': '<b>🐻 AntiArab:</b> <code>.antiarab</code>\n<b>🐼 AntiLogspam:</b> <code>.als</code> <code>.alsset</code>\n<b>🐺 AntiHelp:</b> <code>.antihelp</code>\n<b>🐵 AntiTagAll:</b> <code>.atagall</code>\n<b>👋 Welcome: </b><code>.welcome</code>\n<b>🐶 AntiRaid:</b> <code>.antiraid</code>\n<b>🔞 AntiSex:</b> <code>.antisex</code>\n<b>📯 AntiChannel:</b> <code>.antichannel</code>\n<b>🪙 AntiSpoiler:</b> <code>.antispoiler</code>\n<b>🍓 AntiNSFW:</b> <code>.antinsfw</code>\n<b>⏱ AntiFlood:</b> <code>.antiflood</code>\n<b>👾 Admin: </b>\n<code>.ban</code> <code>.kick</code> <code>.mute</code>\n<code>.unban</code> <code>.unmute</code>\n<code>.def</code> <code>.gdef</code> <code>.deflist</code> <code>.gdeflist</code>\n<b>👮‍♂️ Warns:</b> <code>.warn</code> <code>.warns</code> <code>.warnslimit</code>\n<code>.dwarn</code> <code>.clrwarns</code> <code>.warnsaciton</code>',
+        'protections': '<b>🐻 AntiArab:</b> <code>.antiarab</code>\n<b>🐼 AntiLogspam:</b> <code>.als</code> <code>.alsset</code>\n<b>🐺 AntiHelp:</b> <code>.antihelp</code>\n<b>🐵 AntiTagAll:</b> <code>.atagall</code>\n<b>👋 Welcome: </b><code>.welcome</code>\n<b>🐶 AntiRaid:</b> <code>.antiraid</code>\n<b>🔞 AntiSex:</b> <code>.antisex</code>\n<b>📯 AntiChannel:</b> <code>.antichannel</code>\n<b>🪙 AntiSpoiler:</b> <code>.antispoiler</code>\n<b>🍓 AntiNSFW:</b> <code>.antinsfw</code>\n<b>⏱ AntiFlood:</b> <code>.antiflood</code>\n<b>👾 Admin: </b>\n<code>.ban</code> <code>.kick</code> <code>.mute</code>\n<code>.unban</code> <code>.unmute</code>\n<code>.def</code> <code>.gdef</code> <code>.deflist</code> <code>.gdeflist</code>\n<b>👮‍♂️ Warns:</b> <code>.warn</code> <code>.warns</code> <code>.warnslimit</code>\n<code>.dwarn</code> <code>.clrwarns</code> <code>.warnsaciton</code>\n<b>💼 Federations:</b> <code>.fadd</code> <code>.frm</code> <code>.newfed</code>\n <code>.namefed</code> <code>.fban</code> <code>.rmfed</code>',
 
         'prefix_set': '👾 <b><a href="tg://user?id={}">{}</a></b>\'s prefix is now <b>{}</b>',
         'prefix_removed': '👾 <b><a href="tg://user?id={}">{}</a> has no prefix now</b>',
@@ -101,8 +106,173 @@ This script is made by @innomods"""
         'antispoiler': '🪙 <b>AntiSpoiler is now {} in this chat</b>',
 
         'nsfw_toggle': '🍓 <b>AntiNSFW is now {} in this chat</b>',
-        'nsfw_content': '🍓 <b>Seems like <a href="tg://user?id={}">{}</a> sent NSFW content.\n👊 Action: I {}</b>'
+        'nsfw_content': '🍓 <b>Seems like <a href="tg://user?id={}">{}</a> sent NSFW content.\n👊 Action: I {}</b>',
+
+        'fadded': '💼 <b>Current chat added to federation "{}"</b>',
+        'newfed': '💼 <b>Created federation "{}"</b>',
+        'rmfed': '💼 <b>Removed federation "{}"</b>',
+        'fed404': '💼 <b>Federation not found</b>',
+        'frem': '💼 <b>Current chat removed from federation "{}"</b>',
+        'f404': '💼 <b>Current chat is not in federation "{}"</b>',
+        'fexists': '💼 <b>Current chat is already in federation "{}"</b>',
+        'fedexists': '💼 <b>Federation exists</b>',
+        'namedfed': '💼 <b>Federation renamed to {}</b>',
+        'nofed': '💼 <b>Current chat is not in any federation</b>',
+        'fban': '💼 <b><a href="tg://user?id={}">{}</a> banned in federation {}\nReason: {}</b>'
     }
+
+
+
+    async def newfedcmd(self, message):
+        """<shortname> <name> - Create new federation"""
+        args = utils.get_args_raw(message)
+        if not args or args.count(' ') == 0:
+            return await utils.answer(message, self.strings('args'))
+
+        shortname, name = args.split(maxsplit=1)
+        if shortname in self.federations:
+            return await utils.answer(message, self.strings('fedexists'))
+
+        self.federations[shortname] = {
+            'name': name,
+            'chats': [],
+            'warns': {}
+        }
+
+        self.db.set('InnoChats', 'federations', self.federations)
+
+        await utils.answer(message, self.strings('newfed').format(name))
+
+
+    async def rmfedcmd(self, message):
+        """<shortname> - Remove federation"""
+        args = utils.get_args_raw(message)
+        if not args:
+            return await utils.answer(message, self.strings('args'))
+
+        if args not in self.federations:
+            return await utils.answer(message, self.strings('fed404'))
+
+        name = self.federations[args]['name']
+
+        del self.federations[args]
+        self.db.set('InnoChats', 'federations', self.federations)
+
+        await utils.answer(message, self.strings('rmfed').format(name))
+
+
+    async def namefedcmd(self, message):
+        """<shortname> <name> - Rename federation"""
+        args = utils.get_args_raw(message)
+        if not args or args.count(' ') == 0:
+            return await utils.answer(message, self.strings('args'))
+
+        shortname, name = args.split(maxsplit=1)
+
+        if shortname not in self.federations:
+            return await utils.answer(message, self.strings('fed404'))
+
+        self.federations[shortname]['name'] = name
+        self.db.set('InnoChats', 'federations', self.federations)
+        await utils.answer(message, self.strings('namedfed').format(name))
+
+
+    async def faddcmd(self, message):
+        """<fed name> - Add chat to federation"""
+        args = utils.get_args_raw(message)
+        if not args:
+            return await utils.answer(message, self.strings('args'))
+
+        if args not in self.federations:
+            return await utils.answer(message, self.strings('fed404'))
+
+        chat = utils.get_chat_id(message)
+
+        if chat in self.federations[args]['chats']:
+            return await utils.answer(message, self.strings('fexists').format(self.federations[args]['name']))
+
+        self.federations[args]['chats'] += [chat]
+
+        self.db.set('InnoChats', 'federations', self.federations)
+
+        await utils.answer(message, self.strings('fadded').format(self.federations[args]['name']))
+
+
+    async def frmcmd(self, message):
+        """<fed name> - Remove chat from federation"""
+        args = utils.get_args_raw(message)
+        if not args:
+            return await utils.answer(message, self.strings('args'))
+
+        if args not in self.federations:
+            return await utils.answer(message, self.strings('fed404'))
+
+        chat = utils.get_chat_id(message)
+
+        if chat not in self.federations[args]['chats']:
+            return await utils.answer(message, self.strings('f404').format(self.federations[args]['name']))
+
+        self.federations[args]['chats'].remove(chat)
+
+        self.db.set('InnoChats', 'federations', self.federations)
+
+        await utils.answer(message, self.strings('frem').format(self.federations[args]['name']))
+
+
+
+    @loader.sudo
+    async def fbancmd(self, message):
+        """<reply | user> <reason | optional> - Ban user in federation"""
+        cid = utils.get_chat_id(message)
+        fed = None
+        for federation, config in self.federations.items():
+            if cid in config['chats']:
+                fed = federation
+                break
+
+        if not fed:
+            return await utils.answer(message, self.strings('no_fed'))
+
+        if message.is_private:
+            await message.delete()
+            return
+
+        a = await self.args_parser_2(message)
+        if not a:
+            return await utils.answer(message, self.strings('args'))
+
+        user, t, reason = a
+
+        for c in self.federations[fed]['chats']:
+            try:
+                chat = await self.client.get_entity(c)
+            except Exception:
+                continue
+
+            if not chat.admin_rights and not chat.creator:
+                continue
+
+            try:
+                await self.client.edit_permissions(chat, user, until_date=time.time() + t, view_messages=False,
+                                                   send_messages=False, send_media=False, send_stickers=False,
+                                                   send_gifs=False, send_games=False, send_inline=False, send_polls=False,
+                                                   change_info=False, invite_users=False)
+                if chat.id != cid: await self.client.send_message(chat, self.strings('ban', message).format(user.id,
+                                                                                user.first_name if getattr(user,
+                                                                                                           'first_name',
+                                                                                                           None) is not None else user.title,
+                                                                                f'for {t//60} min(-s)' if t != 0 else 'forever',
+                                                                                reason))
+            except telethon.errors.UserAdminInvalidError:
+                pass
+
+        await utils.answer(message, self.strings('fban').format(user.id, user.first_name if getattr(user,
+                                                                                                           'first_name',
+                                                                                                           None) is not None else user.title,
+                                                                    self.federations[fed]['name'], reason))
+
+
+
 
     async def client_ready(self, client, db):
         self.db = db
@@ -110,6 +280,7 @@ This script is made by @innomods"""
         self.me = str((await client.get_me()).id)
         self.chats = db.get('InnoChats', 'chats', {})
         self.warns = db.get('InnoChats', 'warns', {})
+        self.federations = db.get('InnoChats', 'federations', {})
         self.flood_timeout = 1
         self.flood_threshold = 2
         try:
@@ -234,6 +405,34 @@ This script is made by @innomods"""
 
         return False
 
+    async def args_parser_2(self, message):
+        args = utils.get_args_raw(message)
+        reply = await message.get_reply_message()
+        user = None
+        if not reply:
+            try:
+                user, reason = args.split(maxsplit=1)
+                user = await self.client.get_entity(user)
+                reason = reason or self.strings('no_reason')
+                t = 0
+            except Exception:
+                pass
+
+            if not user:
+                try:
+                    user = await self.client.get_entity(user)
+                except Exception:
+                    return await utils.answer(message, self.strings('args'))
+
+                reason = args or self.strings('no_reason')
+                t = 0
+        else:
+            user = await self.client.get_entity(reply.sender_id)
+            reason = args or self.strings('no_reason')
+            t = 0
+
+        return user, t, reason
+
 
 
 
@@ -281,13 +480,13 @@ This script is made by @innomods"""
 
     @loader.group_admin_ban_users
     async def bancmd(self, message):
-        """<reply | user> <time | 0 for infinity> <reason | optional> - Ban user"""
+        """<reply | user> <reason | optional> - Ban user"""
         chat = await message.get_chat()
         if message.is_private:
             await message.delete()
             return
 
-        a = await self.args_parser_1(message)
+        a = await self.args_parser_2(message)
         if not a:
             return await utils.answer(message, self.strings('args'))
 
@@ -793,7 +992,12 @@ This script is made by @innomods"""
             await message.delete()
             return
 
-        cid = str(utils.get_chat_id(message))
+        chat = await message.get_chat()
+
+        if not chat.admin_rights and not chat.creator:
+            return await utils.answer(message, self.strings('not_admin'))
+
+        cid = utils.get_chat_id(message)
         args = utils.get_args_raw(message)
         reply = await message.get_reply_message()
         user = None
@@ -820,55 +1024,91 @@ This script is made by @innomods"""
             except IndexError:
                 reason = self.strings('no_reason')
 
-        if cid not in self.warns:
-            self.warns[cid] = {
-                'a': 'mute',
-                'l': 5,
-                'w': {}
-            }
 
-        if str(user.id) not in self.warns[cid]['w']:
-            self.warns[cid]['w'][str(user.id)] = []
-        self.warns[cid]['w'][str(user.id)].append(reason)
+        fed = None
+        for federation, config in self.federations.items():
+            if cid in config['chats']:
+                fed = federation
+                break
 
-        if len(self.warns[cid]['w'][str(user.id)]) >= self.warns[cid]['l']:
-            action = self.warns[cid]['a']
-            user_name = user.first_name if getattr(user, 'first_name', None) is not None else user.title
-            user = user.id
-            if action == "kick":
-                await self.client.kick_participant(int(cid), int(user))
-                await self.client.send_message(int(cid),
-                                               self.strings('warns_limit').format(user, user_name, 'kicked him'))
-            elif action == "ban":
-                await self.client(telethon.tl.functions.channels.EditBannedRequest(int(cid), int(user),
-                                                                                   telethon.tl.types.ChatBannedRights(
-                                                                                       until_date=time.time() + 60 * 60,
-                                                                                       view_messages=True,
-                                                                                       send_messages=True,
-                                                                                       send_media=True,
-                                                                                       send_stickers=True,
-                                                                                       send_gifs=True, send_games=True,
-                                                                                       send_inline=True,
-                                                                                       embed_links=True)))
-                await self.client.send_message(int(cid), self.strings('warns_limit').format(user, user_name,
-                                                                                            'banned him for 1 hour'))
-            elif action == "mute":
-                await self.client(telethon.tl.functions.channels.EditBannedRequest(int(cid), int(user),
-                                                                                   telethon.tl.types.ChatBannedRights(
-                                                                                       until_date=time.time() + 60 * 60,
-                                                                                       send_messages=True)))
-                await self.client.send_message(int(cid), self.strings('warns_limit').format(user, user_name,
-                                                                                            'muted him for 1 hour'))
 
-            await message.delete()
-            self.warns[cid]['w'][user] = []
+        if not fed:
+            if cid not in self.warns:
+                self.warns[cid] = {
+                    'a': 'mute',
+                    'l': 5,
+                    'w': {}
+                }
+
+            if str(user.id) not in self.warns[cid]['w']:
+                self.warns[cid]['w'][str(user.id)] = []
+            self.warns[cid]['w'][str(user.id)].append(reason)
+
+            if len(self.warns[cid]['w'][str(user.id)]) >= self.warns[cid]['l']:
+                action = self.warns[cid]['a']
+                user_name = user.first_name if getattr(user, 'first_name', None) is not None else user.title
+                user = user.id
+                if action == "kick":
+                    await self.client.kick_participant(int(cid), int(user))
+                    await self.client.send_message(int(cid),
+                                                   self.strings('warns_limit').format(user, user_name, 'kicked him'))
+                elif action == "ban":
+                    await self.client(telethon.tl.functions.channels.EditBannedRequest(int(cid), int(user),
+                                                                                       telethon.tl.types.ChatBannedRights(
+                                                                                           until_date=time.time() + 60 * 60,
+                                                                                           view_messages=True,
+                                                                                           send_messages=True,
+                                                                                           send_media=True,
+                                                                                           send_stickers=True,
+                                                                                           send_gifs=True, send_games=True,
+                                                                                           send_inline=True,
+                                                                                           embed_links=True)))
+                    await self.client.send_message(int(cid), self.strings('warns_limit').format(user, user_name,
+                                                                                                'banned him for 1 hour'))
+                elif action == "mute":
+                    await self.client(telethon.tl.functions.channels.EditBannedRequest(int(cid), int(user),
+                                                                                       telethon.tl.types.ChatBannedRights(
+                                                                                           until_date=time.time() + 60 * 60,
+                                                                                           send_messages=True)))
+                    await self.client.send_message(int(cid), self.strings('warns_limit').format(user, user_name,
+                                                                                                'muted him for 1 hour'))
+
+                await message.delete()
+                self.warns[cid]['w'][str(user)] = []
+            else:
+                await utils.answer(message, self.strings('warn', message).format(user.id, user.first_name if getattr(user,
+                                                                                                                     'first_name',
+                                                                                                                     None) is not None else user.title,
+                                                                                 len(self.warns[cid]['w'][str(user.id)]),
+                                                                                 self.warns[cid]['l'], reason))
+            self.db.set('InnoChats', 'warns', self.warns)
         else:
-            await utils.answer(message, self.strings('warn', message).format(user.id, user.first_name if getattr(user,
-                                                                                                                 'first_name',
-                                                                                                                 None) is not None else user.title,
-                                                                             len(self.warns[cid]['w'][str(user.id)]),
-                                                                             self.warns[cid]['l'], reason))
-        self.db.set('InnoChats', 'warns', self.warns)
+            if str(user.id) not in self.federations[fed]['warns']:
+                self.federations[fed]['warns'][str(user.id)] = []
+            self.federations[fed]['warns'][str(user.id)].append(reason)
+
+            if len(self.federations[fed]['warns'][str(user.id)]) >= 7:
+                user_name = user.first_name if getattr(user, 'first_name', None) is not None else user.title
+                user = user.id
+                for c in self.federations[fed]['chats']:
+                    await self.client(telethon.tl.functions.channels.EditBannedRequest(c, user,
+                                                                                       telethon.tl.types.ChatBannedRights(
+                                                                                           until_date=time.time() + 60 * 60 * 24,
+                                                                                           send_messages=True)))
+                    await self.client.send_message(c, self.strings('warns_limit').format(user, user_name,
+                                                                                                'muted him in federation for 24 hours'))
+
+                await message.delete()
+
+                self.federations[fed]['warns'][str(user)] = []
+            else:
+                await utils.answer(message, self.strings('fwarn', message).format(user.id, user.first_name if getattr(user,
+                                                                                                                     'first_name',
+                                                                                                                     None) is not None else user.title,
+                                                                                 len(self.federations[fed]['warns'][user.id]),
+                                                                                 7, reason))
+            self.db.set('InnoChats', 'federations', self.federations)
+
 
     @loader.unrestricted
     async def warnscmd(self, message):
@@ -879,8 +1119,11 @@ This script is made by @innomods"""
 
         cid = utils.get_chat_id(message)
 
-        if str(cid) not in self.warns:
-            return await utils.answer(message, self.strings('chat_not_in_db', message))
+        fed = None
+        for federation, config in self.federations.items():
+            if cid in config['chats']:
+                fed = federation
+                break
 
         async def check_admin(user_id):
             try:
@@ -895,65 +1138,131 @@ This script is made by @innomods"""
             except Exception:
                 return False
 
-        async def send_user_warns(usid):
+        if not fed:
             if str(cid) not in self.warns:
-                await utils.answer(message, self.strings('chat_not_in_db', message))
-                return
-            elif usid not in self.warns[str(cid)]['w'] or len(self.warns[str(cid)]['w'][usid]) == 0:
-                user_obj = await self.client.get_entity(usid)
-                await utils.answer(message, self.strings('no_warns', message).format(user_obj.id,
-                                                                                     user_obj.first_name if getattr(
-                                                                                         user_obj, 'first_name',
-                                                                                         None) is not None else user_obj.title))
+                return await utils.answer(message, self.strings('chat_not_in_db', message))
+
+            async def send_user_warns(usid):
+                if str(cid) not in self.warns:
+                    await utils.answer(message, self.strings('chat_not_in_db', message))
+                    return
+                elif usid not in self.warns[str(cid)]['w'] or len(self.warns[str(cid)]['w'][usid]) == 0:
+                    user_obj = await self.client.get_entity(usid)
+                    await utils.answer(message, self.strings('no_warns', message).format(user_obj.id,
+                                                                                         user_obj.first_name if getattr(
+                                                                                             user_obj, 'first_name',
+                                                                                             None) is not None else user_obj.title))
+                else:
+                    user_obj = await self.client.get_entity(usid)
+                    await utils.answer(message, self.strings('warns', message).format(user_obj.id,
+                                                                                      user_obj.first_name if getattr(
+                                                                                          user_obj,
+                                                                                          'first_name',
+                                                                                          None) is not None else user_obj.title,
+                                                                                      len(self.warns[str(cid)]['w'][usid]),
+                                                                                      self.warns[str(cid)]['l'],
+                                                                                      '\n    🏴󠁧󠁢󠁥󠁮󠁧󠁿 '.join(
+                                                                                          self.warns[str(cid)]['w'][usid])))
+
+            if not await check_admin(message.sender_id):
+                await send_user_warns(message.sender_id)
             else:
-                user_obj = await self.client.get_entity(usid)
-                await utils.answer(message, self.strings('warns', message).format(user_obj.id,
-                                                                                  user_obj.first_name if getattr(
-                                                                                      user_obj,
-                                                                                      'first_name',
-                                                                                      None) is not None else user_obj.title,
-                                                                                  len(self.warns[str(cid)]['w'][usid]),
-                                                                                  self.warns[str(cid)]['l'],
-                                                                                  '\n    🏴󠁧󠁢󠁥󠁮󠁧󠁿 '.join(
-                                                                                      self.warns[str(cid)]['w'][usid])))
-
-        if not await check_admin(message.sender_id):
-            await send_user_warns(message.sender_id)
-        else:
-            reply = await message.get_reply_message()
-            args = utils.get_args_raw(message)
-            if not reply and not args:
-                res = self.strings('warns_adm', message)
-                for user, warns in self.warns[str(cid)]['w'].copy().items():
-                    try:
-                        user_obj = await self.client.get_entity(int(user))
-                    except Exception:
-                        del self.warns[str(cid)]['w'][user]
-                        continue
-
-                    if not await check_member(int(user)):
-                        del self.warns[str(cid)]['w'][user]
-                        continue
-
-                    if isinstance(user_obj, telethon.tl.types.User):
+                reply = await message.get_reply_message()
+                args = utils.get_args_raw(message)
+                if not reply and not args:
+                    res = self.strings('warns_adm', message)
+                    for user, warns in self.warns[str(cid)]['w'].copy().items():
                         try:
-                            name = user_obj.first_name + ' ' + (user_obj.last_name if getattr(user_obj, 'last_name', '') is not None else '')
-                        except TypeError:
+                            user_obj = await self.client.get_entity(int(user))
+                        except Exception:
                             del self.warns[str(cid)]['w'][user]
                             continue
-                    else:
-                        name = user_obj.title
 
-                    res += "🐺 <b><a href=\"tg://user?id=" + str(user_obj.id) + "\">" + name + '</a></b>\n'
-                    for warn in warns:
-                        res += "<code>   </code>🏴󠁧󠁢󠁥󠁮󠁧󠁿 <i>" + warn + '</i>\n'
+                        if not await check_member(int(user)):
+                            del self.warns[str(cid)]['w'][user]
+                            continue
 
-                await utils.answer(message, res)
-                return
-            elif reply:
-                await send_user_warns(reply.sender_id)
-            elif args:
-                await send_user_warns(args)
+                        if isinstance(user_obj, telethon.tl.types.User):
+                            try:
+                                name = user_obj.first_name + ' ' + (user_obj.last_name if getattr(user_obj, 'last_name', '') is not None else '')
+                            except TypeError:
+                                del self.warns[str(cid)]['w'][user]
+                                continue
+                        else:
+                            name = user_obj.title
+
+                        res += "🐺 <b><a href=\"tg://user?id=" + str(user_obj.id) + "\">" + name + '</a></b>\n'
+                        for warn in warns:
+                            res += "<code>   </code>🏴󠁧󠁢󠁥󠁮󠁧󠁿 <i>" + warn + '</i>\n'
+
+                    await utils.answer(message, res)
+                    return
+                elif reply:
+                    await send_user_warns(reply.sender_id)
+                elif args:
+                    await send_user_warns(args)
+        else:
+            if not self.federations[fed]['warns']:
+                return await utils.answer(message, self.strings('no_fed_warns', message))
+
+
+            async def send_user_warns(usid):
+                if not self.federations[fed]['warns']:
+                    await utils.answer(message, self.strings('no_fed_warns', message))
+                    return
+
+                elif str(usid) not in self.federations[fed]['warns'] or len(self.federations[fed]['warns'][str(usid)]) == 0:
+                    user_obj = await self.client.get_entity(usid)
+                    await utils.answer(message, self.strings('no_warns', message).format(user_obj.id,
+                                                                                         user_obj.first_name if getattr(
+                                                                                             user_obj, 'first_name',
+                                                                                             None) is not None else user_obj.title))
+                else:
+                    user_obj = await self.client.get_entity(usid)
+                    await utils.answer(message, self.strings('warns', message).format(user_obj.id,
+                                                                                      user_obj.first_name if getattr(
+                                                                                          user_obj,
+                                                                                          'first_name',
+                                                                                          None) is not None else user_obj.title,
+                                                                                      len(self.federations[fed]['warns'][str(usid)]),
+                                                                                      7,
+                                                                                      '\n    🏴󠁧󠁢󠁥󠁮󠁧󠁿 '.join(
+                                                                                          self.federations[fed]['warns'][str(usid)])))
+
+            if not await check_admin(message.sender_id):
+                await send_user_warns(message.sender_id)
+            else:
+                reply = await message.get_reply_message()
+                args = utils.get_args_raw(message)
+                if not reply and not args:
+                    res = self.strings('warns_adm_fed', message)
+                    for user, warns in self.federations[fed]['warns'].copy().items():
+                        try:
+                            user_obj = await self.client.get_entity(int(user))
+                        except Exception:
+                            del self.federations[fed]['warns'][user]
+                            continue
+
+                        if isinstance(user_obj, telethon.tl.types.User):
+                            try:
+                                name = user_obj.first_name + ' ' + (user_obj.last_name if getattr(user_obj, 'last_name', '') is not None else '')
+                            except TypeError:
+                                del self.federations[fed]['warns'][user]
+                                continue
+                        else:
+                            name = user_obj.title
+
+                        res += "🐺 <b><a href=\"tg://user?id=" + str(user_obj.id) + "\">" + name + '</a></b>\n'
+                        for warn in warns:
+                            res += "<code>   </code>🏴󠁧󠁢󠁥󠁮󠁧󠁿 <i>" + warn + '</i>\n'
+
+                    await utils.answer(message, res)
+                    return
+                elif reply:
+                    await send_user_warns(reply.sender_id)
+                elif args:
+                    await send_user_warns(args)
+
 
     @loader.group_admin_ban_users
     async def dwarncmd(self, message):
@@ -966,6 +1275,7 @@ This script is made by @innomods"""
         args = utils.get_args_raw(message)
         reply = await message.get_reply_message()
         user = None
+
         if reply:
             user = await self.client.get_entity(reply.sender_id)
         else:
@@ -979,19 +1289,40 @@ This script is made by @innomods"""
             except IndexError:
                 return await utils.answer(message, self.strings('args', message))
 
-        if cid not in self.warns:
-            return await utils.answer(message, self.strings('chat_not_in_db', message))
+        fed = None
+        for federation, config in self.federations.items():
+            if int(cid) in config['chats']:
+                fed = federation
+                break
 
-        if str(user.id) not in self.warns[cid]['w']:
-            return await utils.answer(message, self.strings('no_warns').format(user.id,
-                                                            user.first_name if getattr(user, 'first_name',
-                                                                                       None) is not None else user.title))
+        if not fed:
+            if cid not in self.warns:
+                return await utils.answer(message, self.strings('chat_not_in_db', message))
 
-        del self.warns[cid]['w'][str(user.id)][-1]
-        await utils.answer(message, self.strings('dwarn', message).format(user.id,
-                                                                          user.first_name if getattr(user, 'first_name',
-                                                                                                     None) is not None else user.title))
-        self.db.set('InnoChats', 'warns', self.warns)
+            if str(user.id) not in self.warns[cid]['w']:
+                return await utils.answer(message, self.strings('no_warns').format(user.id,
+                                                                user.first_name if getattr(user, 'first_name',
+                                                                                           None) is not None else user.title))
+
+            del self.warns[cid]['w'][str(user.id)][-1]
+            await utils.answer(message, self.strings('dwarn', message).format(user.id,
+                                                                              user.first_name if getattr(user, 'first_name',
+                                                                                                         None) is not None else user.title))
+            self.db.set('InnoChats', 'warns', self.warns)
+        else:
+            if not self.federations[fed]['warns']:
+                return await utils.answer(message, self.strings('no_fed_warns', message))
+
+            if str(user.id) not in self.federations[fed]['warns']:
+                return await utils.answer(message, self.strings('no_warns').format(user.id,
+                                                                user.first_name if getattr(user, 'first_name',
+                                                                                           None) is not None else user.title))
+
+            del self.federations[fed]['warns'][str(user.id)][-1]
+            await utils.answer(message, self.strings('dwarn_fed', message).format(user.id,
+                                                                              user.first_name if getattr(user, 'first_name',
+                                                                                                         None) is not None else user.title))
+            self.db.set('InnoChats', 'federations', self.federations)
 
     @loader.group_admin_ban_users
     async def clrwarnscmd(self, message):
@@ -1017,19 +1348,40 @@ This script is made by @innomods"""
             except IndexError:
                 return await utils.answer(message, self.strings('args', message))
 
-        if cid not in self.warns:
-            return await utils.answer(message, self.strings('chat_not_in_db', message))
+        fed = None
+        for federation, config in self.federations.items():
+            if int(cid) in config['chats']:
+                fed = federation
+                break
 
-        if str(user.id) not in self.warns[cid]['w']:
-            return await utils.answer(message, self.strings('no_warns').format(user.id, user.first_name if getattr(user,
-                                                                                                                   'first_name',
-                                                                                                                   None) is not None else user.title))
+        if not fed:
+            if cid not in self.warns:
+                return await utils.answer(message, self.strings('chat_not_in_db', message))
 
-        del self.warns[cid]['w'][str(user.id)]
-        await utils.answer(message, self.strings('clrwarns', message).format(user.id, user.first_name if getattr(user,
-                                                                                                                 'first_name',
-                                                                                                                 None) is not None else user.title))
-        self.db.set('InnoChats', 'warns', self.warns)
+            if str(user.id) not in self.warns[cid]['w']:
+                return await utils.answer(message, self.strings('no_warns').format(user.id, user.first_name if getattr(user,
+                                                                                                                       'first_name',
+                                                                                                                       None) is not None else user.title))
+
+            del self.warns[cid]['w'][str(user.id)]
+            await utils.answer(message, self.strings('clrwarns', message).format(user.id, user.first_name if getattr(user,
+                                                                                                                     'first_name',
+                                                                                                                     None) is not None else user.title))
+            self.db.set('InnoChats', 'warns', self.warns)
+        else:
+            if not self.federations[fed]['warns']:
+                return await utils.answer(message, self.strings('no_fed_warns', message))
+
+            if str(user.id) not in self.federations[fed]['warns']:
+                return await utils.answer(message, self.strings('no_warns').format(user.id, user.first_name if getattr(user,
+                                                                                                                       'first_name',
+                                                                                                                       None) is not None else user.title))
+
+            del self.federations[fed]['warns'][str(user.id)]
+            await utils.answer(message, self.strings('clrwarns_fed', message).format(user.id, user.first_name if getattr(user,
+                                                                                                                     'first_name',
+                                                                                                                     None) is not None else user.title))
+            self.db.set('InnoChats', 'federations', self.federations)
 
     @loader.group_admin_ban_users
     async def warnsactioncmd(self, message):
