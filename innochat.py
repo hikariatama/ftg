@@ -24,7 +24,7 @@ import io
 
 logger = logging.getLogger(__name__)
 
-version = "v5.0a2"
+version = "v5.1a1"
 
 
 @loader.tds
@@ -85,7 +85,7 @@ This script is made by @innomods"""
         'unwelcome': '👋 <b>Not I will not greet people in this chat</b>',
 
         'chat404': '🦊 <b>I am not protecting this chat yet.</b>\n',
-        'protections': '<b>🐻 AntiArab:</b> <code>.antiarab</code>\n<b>🐼 AntiLogspam:</b> <code>.als</code> <code>.alsset</code>\n<b>🐺 AntiHelp:</b> <code>.antihelp</code>\n<b>🐵 AntiTagAll:</b> <code>.atagall</code>\n<b>👋 Welcome: </b><code>.welcome</code>\n<b>🐶 AntiRaid:</b> <code>.antiraid</code>\n<b>🔞 AntiSex:</b> <code>.antisex</code>\n<b>📯 AntiChannel:</b> <code>.antichannel</code>\n<b>🪙 AntiSpoiler:</b> <code>.antispoiler</code>\n<b>🍓 AntiNSFW:</b> <code>.antinsfw</code>\n<b>⏱ AntiFlood:</b> <code>.antiflood</code>\n<b>👾 Admin: </b>\n<code>.ban</code> <code>.kick</code> <code>.mute</code>\n<code>.unban</code> <code>.unmute</code>\n<code>.def</code> <code>.gdef</code> <code>.deflist</code> <code>.gdeflist</code>\n<b>👮‍♂️ Warns:</b> <code>.warn</code> <code>.warns</code> <code>.warnslimit</code>\n<code>.dwarn</code> <code>.clrwarns</code> <code>.warnsaciton</code>\n<b>💼 Federations:</b> <code>.fadd</code> <code>.frm</code> <code>.newfed</code>\n <code>.namefed</code> <code>.fban</code> <code>.rmfed</code>',
+        'protections': '<b>🐻 AntiArab:</b> <code>.antiarab</code>\n<b>🐼 AntiLogspam:</b> <code>.als</code> <code>.alsset</code>\n<b>🐺 AntiHelp:</b> <code>.antihelp</code>\n<b>🐵 AntiTagAll:</b> <code>.atagall</code>\n<b>👋 Welcome: </b><code>.welcome</code>\n<b>🐶 AntiRaid:</b> <code>.antiraid</code>\n<b>🔞 AntiSex:</b> <code>.antisex</code>\n<b>📯 AntiChannel:</b> <code>.antichannel</code>\n<b>🪙 AntiSpoiler:</b> <code>.antispoiler</code>\n<b>🍓 AntiNSFW:</b> <code>.antinsfw</code>\n<b>⏱ AntiFlood:</b> <code>.antiflood</code>\n<b>👾 Admin: </b>\n<code>.ban</code> <code>.kick</code> <code>.mute</code>\n<code>.unban</code> <code>.unmute</code>\n<code>.def</code> <code>.gdef</code> <code>.deflist</code> <code>.gdeflist</code>\n<b>👮‍♂️ Warns:</b> <code>.warn</code> <code>.warns</code> <code>.warnslimit</code>\n<code>.dwarn</code> <code>.clrwarns</code> <code>.warnsaciton</code>\n<b>💼 Federations:</b> <code>.fadd</code> <code>.frm</code> <code>.newfed</code>\n <code>.namefed</code> <code>.fban</code> <code>.rmfed</code> <code>.feds</code>',
 
         'prefix_set': '👾 <b><a href="tg://user?id={}">{}</a></b>\'s prefix is now <b>{}</b>',
         'prefix_removed': '👾 <b><a href="tg://user?id={}">{}</a> has no prefix now</b>',
@@ -118,7 +118,8 @@ This script is made by @innomods"""
         'fedexists': '💼 <b>Federation exists</b>',
         'namedfed': '💼 <b>Federation renamed to {}</b>',
         'nofed': '💼 <b>Current chat is not in any federation</b>',
-        'fban': '💼 <b><a href="tg://user?id={}">{}</a> banned in federation {}\nReason: {}</b>'
+        'fban': '💼 <b><a href="tg://user?id={}">{}</a> banned in federation {}\nReason: {}</b>',
+        'feds_header': '💼 <b>Federations:</b>\n\n'
     }
 
 
@@ -859,10 +860,30 @@ This script is made by @innomods"""
         """List available filters"""
         await utils.answer(message, self.strings('protections', message))
 
+
+    async def fedscmd(self, message):
+        """List federations"""
+        res = self.strings('feds_header')
+        for shortname, config in self.federations.copy().items():
+            res += f"    ☮️ <b>{config['name']}</b> (<code>{shortname}</code>)"
+            for chat in config['chats'].copy():
+                try:
+                    c = await self.client.get_entity(chat)
+                except Exception:
+                    self.federations[shortname]['chats'].remove(chat)
+                    continue
+
+                res += f"\n        <b>- <a href=\"tg://resolve?domain={c.username if getattr(c, 'username', None) is not None else ''}\">{c.title}</a></b>"
+
+            res += f"\n        <b>👮‍♂️ {len(config['warns'])} warns</b>"
+
+        await utils.answer(message, res)
+
+
     async def pchatscmd(self, message):
         """List protections"""
 
-        res = f"<b><u>🦊 @innomods Chat Protection</u></b> <i>{version}</i>\n\n<i>🐼 - AntiLogspam\n🐺 - AntiHelp\n🐻 - AntiArab\n🐵 - AntiTagAll\n💋 - AntiSex\n🚪 - AntiRaid\n📯 - AntiChannel\n🪙 - AntiSpoiler\n🍓 - AntiNSFW\n⏱ - AntiFlood\n\n👋 - Welcome\n👮‍♂️ - Warns</i>\n\n🦊 <b><u>Chats:</u></b>\n"
+        res = f"<b><u>🦊 @innomods Chat Protection</u></b> <i>{version}</i>\n\n<i>🐼 - AntiLogspam\n🐺 - AntiHelp\n🐻 - AntiArab\n🐵 - AntiTagAll\n💋 - AntiSex\n🚪 - AntiRaid\n📯 - AntiChannel\n🪙 - AntiSpoiler\n🍓 - AntiNSFW\n⏱ - AntiFlood\n\n👋 - Welcome\n👮‍♂️ - Local warns\n💼 - Federations</i>\n\n🦊 <b><u>Chats:</u></b>\n"
         changes = False
         for chat, obj in self.chats.copy().items():
             try:
@@ -875,6 +896,12 @@ This script is made by @innomods"""
                 del self.chats[chat]
                 changes = True
                 continue
+
+            fed = None
+            for federation, config in self.federations.items():
+                if int(cid) in config['chats']:
+                    fed = federation
+                    break
 
             line = ""
             line += "🐼" if 'als' in obj else ""
@@ -889,6 +916,7 @@ This script is made by @innomods"""
             line += "⏱" if 'antiflood' in obj else ""
             line += "👋" if 'welcome' in obj else ""
             line += "👮‍♂️" if chat in self.warns else ""
+            line += "💼" if fed is not None else ""
 
             if not line:
                 del self.chats[chat]
@@ -915,6 +943,12 @@ This script is made by @innomods"""
 
         obj = self.chats[cid]
 
+        fed = None
+        for federation, config in self.federations.items():
+            if int(cid) in config['chats']:
+                fed = federation
+                break
+
         line = ""
         line += "\n🐺 <b>AntiHelp.</b>" if 'antihelp' in obj else ""
         line += "\n🐵 <b>AntiTagAll.</b> Action: <b>{}</b>".format(
@@ -933,7 +967,8 @@ This script is made by @innomods"""
         line += "\n⏱ <b>AntiFlood</b> Action: <b>{}</b>".format(obj['antiflood']) if 'antiflood' in obj else ""
         line += "\n👋 <b>Welcome.</b> \n<code>    </code>{}".format(
             obj['welcome'].replace('\n', '\n<code>    </code>')) if 'welcome' in obj else ""
-        line += "\n👮‍♂️ <b>Warns.</b>" if cid in self.warns else ""
+        line += "\n👮‍♂️ <b>Local warns.</b>" if cid in self.warns else ""
+        line += "\n💼 <b>Federation: </b>" + self.federations[fed]['name'] if fed is not None else ""
 
         res += line
 
