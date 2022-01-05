@@ -124,7 +124,7 @@ class MagicBroomMod(loader.Module):
         if '--filemods' in args or '-1' in args:
             todel = []
             for x in self.db.keys(): 
-                if "__extmod" in x:
+                if "__extmod" in x or 'filemod_' in x:
                     todel.append(x)
 
             for delete in todel:
