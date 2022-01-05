@@ -17,9 +17,11 @@ import json
 import io
 import telethon
 import os
+import logging
 
-#requires: requests
+# requires: requests
 
+logger = logging.getLogger(__name__)
 
 @loader.tds
 class NSFWMod(loader.Module):
@@ -67,7 +69,12 @@ class NSFWMod(loader.Module):
             await utils.answer(message, self.strings('sreddit404', message))
             return
 
-        ans = requests.get('https://api.scrolller.com/api/v2/graphql', json={"query": " query SubredditQuery( $url: String! $filter: SubredditPostFilter $iterator: String ) { getSubreddit(url: $url) { children( limit: " + str(quantity) + " iterator: $iterator filter: $filter ) { iterator items { __typename url title subredditTitle subredditUrl redditPath isNsfw albumUrl isFavorite mediaSources { url width height isOptimized } } } } } ","variables":{"filter":None, "url": subreddit},"authorization":None}).json()
+        ans = requests.get('https://api.scrolller.com/api/v2/graphql', json={
+            "query": " query SubredditQuery( $url: String! $filter: SubredditPostFilter $iterator: String ) { getSubreddit(url: $url) { children( limit: " + str(quantity) + " iterator: $iterator filter: $filter disabledHosts: null ) { iterator items { __typename url title subredditTitle subredditUrl redditPath isNsfw albumUrl isFavorite mediaSources { url width height isOptimized } } } } } ",
+            "variables": {"url": subreddit, "filter": None, "hostsDown": None},
+            "authorization": None
+        }).json()
+        # logger.info(ans)
         posts = ans['data']['getSubreddit']['children']['items']
         res = []
         for i in range(min(quantity, len(posts))):
