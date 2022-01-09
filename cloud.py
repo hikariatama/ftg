@@ -76,15 +76,9 @@ class modCloudMod(loader.Module):
 
             await send(self.client)
 
-    @loader.unrestricted
-    async def cloudcmd(self, message):
-        """<command \\ mod_name> - Lookup mod in @innomods_database"""
-        args = utils.get_args_raw(message)
-        if not args:
-            await utils.answer(message, self.strings('args', message))
-            return
 
-        entity = await self.client.get_entity("@innomods_database")
+    async def search(self, entity, message):
+        args = utils.get_args_raw(message)
         try:
             msgs = await self.client.get_messages(entity, limit=100)
         except:
@@ -104,6 +98,31 @@ class modCloudMod(loader.Module):
                 pass
 
         await utils.answer(message, self.strings('mod404', message).format(args))
+
+
+    @loader.unrestricted
+    async def cloudcmd(self, message):
+        """<command \\ mod_name> - Lookup mod in @innomods_database"""
+        args = utils.get_args_raw(message)
+        if not args:
+            await utils.answer(message, self.strings('args', message))
+            return
+
+        entity = await self.client.get_entity("@innomods_database")
+        await self.search(entity, message)
+
+    @loader.unrestricted
+    async def imodcmd(self, message):
+        """<command \\ mod_name> - Lookup mod in @innomods"""
+        args = utils.get_args_raw(message)
+        if not args:
+            await utils.answer(message, self.strings('args', message))
+            return
+
+        entity = await self.client.get_entity("@innomods")
+        await self.search(entity, message)
+        
+
 
 
 
