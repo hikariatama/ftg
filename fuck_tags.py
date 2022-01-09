@@ -9,7 +9,7 @@
 
 #<3 title: FuckTags
 #<3 pic: https://img.icons8.com/fluency/48/000000/radio-waves.png
-#<3 desc: "Тихие теги и авточтение сообщений"
+#<3 desc: Тихие теги и авточтение сообщений
 
 from .. import loader, utils
 import asyncio

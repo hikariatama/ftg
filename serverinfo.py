@@ -8,7 +8,7 @@
 """
 
 #<3 title: ServerInfo
-#<3 pic: https://img.icons8.com/fluency/48/000000/system-information.png
+#<3 pic: https://img.icons8.com/fluency/48/000000/server.png
 #<3 desc: Информация о сервере, где установлен юб
 
 from .. import loader, utils
