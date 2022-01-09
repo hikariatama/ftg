@@ -14,7 +14,9 @@
 
 import inspect
 from .. import loader, utils, main, security
+import logging
 
+logger = logging.getLogger(__name__)
 
 @loader.tds
 class HelpMod(loader.Module):
@@ -109,6 +111,17 @@ class HelpMod(loader.Module):
             reply = self.strings("all_header", message).format(count)
             shown_warn = False
             mods_formatted = {}
+            one_command_mods_cmds = []
+            cats = {}
+
+            for mod_name, cat in self.db.get('Help', 'cats', {}).items():
+                if cat not in cats:
+                    cats[cat] = []
+
+                cats[cat].append(mod_name)
+
+            logger.info(cats)
+
             for mod in self.allmodules.modules:
                 if len(mod.commands) != 0:
                     tmp = ""
@@ -119,6 +132,12 @@ class HelpMod(loader.Module):
                     tmp += self.strings("mod_tmpl", message).format(name)
                     first = True
                     commands = [name for name, func in mod.commands.items() if await self.allmodules.check_security(message, func) or force]
+
+                    if len(commands) == 1:
+                        if 'hide' not in cats or name not in cats['hide']:
+                            one_command_mods_cmds += commands
+                            continue
+
                     for cmd in commands:
                         if first:
                             tmp += self.strings("first_cmd_tmpl", message).format(cmd)
@@ -133,17 +152,10 @@ class HelpMod(loader.Module):
                         tmp += " )"
                         mods_formatted[name] = tmp
 
-            cats = {}
-
-            for mod_name, cat in self.db.get('Help', 'cats', {}).items():
-                if cat not in cats:
-                    cats[cat] = []
-
-                cats[cat].append(mod_name)
-
             if category is None:
                 mods_remaining = mods_formatted.copy()
                 for cat, mods in cats.items():
+                    if cat == 'hide': continue
                     tmp = ""
                     for mod in mods:
                         if mod in mods_formatted:
@@ -156,7 +168,8 @@ class HelpMod(loader.Module):
                     reply += "\n➖➖➖➖➖"
 
                 for _, mod_formatted in mods_formatted.items():
-                    reply += mod_formatted
+                    if 'hide' not in cats or _ not in cats['hide']:
+                        reply += mod_formatted
             else:
                 tmp = ""
                 for mod in cats[category]:
@@ -165,6 +178,8 @@ class HelpMod(loader.Module):
                         del mods_formatted[mod]
                 if tmp != "":
                     reply += "\n<b><u>🔹 " + category + "</u></b>" + tmp
+
+            reply += ("\n\n<b>1-Command Mods:</b>\n" + ' | '.join(one_command_mods_cmds)) if one_command_mods_cmds else ""
 
 
         await utils.answer(message, reply)
