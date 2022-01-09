@@ -30,7 +30,7 @@ class MailMod(loader.Module):
 
     async def parser(self):
         imap = imaplib.IMAP4_SSL('imap.mail.ru', 993)
-        imap.login('elusloodus@mail.ru', 'Ycf3rHrv3ydrPLcFGkmF')
+        imap.login(self.config['mail'], self.config['password'])
         imap.select('inbox')
         while True:
             result, data = imap.uid('search', None, "ALL")
@@ -70,4 +70,8 @@ class MailMod(loader.Module):
         self.cached = db.get(__name__, 'cached', 0)
 
         asyncio.ensure_future(self.parser())
+
+    def __init__(self):
+        self.config = loader.ModuleConfig("mail", 'elusloodus@mail.ru', lambda: "E-mail"
+                                            "password", '', lambda: "Password for external apps")
 
