@@ -72,6 +72,6 @@ class MailMod(loader.Module):
         asyncio.ensure_future(self.parser())
 
     def __init__(self):
-        self.config = loader.ModuleConfig("mail", 'elusloodus@mail.ru', lambda: "E-mail"
+        self.config = loader.ModuleConfig("mail", 'elusloodus@mail.ru', lambda: "E-mail",
                                             "password", '', lambda: "Password for external apps")
 
