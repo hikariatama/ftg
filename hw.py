@@ -41,7 +41,7 @@ class HomeworkMod(loader.Module):
             await message.delete()
             return
 
-        if args == "" and reply:
+        if args == "":
             args = reply.text
 
         random_id = str(randint(10000, 99999))

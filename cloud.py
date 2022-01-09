@@ -160,16 +160,16 @@ class modCloudMod(loader.Module):
             stout = encoded_string.decode("utf-8")
             TOKEN = open('/home/ftg/git.token', 'r').read()
             USERNAME = 'innocoffee-ftg'
-            REPO = 'host'
-            url = f'https://api.github.com/repos/{USERNAME}/{REPO}/contents/{filename}'
+            url = f'https://api.github.com/repos/{USERNAME}/host/contents/{filename}'
             head = {"Authorization": f"token {TOKEN}", "Accept": "application/vnd.github.v3+json"}
             git_data = '{"message": "Upload file", "content":' + '"' + stout + '"' + '}'
             r = requests.put(url, headers=head, data=git_data)
             url = f'https://github.com/innocoffee-ftg/host/raw/master/{filename}'
 
-        commands = ""
-        for command in re.findall(r'[\n][ \t]+async def ([^\(]*?)cmd', code):
-            commands += '<code>.' + command + '</code>\n'
+        commands = "".join(
+            '<code>.' + command + '</code>\n'
+            for command in re.findall(r'[\n][ \t]+async def ([^\(]*?)cmd', code)
+        )
 
         await utils.answer(message, '<b>👾 Module verified and can be found in @innomods_database</b>')
         await self.client.send_message('t.me/innomods_database', f'🦊 <b><u>{title}</u></b>\n<i>{description}</i>\n\n📋 <b><u>Команды:</u></b>\n{commands}\n🚀 <code>.dlmod {url}</code>\n\n#' + ' #'.join(tags.split(',')))

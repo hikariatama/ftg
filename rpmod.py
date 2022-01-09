@@ -45,13 +45,11 @@ class RPMod(loader.Module):
         except:
             if not args or command not in self.rp:
                 await utils.answer(message, self.strings('args', message))
-                return
             else:
                 del self.rp[command]
                 self.db.set('RPMod', 'rp', self.rp)
                 await utils.answer(message, self.strings('success', message))
-                return
-
+            return
         self.rp[command] = msg
         self.db.set('RPMod', 'rp', self.rp)
         await utils.answer(message, self.strings('success', message))
@@ -135,7 +133,7 @@ class RPMod(loader.Module):
             if not reply and not entity:
                 return
 
-            if reply and entity or not reply and entity:
+            if reply and entity or not reply:
                 reply = entity
 
             sender = await self.client.get_entity(message.sender_id)
