@@ -89,17 +89,13 @@ class statusesMod(loader.Module):
             await message.delete()
             return
 
-        if args[1] in ['1', 'true', 'yes', '+']:
-            args[1] = True
-        else:
-            args[1] = False
-
+        args[1] = args[1] in ['1', 'true', 'yes', '+']
         texts = self.db.get('Statuses', 'texts', {})
-        texts[args[0]] = args[2]        
+        texts[args[0]] = args[2]
         self.db.set('Statuses', 'texts', texts)
 
         notif = self.db.get('Statuses', 'notif', {})
-        notif[args[0]] = args[1]        
+        notif[args[0]] = args[1]
         self.db.set('Statuses', 'notif', notif)
         await utils.answer(message, self.strings('status_created', message).format(utils.escape_html(args[0]), utils.escape_html(args[2]), args[1]))
 

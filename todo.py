@@ -43,10 +43,7 @@ class TodoMod(loader.Module):
             task = args
 
         try:
-            if task != '':
-                importance = int(task)
-            else:
-                importance = 0
+            importance = int(task) if task != '' else 0
             reply = await message.get_reply_message()
             if reply:
                 task = reply.text
@@ -66,10 +63,7 @@ class TodoMod(loader.Module):
     async def tdlcmd(self, message):
         """Показать активные задачи"""
         res = "<b>#ToDo:</b>\n"
-        items = {}
-        for i in range(len(self.imp_levels)):
-            items[len(self.imp_levels) - i - 1] = []
-
+        items = {len(self.imp_levels) - i - 1: [] for i in range(len(self.imp_levels))}
         for item_id, item in self.todolist.items():
             items[item[1]].append(
                 " <code>.utd " + item_id + "</code>: <code>" + item[0] + "</code>")

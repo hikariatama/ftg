@@ -55,10 +55,7 @@ class CTFToolsMod(loader.Module):
         """Linux Strings | grep . command wrapper"""
         await utils.answer(message, self.strings('processing', message))
         args = utils.get_args_raw(message)
-        if args == '':
-            grep = ''
-        else:
-            grep = ' | grep ' + args
+        grep = '' if args == '' else ' | grep ' + args
         reply = await message.get_reply_message()
         if not reply and type(message.media) is None:
             await utils.answer(message, self.strings('file_not_specified', message))
