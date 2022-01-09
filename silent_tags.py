@@ -45,8 +45,6 @@ class SilentTagsMod(loader.Module):
         self._ratelimit = []
         if self.un is None:
             raise Exception('You cannot load this module because you do not have username')
-            return
-
         self.c = await self.find_db()
 
     async def stagscmd(self, message):
@@ -57,7 +55,7 @@ class SilentTagsMod(loader.Module):
             await utils.answer(message, self.strings("stags_status", message).format('active' if self.stags else 'inactive'))
             return
 
-        args = True if args == "on" else False
+        args = args == "on"
         self.db.set('SilentTags', "stags", args)
         self.stags = args
         self._ratelimit = []

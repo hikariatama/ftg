@@ -205,12 +205,12 @@ class FlashCardsMod(loader.Module):
         self.decks = self.db.get("FlashCards", "decks", {})
 
     def get_fucking_deck_from_fucking_reply(self, fucking_reply, fucking_limit=None):
-        if fucking_reply == None:
+        if fucking_reply is None:
             return False
 
-        bitches = 1
-
         if "#Deck" in fucking_reply.text:
+            bitches = 1
+
             for asshole_fucking_line in fucking_reply.text.split('\n'):
                 asshole_fucking_line = asshole_fucking_line.split()
                 if len(asshole_fucking_line) > 1:
@@ -221,7 +221,12 @@ class FlashCardsMod(loader.Module):
                         pass
 
                     if what_the_fuck_am_i_doing_in_3_am_utc in self.decks:
-                        if fucking_limit == None or fucking_limit == False and "#Decks" not in fucking_reply.text or bitches == fucking_limit:
+                        if (
+                            fucking_limit is None
+                            or fucking_limit == False
+                            and "#Decks" not in fucking_reply.text
+                            or bitches == fucking_limit
+                        ):
                             return what_the_fuck_am_i_doing_in_3_am_utc
                         else:
                             bitches += 1
@@ -279,19 +284,14 @@ class FlashCardsMod(loader.Module):
     async def deckscmd(self, message):
         """List decks"""
         res = "<b>#Decks:</b>\n\n"
-        counter = 1
-        for item_id, item in self.decks.items():
+        for counter, (item_id, item) in enumerate(self.decks.items(), start=1):
             if len(item['cards']) == 0:
                 items = 'No cards'
             else:
-                items = ""
-                for front, back in item['cards'][:2]:
-                    items += f'\n   {front} - {back}'
-
+                items = "".join(f'\n   {front} - {back}' for front, back in item['cards'][:2])
                 if len(item['cards']) > 2:
                     items += "\n   <...>"
             res += f"🔸<b>{counter}.</b> <code>{item_id}</code> | {item['name']}<code>{items}</code>\n\n"
-            counter += 1
         await utils.answer(message, res)
 
     async def deletedeckcmd(self, message):
@@ -303,10 +303,11 @@ class FlashCardsMod(loader.Module):
         del self.decks[deck_id]
         self.db.set("FlashCards", "decks", self.decks)
         reply = await message.get_reply_message()
-        if reply and '#Decks' in reply.text:
-            await self.deckscmd(reply)
-        elif reply and '#Deck' in reply.text:
-            await reply.edit(reply.text + '\n' + self.strings('deck_removed', message))
+        if reply:
+            if '#Decks' in reply.text:
+                await self.deckscmd(reply)
+            elif '#Deck' in reply.text:
+                await reply.edit(reply.text + '\n' + self.strings('deck_removed', message))
         await utils.answer(message, self.strings('deck_removed', message))
         await asyncio.sleep(2)
         await message.delete()
@@ -320,11 +321,8 @@ class FlashCardsMod(loader.Module):
 
         deck = self.decks[deck_id]
         res = f"📋#Deck #{deck_id} <b>{deck['name']}</b>:\n➖➖➖➖➖➖➖➖➖➖"
-        i = 1
-        for front, back in deck['cards']:
+        for i, (front, back) in enumerate(deck['cards'], start=1):
             res += f"\n<b>{i}. {front} - {back}</b>"
-            i += 1
-
         await utils.answer(message, res)
 
     async def editdeckcmd(self, message):
@@ -364,7 +362,7 @@ class FlashCardsMod(loader.Module):
         for item in items[2:-3]:
             self.decks[deck_id]['cards'].append((self.remove_html(item.split(' - ')[0]), self.remove_html(item.split(' - ')[1])))
 
-        
+
         try:
             self.decks[deck_id]['name'] = self.remove_html(re.search(r'&quot;(.+?)&quot;', items[0]).group(1))
         except:
@@ -373,11 +371,8 @@ class FlashCardsMod(loader.Module):
         self.db.set("FlashCards", "decks", self.decks)
 
         res = f"📋#Deck #{deck_id} <b>{deck['name']}</b>:\n➖➖➖➖➖➖➖➖➖➖"
-        i = 1
-        for front, back in deck['cards']:
+        for i, (front, back) in enumerate(deck['cards'], start=1):
             res += f"\n<b>{i}. {front} - {back}</b>"
-            i += 1
-
         res += "\n➖➖➖➖➖➖➖➖➖➖\n" + self.strings('deck_saved', message)
 
         await utils.answer(reply, res)
@@ -393,9 +388,7 @@ class FlashCardsMod(loader.Module):
         await utils.answer(message, self.strings('generating_page', message))
         deck_name = deck['name']
         loc_cards = deck['cards'].copy()
-        cards = {}
-        for front, back in loc_cards:
-            cards[front] = back
+        cards = dict(loc_cards)
         json_cards = json.dumps(cards).replace('"', '\\"')
         txt = io.BytesIO(TEMPLATE.replace('^title_deck_name^', deck_name).replace('^deck_name^', deck_name).replace('^json_cards^', json_cards).encode('utf-8'))
         txt.name = "testing.html"

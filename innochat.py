@@ -455,7 +455,7 @@ This script is made by @innomods"""
         try:
             if reply:
                 user = await self.client.get_entity(reply.sender_id)
-                reason = args if args else self.strings('no_reason')
+                reason = args or self.strings('no_reason')
             else:
                 uid = args.split(maxsplit=1)[0]
                 try:
@@ -668,14 +668,13 @@ This script is made by @innomods"""
         if chat not in self.chats:
             self.chats[chat] = {}
 
-        if args not in ['warn', 'ban', 'kick', 'mute', 'delmsg']:
-            if 'antitagall' in self.chats[chat]:
-                del self.chats[chat]['antitagall']
-                await utils.answer(message, self.strings('atagall_off'))
-        else:
+        if args in ['warn', 'ban', 'kick', 'mute', 'delmsg']:
             self.chats[chat]['antitagall'] = args
             await utils.answer(message, self.strings('atagall_on').format(args))
 
+        elif 'antitagall' in self.chats[chat]:
+            del self.chats[chat]['antitagall']
+            await utils.answer(message, self.strings('atagall_off'))
         self.db.set('InnoChats', 'chats', self.chats)
 
     @loader.group_owner
@@ -903,8 +902,7 @@ This script is made by @innomods"""
                     fed = federation
                     break
 
-            line = ""
-            line += "🐼" if 'als' in obj else ""
+            line = "" + ("🐼" if 'als' in obj else "")
             line += "🐺" if 'antihelp' in obj else ""
             line += "🐻" if 'arabshield' in obj else ""
             line += "🐵" if 'antitagall' in obj else ""
@@ -949,8 +947,9 @@ This script is made by @innomods"""
                 fed = federation
                 break
 
-        line = ""
-        line += "\n🐺 <b>AntiHelp.</b>" if 'antihelp' in obj else ""
+
+        line = "" + ("\n🐺 <b>AntiHelp.</b>" if 'antihelp' in obj else "")
+
         line += "\n🐵 <b>AntiTagAll.</b> Action: <b>{}</b>".format(
             obj['antitagall']) if 'antitagall' in obj else ""
         line += "\n🐻 <b>AntiArab.</b> Action: <b>{}</b>".format(
@@ -996,10 +995,16 @@ This script is made by @innomods"""
                                                                                    embed_links=True)))
         elif action == "mute":
             await self.client.send_message(cid, self.strings(violation).format(user, user_name, 'muted him for 1 hour'))
-            await self.client(telethon.tl.functions.channels.EditBannedRequest(cid, user,
-                                                                               telethon.tl.types.ChatBannedRights(
-                                                                                   until_date=time.time() + 60 * 60,
-                                                                                   send_messages=True)))
+            await self.client(
+                telethon.tl.functions.channels.EditBannedRequest(
+                    cid,
+                    user,
+                    telethon.tl.types.ChatBannedRights(
+                        until_date=time.time() + 60 ** 2, send_messages=True
+                    ),
+                )
+            )
+
         elif action == "warn":
             if not self.warn:
                 await self.client.send_message(cid, self.strings(violation).format(user, user_name,
@@ -1038,10 +1043,7 @@ This script is made by @innomods"""
         user = None
         if reply:
             user = await self.client.get_entity(reply.sender_id)
-            if args:
-                reason = args
-            else:
-                reason = self.strings('no_reason')
+            reason = args or self.strings('no_reason')
         else:
             try:
                 u = args.split(maxsplit=1)[0]
@@ -1088,16 +1090,24 @@ This script is made by @innomods"""
                     await self.client.send_message(int(cid),
                                                    self.strings('warns_limit').format(user, user_name, 'kicked him'))
                 elif action == "ban":
-                    await self.client(telethon.tl.functions.channels.EditBannedRequest(int(cid), int(user),
-                                                                                       telethon.tl.types.ChatBannedRights(
-                                                                                           until_date=time.time() + 60 * 60,
-                                                                                           view_messages=True,
-                                                                                           send_messages=True,
-                                                                                           send_media=True,
-                                                                                           send_stickers=True,
-                                                                                           send_gifs=True, send_games=True,
-                                                                                           send_inline=True,
-                                                                                           embed_links=True)))
+                    await self.client(
+                        telethon.tl.functions.channels.EditBannedRequest(
+                            int(cid),
+                            int(user),
+                            telethon.tl.types.ChatBannedRights(
+                                until_date=time.time() + 60 ** 2,
+                                view_messages=True,
+                                send_messages=True,
+                                send_media=True,
+                                send_stickers=True,
+                                send_gifs=True,
+                                send_games=True,
+                                send_inline=True,
+                                embed_links=True,
+                            ),
+                        )
+                    )
+
                     await self.client.send_message(int(cid), self.strings('warns_limit').format(user, user_name,
                                                                                                 'banned him for 1 hour'))
                 elif action == "mute":
@@ -1126,10 +1136,17 @@ This script is made by @innomods"""
                 user_name = user.first_name if getattr(user, 'first_name', None) is not None else user.title
                 user = user.id
                 for c in self.federations[fed]['chats']:
-                    await self.client(telethon.tl.functions.channels.EditBannedRequest(c, user,
-                                                                                       telethon.tl.types.ChatBannedRights(
-                                                                                           until_date=time.time() + 60 * 60 * 24,
-                                                                                           send_messages=True)))
+                    await self.client(
+                        telethon.tl.functions.channels.EditBannedRequest(
+                            c,
+                            user,
+                            telethon.tl.types.ChatBannedRights(
+                                until_date=time.time() + 60 ** 2 * 24,
+                                send_messages=True,
+                            ),
+                        )
+                    )
+
                     await self.client.send_message(c, self.strings('warns_limit').format(user, user_name,
                                                                                                 'muted him in federation for 24 hours'))
 

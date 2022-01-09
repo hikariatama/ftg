@@ -58,7 +58,7 @@ class RateModuleMod(loader.Module):
                 code = (await utils.run_sync(requests.get, args)).text
             except:
                 return await utils.answer(message, self.strings('cannot_check_file', message))
-        
+
         try:
             mod_name = re.search(r"""strings[ ]*=[ ]*{.*?name['"]:[ ]*['"](.*?)['"]""", code, flags=re.S).group(1)
         except:
@@ -100,14 +100,19 @@ class RateModuleMod(loader.Module):
             comments += f"🔻 <code>{{-0.2}}</code> <b>Бот-абьюз (</b><code>{bots}</code><b>)</b> <i>[модуль умрет вместе с используемым ботом]</i>\n"
             score -= .2
         if re.search(r'[ \t]+async def .*?cmd.*\n[ \t]+[^\'" \t]', code) is not None:
-            undoc = ' | '.join([_ for _ in re.findall(r'[ \t]+async def (.*?)cmd.*\n[ \t]+[^" \t]', code)])
+            undoc = ' | '.join(
+                list(
+                    re.findall(r'[ \t]+async def (.*?)cmd.*\n[ \t]+[^" \t]', code)
+                )
+            )
+
             comments += f"🔻 <code>{{-0.4}}</code> <b>Нет докстрингов (</b><code>{undoc}</code><b>)</b> <i>[все команды должны быть задокументированы]</i>\n"
             score -= .4
         if 'time.sleep' in code or 'from time import sleep' in code:
             comments += "🔻 <code>{-0.5}</code> <b>Синхронный сон (</b><code>time.sleep</code><b>) замените на (</b><code>await asyncio.sleep</code><b>)</b> <i>[останавливает выполнение]</i>\n"
             score -= .5
         if [_ for _ in code.split('\n') if len(_) > 300]:
-            ll = max([len(_) for _ in code.split('\n') if len(_) > 300])
+            ll = max(len(_) for _ in code.split('\n') if len(_) > 300)
             comments += f"🔻 <code>{{-0.1}}</code> <b>Длинные строки ({ll})</b> <i>[влияет на читаемость]</i>\n"
             score -= .1
         if re.search(r'[\'"] ?\+ ?.*? ?\+ ?[\'"]', code) is not None:
@@ -117,10 +122,12 @@ class RateModuleMod(loader.Module):
             comments += f"🔻 <code>{{-0.2}}</code> <b>Большие 'if' деревья (</b><code>{' | '.join([f'{chain} в {fun}' for chain, fun in splitted])}</code><b>)</b> <i>[влияет на читаемость и выполнение]</i>\n"
             score -= .2
         if '== None' in code or '==None' in code:
-            comments += f"🔻 <code>{{-0.3}}</code> <b>Сравнение типов через ==</b> <i>[влияет на качество кода, вызывает проблемы]</i>\n"
+            comments += '🔻 <code>{-0.3}</code> <b>Сравнение типов через ==</b> <i>[влияет на качество кода, вызывает проблемы]</i>\n'
+
             score -= .3
         if 'is not None else' in code:
-            comments += f"🔻 <code>{{-0.1}}</code> <b>Неуместное использование тернарного оператора (</b><code>if some_var is not None else another</code> <b>-></b> <code>some_var or another</code><b>)</b> <i>[влияет на качество кода]</i>\n"
+            comments += '🔻 <code>{-0.1}</code> <b>Неуместное использование тернарного оператора (</b><code>if some_var is not None else another</code> <b>-></b> <code>some_var or another</code><b>)</b> <i>[влияет на качество кода]</i>\n'
+
             score -= .1
         if 'utils.answer' in code and '.edit(' not in code:
             comments += "🔸 <code>{+0.3}</code> <b>utils.answer</b> <i>[совместимость с твинками]</i>\n"
@@ -141,7 +148,7 @@ class RateModuleMod(loader.Module):
         except:
             check_res = ""
 
-        if check_res in ['yes', 'db']:
+        if check_res in {'yes', 'db'}:
             comments += "🔸 <code>{+1.0}</code> <b>Модуль верифицирован</b> <i>[в нем нет скама]</i>\n"
             score += 1.0
 
