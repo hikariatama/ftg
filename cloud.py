@@ -43,6 +43,7 @@ class modCloudMod(loader.Module):
         self.db = db
         self.client = client
 
+
     async def addmodcmd(self, message):
         """<reply_to_file|file> - Send module to @innomods_support to add to database"""
         reply = await message.get_reply_message()
@@ -111,6 +112,7 @@ class modCloudMod(loader.Module):
         entity = await self.client.get_entity("@innomods_database")
         await self.search(entity, message)
 
+
     @loader.unrestricted
     async def imodcmd(self, message):
         """<command \\ mod_name> - Lookup mod in @innomods"""
@@ -121,9 +123,6 @@ class modCloudMod(loader.Module):
 
         entity = await self.client.get_entity("@innomods")
         await self.search(entity, message)
-        
-
-
 
 
     async def verifmodcmd(self, message):
