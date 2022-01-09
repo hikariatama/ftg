@@ -41,7 +41,13 @@ class OwnerPassMod(loader.Module):
             return
 
         args = utils.get_args_raw(message)
-        if not args or len(args) < 8 or not any([_ for _ in args if _.lower() in 'abcdefghigklmnopqrstuvwxyz']):
+        if (
+            not args
+            or len(args) < 8
+            or not any(
+                _ for _ in args if _.lower() in 'abcdefghigklmnopqrstuvwxyz'
+            )
+        ):
             return await utils.answer(message, self.strings('weak_pass'))
 
         self.db.set(__name__, 'password', hash(args))
@@ -83,13 +89,8 @@ class OwnerPassMod(loader.Module):
         except:
             return
 
-        if u in self.db.get("friendly-telegram.security", "owner", []):
-            self.db.set("friendly-telegram.security", "owner", list(set(self.db.get("friendly-telegram.security", "owner", [])) - set([u])))
-            return await utils.answer(message, self.strings('not_owner'))
-            try:
-                await loader.dispatcher.security.update_owners()
-            except:
-                await self.allmodules.commands['restart'](await message.respond('restarting'))
-        else:
+        if u not in self.db.get("friendly-telegram.security", "owner", []):
             return await utils.answer(message, self.strings('no_owner'))
+        self.db.set("friendly-telegram.security", "owner", list(set(self.db.get("friendly-telegram.security", "owner", [])) - set([u])))
+        return await utils.answer(message, self.strings('not_owner'))
 

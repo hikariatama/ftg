@@ -40,11 +40,7 @@ def startswithemoji(s):
 
 
 def has_digits(s):
-    for i in range(10):
-        if str(i) in s:
-            return True
-
-    return False
+    return any(str(i) in s for i in range(10))
 
 
 clf = None
@@ -83,7 +79,7 @@ def train():
     search.fit(X_train, y_train)
     clf = search.best_estimator_
     logger.info(f'Picked params for tree {search.best_params_}')
-    logger.info(f'Testing params on tree')
+    logger.info('Testing params on tree')
     res = clf.score(X_test, y_test)
     logger.info(f'{res}')
 
@@ -106,9 +102,7 @@ def normalize(text, entities_q=0, from_id=0):
 def predict(text, entities_q=0, from_id=0, threshold=.7):
     normalized = normalize(text, entities_q, from_id)
     d = normalized.to_dict()
-    r = {}
-    for i, v in d.items():
-        r[i] = v[0]
+    r = {i: v[0] for i, v in d.items()}
     # logger.info(r)
     probability = clf.predict_proba(normalized)
     if probability[0][0] > threshold:

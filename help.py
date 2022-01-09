@@ -68,7 +68,7 @@ class HelpMod(loader.Module):
         if '-f' in args:
             args = args.replace(' -f', '').replace('-f', '')
             force = True
-        
+
         category = None
         if "-c" in args:
             category = args[args.find('-c ') + 3:]
@@ -133,10 +133,11 @@ class HelpMod(loader.Module):
                     first = True
                     commands = [name for name, func in mod.commands.items() if await self.allmodules.check_security(message, func) or force]
 
-                    if len(commands) == 1:
-                        if 'hide' not in cats or name not in cats['hide']:
-                            one_command_mods_cmds += commands
-                            continue
+                    if len(commands) == 1 and (
+                        'hide' not in cats or name not in cats['hide']
+                    ):
+                        one_command_mods_cmds += commands
+                        continue
 
                     for cmd in commands:
                         if first:
@@ -144,14 +145,13 @@ class HelpMod(loader.Module):
                             first = False
                         else:
                             tmp += self.strings("cmd_tmpl", message).format(cmd)
-                    if len(commands) == 0:
-                        if not shown_warn:
-                            reply = '<i>Показаны только те модули, для которых вам хватает разрешений для выполнения</i>\n' + reply
-                            shown_warn = True
-                    else:
+                    if commands:
                         tmp += " )"
                         mods_formatted[name] = tmp
 
+                    elif not shown_warn:
+                        reply = '<i>Показаны только те модули, для которых вам хватает разрешений для выполнения</i>\n' + reply
+                        shown_warn = True
             if category is None:
                 mods_remaining = mods_formatted.copy()
                 for cat, mods in cats.items():
@@ -164,7 +164,7 @@ class HelpMod(loader.Module):
                     if tmp != "":
                         reply += "\n\n<b><u>🔹 " + cat + "</u></b>" + tmp
 
-                if len(mods_formatted) > 0:
+                if mods_formatted:
                     reply += "\n➖➖➖➖➖"
 
                 for _, mod_formatted in mods_formatted.items():

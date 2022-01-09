@@ -34,11 +34,7 @@ class modInfoMod(loader.Module):
         TEMPLATE = self.strings('template', message)
         reply = await message.get_reply_message()
 
-        if not reply:
-            media = message.media
-        else:
-            media = reply.media
-
+        media = message.media if not reply else reply.media
         try:
             file = await message.client.download_file(media)
         except:
@@ -69,8 +65,7 @@ class modInfoMod(loader.Module):
                         r'^[^#]mport ([^\n\r]*)[^\n\r]*$', r"""__import__[(]['"]([^'"]*)['"][)]"""]
         imports = []
         for import_re in import_regex:
-            imports = imports + \
-                re.findall(import_re, code, flags=re.M | re.DOTALL)
+            imports += re.findall(import_re, code, flags=re.M | re.DOTALL)
 
         if '..' in imports:
             del imports[imports.index('..')]
@@ -115,12 +110,12 @@ class modInfoMod(loader.Module):
         sha1 = hashlib.sha1()
         sha1.update(code.encode('utf-8'))
         check_res = requests.get(api_endpoint + str(sha1.hexdigest())).text
-        if check_res == 'yes':
-            comments += '\n✅ <b><u>Module is created by @innocoffee.</u> Hash confirmed</b>'
-        elif check_res == 'db':
+        if check_res == 'db':
             comments += '\n✅ <b><u>Module is downloaded from @innomods_database and does not contain scam.</u> Hash confirmed</b>'
 
 
+        elif check_res == 'yes':
+            comments += '\n✅ <b><u>Module is created by @innocoffee.</u> Hash confirmed</b>'
         # await utils.answer(message, '<code>Sending report</code>')
 
 

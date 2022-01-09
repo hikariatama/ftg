@@ -142,10 +142,7 @@ class HidePicsMod(loader.Module):
                     continue
 
                 await msg.edit('<code>📤' + data_remaining[:4000] + '</code>')
-                if len(data_remaining) < 4000:
-                    data_remaining = ""
-                else:
-                    data_remaining = data_remaining[4000:]
+                data_remaining = "" if len(data_remaining) < 4000 else data_remaining[4000:]
                 counter += 1
 
         if data_remaining != "":

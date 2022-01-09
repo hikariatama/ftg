@@ -159,11 +159,7 @@ class eduTatarMod(loader.Module):
         await self.scrape_term('')
         marks_new = self.db.get('eduTatar', 'marks', {}).copy()
         for subject, current_marks_2 in list(marks_new.items()):
-            if subject not in marks_tmp:
-                current_marks_1 = []
-            else:
-                current_marks_1 = marks_tmp[subject]
-
+            current_marks_1 = [] if subject not in marks_tmp else marks_tmp[subject]
             try:
                 subject = filters[subject]
             except KeyError:
@@ -226,7 +222,7 @@ class eduTatarMod(loader.Module):
                     'Среда', 'Четверг', 'Пятница', 'Суббота']
         for i in range(6):
             week += f"📚 <b>{weekdays[i]}</b> 📚\n"
-            week += await self.scrape_date(monday + 60 * 60 * 24 * i)
+            week += await self.scrape_date(monday + 60**2 * 24 * i)
 
         return week
 

@@ -25,11 +25,16 @@ import imghdr
 logger = logging.getLogger(__name__)
 
 def sherlock(username, installed=False):
-    git = 'https://github.com/sherlock-project/sherlock.git'
     if not os.path.isdir('sherlock'):
         if installed: return '🚫 Cannot install Sherlock'
+        git = 'https://github.com/sherlock-project/sherlock.git'
         logger.info(os.popen(f'git clone {git}').read())
-        logger.info(os.popen(f'python3 -m pip install -r sherlock/requirements.txt').read())
+        logger.info(
+            os.popen(
+                'python3 -m pip install -r sherlock/requirements.txt'
+            ).read()
+        )
+
 
     output = os.popen(f'cd sherlock && python3 sherlock {username}').read().strip()
     res = ""
