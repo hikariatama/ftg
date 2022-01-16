@@ -54,7 +54,11 @@ class CommandsLoggerMod(loader.Module):
         logger.warning('Logging installed')
 
     async def process_log(self, message):
-        by = f"\n<b>By: <a href=\"tg://user?id={message.sender.id}\">{tutils.get_display_name(message.sender)}</a></b>" if not message.out else ""
+        try:
+            by = f"\n<b>By: <a href=\"tg://user?id={message.sender.id}\">{tutils.get_display_name(message.sender)}</a></b>" if not message.out else ""
+        except AttributeError:
+            by = f"\n<b>By: <a href=\"tg://user?id={message.chat_id}\">{tutils.get_display_name(await self.client.get_entity(message.chat_id))}</a> in pm</b>" if not message.out else ""
+
         await self.client.send_message(self.log_channel, f"<code>{self.prefix}{message.raw_text}</code>{by}")
 
 
