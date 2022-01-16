@@ -208,4 +208,4 @@ class KeywordMod(loader.Module):
                         await ms.respond(self.strings('no_command'))
 
         except Exception as e:
-            logger.exception(e)
+            pass
