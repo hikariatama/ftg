@@ -1,5 +1,5 @@
 """
-    Copyright 2021 t.me/hikariakami
+    Copyright 2021 t.me/hikariatama
     Licensed under the Apache License, Version 2.0
     
     Author is not responsible for any consequencies caused by using this
@@ -9,7 +9,7 @@
 
 #<3 title: ModuleCloud
 #<3 pic: https://img.icons8.com/fluency/48/000000/cloud-storage.png
-#<3 desc: Облако модулей, верифицированных @hikariakami
+#<3 desc: Облако модулей, верифицированных @hikariatama
 
 from .. import loader, utils
 from time import time
@@ -154,17 +154,17 @@ class modCloudMod(loader.Module):
         file_hash = str(sha1.hexdigest())
         open('/home/ftg/verified_mods.db', 'a').write(file_hash + '\n')
         if 'hikarimods' in tags:
-            url = f'https://github.com/hikariakami/ftg/raw/master/{filename}'
+            url = f'https://github.com/hikariatama/ftg/raw/master/{filename}'
         else:
             encoded_string = base64.b64encode(file)
             stout = encoded_string.decode("utf-8")
             TOKEN = open('/home/ftg/git.token', 'r').read()
-            USERNAME = 'hikariakami'
+            USERNAME = 'hikariatama'
             url = f'https://api.github.com/repos/{USERNAME}/host/contents/{filename}'
             head = {"Authorization": f"token {TOKEN}", "Accept": "application/vnd.github.v3+json"}
             git_data = '{"message": "Upload file", "content":' + '"' + stout + '"' + '}'
             r = requests.put(url, headers=head, data=git_data)
-            url = f'https://github.com/hikariakami/host/raw/master/{filename}'
+            url = f'https://github.com/hikariatama/host/raw/master/{filename}'
 
         commands = "".join(
             '<code>.' + command + '</code>\n'

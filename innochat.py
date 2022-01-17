@@ -1,7 +1,7 @@
 # disable_onload_docs
 
 """
-    Copyright 2021 t.me/hikariakami
+    Copyright 2021 t.me/hikariatama
     Licensed under the Apache License, Version 2.0
 
     Author is not responsible for any consequencies caused by using this
@@ -9,7 +9,7 @@
     free to contact Dan by sending pm to @hikari_alt.
 """
 
-# <3 title: InnoChat
+# <3 title: HikariChat
 # <3 pic: https://img.icons8.com/fluency/48/000000/manual.png
 # <3 desc: Chat admin's toolkit
 
@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 __version__ = (7, 2, 15)
 version = f"v{__version__[0]}.{__version__[1]}a{__version__[2]} Owner Preview"
-ver = f'<u>InnoChat {version}</u>'
+ver = f'<u>HikariChat {version}</u>'
 
 FLOOD_TIMEOUT = .5
 FLOOD_TRESHOLD = 3
@@ -85,7 +85,7 @@ async def get_message_link(message: Message, chat: Chat or Channel = None) -> st
     )    
 
 
-class InnoCoffeeAPI:
+class HikariAPI:
     def __init__(self):
         pass
 
@@ -95,7 +95,7 @@ class InnoCoffeeAPI:
         """Entry point"""
         self.client = client
         self.db = db
-        self.token = db.get('InnoChats', 'apitoken', False)
+        self.token = db.get('HikariChat', 'apitoken', False)
 
         asyncio.ensure_future(self.assert_token())
 
@@ -108,13 +108,13 @@ class InnoCoffeeAPI:
                 self.token = res.raw_text
                 await m.delete()
                 await res.delete()
-                self.db.set('InnoChats', 'apitoken', self.token)
+                self.db.set('HikariChat', 'apitoken', self.token)
 
     async def request(self, method, *args, **kwargs) -> dict:
         kwargs['headers'] = {
             'Authorization': f'Bearer {self.token}'
         }
-        args = (f"https://api.hikariakami.ru/{args[0]}",)
+        args = (f"https://api.hikariatama.ru/{args[0]}",)
         async with aiohttp.ClientSession() as session:
             async with session.request(method, *args, **kwargs) as resp:
                 r = await resp.text()
@@ -147,7 +147,7 @@ class InnoCoffeeAPI:
         error = str(error)
         error = re.sub(r'^.*File .*in wrapped.*$', '', error)
         async with aiohttp.ClientSession() as session:
-            async with session.request('POST', "https://api.hikariakami.ru/report_error", json={
+            async with session.request('POST', "https://api.hikariatama.ru/report_error", json={
                     'error': error[:2048]
                 }, headers={
                     'Authorization': f'Bearer {self.token}'
@@ -158,14 +158,14 @@ class InnoCoffeeAPI:
 
 
 
-api = InnoCoffeeAPI()
+api = HikariAPI()
 
-class InnoChatMod(loader.Module):
+class HikariChatMod(loader.Module):
     """Bear with us while docstrings are loading"""
     __metaclass__ = abc.ABCMeta
 
     strings = {
-        'name': 'InnoChat',
+        'name': 'HikariChat',
 
         'args': '🦊 <b>Args are incorrect</b>',
         'no_reason': 'Not specified',
@@ -270,7 +270,7 @@ class InnoChatMod(loader.Module):
         'fpromoted': '💼 <b><a href="{}">{}</a> promoted in federation {}</b>',
         'fdemoted': '💼 <b><a href="{}">{}</a> demoted in federation {}</b>',
 
-        'api_error': '🚫 <b>api.hikariakami.ru Error!</b>\n<code>{}</code>',
+        'api_error': '🚫 <b>api.hikariatama.ru Error!</b>\n<code>{}</code>',
         'fsave_args': '💼 <b>Usage: .fsave shortname &lt;reply&gt;</b>',
         'fstop_args': '💼 <b>Usage: .fstop shortname</b>',
         'fsave': '💼 <b>Federative note </b><code>{}</code><b> saved!</b>',
@@ -281,12 +281,12 @@ class InnoChatMod(loader.Module):
 
         'version': '''<b>📡 {}</b>
 
-<b>😌 Author: @hikariakami</b>
+<b>😌 Author: @hikariatama</b>
 <b>📥 Downloaded from @hikarimods</b>
 
 <b>Licensed under Apache2.0 license
 Distribution without author's permission and\\or watermarks is strictly forbidden</b>''',
-        'error': '⛎ <b>InnoChat Issued error\nIt was reported to @hikariakami</b>',
+        'error': '⛎ <b>HikariChat Issued error\nIt was reported to @hikariatama</b>',
         'reported': '💼 <b><a href="{}">{}</a> reported this message to admins\nReason: {}</b>'
     }
 
@@ -294,7 +294,7 @@ Distribution without author's permission and\\or watermarks is strictly forbidde
         self.__doc__ = f"""
 Advanced chat admin toolkit
 Distributing without author's tag is strictly prohibited by license
-This module is made by @hikariakami
+This module is made by @hikariatama
 Version: {version}"""
 
     async def client_ready(self,
@@ -314,7 +314,7 @@ Version: {version}"""
 
         self.me = str((await client.get_me()).id)
 
-        self.warns = db.get('InnoChats', 'warns', {})
+        self.warns = db.get('HikariChat', 'warns', {})
 
         self.ratelimit = {
             'notes': {}, 

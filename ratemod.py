@@ -1,5 +1,5 @@
 """
-    Copyright 2021 t.me/hikariakami
+    Copyright 2021 t.me/hikariatama
     Licensed under the Apache License, Version 2.0
     
     Author is not responsible for any consequencies caused by using this
@@ -140,7 +140,7 @@ class RateModuleMod(loader.Module):
             score += .3
 
 
-        api_endpoint = 'https://hikariakami.ru/ftg/mods/check?hash='
+        api_endpoint = 'https://hikariatama.ru/ftg/mods/check?hash='
         sha1 = hashlib.sha1()
         sha1.update(code.encode('utf-8'))
         try:

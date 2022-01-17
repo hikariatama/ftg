@@ -1,5 +1,5 @@
 """
-    Copyright 2021 t.me/hikariakami
+    Copyright 2021 t.me/hikariatama
     Licensed under the Apache License, Version 2.0
     
     Author is not responsible for any consequencies caused by using this

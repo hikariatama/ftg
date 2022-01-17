@@ -1,5 +1,5 @@
 """
-    Copyright 2021 t.me/hikariakami
+    Copyright 2021 t.me/hikariatama
     Licensed under the Apache License, Version 2.0
     
     Author is not responsible for any consequencies caused by using this
@@ -33,5 +33,5 @@ class AntiNSFWMod(loader.Module):
         photo = io.BytesIO()
         await self.client.download_media(message.media, photo)
         photo.seek(0)
-        response = requests.post('https://api.hikariakami.ru/check_nsfw', files={'file': photo}, headers={'Authorization': 'Bearer nekoboy_9ci7jg4vqvmx9km7233hsktaq9kur4vz'})
+        response = requests.post('https://api.hikariatama.ru/check_nsfw', files={'file': photo}, headers={'Authorization': 'Bearer nekoboy_9ci7jg4vqvmx9km7233hsktaq9kur4vz'})
         await utils.answer(message, response.text)
