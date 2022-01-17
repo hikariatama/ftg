@@ -45,7 +45,7 @@ class modCloudMod(loader.Module):
 
 
     async def addmodcmd(self, message):
-        """<reply_to_file|file> - Send module to @innomods_support to add to database"""
+        """<reply_to_file|file> - Send module to @hikarimods_support to add to database"""
         reply = await message.get_reply_message()
         if not reply:
             media = message.media
@@ -60,8 +60,8 @@ class modCloudMod(loader.Module):
             return
 
         async def send(client):
-            await client.forward_messages('t.me/innomods_support', [msid], utils.get_chat_id(message))
-            await client.send_message('t.me/innomods_support', self.strings('tag', message))
+            await client.forward_messages('t.me/hikarimods_support', [msid], utils.get_chat_id(message))
+            await client.send_message('t.me/hikarimods_support', self.strings('tag', message))
             await utils.answer(message, self.strings('sent', message))
 
         # await send(self.client)
@@ -70,7 +70,7 @@ class modCloudMod(loader.Module):
             await send(self.client)
         except:
             try:
-                await self.client(telethon.tl.functions.channels.JoinChannelRequest(await self.client.get_entity('t.me/innomods_support')))
+                await self.client(telethon.tl.functions.channels.JoinChannelRequest(await self.client.get_entity('t.me/hikarimods_support')))
             except:
                 await utils.answer(message, self.strings('cannot_join', message))
                 return
@@ -103,30 +103,30 @@ class modCloudMod(loader.Module):
 
     @loader.unrestricted
     async def cloudcmd(self, message):
-        """<command \\ mod_name> - Lookup mod in @innomods_database"""
+        """<command \\ mod_name> - Lookup mod in @hikarimods_database"""
         args = utils.get_args_raw(message)
         if not args:
             await utils.answer(message, self.strings('args', message))
             return
 
-        entity = await self.client.get_entity("@innomods_database")
+        entity = await self.client.get_entity("@hikarimods_database")
         await self.search(entity, message)
 
 
     @loader.unrestricted
     async def imodcmd(self, message):
-        """<command \\ mod_name> - Lookup mod in @innomods"""
+        """<command \\ mod_name> - Lookup mod in @hikarimods"""
         args = utils.get_args_raw(message)
         if not args:
             await utils.answer(message, self.strings('args', message))
             return
 
-        entity = await self.client.get_entity("@innomods")
+        entity = await self.client.get_entity("@hikarimods")
         await self.search(entity, message)
 
 
     async def verifmodcmd(self, message):
-        """<filename>;<title>;<description>;<tags> - Verfiy module [only for @innomods admins]"""
+        """<filename>;<title>;<description>;<tags> - Verfiy module [only for @hikarimods admins]"""
         args = utils.get_args_raw(message).split(';')
         filename, title, description, tags = args
         reply = await message.get_reply_message()
@@ -153,7 +153,7 @@ class modCloudMod(loader.Module):
         sha1.update(code.encode('utf-8'))
         file_hash = str(sha1.hexdigest())
         open('/home/ftg/verified_mods.db', 'a').write(file_hash + '\n')
-        if 'innomods' in tags:
+        if 'hikarimods' in tags:
             url = f'https://github.com/hikariakami/ftg/raw/master/{filename}'
         else:
             encoded_string = base64.b64encode(file)
@@ -171,5 +171,5 @@ class modCloudMod(loader.Module):
             for command in re.findall(r'[\n][ \t]+async def ([^\(]*?)cmd', code)
         )
 
-        await utils.answer(message, '<b>👾 Module verified and can be found in @innomods_database</b>')
-        await self.client.send_message('t.me/innomods_database', f'🦊 <b><u>{title}</u></b>\n<i>{description}</i>\n\n📋 <b><u>Команды:</u></b>\n{commands}\n🚀 <code>.dlmod {url}</code>\n\n#' + ' #'.join(tags.split(',')))
+        await utils.answer(message, '<b>👾 Module verified and can be found in @hikarimods_database</b>')
+        await self.client.send_message('t.me/hikarimods_database', f'🦊 <b><u>{title}</u></b>\n<i>{description}</i>\n\n📋 <b><u>Команды:</u></b>\n{commands}\n🚀 <code>.dlmod {url}</code>\n\n#' + ' #'.join(tags.split(',')))

@@ -157,7 +157,7 @@ class OSINTMod(loader.Module):
 
 
         report = io.BytesIO(res.encode('utf-8'))
-        report.name = 'innomods-osint-report.txt'
+        report.name = 'hikarimods-osint-report.txt'
 
         await message.delete()
         await self.client.send_message(message.peer_id, f"🐙 <b>OSINT report for </b><code>{args}</code>", file=report)

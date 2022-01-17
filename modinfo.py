@@ -111,7 +111,7 @@ class modInfoMod(loader.Module):
         sha1.update(code.encode('utf-8'))
         check_res = requests.get(api_endpoint + str(sha1.hexdigest())).text
         if check_res == 'db':
-            comments += '\n✅ <b><u>Module is downloaded from @innomods_database and does not contain scam.</u> Hash confirmed</b>'
+            comments += '\n✅ <b><u>Module is downloaded from @hikarimods_database and does not contain scam.</u> Hash confirmed</b>'
 
 
         elif check_res == 'yes':

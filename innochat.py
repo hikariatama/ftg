@@ -282,7 +282,7 @@ class InnoChatMod(loader.Module):
         'version': '''<b>📡 {}</b>
 
 <b>😌 Author: @hikariakami</b>
-<b>📥 Downloaded from @innomods</b>
+<b>📥 Downloaded from @hikarimods</b>
 
 <b>Licensed under Apache2.0 license
 Distribution without author's permission and\\or watermarks is strictly forbidden</b>''',
