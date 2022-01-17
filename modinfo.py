@@ -1,10 +1,10 @@
 """
-    Copyright 2021 t.me/innocoffee
+    Copyright 2021 t.me/hikariakami
     Licensed under the Apache License, Version 2.0
     
     Author is not responsible for any consequencies caused by using this
     software or any of its parts. If you have any questions or wishes, feel
-    free to contact Dan by sending pm to @innocoffee_alt.
+    free to contact Dan by sending pm to @hikari_alt.
 """
 
 #<3 title: ModuleInfo
@@ -106,7 +106,7 @@ class modInfoMod(loader.Module):
         if 'allmodules' in code:
             comments += "🔅 <b>Calling another modules' commands</b>\n"
 
-        api_endpoint = 'https://innocoffee.ru/ftg/mods/check?hash='
+        api_endpoint = 'https://hikariakami.ru/ftg/mods/check?hash='
         sha1 = hashlib.sha1()
         sha1.update(code.encode('utf-8'))
         check_res = requests.get(api_endpoint + str(sha1.hexdigest())).text
@@ -115,7 +115,7 @@ class modInfoMod(loader.Module):
 
 
         elif check_res == 'yes':
-            comments += '\n✅ <b><u>Module is created by @innocoffee.</u> Hash confirmed</b>'
+            comments += '\n✅ <b><u>Module is created by @hikariakami.</u> Hash confirmed</b>'
         # await utils.answer(message, '<code>Sending report</code>')
 
 

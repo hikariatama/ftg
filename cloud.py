@@ -1,15 +1,15 @@
 """
-    Copyright 2021 t.me/innocoffee
+    Copyright 2021 t.me/hikariakami
     Licensed under the Apache License, Version 2.0
     
     Author is not responsible for any consequencies caused by using this
     software or any of its parts. If you have any questions or wishes, feel
-    free to contact Dan by sending pm to @innocoffee_alt.
+    free to contact Dan by sending pm to @hikari_alt.
 """
 
 #<3 title: ModuleCloud
 #<3 pic: https://img.icons8.com/fluency/48/000000/cloud-storage.png
-#<3 desc: Облако модулей, верифицированных @innocoffee
+#<3 desc: Облако модулей, верифицированных @hikariakami
 
 from .. import loader, utils
 from time import time
@@ -32,7 +32,7 @@ class modCloudMod(loader.Module):
     'cannot_check_file': '<b>Не могу прочитать файл...</b>',
     'cannot_join': '<b>Не могу вступить в чат. Может, ты в бане?</b>',
     'sent': '<b>Файл отправлен на проверку</b>',
-    'tag': '<b>🦊 @innocoffee_alt, модуль на добавление в базу</b>',
+    'tag': '<b>🦊 @hikari_alt, модуль на добавление в базу</b>',
     'upload_error': '🦊 <b>Upload error</b>',
     'args': '🦊 <b>Args not specified</b>',
     'mod404': '🦊 <b>Module {} not found</b>'
@@ -154,17 +154,17 @@ class modCloudMod(loader.Module):
         file_hash = str(sha1.hexdigest())
         open('/home/ftg/verified_mods.db', 'a').write(file_hash + '\n')
         if 'innomods' in tags:
-            url = f'https://github.com/innocoffee-ftg/ftg/raw/master/{filename}'
+            url = f'https://github.com/hikariakami/ftg/raw/master/{filename}'
         else:
             encoded_string = base64.b64encode(file)
             stout = encoded_string.decode("utf-8")
             TOKEN = open('/home/ftg/git.token', 'r').read()
-            USERNAME = 'innocoffee-ftg'
+            USERNAME = 'hikariakami'
             url = f'https://api.github.com/repos/{USERNAME}/host/contents/{filename}'
             head = {"Authorization": f"token {TOKEN}", "Accept": "application/vnd.github.v3+json"}
             git_data = '{"message": "Upload file", "content":' + '"' + stout + '"' + '}'
             r = requests.put(url, headers=head, data=git_data)
-            url = f'https://github.com/innocoffee-ftg/host/raw/master/{filename}'
+            url = f'https://github.com/hikariakami/host/raw/master/{filename}'
 
         commands = "".join(
             '<code>.' + command + '</code>\n'
