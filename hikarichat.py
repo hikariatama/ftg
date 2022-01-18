@@ -36,7 +36,7 @@ from contextlib import suppress
 
 logger = logging.getLogger(__name__)
 
-__version__ = (7, 2, 17)
+__version__ = (7, 2, 18)
 version = f"v{__version__[0]}.{__version__[1]}b{__version__[2]}"
 ver = f'<u>HikariChat {version}</u>'
 
@@ -1630,9 +1630,8 @@ Version: {version}"""
                     res[key] = ""
                 res[key] += f"  <code>{shortname}</code>\n"
 
-        if not from_watcher:
-            for owner, note in res.items():
-                notes += f"\nby {owner}:\n{note}"
+        for owner, note in res.items():
+            notes += f"\nby {owner}:\n{note}"
 
         if not notes:
             return
