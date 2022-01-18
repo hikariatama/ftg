@@ -36,7 +36,7 @@ from contextlib import suppress
 
 logger = logging.getLogger(__name__)
 
-__version__ = (7, 2, 16)
+__version__ = (7, 2, 17)
 version = f"v{__version__[0]}.{__version__[1]}a{__version__[2]} Owner Preview"
 ver = f'<u>HikariChat {version}</u>'
 
@@ -103,7 +103,7 @@ class HikariAPI:
 
         token_valid = await self.validate_token()
         if not token_valid:
-            await self.client.send_message('me', f'<b>You are using an unregistered copy of HikariChat. Please, consider removing it with </b><code>{self.module.prefix}unloadmod HikariChat</code><b>, otherwise you will see flood messages</b>')
+            await self.client.send_message('@userbot_notifies_bot', utils.escape_html(f'<b>You are using an unregistered copy of HikariChat. Please, consider removing it with </b><code>{self.module.prefix}unloadmod HikariChat</code><b>, otherwise you will see flood messages</b>'))
             self.token = False
 
     async def assert_token(self) -> None:
@@ -589,7 +589,7 @@ Version: {version}"""
             if reply and args:
                 a = args.split(maxsplit=1)
                 t = self.convert_time(a[0])
-                user = await self.client.get_entity(reply.from_id)
+                user = await self.client.get_entity(reply.sender_id)
                 reason = a[1] or self.strings('no_reason')
                 return user, t, reason
         except Exception as e:
@@ -1694,10 +1694,14 @@ Version: {version}"""
             user_id = getattr(message, 'sender_id', False) or message.action_message.action.users[0]
         except Exception:
             try:
-                user_id = message.from_id.user_id
+                user_id = message.action_message.action.from_id.user_id
             except Exception:
-                await self.api.report_error(str(message))
-                return
+                try:
+                    user_id = message.from_id.user_id
+                except Exception:
+                    await self.api.report_error(str(message))
+                    return
+
 
         user_id = int(str(user_id)[4:]) if str(user_id).startswith('-100') else int(user_id)
 
