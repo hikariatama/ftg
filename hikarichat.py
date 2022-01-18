@@ -36,7 +36,7 @@ from contextlib import suppress
 
 logger = logging.getLogger(__name__)
 
-__version__ = (7, 2, 18)
+__version__ = (7, 2, 19)
 version = f"v{__version__[0]}.{__version__[1]}b{__version__[2]}"
 ver = f'<u>HikariChat {version}</u>'
 
@@ -135,6 +135,10 @@ class HikariAPI:
             'Authorization': f'Bearer {self.token}'
         }
         args = (f"https://api.hikariatama.ru/{args[0]}",)
+        if 'json' in kwargs:
+            kwargs['json']['version'] = __version__
+        else:
+            kwargs['json'] = {'version': __version__}
         async with aiohttp.ClientSession() as session:
             async with session.request(method, *args, **kwargs) as resp:
                 r = await resp.text()
@@ -1835,7 +1839,7 @@ Version: {version}"""
         # AntiSpoiler:
 
         if 'antispoiler' in self.chats[str(chat_id)] and 'antispoiler' in self.my_protects[str(chat_id)]:
-            if isinstance(message.entities, list) and \
+            if isinstance(getattr(message, 'entities'), list) and \
                any([isinstance(_, MessageEntitySpoiler) for _ in message.entities]):
                 await message.delete()
                 return
