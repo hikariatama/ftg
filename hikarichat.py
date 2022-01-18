@@ -37,7 +37,7 @@ from contextlib import suppress
 logger = logging.getLogger(__name__)
 
 __version__ = (7, 2, 17)
-version = f"v{__version__[0]}.{__version__[1]}a{__version__[2]} Owner Preview"
+version = f"v{__version__[0]}.{__version__[1]}b{__version__[2]}"
 ver = f'<u>HikariChat {version}</u>'
 
 FLOOD_TIMEOUT = .5
