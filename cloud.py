@@ -159,8 +159,7 @@ class modCloudMod(loader.Module):
             encoded_string = base64.b64encode(file)
             stout = encoded_string.decode("utf-8")
             TOKEN = open('/home/ftg/git.token', 'r').read()
-            USERNAME = 'hikariatama'
-            url = f'https://api.github.com/repos/{USERNAME}/host/contents/{filename}'
+            url = f'https://api.github.com/repos/hikariatama/host/contents/{filename}'
             head = {"Authorization": f"token {TOKEN}", "Accept": "application/vnd.github.v3+json"}
             git_data = '{"message": "Upload file", "content":' + '"' + stout + '"' + '}'
             r = requests.put(url, headers=head, data=git_data)

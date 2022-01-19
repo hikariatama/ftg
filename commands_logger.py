@@ -33,7 +33,13 @@ class CommandsLoggerMod(loader.Module):
             if d.title == "geektg-log":
                 return d.entity
 
-        return (await self.client(CreateChannelRequest("geektg-log", f"Commands will appear there", megagroup=True))).chats[0]
+        return (
+            await self.client(
+                CreateChannelRequest(
+                    "geektg-log", 'Commands will appear there', megagroup=True
+                )
+            )
+        ).chats[0]
 
 
     async def client_ready(self, client, db):

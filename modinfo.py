@@ -79,10 +79,10 @@ class modInfoMod(loader.Module):
             else:
                 imports_formatted += f"    ▫️ <code>{dependency}</code>\n"
 
-        if imports_formatted == "":
+        if not imports_formatted:
             imports_formatted = "<i>No</i>"
 
-        if safe_imports == "":
+        if not safe_imports:
             safe_imports = "<i>No</i>"
 
 

@@ -629,7 +629,7 @@ Version: {version}"""
             await self.ban(chat_id, user, 60 * 60)
         elif action == "mute":
             comment = 'muted him for 1 hour'
-            await self.mute(chat_id, user, 60 * 60)
+            await self.mute(chat_id, user, 60**2)
 
         elif action == "warn":
             comment = 'warned him'
@@ -1589,8 +1589,6 @@ Version: {version}"""
             return
 
         res = {}
-
-        notes = ""
         for shortname, note in answ['notes'].items():
             try:
                 obj = await self.client.get_entity(int(note['creator']))
@@ -1600,14 +1598,12 @@ Version: {version}"""
                     res[key] = ""
                 res[key] += f"  <code>{shortname}</code>\n"
             except Exception:
-                key = f"unknown"
+                key = 'unknown'
                 if key not in res:
                     res[key] = ""
                 res[key] += f"  <code>{shortname}</code>\n"
 
-        for owner, note in res.items():
-            notes += f"\nby {owner}:\n{note}"
-
+        notes = "".join(f"\nby {owner}:\n{note}" for owner, note in res.items())
         await utils.answer(message, self.strings('fnotes').format(notes))
 
     @error_handler
