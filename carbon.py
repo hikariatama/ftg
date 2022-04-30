@@ -50,9 +50,9 @@ class CarbonMod(loader.Module):
 
         try:
             reply = await message.get_reply_message()
-            code_from_reply = (await self._client.download_file(reply.media, bytes)).decode(
-                "utf-8"
-            )
+            code_from_reply = (
+                await self._client.download_file(reply.media, bytes)
+            ).decode("utf-8")
         except Exception:
             code_from_reply = ""
 
@@ -75,5 +75,6 @@ class CarbonMod(loader.Module):
             utils.get_chat_id(message),
             file=doc,
             force_document=(len(args.splitlines()) > 50),
+            reply_to=getattr(message, "reply_to_msg_id", None),
         )
         await message.delete()
