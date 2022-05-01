@@ -26,8 +26,6 @@ class OnloadExecutorMod(loader.Module):
     strings = {"name": "OnloadExecutor"}
 
     async def client_ready(self, client, db):
-        self._me = (await client.get_me()).id
-
         self.c, _ = await utils.asset_channel(
             client,
             "onload-commands",

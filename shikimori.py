@@ -253,7 +253,11 @@ class ShikimoriMod(loader.Module):
             await call.answer(self.strings("error"))
             return
 
-        anime["episodes_seen"] += diff
+        if "episodes_seen" in anime:
+            anime["episodes_seen"] += diff
+        else:
+            anime["episodes_seen"] = 0 if diff < 0 else 1
+
         await call.answer(self.strings("success"))
         await call.edit(self._get_anime_message(anime), self._get_anime_markup(anime))
 

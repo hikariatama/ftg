@@ -10,6 +10,8 @@
 
 # meta pic: https://img.icons8.com/fluency/48/000000/envelope-number.png
 # meta developer: @hikariatama
+# scope: hikka_only
+# scope: hikka_min 1.1.12
 
 from .. import loader, utils
 import asyncio
@@ -38,7 +40,6 @@ class StatusesMod(loader.Module):
 
     async def client_ready(self, client, db):
         self._db = db
-        self._me = await client.get_me(True)
         self._ratelimit = []
         self._sent_messages = []
 
@@ -46,15 +47,12 @@ class StatusesMod(loader.Module):
         if not isinstance(message, types.Message):
             return
 
-        if not self._db.get("Statuses", "status", False):
+        if not self.get("status", False):
             return
 
-        if getattr(message.to_id, "user_id", None) == self._me.user_id:
-            user = await utils.get_user(message)
-            if user in self._ratelimit:
-                return
-
-            if user.is_self or user.bot or user.verified:
+        if getattr(message.to_id, "user_id", None) == self._tg_id:
+            user = message.sender_id
+            if user in self._ratelimit or user.is_self or user.bot or user.verified:
                 return
         elif not message.mentioned:
             return
@@ -66,41 +64,39 @@ class StatusesMod(loader.Module):
 
         m = await utils.answer(
             message,
-            self._db.get("Statuses", "texts", {"": ""})[
-                self._db.get("Statuses", "status", "")
+            self.get("texts", {"": ""})[
+                self.get("status", "")
             ],
         )
 
-        if isinstance(m, (list, tuple, set)):
-            m = m[0]
-
         self._sent_messages += [m]
 
-        if not self._db.get("Statuses", "notif", {"": False})[
-            self._db.get("Statuses", "status", "")
+        if not self.get("notif", {"": False})[
+            self.get("status", "")
         ]:
-            await message.client.send_read_acknowledge(
-                message.chat_id, clear_mentions=True
+            await self._client.send_read_acknowledge(
+                message.peer_id,
+                clear_mentions=True,
             )
 
-        self._ratelimit.append(chat)
+        self._ratelimit += [chat]
 
     async def statuscmd(self, message: Message):
         """<short_name> - Set status"""
         args = utils.get_args_raw(message)
-        if args not in self._db.get("Statuses", "texts", {}):
-            await utils.answer(message, self.strings("status_not_found", message))
+        if args not in self.get("texts", {}):
+            await utils.answer(message, self.strings("status_not_found"))
             await asyncio.sleep(3)
             await message.delete()
             return
 
-        self._db.set("Statuses", "status", args)
+        self.set("status", args)
         self._ratelimit = []
         await utils.answer(
             message,
-            self.strings("status_set", message).format(
-                utils.escape_html(self._db.get("Statuses", "texts", {})[args]),
-                str(self._db.get("Statuses", "notif")[args]),
+            self.strings("status_set").format(
+                utils.escape_html(self.get("texts", {})[args]),
+                str(self.get("notif")[args]),
             ),
         )
 
@@ -110,56 +106,58 @@ class StatusesMod(loader.Module):
         args = utils.get_args_raw(message)
         args = args.split(" ", 2)
         if len(args) < 3:
-            await utils.answer(message, self.strings("pzd_with_args", message))
+            await utils.answer(message, self.strings("pzd_with_args"))
             await asyncio.sleep(3)
             await message.delete()
             return
 
         args[1] = args[1] in ["1", "true", "yes", "+"]
-        texts = self._db.get("Statuses", "texts", {})
+        texts = self.get("texts", {})
         texts[args[0]] = args[2]
-        self._db.set("Statuses", "texts", texts)
+        self.set("texts", texts)
 
-        notif = self._db.get("Statuses", "notif", {})
+        notif = self.get("notif", {})
         notif[args[0]] = args[1]
-        self._db.set("Statuses", "notif", notif)
+        self.set("notif", notif)
         await utils.answer(
             message,
-            self.strings("status_created", message).format(
-                utils.escape_html(args[0]), utils.escape_html(args[2]), args[1]
+            self.strings("status_created").format(
+                utils.escape_html(args[0]),
+                utils.escape_html(args[2]),
+                args[1],
             ),
         )
 
     async def delstatuscmd(self, message: Message):
         """<short_name> - Delete status"""
         args = utils.get_args_raw(message)
-        if args not in self._db.get("Statuses", "texts", {}):
-            await utils.answer(message, self.strings("status_not_found", message))
+        if args not in self.get("texts", {}):
+            await utils.answer(message, self.strings("status_not_found"))
             await asyncio.sleep(3)
             await message.delete()
             return
 
-        texts = self._db.get("Statuses", "texts", {})
+        texts = self.get("texts", {})
         del texts[args]
-        self._db.set("Statuses", "texts", texts)
+        self.set("texts", texts)
 
-        notif = self._db.get("Statuses", "notif", {})
+        notif = self.get("notif", {})
         del notif[args]
-        self._db.set("Statuses", "notif", notif)
+        self.set("notif", notif)
         await utils.answer(
             message,
-            self.strings("status_removed", message).format(utils.escape_html(args)),
+            self.strings("status_removed").format(utils.escape_html(args)),
         )
 
     async def unstatuscmd(self, message: Message):
         """Remove status"""
-        if not self._db.get("Statuses", "status", False):
-            await utils.answer(message, self.strings("no_status", message))
+        if not self.get("status", False):
+            await utils.answer(message, self.strings("no_status"))
             await asyncio.sleep(3)
             await message.delete()
             return
 
-        self._db.set("Statuses", "status", False)
+        self.set("status", False)
         self._ratelimit = []
 
         for m in self._sent_messages:
@@ -170,12 +168,12 @@ class StatusesMod(loader.Module):
 
         self._sent_messages = []
 
-        await utils.answer(message, self.strings("status_unset", message))
+        await utils.answer(message, self.strings("status_unset"))
 
     async def statusescmd(self, message: Message):
         """Show available statuses"""
-        res = self.strings("available_statuses", message)
-        for short_name, status in self._db.get("Statuses", "texts", {}).items():
+        res = self.strings("available_statuses")
+        for short_name, status in self.get("texts", {}).items():
             res += f"<b><u>{short_name}</u></b> | Notify: <b>{self._db.get('Statuses', 'notif', {})[short_name]}</b>\n{status}\n➖➖➖➖➖➖➖➖➖\n"
 
         await utils.answer(message, res)

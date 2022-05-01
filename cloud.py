@@ -58,7 +58,7 @@ class ModuleCloudMod(loader.Module):
                     telethon.tl.functions.channels.JoinChannelRequest(entity)
                 )
             except Exception:
-                await utils.answer(message, self.strings("cannot_join", message))
+                await utils.answer(message, self.strings("cannot_join"))
                 return
 
             msgs = await self._client.get_messages(entity, limit=100)
@@ -74,14 +74,14 @@ class ModuleCloudMod(loader.Module):
             except Exception:  # Ignore errors when trying to get text of e.g. service message
                 pass
 
-        await utils.answer(message, self.strings("mod404", message).format(args))
+        await utils.answer(message, self.strings("mod404").format(args))
 
     @loader.unrestricted
     async def cloudcmd(self, message: Message) -> None:
         """<command \\ mod_name> - Lookup mod in @hikarimods_database"""
         args = utils.get_args_raw(message)
         if not args:
-            await utils.answer(message, self.strings("args", message))
+            await utils.answer(message, self.strings("args"))
             return
 
         entity = await self._client.get_entity("@hikarimods_database")
@@ -92,7 +92,7 @@ class ModuleCloudMod(loader.Module):
         """<command \\ mod_name> - Lookup mod in @hikarimods"""
         args = utils.get_args_raw(message)
         if not args:
-            await utils.answer(message, self.strings("args", message))
+            await utils.answer(message, self.strings("args"))
             return
 
         entity = await self._client.get_entity("@hikarimods")
@@ -139,13 +139,13 @@ class ModuleCloudMod(loader.Module):
         try:
             file = await self._client.download_file(media, bytes)
         except Exception:
-            await utils.answer(message, self.strings("no_file", message))
+            await utils.answer(message, self.strings("no_file"))
             return
 
         try:
             code = file.decode("utf-8").replace("\r\n", "\n")
         except Exception:
-            await utils.answer(message, self.strings("cannot_check_file", message))
+            await utils.answer(message, self.strings("cannot_check_file"))
             await asyncio.sleep(3)
             await message.delete()
             return

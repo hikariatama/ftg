@@ -12,7 +12,7 @@
 # meta developer: @hikariatama
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.0.20
+# scope: hikka_min 1.1.12
 # requires: Pillow requests_toolbelt
 
 __version__ = (1, 0, 1)
@@ -128,8 +128,6 @@ class GrustnoGramMod(loader.Module):
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
-
-        self._me = (await client.get_me()).id
 
         if not self.get("email") or not self.get("password"):
             self.sadauthcmd = self.sadauthcmd_
@@ -333,7 +331,7 @@ class GrustnoGramMod(loader.Module):
 
                         if notification["type"] == "follow":
                             await self.inline.bot.send_message(
-                                self._me,
+                                self._tg_id,
                                 self.strings("notif_follow").format(
                                     notification["data"]["nickname"]
                                 ),
@@ -342,7 +340,7 @@ class GrustnoGramMod(loader.Module):
                             )
                         elif notification["type"] == "like":
                             await self.inline.bot.send_message(
-                                self._me,
+                                self._tg_id,
                                 self.strings("notif_like").format(
                                     notification["data"]["nickname"],
                                     notification["data"]["post_url"],

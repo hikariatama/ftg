@@ -10,6 +10,8 @@
 
 # meta pic: https://img.icons8.com/external-wanicon-flat-wanicon/64/000000/external-secret-emoji-wanicon-flat-wanicon.png
 # meta developer: @hikariatama
+# scope: hikka_only
+# scope: hikka_min 1.1.12
 
 from .. import loader, utils
 from telethon.tl.types import Message
@@ -33,7 +35,7 @@ class SecretChatMod(loader.Module):
 
     def _get_chat_id(self, chat) -> int:
         cid = [chat.admin_id] + [chat.participant_id]
-        cid.remove(self._me)
+        cid.remove(self._tg_id)
         cid = cid[0]
         return cid
 
@@ -72,7 +74,6 @@ class SecretChatMod(loader.Module):
             client, auto_accept=True, new_chat_created=self._new_chat
         )
         self._manager.add_secret_event_handler(func=self._replier)
-        self._me = (await client.get_me()).id
         self._chats = {}
         self._secret_chats = {}
 

@@ -11,6 +11,8 @@
 # meta title: PM->BL
 # meta pic: https://img.icons8.com/fluency/48/000000/poison.png
 # meta developer: @hikariatama
+# scope: hikka_only
+# scope: hikka_min 1.1.12
 
 from .. import loader, utils
 from telethon.tl.types import Message, PeerUser, User
@@ -80,13 +82,12 @@ class PMBLMod(loader.Module):
         self._db = db
         self._client = client
         self._whitelist = self.get("whitelist", [])
-        self._me = (await client.get_me()).id
         self._ratelimit = []
         self._ratelimit_timeout = 5 * 60
         self._ratelimit_threshold = 10
         if not self.get("ignore_qs", False):
             await self.inline.bot.send_photo(
-                self._me,
+                self._tg_id,
                 photo=r"https://static.zerochan.net/Kirito.%28GGO%29.full.2814614.jpg",
                 caption=self.strings("hello"),
                 parse_mode="HTML",
@@ -241,7 +242,7 @@ class PMBLMod(loader.Module):
             )
         )[0]
 
-        if getattr(message, "raw_text", False) and first_message.sender_id == self._me:
+        if getattr(message, "raw_text", False) and first_message.sender_id == self._tg_id:
             return self._approve(cid, "started_by_you")
         else:
             started_by_you = False
@@ -250,7 +251,7 @@ class PMBLMod(loader.Module):
             q = 0
 
             async for msg in self._client.iter_messages(message.peer_id, limit=200):
-                if msg.sender_id == self._me:
+                if msg.sender_id == self._tg_id:
                     q += 1
 
                 if q >= self.config["active_threshold"]:

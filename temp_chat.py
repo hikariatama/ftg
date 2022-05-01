@@ -13,7 +13,7 @@ __version__ = (2, 0, 0)
 # meta pic: https://img.icons8.com/fluency/344/demolition-excavator.png
 # meta developer: @hikariatama
 # scope: hikka_only
-# scope: hikka_min 1.1.2
+# scope: hikka_min 1.1.12
 
 from .. import loader, utils
 import re
@@ -92,7 +92,7 @@ class TempChatsMod(loader.Module):
             except Exception:
                 logger.exception("Failed to delete chat")
                 await self.inline.bot.send_message(
-                    self._me,
+                    self._tg_id,
                     self.strings("delete_error_me").format(utils.escape_html(info[1])),
                     parse_mode="HTML",
                     disable_web_page_preview=True,
@@ -105,7 +105,6 @@ class TempChatsMod(loader.Module):
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
-        self._me = (await client.get_me()).id
 
     async def tmpchatcmd(self, message: Message):
         """<time> <title> - Create new temp chat"""

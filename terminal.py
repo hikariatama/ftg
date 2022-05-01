@@ -26,6 +26,8 @@
 
 # meta pic: https://img.icons8.com/external-filled-outline-lima-studio/344/external-terminal-coding-filled-outline-lima-studio.png
 # meta developer: @bsolute
+# scope: hikka_only
+# scope: hikka_min 1.1.12
 
 from .. import loader, utils
 import logging
@@ -68,7 +70,7 @@ class TerminalMod(loader.Module):
         self.config = loader.ModuleConfig(
             "FLOOD_WAIT_PROTECT",
             2,
-            lambda m: self.strings("flood_wait_protect_cfg_doc", m),
+            lambda: self.strings("flood_wait_protect_cfg_doc"),
         )
         self.activecmds = {}
 
@@ -146,7 +148,7 @@ class TerminalMod(loader.Module):
     async def terminatecmd(self, message):
         """[-f to force kill] - Use in reply to send SIGTERM to a process"""
         if not message.is_reply:
-            await utils.answer(message, self.strings("what_to_kill", message))
+            await utils.answer(message, self.strings("what_to_kill"))
             return
 
         if hash_msg(await message.get_reply_message()) in self.activecmds:
@@ -157,11 +159,11 @@ class TerminalMod(loader.Module):
                     self.activecmds[hash_msg(await message.get_reply_message())].kill()
             except Exception:
                 logger.exception("Killing process failed")
-                await utils.answer(message, self.strings("kill_fail", message))
+                await utils.answer(message, self.strings("kill_fail"))
             else:
-                await utils.answer(message, self.strings("killed", message))
+                await utils.answer(message, self.strings("killed"))
         else:
-            await utils.answer(message, self.strings("no_cmd", message))
+            await utils.answer(message, self.strings("no_cmd"))
 
 
 def hash_msg(message):
@@ -224,18 +226,18 @@ class MessageEditor:
         await self.redraw()
 
     async def redraw(self):
-        text = self.strings("running", self.request_message).format(utils.escape_html(self.command))  # fmt: skip
+        text = self.strings("running").format(utils.escape_html(self.command))  # fmt: skip
 
         if self.rc is not None:
-            text += self.strings("finished", self.request_message).format(
+            text += self.strings("finished").format(
                 utils.escape_html(str(self.rc))
             )
 
-        text += self.strings("stdout", self.request_message)
+        text += self.strings("stdout")
         text += utils.escape_html(self.stdout[max(len(self.stdout) - 2048, 0) :])
-        text += self.strings("stderr", self.request_message)
+        text += self.strings("stderr")
         text += utils.escape_html(self.stderr[max(len(self.stderr) - 1024, 0) :])
-        text += self.strings("end", self.request_message)
+        text += self.strings("end")
 
         try:
             self.message = await utils.answer(self.message, text)
@@ -286,7 +288,7 @@ class SudoMessageEditor(MessageEditor):
             and self.state == 1
         ):
             logger.debug("switching state to 0")
-            await self.authmsg.edit(self.strings("auth_failed", self.request_message))
+            await self.authmsg.edit(self.strings("auth_failed"))
             self.state = 0
             handled = True
             await asyncio.sleep(2)
@@ -294,8 +296,8 @@ class SudoMessageEditor(MessageEditor):
 
         if lastlines[0] == self.PASS_REQ and self.state == 0:
             logger.debug("Success to find sudo log!")
-            text = self.strings("auth_needed", self.request_message).format(
-                (await self.message[0].client.get_me()).id
+            text = self.strings("auth_needed").format(
+                self._tg_id
             )
 
             try:
@@ -309,7 +311,7 @@ class SudoMessageEditor(MessageEditor):
 
             self.authmsg = await self.message[0].client.send_message(
                 "me",
-                self.strings("auth_msg", self.request_message).format(command, user),
+                self.strings("auth_msg").format(command, user),
 
             )
             logger.debug("sent message to self")
@@ -329,7 +331,7 @@ class SudoMessageEditor(MessageEditor):
         ):
             logger.debug("password wrong lots of times")
             await utils.answer(
-                self.message, self.strings("auth_locked", self.request_message)
+                self.message, self.strings("auth_locked")
             )
             await self.authmsg.delete()
             self.state = 2
@@ -368,7 +370,7 @@ class SudoMessageEditor(MessageEditor):
             # The user has provided interactive authentication. Send password to stdin for sudo.
             try:
                 self.authmsg = await utils.answer(
-                    message, self.strings("auth_ongoing", self.request_message)
+                    message, self.strings("auth_ongoing")
                 )
             except telethon.errors.rpcerrorlist.MessageNotModifiedError:
                 # Try to clear personal info if the edit fails
@@ -416,7 +418,7 @@ class RawMessageEditor(SudoMessageEditor):
             )
 
         if self.rc is not None and self.show_done:
-            text += "\n" + self.strings("done", self.request_message)
+            text += "\n" + self.strings("done")
 
         logger.debug(text)
 

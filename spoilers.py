@@ -14,7 +14,7 @@ __version__ = (1, 0, 3)
 # meta developer: @hikariatama
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.1.6
+# scope: hikka_min 1.1.12
 
 from .. import loader, utils
 import logging
@@ -53,7 +53,6 @@ class SpoilersMod(loader.Module):
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
-        self._me = (await client.get_me()).id
 
     async def hide_inline_handler(self, query: InlineQuery):
         """Create new hidden message"""
@@ -95,12 +94,12 @@ class SpoilersMod(loader.Module):
         """Process button presses"""
         if call.from_user.id not in {
             for_user,
-            self._me,
+            self._tg_id,
         }:
             await call.answer(self.strings("not4u"))
             return
 
         await call.answer(text, show_alert=True)
         
-        if call.from_user.id != self._me:
+        if call.from_user.id != self._tg_id:
             await call.edit(self.strings("seen"))

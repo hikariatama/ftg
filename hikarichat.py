@@ -1,4 +1,4 @@
-__version__ = (10, 0, 5)
+__version__ = (10, 0, 6)
 
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
@@ -17,6 +17,7 @@ __version__ = (10, 0, 5)
 # scope: disable_onload_docs
 # scope: inline
 # scope: hikka_only
+# scope: hikka_min 1.1.12
 # requires: aiohttp
 
 import re
@@ -96,7 +97,7 @@ def get_link(user: User or Channel) -> str:
 
 
 PROTECTS = {
-    "antinsfw": "🍓 AntiNSFW",
+    "antinsfw": "🔞 AntiNSFW",
     "antiarab": "🐻 AntiArab",
     "antitagall": "🐵 AntiTagAll",
     "antihelp": "🐺 AntiHelp",
@@ -286,7 +287,6 @@ class HikariChatAPI:
     ):
         """Entry point"""
         self._client = client
-        self._me = (await client.get_me()).id
         self._db = db
         self.module = module
         self._bot = "@hikka_userbot"
@@ -387,7 +387,7 @@ class HikariChatAPI:
         return (
             str(chat_id) in self.chats
             and protection in self.chats[str(chat_id)]
-            and str(self.chats[str(chat_id)][protection][1]) == str(self._me)
+            and str(self.chats[str(chat_id)][protection][1]) == str(self._tg_id)
         )
 
     async def nsfw(self, photo: bytes) -> str:
@@ -453,7 +453,7 @@ class HikariChatMod(loader.Module):
 
     strings = {
         "name": "HikariChat",
-        "args": "🦊 <b>Args are incorrect</b>",
+        "args": "🚫 <b>Args are incorrect</b>",
         "no_reason": "Not specified",
         "antitagall_on": "🐵 <b>AntiTagAll is now on in this chat\nAction: {}</b>",
         "antitagall_off": "🐵 <b>AntiTagAll is now off in this chat</b>",
@@ -486,14 +486,14 @@ class HikariChatMod(loader.Module):
         "banninja_off": "🥷 <b>BanNinja is now off in this chat</b>",
         "antiexplicit_on": "😒 <b>AntiExplicit is now on in this chat\nAction: {}</b>",
         "antiexplicit_off": "😒 <b>AntiExplicit is now off in this chat</b>",
-        "antinsfw_on": "🍓 <b>AntiNSFW is now on in this chat\nAction: {}</b>",
-        "antinsfw_off": "🍓 <b>AntiNSFW is now off in this chat</b>",
+        "antinsfw_on": "🔞 <b>AntiNSFW is now on in this chat\nAction: {}</b>",
+        "antinsfw_off": "🔞 <b>AntiNSFW is now off in this chat</b>",
         "arabic_nickname": '🐻 <b>Seems like <a href="{}">{}</a> is Arab.\n👊 Action: I {}</b>',
         "zalgo": '🌀 <b>Seems like <a href="{}">{}</a> has ZALGO in his nickname.\n👊 Action: I {}</b>',
         "stick": '🎨 <b>Seems like <a href="{}">{}</a> is flooding stickers.\n👊 Action: I {}</b>',
         "explicit": '😒 <b>Seems like <a href="{}">{}</a> sent explicit content.\n👊 Action: I {}</b>',
         "destructive_stick": '🚫 <b>Seems like <a href="{}">{}</a> sent destructive sticker.\n👊 Action: I {}</b>',
-        "nsfw_content": '🍓 <b>Seems like <a href="{}">{}</a> sent NSFW content.\n👊 Action: I {}</b>',
+        "nsfw_content": '🔞 <b>Seems like <a href="{}">{}</a> sent NSFW content.\n👊 Action: I {}</b>',
         "flood": '⏱ <b>Seems like <a href="{}">{}</a> is flooding.\n👊 Action: I {}</b>',
         "tagall": '🐵 <b>Seems like <a href="{}">{}</a> used TagAll.\n👊 Action: I {}</b>',
         "sex_datings": '🔞 <b><a href="{}">{}</a> is suspicious 🧐\n👊 Action: I {}</b>',
@@ -883,7 +883,7 @@ class HikariChatMod(loader.Module):
                 )
                 await call.answer("Configuration value saved")
                 if state != "off":
-                    self.api.chats[str(chat)][protection] = [state, str(self._me)]
+                    self.api.chats[str(chat)][protection] = [state, str(self._tg_id)]
                 else:
                     del self.api.chats[str(chat)][protection]
 
@@ -906,7 +906,7 @@ class HikariChatMod(loader.Module):
             if current_state:
                 del self.api.chats[str(chat)][protection]
             else:
-                self.api.chats[str(chat)][protection] = ["on", str(self._me)]
+                self.api.chats[str(chat)][protection] = ["on", str(self._tg_id)]
             await self._inline_config(call, chat)
 
     @error_handler
@@ -1048,14 +1048,10 @@ class HikariChatMod(loader.Module):
                         reason,
                         "",
                     ),
-                    reply_markup=[
-                        [
-                            {
-                                "text": self.strings("btn_unban"),
-                                "data": f"ub/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
-                            }
-                        ]
-                    ],
+                    reply_markup={
+                        "text": self.strings("btn_unban"),
+                        "data": f"ub/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
+                    },
                 )
 
                 if isinstance(message, Message):
@@ -1068,14 +1064,10 @@ class HikariChatMod(loader.Module):
                     if isinstance(message, Message)
                     else getattr(chat, "id", chat),
                     text=msg,
-                    reply_markup=[
-                        [
-                            {
-                                "text": self.strings("btn_unban"),
-                                "data": f"ub/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
-                            }
-                        ]
-                    ],
+                    reply_markup={
+                        "text": self.strings("btn_unban"),
+                        "data": f"ub/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
+                    },
                 )
         else:
             await (utils.answer if message else self._client.send_message)(
@@ -1132,14 +1124,10 @@ class HikariChatMod(loader.Module):
                         reason,
                         "",
                     ),
-                    reply_markup=[
-                        [
-                            {
-                                "text": self.strings("btn_unmute"),
-                                "data": f"um/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
-                            }
-                        ]
-                    ],
+                    reply_markup={
+                        "text": self.strings("btn_unmute"),
+                        "data": f"um/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
+                    },
                 )
 
                 if isinstance(message, Message):
@@ -1152,14 +1140,10 @@ class HikariChatMod(loader.Module):
                     if isinstance(message, Message)
                     else getattr(chat, "id", chat),
                     text=msg,
-                    reply_markup=[
-                        [
-                            {
-                                "text": self.strings("btn_unmute"),
-                                "data": f"um/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
-                            }
-                        ]
-                    ],
+                    reply_markup={
+                        "text": self.strings("btn_unmute"),
+                        "data": f"um/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
+                    },
                 )
         else:
             await (utils.answer if message else self._client.send_message)(
@@ -1780,17 +1764,15 @@ class HikariChatMod(loader.Module):
             ),
             message=message,
             reply_markup=[
-                [
-                    {
-                        "text": self.strings("confirm_rmfed_btn"),
-                        "callback": self.inline__confirm_rmfed,
-                        "args": (args,),
-                    },
-                    {
-                        "text": self.strings("decline_rmfed_btn"),
-                        "callback": self.inline__close,
-                    },
-                ]
+                {
+                    "text": self.strings("confirm_rmfed_btn"),
+                    "callback": self.inline__confirm_rmfed,
+                    "args": (args,),
+                },
+                {
+                    "text": self.strings("decline_rmfed_btn"),
+                    "callback": self.inline__close,
+                },
             ],
         )
 
@@ -2003,14 +1985,10 @@ class HikariChatMod(loader.Module):
 
         if self._is_inline:
             punishment_info = {
-                "reply_markup": [
-                    [
-                        {
-                            "text": self.strings("btn_funban"),
-                            "data": f"ufb/{utils.get_chat_id(message)}/{user.id}",
-                        }
-                    ]
-                ],
+                "reply_markup": {
+                    "text": self.strings("btn_funban"),
+                    "data": f"ufb/{utils.get_chat_id(message)}/{user.id}",
+                },
                 "ttl": 15,
             }
 
@@ -2207,14 +2185,10 @@ class HikariChatMod(loader.Module):
 
         if self._is_inline:
             punishment_info = {
-                "reply_markup": [
-                    [
-                        {
-                            "text": self.strings("btn_funmute"),
-                            "data": f"ufm/{utils.get_chat_id(message)}/{user.id}",
-                        }
-                    ]
-                ],
+                "reply_markup": {
+                    "text": self.strings("btn_funmute"),
+                    "data": f"ufm/{utils.get_chat_id(message)}/{user.id}",
+                },
                 "ttl": 15,
             }
 
@@ -2715,14 +2689,10 @@ class HikariChatMod(loader.Module):
 
             if self._is_inline:
                 punishment_info = {
-                    "reply_markup": [
-                        [
-                            {
-                                "text": self.strings("btn_unwarn"),
-                                "data": f"dw/{utils.get_chat_id(message)}/{user.id}",
-                            }
-                        ]
-                    ],
+                    "reply_markup": {
+                        "text": self.strings("btn_unwarn"),
+                        "data": f"dw/{utils.get_chat_id(message)}/{user.id}",
+                    },
                     "ttl": 15,
                 }
 
@@ -3093,7 +3063,7 @@ class HikariChatMod(loader.Module):
         cache = {}
 
         for shortname, note in self.api.feds[fed].get("notes", {}).items():
-            if int(note["creator"]) != self._me and from_watcher:
+            if int(note["creator"]) != self._tg_id and from_watcher:
                 continue
 
             try:
@@ -3344,15 +3314,11 @@ class HikariChatMod(loader.Module):
             await self.inline.form(
                 self.strings("smart_anti_raid_active"),
                 message=chat.id,
-                reply_markup=[
-                    [
-                        {
-                            "text": self.strings("smart_anti_raid_off"),
-                            "callback": self.disable_smart_anti_raid,
-                            "args": (chat_id,),
-                        }
-                    ]
-                ],
+                reply_markup={
+                    "text": self.strings("smart_anti_raid_off"),
+                    "callback": self.disable_smart_anti_raid,
+                    "args": (chat_id,),
+                },
             )
 
         return False
@@ -3912,7 +3878,7 @@ class HikariChatMod(loader.Module):
                 if message.raw_text.lower().strip() in ["#заметки", "#notes", "/notes"]:
                     self._ratelimit["notes"][str(user_id)] = time.time() + 3
                     if any(
-                        str(note["creator"]) == str(self._me)
+                        str(note["creator"]) == str(self._tg_id)
                         for _, note in self.api.feds[fed]["notes"].items()
                     ):
                         await self.fnotescmd(
@@ -3923,7 +3889,7 @@ class HikariChatMod(loader.Module):
                         )
 
                 for note, note_info in self.api.feds[fed]["notes"].items():
-                    if str(note_info["creator"]) != str(self._me):
+                    if str(note_info["creator"]) != str(self._tg_id):
                         continue
 
                     if note.lower() in message.raw_text.lower():
@@ -4075,7 +4041,7 @@ class HikariChatMod(loader.Module):
         self._db = db
         self._client = client
 
-        self._me = (await client.get_me()).id
+        self._tg_id = (await client.get_me()).id
 
         self._is_inline = self.inline.init_complete
 

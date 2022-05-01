@@ -59,7 +59,8 @@ class GroupsMod(loader.Module):
         self._db = db
         self._client = client
         self._me = (await client.get_me()).id
-        self._is_hikka = hasattr(self, 'inline')
+        if hasattr(self, "hikka"):
+            raise loader.LoadError("You don't need this module, because it is included in your userbot")
 
     async def _resolve_user(self, message: Message):
         reply = await message.get_reply_message()

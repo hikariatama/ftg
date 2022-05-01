@@ -12,6 +12,7 @@
 # meta developer: @hikariatama
 # scope: inline
 # scope: hikka_only
+# scope: hikka_min 1.1.12
 
 import abc
 from .. import loader, utils
@@ -20,7 +21,6 @@ import time
 from telethon.utils import get_display_name
 
 from aiogram.types import Message as AiogramMessage
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -48,23 +48,16 @@ class FeedbackMod(loader.Module):
     }
 
     async def client_ready(self, client, db):
-        self._me = (await client.get_me()).id
         self._name = utils.escape_html(get_display_name(await client.get_me()))
 
-        if not hasattr(self, "inline"):
-            raise Exception("Hikka Only")
-
-        self._bot = self.inline.bot
         self._ratelimit = {}
-        self._markup = InlineKeyboardMarkup()
-        self._markup.add(
-            InlineKeyboardButton(
-                "✍️ Leave a message [1 per minute]", callback_data="fb_leave_message"
-            )
-        )
 
-        self._cancel = InlineKeyboardMarkup()
-        self._cancel.add(InlineKeyboardButton("🚫 Cancel", callback_data="fb_cancel"))
+        self._markup = self.inline._generate_markup(
+            {"text": "✍️ Leave a message [1 per minute]", "data": "fb_leave_message"}
+        )
+        self._cancel = self.inline._generate_markup(
+            {"text": "🚫 Cancel", "data": "fb_cancel"}
+        )
 
         self.__doc__ = (
             "Feedback bot\n"
@@ -75,13 +68,16 @@ class FeedbackMod(loader.Module):
     async def aiogram_watcher(self, message: AiogramMessage):
         if message.text == "/start feedback":
             await message.answer(
-                self.strings("/start").format(self._name), reply_markup=self._markup
+                self.strings("/start").format(self._name),
+                reply_markup=self._markup,
             )
         elif message.text == "/nometa":
             await message.answer(self.strings("/nometa"), reply_markup=self._markup)
         elif self.inline.gs(message.from_user.id) == "fb_send_message":
-            await self._bot.forward_message(
-                self._me, message.chat.id, message.message_id
+            await self.inline.bot.forward_message(
+                self._tg_id,
+                message.chat.id,
+                message.message_id,
             )
             await message.answer(self.strings("sent"))
             self._ratelimit[message.from_user.id] = time.time() + 60
@@ -92,8 +88,9 @@ class FeedbackMod(loader.Module):
         """Handles button clicks"""
         if call.data == "fb_cancel":
             self.inline.ss(call.from_user.id, False)
-            await self._bot.delete_message(
-                call.message.chat.id, call.message.message_id
+            await self.inline.bot.delete_message(
+                call.message.chat.id,
+                call.message.message_id,
             )
             return
 
@@ -111,7 +108,7 @@ class FeedbackMod(loader.Module):
             return
 
         self.inline.ss(call.from_user.id, "fb_send_message")
-        await self._bot.edit_message_text(
+        await self.inline.bot.edit_message_text(
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
             text=self.strings("enter_message"),
