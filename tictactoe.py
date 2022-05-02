@@ -1,3 +1,5 @@
+__version__ = (2, 0, 0)
+
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
 #
@@ -16,7 +18,7 @@
 
 import enum
 import copy
-from .. import loader
+from .. import loader, utils
 from telethon.tl.types import Message
 from typing import List
 from random import choice
@@ -331,7 +333,7 @@ class TicTacToeMod(loader.Module):
         text = self.strings("normal_game").format(
             choice(phrases),
             game["name"],
-            get_display_name(self._me) if game["turn"] == self._me.id else game["name"],
+            utils.escape_html(get_display_name(self._me)) if game["turn"] == self._me.id else game["name"],
         )
         score = game["score"].split("|")
         kb = []
@@ -351,7 +353,7 @@ class TicTacToeMod(loader.Module):
                 "text": self.strings("win").format(
                     game["name"]
                     if winner != self._me.id
-                    else get_display_name(self._me),
+                    else utils.escape_html(get_display_name(self._me)),
                     "❌" if win_x else "⭕️",
                     self._render_text(score),
                 )
@@ -398,7 +400,7 @@ class TicTacToeMod(loader.Module):
                 first: "x",
                 (call.from_user.id if call.from_user.id != first else self._me.id): "o",
             },
-            "name": get_display_name(await self._client.get_entity(call.from_user.id)),
+            "name": utils.escape_html(get_display_name(await self._client.get_entity(call.from_user.id))),
             "score": "...|...|...",
         }
 
@@ -447,7 +449,7 @@ class TicTacToeMod(loader.Module):
         game = self._games[uid]
         text = self.strings("ai_game").format(
             choice(phrases),
-            get_display_name(game["user"]),
+            utils.escape_html(get_display_name(game["user"])),
             "❌" if game["amifirst"] else "⭕️",
         )
         score = [
@@ -471,7 +473,7 @@ class TicTacToeMod(loader.Module):
                 "text": self.strings("win").format(
                     "🐻 Bear"
                     if winner != game["user"]
-                    else get_display_name(game["user"]),
+                    else utils.escape_html(get_display_name(game["user"])),
                     "❌" if win_x else "⭕️",
                     self._render_text(score),
                 )

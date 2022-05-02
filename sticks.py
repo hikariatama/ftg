@@ -98,7 +98,8 @@ class StickManagerMod(loader.Module):
         return False
 
     async def prepare(self, message: Message) -> InputDocument:
-        dl = await self._client.download_file(message.media, bytes)
+        dl = io.BytesIO(await self._client.download_file(message.media, bytes))
+        dl.seek(0)
         img = Image.open(dl)
 
         w, h = img.size

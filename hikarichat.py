@@ -1,4 +1,4 @@
-__version__ = (10, 0, 6)
+__version__ = (11, 0, 3)
 
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
@@ -49,8 +49,10 @@ from telethon.tl.types import (
 
 from types import FunctionType
 from typing import Union, List
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, ChatPermissions
+from aiogram.utils.exceptions import MessageToDeleteNotFound, MessageCantBeDeleted
 from .. import loader, utils
+from ..inline.types import InlineCall
 
 from telethon.errors import UserAdminInvalidError, ChatAdminRequiredError
 
@@ -76,7 +78,7 @@ else:
 
 logger = logging.getLogger(__name__)
 
-version = f"v{__version__[0]}.{__version__[1]}.{__version__[2]}alpha"
+version = f"v{__version__[0]}.{__version__[1]}.{__version__[2]}stable"
 ver = f"<u>HikariChat {version}</u>"
 
 FLOOD_TIMEOUT = 0.8
@@ -387,7 +389,7 @@ class HikariChatAPI:
         return (
             str(chat_id) in self.chats
             and protection in self.chats[str(chat_id)]
-            and str(self.chats[str(chat_id)][protection][1]) == str(self._tg_id)
+            and str(self.chats[str(chat_id)][protection][1]) == str(self.module._tg_id)
         )
 
     async def nsfw(self, photo: bytes) -> str:
@@ -636,6 +638,9 @@ class HikariChatMod(loader.Module):
         "clnraid_stop": "🚨 Stop",
         "clnraid_complete": "🥷 <b>RaidCleaner complete! Removed: {} user(-s)</b>",
         "clnraid_cancelled": "🥷 <b>RaidCleaner cancelled. Removed: {} user(-s)</b>",
+        "smart_anti_raid_active": "🥷 <b>BanNinja protection triggered</b>\n<i>Deleted {} bot(-s)</i>",
+        "smart_anti_raid_off": "🚨 Stop",
+        "smart_anti_raid_stopped": "🥷 <b>BanNinja Stopped</b>",
         "confirm_rmfed": (
             "⚠️ <b>Warning! This operation can't be reverted! Are you sure, "
             "you want to delete federation </b><code>{}</code><b>?</b>"
@@ -652,6 +657,10 @@ class HikariChatMod(loader.Module):
 
     strings_ru = {
         "from_where": "🚫 <b>Ответь на сообщение, начиная с которого надо удалить.</b>",
+        "smart_anti_raid_active": "🥷 <b>Сработала защита BanNinja</b>\n<i>Удалено {} ботов</i>",
+        "smart_anti_raid_off": "🚨 Остановить",
+        "smart_anti_raid_stopped": "🥷 <b>BanNinja остановлен</b>",
+        "error": "😵 <b>Произошла ошибка HikariChat</b>",
     }
 
     def __init__(self):
@@ -660,12 +669,16 @@ class HikariChatMod(loader.Module):
             False,
             lambda: "Do not notify about protections actions",
             "join_ratelimit",
-            15,
+            10,
             lambda: "How many users per minute need to join until ban starts",
         )
 
     async def on_unload(self):
         self.api._task.cancel()
+        self._pt_task.cancel()
+
+        for _, form in self._ban_ninja_forms.items():
+            await form.delete()
 
     def lookup(self, modname: str):
         return next(
@@ -676,20 +689,6 @@ class HikariChatMod(loader.Module):
             ),
             False,
         )
-
-    def save_join_ratelimit(self):
-        """
-        Saves BanNinja ratelimit to fs
-        """
-        with open("join_ratelimit.json", "w") as f:
-            f.write(json.dumps(self._join_ratelimit))
-
-    def save_flood_cache(self):
-        """
-        Saves AntiFlood ratelimit to fs
-        """
-        with open("flood_cache.json", "w") as f:
-            f.write(json.dumps(self.flood_cache))
 
     async def check_admin(
         self,
@@ -916,6 +915,9 @@ class HikariChatMod(loader.Module):
         """
         args = utils.get_args_raw(message)
         chat = utils.get_chat_id(message)
+
+        await self._promote_bot(chat)
+
         if protection in self.api.variables["argumented_protects"]:
             if args not in self.api.variables["protect_actions"] or args == "off":
                 args = "off"
@@ -1014,12 +1016,20 @@ class HikariChatMod(loader.Module):
         if reason is None:
             reason = self.strings("no_reason")
 
-        await self._client.edit_permissions(
-            chat,
-            user,
-            until_date=(time.time() + period) if period else 0,
-            **BANNED_RIGHTS,
-        )
+        try:
+            await self.inline.bot.kick_chat_member(
+                int(f"-100{getattr(chat, 'id', chat)}"),
+                int(getattr(user, "id", user)),
+            )
+        except Exception:
+            logger.debug("Can't ban with bot", exc_info=True)
+
+            await self._client.edit_permissions(
+                chat,
+                user,
+                until_date=(time.time() + period) if period else 0,
+                **BANNED_RIGHTS,
+            )
 
         if silent:
             return
@@ -1090,12 +1100,22 @@ class HikariChatMod(loader.Module):
         if reason is None:
             reason = self.strings("no_reason")
 
-        await self._client.edit_permissions(
-            chat,
-            user,
-            until_date=time.time() + period,
-            send_messages=False,
-        )
+        try:
+            await self.inline.bot.restrict_chat_member(
+                int(f"-100{getattr(chat, 'id', chat)}"),
+                int(getattr(user, "id", user)),
+                permissions=ChatPermissions(can_send_messages=False),
+                until_date=time.time() + period,
+            )
+        except Exception:
+            logger.debug("Can't mute with bot", exc_info=True)
+
+            await self._client.edit_permissions(
+                chat,
+                user,
+                until_date=time.time() + period,
+                send_messages=False,
+            )
 
         if silent:
             return
@@ -1533,7 +1553,9 @@ class HikariChatMod(loader.Module):
 
             if action == "ban":
                 comment = "banned him"
-                await self.ban(chat_id, user, 0, violation)
+                await self.ban(
+                    chat_id, user, 0, violation, silent=self.config["silent"]
+                )
             elif action == "fban":
                 comment = "f-banned him"
                 await self.fbancmd(
@@ -1549,7 +1571,9 @@ class HikariChatMod(loader.Module):
                 await self._client.kick_participant(chat_id, user)
             elif action == "mute":
                 comment = "muted him for 1 hour"
-                await self.mute(chat_id, user, 60 * 60, violation)
+                await self.mute(
+                    chat_id, user, 60 * 60, violation, silent=self.config["silent"]
+                )
             elif action == "warn":
                 comment = "warned him"
                 warn_msg = await self._client.send_message(
@@ -1668,7 +1692,7 @@ class HikariChatMod(loader.Module):
             except UserAdminInvalidError:
                 pass
 
-            if str(c) in self._linked_channels:
+            if str(c) in self._linked_channels and self._linked_channels[str(c)]:
                 channel = await self._client.get_entity(self._linked_channels[str(c)])
                 kicked = 0
                 try:
@@ -1989,7 +2013,6 @@ class HikariChatMod(loader.Module):
                     "text": self.strings("btn_funban"),
                     "data": f"ufb/{utils.get_chat_id(message)}/{user.id}",
                 },
-                "ttl": 15,
             }
 
             if self.get("logchat"):
@@ -2189,7 +2212,6 @@ class HikariChatMod(loader.Module):
                     "text": self.strings("btn_funmute"),
                     "data": f"ufm/{utils.get_chat_id(message)}/{user.id}",
                 },
-                "ttl": 15,
             }
 
             if self.get("logchat"):
@@ -2693,7 +2715,6 @@ class HikariChatMod(loader.Module):
                         "text": self.strings("btn_unwarn"),
                         "data": f"dw/{utils.get_chat_id(message)}/{user.id}",
                     },
-                    "ttl": 15,
                 }
 
                 if self.get("logchat"):
@@ -3175,6 +3196,65 @@ class HikariChatMod(loader.Module):
         )
 
     @error_handler
+    @chat_command
+    async def clnraidcmd(self, message: Message):
+        """<number of users> - Clean raid"""
+        args = utils.get_args_raw(message)
+        if not args or not args.isdigit():
+            await utils.answer(message, self.strings("clnraid_args"))
+            return
+
+        args = int(args)
+
+        await self.inline.form(
+            message=message,
+            text=self.strings("clnraid_confirm").format(args),
+            reply_markup=[
+                {
+                    "text": self.strings("clnraid_yes"),
+                    "callback": self._clnraid,
+                    "args": (utils.get_chat_id(message), args),
+                },
+                {
+                    "text": self.strings("clnraid_cancel"),
+                    "callback": self.inline__close,
+                },
+            ],
+        )
+
+    async def _clnraid(
+        self,
+        call: Union[InlineCall, None],
+        chat_id: int,
+        quantity: int,
+    ) -> Union[InlineCall, None]:
+        if call is not None:
+            await call.edit(self.strings("clnraid_started").format(quantity))
+
+        deleted = 0
+        actually_deleted = 0
+        async for log_msg in self._client.iter_admin_log(chat_id, join=True):
+            if deleted >= quantity:
+                break
+
+            deleted += 1
+
+            try:
+                await self.inline.bot.kick_chat_member(
+                    int(f"-100{chat_id}"),
+                    log_msg.user.id,
+                )
+            except Exception:
+                logger.debug("Can't kick member", exc_info=True)
+            else:
+                actually_deleted += 1
+
+        if call is not None:
+            await call.edit(self.strings("clnraid_complete").format(actually_deleted))
+
+        return call
+
+    @error_handler
     async def myrightscmd(self, message: Message):
         """List your admin rights in all chats"""
         if not PIL_AVAILABLE:
@@ -3234,10 +3314,29 @@ class HikariChatMod(loader.Module):
 
     @error_handler
     async def p__antiservice(self, chat_id: Union[str, int], message: Message):
-        if self.api.should_protect(chat_id, "antiservice") and getattr(
-            message, "action_message", False
+        if (
+            self.api.should_protect(chat_id, "antiservice")
+            and str(chat_id) not in self._ban_ninja
+            and getattr(message, "action_message", False)
         ):
-            await message.delete()
+            await self.inline.bot.delete_message(
+                int(f"-100{chat_id}"),
+                message.action_message.id,
+            )
+
+    async def _update_ban_ninja(self, chat_id: str):
+        while chat_id in self._ban_ninja_forms:
+            await asyncio.sleep(15)
+            await self._ban_ninja_forms[chat_id].edit(
+                self.strings("smart_anti_raid_active").format(
+                    self._ban_ninja_progress[chat_id]
+                ),
+                {
+                    "text": self.strings("smart_anti_raid_off"),
+                    "callback": self.disable_smart_anti_raid,
+                    "args": (chat_id,),
+                },
+            )
 
     @error_handler
     async def p__banninja(
@@ -3261,58 +3360,64 @@ class HikariChatMod(loader.Module):
 
         if chat_id in self._ban_ninja:
             if self._ban_ninja[chat_id] > time.time():
-                await self.inline.bot.kick_chat_member(f"-100{chat_id}", user_id)
-                logger.warning(f"BanNinja is active in chat {chat.title}, I kicked {get_full_name(user)}")  # fmt: skip
+                await self.inline.bot.kick_chat_member(int(f"-100{chat_id}"), user_id)
+
+                self._ban_ninja_progress[chat_id] += 1
+
+                try:
+                    await self.inline.bot.delete_message(
+                        int(f"-100{chat_id}"),
+                        message.action_message.id,
+                    )
+                except MessageToDeleteNotFound:
+                    pass
+                except MessageCantBeDeleted:
+                    await self._promote_bot(chat_id)
+                    await self.inline.bot.delete_message(
+                        int(f"-100{chat_id}"),
+                        message.action_message.id,
+                    )
+
+                logger.debug(f"BanNinja is active in chat {chat.title}, I kicked {get_full_name(user)}")  # fmt: skip
                 return True
 
             del self._ban_ninja[chat_id]
 
+            if chat_id in self._ban_ninja_forms:
+                await self._ban_ninja_forms[chat_id].delete()
+                del self._ban_ninja_forms[chat_id]
+
+            if chat_id in self._ban_ninja_progress:
+                del self._ban_ninja_progress[chat_id]
+
+            if chat_id in self._ban_ninja_tasks:
+                self._ban_ninja_tasks[chat_id].cancel()
+                del self._ban_ninja_tasks[chat_id]
+
         if chat_id not in self._join_ratelimit:
             self._join_ratelimit[chat_id] = []
 
-        self._join_ratelimit[chat_id] += [(user_id, round(time.time()))]
+        self._join_ratelimit[chat_id] += [[user_id, round(time.time())]]
 
         processed = []
 
         for u, t in self._join_ratelimit[chat_id].copy():
             if u in processed or t + 60 < time.time():
-                self._join_ratelimit[chat_id].remove((u, t))
+                self._join_ratelimit[chat_id].remove([u, t])
             else:
                 processed += [u]
 
-        if len(self._join_ratelimit) > int(self.config["join_ratelimit"]):
-            if not await self.check_admin(
-                utils.get_chat_id(message),
-                f"@{self.inline.bot_username}",
-            ):
-                try:
-                    await self._client(
-                        InviteToChannelRequest(
-                            utils.get_chat_id(message),
-                            [self.inline.bot_username],
-                        )
-                    )
-                except Exception:
-                    logger.warning(
-                        "Unable to invite cleaner to chat. Maybe he's already there?"
-                    )
+        self.set("join_ratelimit", self._join_ratelimit)
 
-                try:
-                    await self._client(
-                        EditAdminRequest(
-                            channel=utils.get_chat_id(message),
-                            user_id=self.inline.bot_username,
-                            admin_rights=ChatAdminRights(ban_users=True),
-                            rank="Ban Ninja",
-                        )
-                    )
-                except Exception:
-                    logger.exception("Cleaner promotion failed!")
-                    return False
+        if len(self._join_ratelimit[chat_id]) >= int(self.config["join_ratelimit"]):
+            if chat_id in self._ban_ninja:
+                return False
 
-            self._ban_ninja[chat_id] = round(time.time()) + (10 * 60)
-            await self.inline.form(
-                self.strings("smart_anti_raid_active"),
+            self._ban_ninja[chat_id] = round(time.time()) + (5 * 60)
+            form = await self.inline.form(
+                self.strings("smart_anti_raid_active").format(
+                    self.config["join_ratelimit"]
+                ),
                 message=chat.id,
                 reply_markup={
                     "text": self.strings("smart_anti_raid_off"),
@@ -3321,7 +3426,56 @@ class HikariChatMod(loader.Module):
                 },
             )
 
+            self._ban_ninja_forms[chat_id] = form
+            self._ban_ninja_progress[chat_id] = int(self.config["join_ratelimit"])
+            self._ban_ninja_tasks[chat_id] = asyncio.ensure_future(self._update_ban_ninja(chat_id))
+
+            await (
+                await self._clnraid(
+                    call=(
+                        await self.inline.form(
+                            self.strings("clnraid_started").format("*loading*"),
+                            message=chat.id,
+                            reply_markup={"text": ".", "callback": self.inline__close},
+                        )
+                    ),
+                    chat_id=chat.id,
+                    quantity=int(self.config["join_ratelimit"]),
+                )
+            ).delete()
+
+            for m in self._ban_ninja_messages:
+                try:
+                    await self.inline.bot.delete_message(
+                        int(f"-100{utils.get_chat_id(m)}"),
+                        m.id,
+                    )
+                except MessageToDeleteNotFound:
+                    pass
+                except MessageCantBeDeleted:
+                    await self._promote_bot(utils.get_chat_id(m))
+                    await self.inline.bot.delete_message(
+                        int(f"-100{utils.get_chat_id(m)}"),
+                        m.id,
+                    )
+
+            await self._client.pin_message(int(chat_id), form.form["message_id"])
+
         return False
+
+    async def disable_smart_anti_raid(self, call: InlineCall, chat_id: int):
+        chat_id = str(chat_id)
+        if chat_id in self._ban_ninja:
+            del self._ban_ninja[chat_id]
+            await call.edit(self.strings("smart_anti_raid_stopped"))
+            await call.answer("Success")
+            await self._client.unpin_message(
+                int(chat_id),
+                self._ban_ninja_forms[str(chat_id)].form["message_id"],
+            )
+            return
+
+        await call.answer("Already stopped")
 
     @error_handler
     async def p__antiraid(
@@ -3336,12 +3490,15 @@ class HikariChatMod(loader.Module):
             getattr(message, "user_joined", False)
             or getattr(message, "user_added", False)
         ):
-            action = self.api.chats[str(chat_id)]["antiraid"]
+            action = self.api.chats[str(chat_id)]["antiraid"][0]
             if action == "kick":
                 await self._client.send_message(
                     "me",
                     self.strings("antiraid").format(
-                        "kicked", user.id, get_full_name(user), chat.title
+                        "kicked",
+                        user.id,
+                        get_full_name(user),
+                        utils.escape_html(chat.title),
                     ),
                 )
 
@@ -3350,7 +3507,10 @@ class HikariChatMod(loader.Module):
                 await self._client.send_message(
                     "me",
                     self.strings("antiraid").format(
-                        "banned", user.id, get_full_name(user), chat.title
+                        "banned",
+                        user.id,
+                        get_full_name(user),
+                        utils.escape_html(chat.title),
                     ),
                 )
 
@@ -3359,7 +3519,10 @@ class HikariChatMod(loader.Module):
                 await self._client.send_message(
                     "me",
                     self.strings("antiraid").format(
-                        "muted", user.id, get_full_name(user), chat.title
+                        "muted",
+                        user.id,
+                        get_full_name(user),
+                        utils.escape_html(chat.title),
                     ),
                 )
 
@@ -3378,11 +3541,15 @@ class HikariChatMod(loader.Module):
         message: Message,
         chat: Chat,
     ) -> bool:
-        if self.api.should_protect(chat_id, "welcome") and (
-            getattr(message, "user_joined", False)
-            or getattr(message, "user_added", False)
+        if (
+            self.api.should_protect(chat_id, "welcome")
+            and str(chat_id) not in self._ban_ninja
+            and (
+                getattr(message, "user_joined", False)
+                or getattr(message, "user_added", False)
+            )
         ):
-            await self._client.send_message(
+            m = await self._client.send_message(
                 chat_id,
                 self.api.chats[str(chat_id)]["welcome"][0]
                 .replace("{user}", get_full_name(user))
@@ -3392,6 +3559,11 @@ class HikariChatMod(loader.Module):
                 ),
                 reply_to=message.action_message.id,
             )
+
+            self._ban_ninja_messages = [m] + self._ban_ninja_messages
+            self._ban_ninja_messages = self._ban_ninja_messages[
+                : int(self.config["join_ratelimit"])
+            ]
 
             return True
 
@@ -3406,7 +3578,9 @@ class HikariChatMod(loader.Module):
         message: Message,
     ):
         if not self.api.should_protect(chat_id, "report") or not getattr(
-            message, "reply_to_msg_id", False
+            message,
+            "reply_to_msg_id",
+            False,
         ):
             return
 
@@ -3477,16 +3651,52 @@ class HikariChatMod(loader.Module):
                             },
                         ],
                     ],
-                    ttl=15,
                 )
             else:
                 await (utils.answer if message else self._client.send_message)(
-                    message or chat.id, msg
+                    message or chat.id,
+                    msg,
                 )
 
             self._ratelimit["report"][str(user_id)] = time.time() + 30
 
-            await message.delete()
+            try:
+                await self.inline.bot.delete_message(
+                    int(f"-100{chat_id}"),
+                    getattr(message, "id", message.action_message.id),
+                )
+            except MessageToDeleteNotFound:
+                pass
+            except MessageCantBeDeleted:
+                await self._promote_bot(chat_id)
+                await self.inline.bot.delete_message(
+                    int(f"-100{chat_id}"),
+                    getattr(message, "id", message.action_message.id),
+                )
+
+    @error_handler
+    async def _promote_bot(self, chat_id: int):
+        try:
+            await self._client(
+                InviteToChannelRequest(
+                    int(chat_id),
+                    [self.inline.bot_username],
+                )
+            )
+        except Exception:
+            logger.warning("Unable to invite cleaner to chat. Maybe he's already there?")  # fmt: skip
+
+        try:
+            await self._client(
+                EditAdminRequest(
+                    channel=int(chat_id),
+                    user_id=self.inline.bot_username,
+                    admin_rights=ChatAdminRights(ban_users=True, delete_messages=True),
+                    rank="HikariChat",
+                )
+            )
+        except Exception:
+            logger.exception("Cleaner promotion failed!")
 
     @error_handler
     async def p__antiflood(
@@ -3497,21 +3707,21 @@ class HikariChatMod(loader.Module):
         message: Message,
     ) -> Union[bool, str]:
         if self.api.should_protect(chat_id, "antiflood"):
-            if str(chat_id) not in self.flood_cache:
-                self.flood_cache[str(chat_id)] = {}
+            if str(chat_id) not in self._flood_cache:
+                self._flood_cache[str(chat_id)] = {}
 
-            if str(user_id) not in self.flood_cache[str(chat_id)]:
-                self.flood_cache[str(chat_id)][str(user_id)] = []
+            if str(user_id) not in self._flood_cache[str(chat_id)]:
+                self._flood_cache[str(chat_id)][str(user_id)] = []
 
-            for item in self.flood_cache[str(chat_id)][str(user_id)].copy():
+            for item in self._flood_cache[str(chat_id)][str(user_id)].copy():
                 if time.time() - item > self.flood_timeout:
-                    self.flood_cache[str(chat_id)][str(user_id)].remove(item)
+                    self._flood_cache[str(chat_id)][str(user_id)].remove(item)
 
-            self.flood_cache[str(chat_id)][str(user_id)].append(round(time.time(), 2))
-            self.save_flood_cache()
+            self._flood_cache[str(chat_id)][str(user_id)].append(round(time.time(), 2))
+            self.set("flood_cache", self._flood_cache)
 
             if (
-                len(self.flood_cache[str(chat_id)][str(user_id)])
+                len(self._flood_cache[str(chat_id)][str(user_id)])
                 >= self.flood_threshold
             ):
                 return self.api.chats[str(chat_id)]["antiflood"][0]
@@ -3531,7 +3741,7 @@ class HikariChatMod(loader.Module):
             and getattr(message, "sender_id", 0) < 0
         ):
             await self.ban(chat_id, user_id, 0, "", None, True)
-            await message.delete()
+            await self.inline.bot.delete_message(int(f"-100{chat_id}"), message.id)
             return True
 
         return False
@@ -3821,6 +4031,18 @@ class HikariChatMod(loader.Module):
 
     @error_handler
     async def watcher(self, message: Message):
+        self._global_queue += [message]
+
+    @error_handler
+    async def _global_queue_handler(self):
+        while True:
+            while self._global_queue:
+                await self._global_queue_handler_process(self._global_queue.pop(0))
+
+            await asyncio.sleep(0.01)
+
+    @error_handler
+    async def _global_queue_handler_process(self, message: Message):
         if not isinstance(getattr(message, "chat", 0), (Chat, Channel)):
             return
 
@@ -3837,27 +4059,35 @@ class HikariChatMod(loader.Module):
 
         await self.p__antiservice(chat_id, message)
 
-        try:
-            user_id = (
-                getattr(message, "sender_id", False)
-                or message.action_message.action.users[0]
-            )
-        except Exception:
+        if getattr(message, "user_joined", False) or getattr(
+            message, "user_added", False
+        ):
+            user_id = (await message.get_user()).id
+        else:
             try:
-                user_id = message.action_message.action.from_id.user_id
+                user_id = (
+                    getattr(message, "sender_id", False)
+                    or message.action_message.action.users[0]
+                )
             except Exception:
                 try:
-                    user_id = message.from_id.user_id
+                    user_id = message.action_message.action.from_id.user_id
                 except Exception:
                     try:
-                        user_id = message.action_message.from_id.user_id
+                        user_id = message.from_id.user_id
                     except Exception:
                         try:
-                            user_id = message.action.from_user.id
+                            user_id = message.action_message.from_id.user_id
                         except Exception:
-                            logger.debug(f"Can't extract entity from event {type(message)}")  # fmt: skip
-                            return
-        user_id = int(str(user_id)[4:]) if str(user_id).startswith("-100") else int(user_id)  # fmt: skip
+                            try:
+                                user_id = message.action.from_user.id
+                            except Exception:
+                                logger.debug(f"Can't extract entity from event {type(message)}")  # fmt: skip
+                                return
+
+        user_id = (
+            int(str(user_id)[4:]) if str(user_id).startswith("-100") else int(user_id)
+        )
 
         fed = await self.find_fed(message)
 
@@ -3938,9 +4168,7 @@ class HikariChatMod(loader.Module):
             if (
                 await self._client.get_permissions(chat_id, message.sender_id)
             ).is_admin:
-
                 return
-        # fmt: skip
         except Exception:
             pass
 
@@ -4020,6 +4248,13 @@ class HikariChatMod(loader.Module):
 
     _punish_queue = []
     _raid_cleaners = []
+    _global_queue = []
+
+    _ban_ninja = {}
+    _ban_ninja_messages = []
+    _ban_ninja_forms = {}
+    _ban_ninja_progress = {}
+    _ban_ninja_tasks = {}
 
     flood_timeout = FLOOD_TIMEOUT
     flood_threshold = FLOOD_TRESHOLD
@@ -4041,25 +4276,12 @@ class HikariChatMod(loader.Module):
         self._db = db
         self._client = client
 
-        self._tg_id = (await client.get_me()).id
-
         self._is_inline = self.inline.init_complete
 
         self._sticks_limit = 7
 
-        try:
-            with open("flood_cache.json", "r") as f:
-                self.flood_cache = json.loads(f.read())
-        except Exception:
-            self.flood_cache = {}
-
-        try:
-            with open("join_ratelimit.json", "r") as f:
-                self._join_ratelimit = json.loads(f.read())
-        except Exception:
-            self._join_ratelimit = {}
-
-        self._ban_ninja = db.get("HikariChat", "ban_ninja", {})
+        self._join_ratelimit = self.get("join_ratelimit", {})
+        self._flood_cache = self.get("flood_cache", {})
 
         self.api = api
         await api.init(client, db, self)
@@ -4079,6 +4301,8 @@ class HikariChatMod(loader.Module):
             + f"Version: {version}\n"
             + ("💔 Lite" if not self.api._inited else "🌘 Full")
         )
+
+        self._pt_task = asyncio.ensure_future(self._global_queue_handler())
 
     async def _remove_paid_features(self):
         await asyncio.sleep(1)
