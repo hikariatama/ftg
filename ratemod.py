@@ -29,9 +29,16 @@ class RateModuleMod(loader.Module):
         "cannot_check_file": "<b>Check error</b>",
     }
 
+    strings_ru = {
+        "template": "👮‍♂️ <b>Оценка модуля </b><code>{}</code><b>:</b>\n{} {} <b>[{}]</b>\n\n{}",
+        "no_file": "<b>А что проверять то?... 🗿</b>",
+        "cannot_check_file": "<b>Ошибка проверки</b>",
+        "_cmd_doc_ratemod": "<код> - Оценить модуль",
+        "_cls_doc": "Оценивает модуль и дает рекомендации",
+    }
+
     async def client_ready(self, client, db):
         self._client = client
-        self._db = db
 
     @loader.unrestricted
     async def ratemodcmd(self, message: Message):

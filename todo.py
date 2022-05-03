@@ -10,9 +10,9 @@
 
 # meta pic: https://img.icons8.com/fluency/48/000000/todo-list.png
 # meta developer: @hikariatama
+# scope: hikka_only
 
 from .. import loader, utils
-import asyncio
 from random import randint
 from telethon.tl.types import Message
 
@@ -28,9 +28,16 @@ class TodoMod(loader.Module):
         "new_task": "<b>Task </b><code>#{}</code>:\n<pre>{}</pre>\n{}",
     }
 
+    strings_ru = {
+        "task_removed": "<b>✅ Задача удалена</b>",
+        "task_not_found": "<b>🚫 Задача не найдена</b",
+        "new_task": "<b>Задача </b><code>#{}</code>:\n<pre>{}</pre>\n{}",
+        "_cls_doc": "Простой планнер задач",
+    }
+
     async def client_ready(self, client, db):
         self._db = db
-        self.todolist = self._db.get("ToDo", "todo", {})
+        self.todolist = self.get("todo", {})
 
         self.imp_levels = [
             "🌌 Watchlist",
@@ -66,11 +73,13 @@ class TodoMod(loader.Module):
 
         self.todolist[random_id] = [task, importance]
 
-        self._db.set("ToDo", "todo", self.todolist)
+        self.set("todo", self.todolist)
         await utils.answer(
             message,
-            self.strings("new_task", message).format(
-                random_id, str(task), self.imp_levels[importance]
+            self.strings("new_task").format(
+                random_id,
+                task,
+                self.imp_levels[importance],
             ),
         )
 
@@ -102,13 +111,9 @@ class TodoMod(loader.Module):
             args = args[1:]
 
         if args not in self.todolist:
-            await utils.answer(message, self.strings("task_not_found", message))
-            await asyncio.sleep(2)
-            await message.delete()
+            await utils.answer(message, self.strings("task_not_found"))
             return
 
         del self.todolist[args]
-        self._db.set("ToDo", "todo", self.todolist)
-        await utils.answer(message, self.strings("task_removed", message))
-        await asyncio.sleep(2)
-        await message.delete()
+        self.set("todo", self.todolist)
+        await utils.answer(message, self.strings("task_removed"))

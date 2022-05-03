@@ -34,6 +34,12 @@ class CarbonMod(loader.Module):
         "loading": "🕐 <b>Loading...</b>",
     }
 
+    strings_ru = {
+        "args": "🚫 <b>Не указаны аргументы</b>",
+        "loading": "🕐 <b>Обработка...</b>",
+        "_cls_doc": "Создает симпотичные фотки кода",
+    }
+
     async def client_ready(self, client, db):
         self._client = client
 

@@ -29,6 +29,14 @@ class AutoShortenerMod(loader.Module):
         "no_args": "🔗 <b>No link to shorten</b>",
     }
 
+    strings_ru = {
+        "state": "🔗 <b>Автоматический сократитель ссылок теперь {}</b>",
+        "no_args": "🔗 <b>Не указана ссылка для сокращения</b>",
+        "_cmd_doc_autosurl": "Включить\\выключить автоматическое сокращение ссылок",
+        "_cmd_doc_surl": "[ссылка] [движок]- Сократить ссылку",
+        "_cls_doc": "Автоматически сокращает ссылки в твоих сообщениях, если они длиннее значения в конфиге",
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             "threshold",
@@ -41,9 +49,6 @@ class AutoShortenerMod(loader.Module):
 
     async def client_ready(self, client, db):
         self._db = db
-        self.prefix = utils.escape_html(
-            (db.get(main.__name__, "command_prefix", False) or ".")[0]
-        )
 
     async def autosurlcmd(self, message: Message):
         """Toggle automatic url shortener"""
@@ -147,7 +152,7 @@ class AutoShortenerMod(loader.Module):
                 isinstance(entity, MessageEntityUrl) for entity in message.entities
             )
             or not self.get("state", False)
-            or message.raw_text.lower().startswith(self.prefix)
+            or message.raw_text.lower().startswith(self.get_prefix())
         ):
             return
 

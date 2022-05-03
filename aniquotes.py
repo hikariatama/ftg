@@ -10,9 +10,10 @@
 
 # meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/344/external-anime-addiction-flaticons-lineal-color-flat-icons.png
 # meta developer: @hikariatama
+# scope: hikka_only
 
-from .. import loader, utils  # noqa: F401
-from telethon.tl.types import Message  # noqa: F401
+from .. import loader, utils
+from telethon.tl.types import Message
 import logging
 from random import choice
 
@@ -29,6 +30,13 @@ class AnimatedQuotesMod(loader.Module):
         "processing": "⏱ <b>Processing...</b>",
     }
 
+    strings_ru = {
+        "no_text": "🚫 <b>Укажи текст для создания стикера</b>",
+        "processing": "⏱ <b>Обработка...</b>",
+        "_cmd_doc_aniq": "<text> - Создать анимированный стикер",
+        "_cls_doc": "Простенький модуль, который создает анимированные стикеры",
+    }
+
     async def client_ready(self, client, db):
         self._client = client
 
@@ -40,8 +48,6 @@ class AnimatedQuotesMod(loader.Module):
             return
 
         message = await utils.answer(message, self.strings("processing"))
-        if isinstance(message, (list, set, tuple)):
-            message = message[0]
 
         try:
             query = await self._client.inline_query("@QuotAfBot", args)
@@ -50,4 +56,5 @@ class AnimatedQuotesMod(loader.Module):
             await utils.answer(message, str(e))
             return
 
-        await message.delete()
+        if message.out:
+            await message.delete()

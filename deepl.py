@@ -93,6 +93,13 @@ class DeepLMod(loader.Module):
         "translated": "🇺🇸 <code>{}</code>",
     }
 
+    strings_ru = {
+        "no_text": "🚫 <b>Не указан текст</b>",
+        "translated": "🇺🇸 <code>{}</code>",
+        "_cmd_doc_deepl": "<text or reply> - Перевести текст через DeepL",
+        "_cls_doc": "Переводит текст через DeepL. Рекомендуется использовать прокси",
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig("proxy", "", lambda: "Proxy url")
 

@@ -32,6 +32,13 @@ class LongReadMod(loader.Module):
         "longread": "🗄 <b>This is long read</b>\n<i>Click button to show text!\nThis button is active withing 6 hours</i>",
     }
 
+    strings_ru = {
+        "no_text": "🚫 <b>Укажи текст, который надо спрятать</b>",
+        "longread": "🗄 <b>Это - лонгрид</b>\n<i>Нажми на кнопку, чтобы показать текст!\nОна активна в течение 6 часов</i>",
+        "_cmd_doc_lr": "<text> - Создать лонгрид",
+        "_cls_doc": "Пакует лонгриды под спойлеры",
+    }
+
     async def lr_inline_handler(self, query: InlineQuery):
         """Create new hidden message"""
         text = query.args

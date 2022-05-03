@@ -70,6 +70,15 @@ class HttpErrorsMod(loader.Module):
         "scode": "<b>{} {}</b>\n⚜️ Описание кода: <i>{}</i>",
     }
 
+    strings_ru = {
+        "args_incorrect": "<b>Неверные аргументы</b>",
+        "not_found": "<b>Код не найден</b>",
+        "syntax_error": "<b>Аргументы обязательны</b>",
+        "_cmd_doc_httpsc": "<код> - Получить информацию о HTTP-коде",
+        "_cmd_doc_httpscs": "Показать все доступные коды",
+        "_cls_doc": "Словарь HTTP-кодов",
+    }
+
     @loader.unrestricted
     async def httpsccmd(self, message: Message):
         """<statuscode> - Get status code info"""

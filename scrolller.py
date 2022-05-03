@@ -114,6 +114,14 @@ class ScrolllerMod(loader.Module):
         "default_subreddit": "🙂 <b>Set new default subreddit: </b><code>{}</code>",
     }
 
+    strings_ru = {
+        "sreddit404": "🚫 <b>Сабреддит не найден</b>",
+        "default_subreddit": "🙂 <b>Установил новый сабреддит по умолчанию: </b><code>{}</code>",
+        "_cmd_doc_gallery": "<сабреддит> [-n <количество | 1 по умолчанию>] - Отправляет случайную 18+ картинку",
+        "_cmd_doc_gallerycat": "<сабреддит> - Установить новый сабреддит по умолчанию",
+        "_cls_doc": "Отправляет изображения с scrolller.com в виде инлайн галереи",
+    }
+
     async def gallerycmd(self, message: Message):
         """<subreddit | default> - Send inline gallery with photos from subreddit"""
         args = utils.get_args_raw(message)

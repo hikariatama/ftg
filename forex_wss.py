@@ -41,6 +41,14 @@ class RealTimeValutesMod(loader.Module):
         "exchanges": "😌 <b>Exchange rates by Forex</b>\n\n<b>💵 1 USD = {:.2f} RUB\n💶 1 EUR = {:.2f} RUB</b>\n\n<i>This info is relevant to <u>{:%m/%d/%Y %H:%M:%S}</u></i>",
     }
 
+    strings_ru = {
+        "loading": "😌 <b>Загружаю информацию с Forex...</b>",
+        "wss_error": "🚫 <b>Ошибка подеключения к сокету</b>",
+        "exchanges": "😌 <b>Курсы валют Forex</b>\n\n<b>💵 1 USD = {:.2f} RUB\n💶 1 EUR = {:.2f} RUB</b>\n\n<i>Информация актуальна на <u>{:%m/%d/%Y %H:%M:%S}</u></i>",
+        "_cmd_doc_val": "Показать курсы валют",
+        "_cls_doc": "Отслеживает курсы валют в режиме реального времени. Обновляется несколько раз в секунду",
+    }
+
     async def _connect(self):
         r = await utils.run_sync(
             requests.get,

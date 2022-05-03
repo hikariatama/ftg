@@ -24,18 +24,6 @@ import functools
 
 phrases = ["Uwu", "Senpai", "Uff", "Meow", "Bonk", "Ara-ara", "Hewwo", "You're cute!"]
 
-faces = [
-    "ʕ•ᴥ•ʔ",
-    "(ᵔᴥᵔ)",
-    "(◕‿◕✿)",
-    "(づ￣ ³￣)づ",
-    "♥‿♥",
-    "~(˘▾˘~)",
-    "(｡◕‿◕｡)",
-    "｡◕‿◕｡",
-    "ಠ‿↼",
-]
-
 
 async def photo(self, args: str) -> str:
     return (await utils.run_sync(requests.get, f"{self.endpoints['img']}{args}")).json()["url"]
@@ -46,6 +34,16 @@ class NekosLifeMod(loader.Module):
     """NekosLife API Wrapper"""
 
     strings = {"name": "NekosLife"}
+
+    strings_ru = {
+        "_cmd_doc_nk": "Отправить аниме арт",
+        "_cmd_doc_nkct": "Показать доступные категории",
+        "_cmd_doc_owoify": "OwOфицировать текст",
+        "_cmd_doc_why": "Почему?",
+        "_cmd_doc_fact": "А ты знал?",
+        "_cmd_doc_meow": "Отправляет ASCII-арт кошки",
+        "_cls_doc": "Обертка NekosLife API",
+    }
 
     async def client_ready(self, client, db):
         self._client = client
@@ -77,7 +75,7 @@ class NekosLifeMod(loader.Module):
         await self.inline.gallery(
             message=message,
             next_handler=pic,
-            caption=lambda: f"<i>{random.choice(phrases)}</i> {random.choice(faces)}",
+            caption=lambda: f"<i>{random.choice(phrases)}</i> {utils.escape_html(utils.ascii_face())}",
         )
 
     @loader.pm
