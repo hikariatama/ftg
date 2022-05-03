@@ -28,14 +28,31 @@ class StatusesMod(loader.Module):
 
     strings = {
         "name": "Statuses",
-        "status_not_found": "<b>🦊 Status not found</b>",
-        "status_set": "<b>🦊 Status set\n</b><code>{}</code>\nNotify: {}",
-        "pzd_with_args": "<b>🦊 Args are incorrect</b>",
-        "status_created": "<b>🦊 Status {} created\n</b><code>{}</code>\nNotify: {}",
-        "status_removed": "<b>🦊 Status {} deleted</b>",
-        "no_status": "<b>🦊 No status is active</b>",
-        "status_unset": "<b>🦊 Status removed</b>",
+        "status_not_found": "<b>🚫 Status not found</b>",
+        "status_set": "<b>✅ Status set\n</b><code>{}</code>\nNotify: {}",
+        "pzd_with_args": "<b>🚫 Args are incorrect</b>",
+        "status_created": "<b>✅ Status {} created\n</b><code>{}</code>\nNotify: {}",
+        "status_removed": "<b>✅ Status {} deleted</b>",
+        "no_status": "<b>🚫 No status is active</b>",
+        "status_unset": "<b>✅ Status removed</b>",
         "available_statuses": "<b>🦊 Available statuses:</b>\n\n",
+    }
+
+    strings_ru = {
+        "status_not_found": "<b>🚫 Статус не найден</b>",
+        "status_set": "<b>✅ Статус установлен\n</b><code>{}</code>\nУведомлять: {}",
+        "pzd_with_args": "<b>🚫 Неверные аргументы</b>",
+        "status_created": "<b>✅ Статус {} создан\n</b><code>{}</code>\nУведомлять: {}",
+        "status_removed": "<b>✅ Статус {} удален</b>",
+        "no_status": "<b>🚫 Сейчас нет активного статуса</b>",
+        "status_unset": "<b>✅ Статус удален</b>",
+        "available_statuses": "<b>🦊 Доступные статусы:</b>\n\n",
+        "_cmd_doc_status": "<short_name> - Установить статус",
+        "_cmd_doc_newstatus": "<short_name> <уведомлять|0/1> <текст> - Создать новый статус\nПример: .newstatus test 1 Hello!",
+        "_cmd_doc_delstatus": "<short_name> - Удалить статус",
+        "_cmd_doc_unstatus": "Удалить статус",
+        "_cmd_doc_statuses": "Показать доступные статусы",
+        "_cls_doc": "AFK модуль с расширенным функционалом",
     }
 
     async def client_ready(self, client, db):

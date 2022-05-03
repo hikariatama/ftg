@@ -10,9 +10,9 @@
 
 # meta pic: https://img.icons8.com/fluency/48/000000/khan-academy.png
 # meta developer: @hikariatama
+# scope: hikka_only
 
 from .. import loader, utils
-import asyncio
 from random import randint
 from telethon.tl.types import Message
 
@@ -23,15 +23,25 @@ class HomeworkMod(loader.Module):
 
     strings = {
         "name": "HomeWork",
-        "no_hometask": "<b>You haven't provided hometask</b>",
+        "no_hometask": "🚫 <b>You haven't provided hometask</b>",
         "new_hometask": "<b>Hometask </b><code>#{}</code>:\n<pre>{}</pre>",
         "not_found": "<b>🚫 Hometask not found</b",
         "removed": "<b>✅ Hometask removed</b>",
     }
 
+    strings_ru = {
+        "no_hometask": "🚫 <b>Укажи домашнее задание</b>",
+        "new_hometask": "<b>Домашнее задание </b><code>#{}</code>:\n<pre>{}</pre>",
+        "not_found": "<b>🚫 Домашнее задание не найдено</b",
+        "removed": "<b>✅ Домашнее задание удалено</b>",
+        "_cmd_doc_hw": "<item> - Новое домашнее задание",
+        "_cmd_doc_hwl": "Список домашних заданий",
+        "_cmd_doc_uhw": "<id> - Удалить домашнее задание",
+        "_cls_doc": "Простой планнер домашних заданий",
+    }
+
     async def client_ready(self, client, db):
-        self._db = db
-        self.hw = self._db.get("HomeWork", "hw", {})
+        self.hw = self.get("hw", {})
 
     async def hwcmd(self, message: Message):
         """<item> - New hometask"""
@@ -40,8 +50,6 @@ class HomeworkMod(loader.Module):
         reply = await message.get_reply_message()
         if args == "" and not reply:
             await utils.answer(message, self.strings("no_hometask"))
-            await asyncio.sleep(2)
-            await message.delete()
             return
 
         if args == "":
@@ -51,17 +59,20 @@ class HomeworkMod(loader.Module):
 
         self.hw[random_id] = args
 
-        self._db.set("HomeWork", "hw", self.hw)
+        self.set("hw", self.hw)
         await utils.answer(
-            message, self.strings("new_hometask", message).format(random_id, str(args))
+            message,
+            self.strings("new_hometask").format(random_id, str(args)),
         )
 
     @loader.unrestricted
     async def hwlcmd(self, message: Message):
         """List of hometasks"""
         res = "<b>#HW:</b>\n\n"
+
         for item_id, item in self.hw.items():
             res += f"🔸 <code>.uhw {item_id}</code>: <code>{item}" + "</code>\n"
+
         await utils.answer(message, res)
 
     async def uhwcmd(self, message: Message):
@@ -71,13 +82,9 @@ class HomeworkMod(loader.Module):
             args = args[1:]
 
         if args not in self.hw:
-            await utils.answer(message, self.strings("not_found", message))
-            await asyncio.sleep(2)
-            await message.delete()
+            await utils.answer(message, self.strings("not_found"))
             return
 
         del self.hw[args]
-        self._db.set("HomeWork", "hw", self.hw)
-        await utils.answer(message, self.strings("removed", message))
-        await asyncio.sleep(2)
-        await message.delete()
+        self.set("hw", self.hw)
+        await utils.answer(message, self.strings("removed"))

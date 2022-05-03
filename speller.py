@@ -10,6 +10,7 @@
 
 # meta pic: https://img.icons8.com/fluency/48/000000/spell-check.png
 # meta developer: @hikariatama
+# scope: hikka_only
 # requires: requests cloudscraper requests_toolbelt aiohttp bs4 langid
 
 from .. import loader, utils
@@ -167,6 +168,12 @@ class SpellCheckMod(loader.Module):
         "processing": "👩‍🏫 <b>Let me take a look... Seems like this message is misspelled!</b>",
     }
 
+    strings_ru = {
+        "processing": "👩‍🏫 <b>Дай глянуть. Похоже, тут есть ошибки!</b>",
+        "_cmd_doc_spell": "Проверить сообщение на грамотность",
+        "_cls_doc": "Проверяет правописание",
+    }
+
     async def spellcmd(self, message: Message):
         """Perform spell check on reply"""
         reply = await message.get_reply_message()
@@ -174,9 +181,6 @@ class SpellCheckMod(loader.Module):
             await message.delete()
 
         message = await utils.answer(message, self.strings("processing"))
-        if isinstance(message, (list, tuple, set)):
-            message = message[0]
-
         text = reply.text
 
         tt = langid.classify(text)[0]

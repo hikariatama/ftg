@@ -10,6 +10,7 @@
 
 # meta pic: https://img.icons8.com/fluency/48/000000/sleep.png
 # meta developer: @hikariatama
+# scope: hikka_only
 
 from .. import loader, utils
 import re
@@ -44,57 +45,70 @@ class YouDBetterSleepMod(loader.Module):
 
     strings = {
         "name": "YouDBetterSleep",
-        "no_time": "👾 <b>You can't sleep forever, specify <time> argument</b>",
-        "awake": "👾 <b>Good morning. Shit, I'm still alive...</b>",
-        "asleep": "👾 <b>Good night. Now I can't write messages for {}</b>",
-        "disabled": "👾 <b>I can't write messages, because my userbot wants me to sleep</b>",
+        "no_time": "🚫 <b>You can't sleep forever, specify <time> argument</b>",
+        "awake": "🥱 <b>Good morning</b>",
+        "asleep": "😴 <b>Good night. Now I can't write messages for {}</b>",
+        "disabled": "😴 <b>I can't write messages, because my userbot wants me to sleep</b>",
+    }
+
+    strings_ru = {
+        "no_time": "👾 <b>Ты не можешь спать вечно, укажи аргумент <время></b>",
+        "awake": "🥱 <b>Доброе утро</b>",
+        "asleep": "😴 <b>Спокойной ночи. Я не могу писать сообщения на протяжении {}</b>",
+        "disabled": "😴 <b>Я не могу писать сообщения, так как мой юзербот хочет, чтобы я поспал</b>",
+        "_cmd_doc_sleep": "<время> - Время сна",
+        "_cls_doc": "Запрещает писать во время сна",
     }
 
     async def client_ready(self, client, db):
         self._client = client
         self._db = db
-        self.until = 0
-        self.asleep = db.get(__name__, "asleep", False)
 
     @loader.sudo
     async def sleepcmd(self, message: Message):
         """<time> - Sleep for time"""
         args = utils.get_args_raw(message)
+
         t = s2time(args)
+
         if not args or t == 0:
-            self.asleep = False
-            self.until = 0
-            self._db.set(__name__, "asleep", False)
+            self.set("asleep", False)
+            self.get("until", 0)
             await utils.answer(message, self.strings("awake"))
         else:
-            self.asleep = True
-            self.until = t + time.time()
-            self._db.set(__name__, "asleep", True)
-            self._db.set(__name__, "until", t)
+            self.set("asleep", True)
+            self.set("until", t + time.time())
             await utils.answer(message, self.strings("asleep").format(args))
 
     async def watcher(self, message: Message):
-        try:
-            if not self.asleep:
-                return
-            if message.text == ".sleep":
-                return
-            if self.until <= time.time():
-                self.until = 0
-                self.asleep = False
-                await self._client.send_message(
-                    "@userbot_notifies_bot", self.strings("awake")
-                )
-                return
+        if (
+            not isinstance(message, Message)
+            or not hasattr(message, "text")
+            or not self.get("asleep", False)
+            or not self.get("until", False)
+            or message.text == f"{self.get_prefix()}sleep"
+        ):
+            return
 
-            if message.mentioned:
-                await self._client.send_read_acknowledge(
-                    message.peer_id, message, clear_mentions=True
-                )
-                await utils.answer(message, self.strings("disabled"))
-            if not message.out:
-                return
+        if self.get("until", 0) <= time.time():
+            self.get("until", 0)
+            self.get("asleep", False)
+            await self.inline.bot.send_message(
+                self._tg_id,
+                self.strings("awake"),
+                parse_mode="HTML",
+            )
+            return
 
+        if message.mentioned:
+            await self._client.send_read_acknowledge(
+                message.peer_id,
+                message,
+                clear_mentions=True,
+            )
             await utils.answer(message, self.strings("disabled"))
-        except Exception:
-            pass
+
+        if not message.out:
+            return
+
+        await utils.answer(message, self.strings("disabled"))

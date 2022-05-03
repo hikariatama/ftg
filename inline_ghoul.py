@@ -22,7 +22,13 @@ from telethon.tl.types import Message
 class InlineGhoulMod(loader.Module):
     """Non-spammy ghoul module"""
 
-    strings = {"name": "InlineGhoul"}
+    strings = {"name": "InlineGhoul", "tired": "😾 <b>Tired of counting!</b>"}
+
+    strings_ru = {
+        "tired": "😾 <b>Я устал считать!</b>",
+        "_cmd_doc_ghoul": "Отправляет сообщение Гуля",
+        "_cls_doc": "Неспамящий модуль Гуль",
+    }
 
     async def ghoulcmd(self, message: Message):
         """Sends ghoul message"""

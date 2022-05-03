@@ -105,10 +105,6 @@ class NekosLifeMod(loader.Module):
 
         if len(args) > 180:
             message = await utils.answer(message, "<b>OwOifying...</b>")
-            try:
-                message = message[0]
-            except Exception:
-                pass
 
         args = quote_plus(args)
         owo = ""

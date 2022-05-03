@@ -40,13 +40,30 @@ class TempChatsMod(loader.Module):
     strings = {
         "name": "TempChats",
         "chat_is_being_removed": "<b>🚫 This chat is being removed...</b>",
-        "args": "🚫 <b>Check the args: </b><code>.help TempChat</code>",
+        "args": "🚫 <b>Check the args: </b><code>.help TempChats</code>",
         "chat_not_found": "🚫 <b>Chat not found</b>",
         "tmp_cancelled": "✅ <b>Chat </b><code>{}</code><b> will now live forever!</b>",
         "delete_error": "🚫 <b>An error occured while deleting this temp chat. Remove it manually.</b>",
         "temp_chat_header": "<b>⚠️ This chat</b> (<code>{}</code>)<b> is temporary and will be removed {}.</b>",
         "chat_created": '✅ <b><a href="{}">Chat</a> have been created</b>',
         "delete_error_me": "🚫 <b>Error occured while deleting chat {}</b>",
+    }
+
+    strings_ru = {
+        "chat_is_being_removed": "<b>🚫 Чат удаляется...</b>",
+        "args": "🚫 <b>Капец с аргументами: </b><code>.help TempChats</code>",
+        "chat_not_found": "🚫 <b>Чат не найден</b>",
+        "tmp_cancelled": "🚫 <b>Чат </b><code>{}</code><b> будет жить вечно!</b>",
+        "delete_error": "🚫 <b>Произошла ошибка удаления чата. Сделай это вручную.</b>",
+        "temp_chat_header": "<b>⚠️ Этот чат</b> (<code>{}</code>)<b> является временным и будет удален {}.</b>",
+        "chat_created": "✅ <b><a href=\"{}\">Чат</a> создан</b>",
+        "delete_error_me": "🚫 <b>Ошибка удаления чата {}</b>",
+        "_cmd_doc_tmpchat": "<время> <название> - Создать новый временный чат",
+        "_cmd_doc_tmpcurrent": "<время> - Создать новый временный чат",
+        "_cmd_doc_tmpchats": "Показать временные чаты",
+        "_cmd_doc_tmpcancel": "[chat-id] - Отменить удаление чата.",
+        "_cmd_doc_tmpctime": "<chat_id> <новое время> - Изменить время жизни чата",
+        "_cls_doc": "Создает временные чаты во избежание мусорки в Телеграме.",
     }
 
     @staticmethod

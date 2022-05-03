@@ -10,8 +10,9 @@
 
 # meta pic: https://img.icons8.com/fluency/48/000000/macbook-chat.png
 # meta developer: @hikariatama
+# scope: hikka_only
 
-from .. import loader, utils, main
+from .. import loader, utils
 import logging
 import re
 from telethon.tl.types import Message
@@ -25,23 +26,40 @@ class KeywordMod(loader.Module):
 
     strings = {
         "name": "Keyword",
-        "args": "🦊 <b>Args are incorrect</b>",
-        "kw_404": '🦊 <b>Keyword "{}" not found in db</b>',
-        "kw_added": "🦊 <b>New keyword:\nTrigger: {}\nMessage: {}\n{}{}{}{}{}</b>",
-        "kw_removed": '🦊 <b>Keyword "{}" removed</b>',
+        "args": "🚫 <b>Args are incorrect</b>",
+        "kw_404": '🚫 <b>Keyword "{}" not found</b>',
+        "kw_added": "✅ <b>New keyword:\nTrigger: {}\nMessage: {}\n{}{}{}{}{}</b>",
+        "kw_removed": '✅ <b>Keyword "{}" removed</b>',
         "kwbl_list": "🦊 <b>Blacklisted chats:</b>\n{}",
-        "bl_added": "🦊 <b>This chat is now blacklisted for Keywords</b>",
-        "bl_removed": "🦊 <b>This chat is now whitelisted for Keywords</b>",
+        "bl_added": "✅ <b>This chat is now blacklisted for Keywords</b>",
+        "bl_removed": "✅ <b>This chat is now whitelisted for Keywords</b>",
         "sent": "🦊 <b>[Keywords]: Sent message to {}, triggered by {}:\n{}</b>",
         "kwords": "🦊 <b>Current keywords:\n</b>{}",
-        "no_command": "🦊 <b>Execution of command forbidden, because message contains reply</b>",
+        "no_command": "🚫 <b>Execution of command forbidden, because message contains reply</b>",
+    }
+
+    strings_ru = {
+        "args": "🚫 <b>Неверные аргументы</b>",
+        "kw_404": '🚫 <b>Кейворд "{}" не найден</b>',
+        "kw_added": "✅ <b>Новый кейворд:\nТриггер: {}\nСообщение: {}\n{}{}{}{}{}</b>",
+        "kw_removed": '✅ <b>Кейворд "{}" удален</b>',
+        "kwbl_list": "🦊 <b>Чаты в черном списке:</b>\n{}",
+        "bl_added": "✅ <b>Этот чат теперь в черном списке Кейвордов</b>",
+        "bl_removed": "✅ <b>Этот чат больше не в черном списке Кейвордов</b>",
+        "sent": "🦊 <b>[Кейворды]: Отправлено сообщение в {}, активировано {}:\n{}</b>",
+        "kwords": "🦊 <b>Текущие кейворды:\n</b>{}",
+        "no_command": "🚫 <b>Команда не была выполнена, так как сообщение содержит реплай</b>",
+        "_cmd_doc_kword": "<кейворд | можно в кавычках | & для нескольких слов, которые должны быть в сообщении в любом порядке> <сообщение | оставь пустым для удаления кейворда> [-r для полного совпадения] [-m для автопрочтения сообщения] [-l для включения логирования] [-e для включения регулярных выражений]",
+        "_cmd_doc_kwords": "Показать активные кейворды",
+        "_cmd_doc_kwbl": "Добавить чат в черный список кейвордов",
+        "_cmd_doc_kwbllist": "Показать чаты в черном списке",
+        "_cls_doc": "Создавай кастомные кейворды с регулярными выражениями и командами",
     }
 
     async def client_ready(self, client, db):
-        self._db = db
         self._client = client
-        self.keywords = db.get("Keyword", "keywords", {})
-        self.bl = db.get("Keyword", "bl", [])
+        self.keywords = self.get("keywords", {})
+        self.bl = self.get("bl", [])
 
     async def kwordcmd(self, message: Message):
         """<keyword | could be in quotes | & for multiple words that should be in msg> <message | empty to remove keyword> [-r for full match] [-m for autoreading msg] [-l to log in pm] [-e for regular expressions]"""
@@ -84,7 +102,7 @@ class KeywordMod(loader.Module):
             ph = ph.strip()
             kw = kw.strip()
             self.keywords[kw] = [f"🤖 {ph}", restrict, ar, l, e, c]
-            self._db.set("Keyword", "keywords", self.keywords)
+            self.set("keywords", self.keywords)
             return await utils.answer(
                 message,
                 self.strings("kw_added").format(
@@ -100,8 +118,10 @@ class KeywordMod(loader.Module):
         else:
             if kw not in self.keywords:
                 return await utils.answer(message, self.strings("kw_404").format(kw))
+
             del self.keywords[kw]
-            self._db.set("Keyword", "keywords", self.keywords)
+
+            self.set("keywords", self.keywords)
             return await utils.answer(message, self.strings("kw_removed").format(kw))
 
     async def kwordscmd(self, message: Message):
@@ -134,11 +154,11 @@ class KeywordMod(loader.Module):
         cid = utils.get_chat_id(message)
         if cid not in self.bl:
             self.bl.append(cid)
-            self._db.set("Keyword", "bl", self.bl)
+            self.set("bl", self.bl)
             return await utils.answer(message, self.strings("bl_added"))
         else:
             self.bl.remove(cid)
-            self._db.set("Keyword", "bl", self.bl)
+            self.set("bl", self.bl)
             return await utils.answer(message, self.strings("bl_removed"))
 
     async def kwbllistcmd(self, message: Message):
@@ -200,14 +220,7 @@ class KeywordMod(loader.Module):
                 if (
                     len(ph) > 5
                     and ph[5]
-                    and ph[0][offset:].startswith(
-                        utils.escape_html(
-                            (
-                                self._db.get(main.__name__, "command_prefix", False)
-                                or "."
-                            )[0]
-                        )
-                    )
+                    and ph[0][offset:].startswith(self.get_prefix())
                 ):
                     offset += 1
 

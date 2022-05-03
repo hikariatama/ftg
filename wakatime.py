@@ -46,6 +46,19 @@ class WakaTimeMod(loader.Module):
         "set_username": "🙂 <b>You need to set your WakaTime username in </b><code>.config</code>",
     }
 
+    strings_ru = {
+        "face_set": "{} <b>Эмодзи сохранен</b>",
+        "pick_face": "🙂 <b>Выбери эмодзи, который будет отображаться в виджете WakaTime</b>",
+        "widget": "{} <b>Я {}.</b>\n\n<b>▪️ Я &lt;разработчик/&gt; и это как прошла моя неделя:</b>\n\n{}",
+        "state": "🙂 <b>Виджеты WakaTime теперь {}</b>\n{}",
+        "tutorial": "ℹ️ <b>Для активации виджета, отправь </b><code>$WAKATIME_WIDGET$</code> <b>в нужный чат</b>",
+        "configuring": "🙂 <b>Виджет WakaTime готов и скоро будет обновлен</b>",
+        "set_username": "🙂 <b>Необходимо установить юзернейм на WakaTime в </b><code>.config</code>",
+        "_cmd_doc_wakaface": "Выбрать эмодзи, которое будет отображаться в виджетах",
+        "_cmd_doc_wakatoggle": "Включить\\выключить виджеты",
+        "_cls_doc": "Виджеты WakaTime для твоего канала @пользовательname_bio",
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             "wakatime_username",
@@ -62,23 +75,7 @@ class WakaTimeMod(loader.Module):
         self._me = await client.get_me()
         self._endpoint = "https://github-readme-stats.vercel.app/api/wakatime?username={}&show_icons=false&hide_progress=true&layout=true"
 
-        self._faces = [
-            "🐻‍❄️",
-            "🐻",
-            "🐼",
-            "🐯",
-            "🦁",
-            "🦉",
-            "🐺",
-            "🐰",
-            "🦊",
-            "🐬",
-            "🦈",
-            "🦥",
-            "💁‍♂️",
-            "🥷",
-            "🧑‍💻",
-        ]
+        self._faces = ["🐻‍❄️", "🐻", "🐼", "🐯", "🦁", "🦉", "🐺", "🐰", "🦊", "🐬", "🦈", "🦥", "💁‍♂️", "🥷", "🧑‍💻"]  # fmt: skip
 
         self._faces_markup = utils.chunks(
             [

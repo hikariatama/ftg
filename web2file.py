@@ -23,9 +23,16 @@ class Web2fileMod(loader.Module):
 
     strings = {
         "name": "Web2file",
-        "no_args": "🦊 <b>Specify link</b>",
-        "fetch_error": "🦊 <b>Download error</b>",
+        "no_args": "🚫 <b>Specify link</b>",
+        "fetch_error": "🚫 <b>Download error</b>",
         "loading": "🦊 <b>Downloading...</b>",
+    }
+
+    strings_ru = {
+        "no_args": "🚫 <b>Укажи ссылку</b>",
+        "fetch_error": "🚫 <b>Ошибка загрузки</b>",
+        "loading": "🦊 <b>Загрузка...</b>",
+        "_cls_doc": "Скачивает содержимое ссылки и отправляет в виде файла",
     }
 
     async def web2filecmd(self, message: Message):

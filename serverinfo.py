@@ -10,6 +10,7 @@
 
 # meta pic: https://img.icons8.com/fluency/48/000000/server.png
 # meta developer: @hikariatama
+# scope: hikka_only
 # requires: psutil
 
 from .. import loader, utils
@@ -46,15 +47,19 @@ class serverInfoMod(loader.Module):
         "servinfo": "<b><u>👾 Server Info:</u>\n\n<u>🗄 Used resources:</u>\n    CPU: {} Cores {}%\n    RAM: {} / {}MB ({}%)\n\n<u>🧾 Dist info</u>\n    Kernel: {}\n    Arch: {}\n    OS: {}\n\n<u>📦 Python libs:</u>\n    Telethon: {}\n    Telethon-Mod: {}\n    Python-Git: {}\n    Python: {}\n    Pip: {}</b>",
     }
 
+    strings_ru = {
+        "loading": "<b>👾 Загрузка информации о сервере...</b>",
+        "servinfo": "<b><u>👾 Информация о сервере:</u>\n\n<u>🗄 Задействованные ресурсы:</u>\n    CPU: {} ядер {}%\n    RAM: {} / {}MB ({}%)\n\n<u>🧾 Информация о ядре</u>\n    Kernel: {}\n    Arch: {}\n    OS: {}\n\n<u>📦 Библиотеки Python:</u>\n    Telethon: {}\n    Telethon-Mod: {}\n    Python-Git: {}\n    Python: {}\n    Pip: {}</b>",
+        "_cmd_doc_serverinfo": "Показать информацию о сервере",
+        "_cls_doc": "Показывает информацию о сервере",
+    }
+
     async def serverinfocmd(self, message: Message):
         """Show server info"""
         message = await utils.answer(message, self.strings("loading"))
-        try:
-            message = message[0]
-        except Exception:
-            pass
 
         inf = []
+
         try:
             inf.append(psutil.cpu_count(logical=True))
         except Exception:

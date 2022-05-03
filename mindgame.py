@@ -53,7 +53,9 @@ class MindGameMod(loader.Module):
 
     def _generate_markup(self, counter: int) -> list:
         fail_emoji, next_step_emoji = random.choice(EMOJIES)
-        markup = [{"text": fail_emoji, "callback": self._incorrect}] * (8**2 - 1) + [
+        markup = [
+            {"text": fail_emoji, "callback": self._incorrect} for _ in range(8**2 - 1)
+        ] + [
             {
                 "text": next_step_emoji,
                 "callback": self._next_step_callback,

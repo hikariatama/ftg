@@ -10,6 +10,7 @@
 
 # meta pic: https://img.icons8.com/fluency/48/000000/upload-to-cloud.png
 # meta developer: @hikariatama
+# scope: hikka_only
 
 import logging
 import io
@@ -35,8 +36,20 @@ class FileUploaderMod(loader.Module):
         "noargs": "🚫 <b>No file specified</b>",
         "err": "🚫 <b>Upload error</b>",
         "uploaded": "🌐 <code>{}</code>",
-        "imgur_blocked": "🚫 <b>Unban @imgurbot_bot</b>",
+        "imgur_blocked": "🚫 <b>Unban @ImgUploadBot</b>",
         "not_an_image": "🚫 <b>This platform only supports images</b>",
+    }
+
+    strings_ru = {
+        "uploading": "📤 <b>Загрузка...</b>",
+        "noargs": "🚫 <b>Файл не указан</b>",
+        "err": "🚫 <b>Ошибка загрузки</b>",
+        "uploaded": "🌐 <code>{}</code>",
+        "imgur_blocked": "🚫 <b>Разблокируй @ImgUploadBot</b>",
+        "not_an_image": "🚫 <b>Эта платформа поддерживает только изображения</b>",
+        "_cmd_doc_imgur": "Загрузить на imgur.com",
+        "_cmd_doc_oxo": "Загрузить на 0x0.st",
+        "_cls_doc": "Загружает файлы на разные платформы",
     }
 
     async def client_ready(self, client, db):
@@ -78,14 +91,16 @@ class FileUploaderMod(loader.Module):
         file = await self.get_media(message)
         if not file:
             return False
+
         if imghdr.what(file) not in ["gif", "png", "jpg", "jpeg", "tiff", "bmp"]:
             await utils.answer(message, self.strings("not_an_image"))
             return False
+
         return file
 
     async def x0cmd(self, message: Message):
         """Upload to x0.at"""
-        await utils.answer(message, self.strings("uploading"))
+        message = await utils.answer(message, self.strings("uploading"))
         file = await self.get_media(message)
         if not file:
             return
@@ -101,10 +116,11 @@ class FileUploaderMod(loader.Module):
 
     async def imgurcmd(self, message: Message):
         """Upload to imgur.com"""
-        await utils.answer(message, self.strings("uploading"))
+        message = await utils.answer(message, self.strings("uploading"))
         file = await self.get_image(message)
         if not file:
             return
+
         chat = "@ImgUploadBot"
 
         async with self._client.conversation(chat) as conv:
@@ -134,7 +150,7 @@ class FileUploaderMod(loader.Module):
 
     async def oxocmd(self, message: Message):
         """Upload to 0x0.st"""
-        await utils.answer(message, self.strings("uploading"))
+        message = await utils.answer(message, self.strings("uploading"))
         file = await self.get_media(message)
         if not file:
             return

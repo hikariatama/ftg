@@ -29,18 +29,38 @@ class MagicBroomMod(loader.Module):
 
     strings = {
         "name": "MagicBroom",
-        "no_args": "🦊 <b>Args are mandatory </b><code>.help MagicBroom</code>",
-        "will_be_removed": "<b>🦊 {} dialogs will be deleted:</b>\n<pre>   🔸 {}</pre>\n\n🔰 Use: <code>.broom {}</code>",
-        "nothing_will_be_removed": "<b>🦊 No chats will be deleted</b>",
+        "no_args": "🚫 <b>Args are mandatory </b><code>.help MagicBroom</code>",
+        "will_be_removed": "<b>✅ {} dialogs will be deleted:</b>\n<pre>   🔸 {}</pre>\n\n🔰 Use: <code>.broom {}</code>",
+        "nothing_will_be_removed": "<b>✅ No chats will be deleted</b>",
         "fuck_off": "🦊 <b>I don't wanna any messages from you, ergo you are banned.</b>",
-        "removed": "<b>🦊 {} dialogs deleted:</b>\n<pre>   🔸 {}</pre>",
-        "nothing_removed": "<b>🦊 No chats have been deleted</b>",
+        "removed": "<b>✅ {} dialogs deleted:</b>\n<pre>   🔸 {}</pre>",
+        "nothing_removed": "<b>✅ No chats have been deleted</b>",
         "broom_file": "\n✅ Removed {} filemods",
         "broom_deadrepos": "\n✅ Removed {} dead repos",
         "broom_refactorrepos": "\n✅ Replaced {} old repos",
         "broom_deletedconfs": "\n✅ Removed {} unloaded mod configs",
         "processing": "<b>🦊 Processing...</b>",
         "result": "<b>🦊 Result:</b>\n",
+    }
+
+    strings_ru = {
+        "no_args": "🚫 <b>Аргументы обязательны, смотри </b><code>.help MagicBroom</code>",
+        "will_be_removed": "<b>✅ {} диалогов будет удалено:</b>\n<pre>   🔸 {}</pre>\n\n🔰 Команда: <code>.broom {}</code>",
+        "nothing_will_be_removed": "<b>✅ Не будет удалено ни одного чата</b>",
+        "fuck_off": "🦊 <b>Я не хочу никаких сообщений от тебя, поэтому ты заблокирован.</b>",
+        "removed": "<b>✅ {} диалогов удалено:</b>\n<pre>   🔸 {}</pre>",
+        "nothing_removed": "<b>✅ Не было удалено ни одного чата</b>",
+        "broom_file": "\n✅ Удалено {} файловых модулей",
+        "broom_deadrepos": "\n✅ Удалено {} мертвых репо",
+        "broom_refactorrepos": "\n✅ Заменил {} старых репо",
+        "broom_deletedconfs": "\n✅ Удалено {} конфигов выгруженных модулей",
+        "processing": "<b>🦊 Обработка...</b>",
+        "result": "<b>🦊 Результат:</b>\n",
+        "_cmd_doc_broomp": "<args> - Препросмотр .broom",
+        "_cmd_doc_broom": "<args> - Волшебная метла\n-d - Удалить диалоги с удаленными аккаунтами\n-b - Удалить диалоги с заблокированными аккаунтами\n-s - Удалить диалоги со скам аккаунтами\n-q <запрос> - Поиск запроса и удаление диалогов, соответствующих ему",
+        "_cmd_doc_washdb": "<arg> - Очистка базы данных (рекомендуется .backupdb)\n-1 --filemods - Удалить конфиги модулей, загруженных из файла\n-2 --deadrepos - Удалить мертвые репо\n-3 --refactorrepos - Заменить страшные ссылки репозиториев на нормальные\n-4 --deleteconf - Удалить конфиги выгруженных модулей\n-a --all - Применить все фильтры выше",
+        "_cmd_doc_pban": "<args> - Избавиться от чата\n-h - Очистить историю для себя\n-hh - Очистить историю для всех",
+        "_cls_doc": "Волшебная метла очистит базу данных и диалоги от хлама",
     }
 
     async def client_ready(self, client, db):

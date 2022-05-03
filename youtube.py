@@ -10,7 +10,7 @@
 
 # meta pic: https://img.icons8.com/fluency/50/000000/youtube.png
 # meta developer: @hikariatama
-# scope: non_heroku
+# scope: hikka_only
 # scope: ffmpeg
 # requires: pytube python-ffmpeg
 
@@ -19,7 +19,6 @@ from pytube import YouTube
 import os
 import subprocess
 from telethon.tl.types import Message
-
 
 
 @loader.tds
@@ -33,6 +32,14 @@ class YouTubeMod(loader.Module):
         "not_found": "🎞 <b>Video not found...</b>",
     }
 
+    strings_ru = {
+        "args": "🎞 <b>Укажи ссылку на видео</b>",
+        "downloading": "🎞 <b>Скачиваю...</b>",
+        "not_found": "🎞 <b>Видео не найден...</b>",
+        "_cmd_doc_yt": "[mp3] <ссылка> - Скачать видео YouTube",
+        "_cls_doc": "Скачать YouTube видео",
+    }
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
@@ -42,10 +49,7 @@ class YouTubeMod(loader.Module):
         """[mp3] <link> - Download video from youtube"""
         args = utils.get_args_raw(message)
         message = await utils.answer(message, self.strings("downloading"))
-        try:
-            message = message[0]
-        except Exception:
-            pass
+
         ext = False
         if len(args.split()) > 1:
             ext, args = args.split(maxsplit=1)
@@ -78,11 +82,14 @@ class YouTubeMod(loader.Module):
         try:
             path = await utils.run_sync(dlyt, args, path)
         except Exception:
-            return await utils.answer(message, self.strings("not_found"))
+            await utils.answer(message, self.strings("not_found"))
+            return
 
         if ext == "mp3":
             path = convert_video_to_audio_ffmpeg(path)
 
         await self._client.send_file(message.peer_id, path)
         os.remove(path)
-        await message.delete()
+        
+        if message.out:
+            await message.delete()

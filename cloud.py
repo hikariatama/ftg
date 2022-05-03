@@ -40,8 +40,22 @@ class ModuleCloudMod(loader.Module):
         "args": "🚫 <b>Args not specified</b>",
         "mod404": "🚫 <b>Module {} not found</b>",
         "ilink": '<b><u>{name}</u> - <a href="https://mods.hikariatama.ru/view/{file}">source</a></b> | <i>By @hikarimods with ❤️‍🩹</i>\nℹ️ <i>{desc}</i>\n{hikka_only}\n🌃 <b>Install:</b> <code>.dlmod https://mods.hikariatama.ru/{file}</code>',
-        "hikka_only": "\n🌘 <b><u>Hikka</u> only</b>\n",
+        "hikka_only": "\n🌘 <b>Exclusively for <u>Hikka</u></b>\n",
         "404": "😔 <b>Module not found</b>"
+    }
+
+    strings_ru = {
+        "cannot_check_file": "🚫 <b>Не могу прочитать файл...</b>",
+        "cannot_join": "🚫 <b>Может я забанен в чате Хикари?</b>",
+        "args": "🚫 <b>Нет аргументов</b>",
+        "mod404": "🚫 <b>Модуль {} не найден</b>",
+        "hikka_only": "\n🌘 <b>Эсклюзивно для <u>Hikka</u></b>\n",
+        "_cmd_doc_addmod": "<файл> - Отправить модуль в @hikka_talks для добавления в базу",
+        "_cmd_doc_cloud": "<command \\ mod_name> - Поиск модуля в @hikarimods_database",
+        "_cmd_doc_imod": "<command \\ mod_name> - Поиск модуля в @hikarimods",
+        "_cmd_doc_ilink": "<modname> - Получить баннер модуля Хикари",
+        "_cmd_doc_verifmod": "<filename>;<title>;<description>;<tags> - Верифицировать модуль [только для админов @hikarimods]",
+        "_cls_doc": "Поиск и предложение модулей в HikariMods Database",
     }
 
     async def client_ready(self, client, db):

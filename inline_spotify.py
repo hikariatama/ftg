@@ -48,7 +48,18 @@ def create_bar(pb):
 class InlineSpotifyMod(loader.Module):
     """EXTENSION for SpotifyNow mod, that allows you to send interactive player."""
 
-    strings = {"name": "InlineSpotify"}
+    strings = {
+        "name": "InlineSpotify",
+        "input": "🎧 Enter the track name",
+        "search": "🔎 Search",
+    }
+
+    strings_ru = {
+        "input": "🎧 Введи название трека",
+        "search": "🔎 Поиск",
+        "_cmd_doc_splayer": "Отправляет интерактивный плеер Spotify (активен в течение 5 минут!)",
+        "_cls_doc": "Дополнение для модуля SpotifyNow, позволяющее вызвать интерактивный плеер.",
+    }
 
     async def _reload_sp(self, once=False):
         while True:
@@ -185,8 +196,8 @@ class InlineSpotifyMod(loader.Module):
                     ],
                     [
                         {
-                            "text": "🔎 Search",
-                            "input": "🎧 Enter the name of track",
+                            "text": self.strings("search"),
+                            "input": self.strings("input"),
                             "handler": self.sp_play_track,
                         },
                         {"text": "🔗 Link", "url": f"https://song.link/s/{track_id}"},

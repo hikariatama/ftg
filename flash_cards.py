@@ -203,9 +203,27 @@ class FlashCardsMod(loader.Module):
         "offline_testing": "<b>📖 Offline testing, based on deck {}</b>",
     }
 
+    strings_ru = {
+        "deck_not_found": "<b>🚫 Дека не найдена</b",
+        "no_deck_name": "<b>Ты не указал имя деки</b>",
+        "deck_created": "#Deck <code>#{}</code> <b>{}</b> успешно создана!",
+        "deck_removed": "<b>🚫 Дека удалена</b>",
+        "save_deck_no_reply": "<b>🚫 Эта команда должна выполняться в ответ на измененную деку.</b>",
+        "deck_saved": "✅ <b>Дека сохранена!</b>",
+        "generating_page": "<b>⚙️ Генерирую страницу, секунду...</b>",
+        "offline_testing": "<b>📖 Оффлайн тестирование на основе деки {}</b>",
+        "_cmd_doc_newdeck": "<name> - Создать новую деку",
+        "_cmd_doc_decks": "Показать деки",
+        "_cmd_doc_deletedeck": "<id> - Удалить деку",
+        "_cmd_doc_listdeck": "<id> - Показать деку",
+        "_cmd_doc_editdeck": "<id> - Редактировать деку",
+        "_cmd_doc_savedeck": "<reply> - Сохранить деку",
+        "_cmd_doc_htmldeck": "<id> - Сгенерировать оффлайн-тестирование по деке",
+        "_cls_doc": "Флеш-карты для обучения",
+    }
+
     async def client_ready(self, client, db):
-        self._db = db
-        self.decks = self._db.get("FlashCards", "decks", {})
+        self.decks = self.get("decks", {})
 
     def get_fucking_deck_from_fucking_reply(self, fucking_reply, fucking_limit=None):
         if fucking_reply is None:
@@ -263,7 +281,7 @@ class FlashCardsMod(loader.Module):
             )
 
         if not args or args not in self.decks:
-            await utils.answer(message, self.strings("deck_not_found", message))
+            await utils.answer(message, self.strings("deck_not_found"))
             await asyncio.sleep(2)
             await message.delete()
             return False
@@ -275,7 +293,7 @@ class FlashCardsMod(loader.Module):
 
         args = utils.get_args_raw(message)
         if args == "":
-            await utils.answer(message, self.strings("no_deck_name", message))
+            await utils.answer(message, self.strings("no_deck_name"))
             await asyncio.sleep(2)
             await message.delete()
             return
@@ -284,9 +302,10 @@ class FlashCardsMod(loader.Module):
 
         self.decks[random_id] = {"name": args, "cards": [("sample", "sample")]}
 
-        self._db.set("FlashCards", "decks", self.decks)
+        self.set("decks", self.decks)
         await utils.answer(
-            message, self.strings("deck_created", message).format(random_id, args)
+            message,
+            self.strings("deck_created").format(random_id, args),
         )
 
     async def deckscmd(self, message: Message):
@@ -311,18 +330,16 @@ class FlashCardsMod(loader.Module):
             return
 
         del self.decks[deck_id]
-        self._db.set("FlashCards", "decks", self.decks)
+        self.set("decks", self.decks)
         reply = await message.get_reply_message()
         if reply:
             if "#Decks" in reply.text:
                 await self.deckscmd(reply)
             elif "#Deck" in reply.text:
                 await reply.edit(
-                    reply.text + "\n" + self.strings("deck_removed", message)
+                    reply.text + "\n" + self.strings("deck_removed")
                 )
-        await utils.answer(message, self.strings("deck_removed", message))
-        await asyncio.sleep(2)
-        await message.delete()
+        await utils.answer(message, self.strings("deck_removed"))
 
     async def listdeckcmd(self, message: Message):
         """<id> - List deck items"""
@@ -358,7 +375,7 @@ class FlashCardsMod(loader.Module):
         """<reply> - Save deck. Do not use if you don't know what is this"""
         reply = await message.get_reply_message()
         if not reply or "#Editing" not in reply.text:
-            await utils.answer(message, self.strings("save_deck_no_reply", message))
+            await utils.answer(message, self.strings("save_deck_no_reply"))
             await asyncio.sleep(2)
             await message.delete()
             return False
@@ -385,12 +402,12 @@ class FlashCardsMod(loader.Module):
         except Exception:
             pass
 
-        self._db.set("FlashCards", "decks", self.decks)
+        self.set("decks", self.decks)
 
         res = f"📋#Deck #{deck_id} <b>{deck['name']}</b>:\n➖➖➖➖➖➖➖➖➖➖"
         for i, (front, back) in enumerate(deck["cards"], start=1):
             res += f"\n<b>{i}. {front} - {back}</b>"
-        res += "\n➖➖➖➖➖➖➖➖➖➖\n" + self.strings("deck_saved", message)
+        res += "\n➖➖➖➖➖➖➖➖➖➖\n" + self.strings("deck_saved")
 
         await utils.answer(reply, res)
         await message.delete()
@@ -402,7 +419,7 @@ class FlashCardsMod(loader.Module):
             return
 
         deck = self.decks[deck_id]
-        await utils.answer(message, self.strings("generating_page", message))
+        await utils.answer(message, self.strings("generating_page"))
         deck_name = deck["name"]
         loc_cards = deck["cards"].copy()
         cards = dict(loc_cards)
@@ -418,5 +435,5 @@ class FlashCardsMod(loader.Module):
         await message.client.send_file(
             message.to_id,
             txt,
-            caption=self.strings("offline_testing", message).format(deck_name),
+            caption=self.strings("offline_testing").format(deck_name),
         )

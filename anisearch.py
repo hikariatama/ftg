@@ -31,6 +31,15 @@ class AniSearchMod(loader.Module):
         "media_not_found": "🚫 <b>Media not found</b>",
     }
 
+    strings_ru = {
+        "404": "😶‍🌫️ <b>Я не знаю, что это за аниме...</b>",
+        "searching": "🐵 <b>Дай глянуть...</b>",
+        "result": "😎 <b>Я думаю, что это... </b><code>{}</code><b> эпизод </b><code>{}</code><b> на</b> <code>{}</code>\n<b>Я уверен на {}%</b>",
+        "media_not_found": "🚫 <b>Медиа не найдено</b>",
+        "_cmd_doc_anisearch": "Поиск аниме по скриншоту",
+        "_cls_doc": "Ищет конкретную серию и тайм-код аниме по скриншоту",
+    }
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client

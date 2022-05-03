@@ -32,6 +32,13 @@ class PollPlotMod(loader.Module):
         "no_answers": "😔 <b>This poll has not answers yet.</b>",
     }
 
+    strings_ru = {
+        "no_reply": "🚫 <b>Нужен ответ на опрос!</b>",
+        "no_answers": "😔 <b>В этом опросе пока что нет участников.</b>",
+        "_cmd_doc_plot": "<reply> - Создать визуализацию опроса",
+        "_cls_doc": "Визуализирует опросы в виде графиков",
+    }
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client

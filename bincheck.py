@@ -26,6 +26,12 @@ class BinCheckerMod(loader.Module):
         "args": "💳 <b>To get bin info, you need to specify Bin of card (first 6 digits)</b>",
     }
 
+    strings_ru = {
+        "args": "💳 <b>Для получения информации БИН укажи первые 6 цифр карты</b>",
+        "_cmd_doc_bincheck": "[bin] - Получить информацию БИН",
+        "_cls_doc": "Показать информацию БИН о банковской карте",
+    }
+
     @loader.unrestricted
     async def bincheckcmd(self, message: Message):
         """[bin] - Get card Bin info"""

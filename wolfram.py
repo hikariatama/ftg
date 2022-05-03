@@ -10,6 +10,7 @@
 
 # meta pic: https://img.icons8.com/color/344/wolfram-alpha.png
 # meta developer: @hikariatama
+# scope: hikka_only
 # requires: aiohttp urllib Pillow
 
 from .. import loader, utils
@@ -63,8 +64,6 @@ async def wolfram_compute(query: str) -> tuple:
                 f"appid={random.choice(appids)}",
             ) as resp:
                 answer = await resp.text()
-
-                # logger.info(answer)
 
                 answer = json.loads(answer)
 
@@ -155,8 +154,22 @@ class WolframAlphaMod(loader.Module):
         "hard": "🤯 <b>I don't know how to solve this problem</b>",
     }
 
+    strings_ru = {
+        "hard": "🤯 <b>Я не знаю, как решить эту задачу</b>",
+        "_cmd_doc_wolfram": "Решить математическую задачу",
+        "_cls_doc": "Решает математические задачи",
+        "computing": (
+            "🧠 <b>Делаю все, чтобы решить эту математическую задачу...</b>|"
+            "🧠 <b>Блин, опять математика...</b>|"
+            "🧠 <b>Ой, это очень сложная задача. Дай мне немного времени...</b>|"
+            "🧠 <b>Я бог математики и я помогу тебе...</b>|"
+            "🧠 <b>АКТИВИРУЮ РЕЖИМ БОГА МАТЕМАТИКИ</b>|"
+            "🧠 <b>Бип-буп решаю</b>|"
+            "🧠 <b>Не можешь решить сам? Мэх, ладно, помогу...</b>"
+        ),
+    }
+
     async def client_ready(self, client, db):
-        self._db = db
         self._client = client
 
     async def wolframcmd(self, message: Message):
@@ -166,11 +179,9 @@ class WolframAlphaMod(loader.Module):
             args = "x ^ 2 + y ^ 2 = 1"
 
         message = await utils.answer(
-            message, random.choice(self.strings("computing").split("|"))
+            message,
+            random.choice(self.strings("computing").split("|")),
         )
-        if isinstance(message, (list, set, tuple)):
-            message = message[0]
-
         answer = await wolfram_compute(args)
         if not answer:
             await utils.answer(message, self.strings("hard"))

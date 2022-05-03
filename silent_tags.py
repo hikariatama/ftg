@@ -33,6 +33,13 @@ class SilentTagsMod(loader.Module):
         "stags_status": "<b>👾 Silent Tags are {}</b>",
     }
 
+    strings_ru = {
+        "tag_mentioned": "<b>👾 Silent Tags включены</b>",
+        "stags_status": "<b>👾 Silent Tags {}</b>",
+        "_cmd_doc_stags": "<on\\off> - Включить\\выключить уведомления о тегах",
+        "_cls_doc": "Отключает уведомления о тегах",
+    }
+
     async def client_ready(self, client, db):
         self._client = client
         self._db = db
