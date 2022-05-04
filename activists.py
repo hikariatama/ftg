@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/edit-message.png
+# meta pic: https://img.icons8.com/external-flaticons-flat-flat-icons/512/000000/external-person-100-most-used-icons-flaticons-flat-flat-icons-2.png
 # meta developer: @hikariatama
 # scope: hikka_only
 

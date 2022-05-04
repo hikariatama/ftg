@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-justicon-flat-justicon/64/000000/external-note-education-justicon-flat-justicon.png
+# meta pic: https://img.icons8.com/tiny-color/256/000000/experimental-note-tiny-color.png
 # meta developer: @hikariatama
 
 from .. import loader, utils  # noqa

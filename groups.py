@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/stickers/100/000000/id-verified.png
+# meta pic: https://img.icons8.com/color/480/000000/brick-wall.png
 # meta developer: @hikariatama
 # scope: inline
 

@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/envelope-number.png
+# meta pic: https://img.icons8.com/fluency/240/000000/envelope-number.png
 # meta developer: @hikariatama
 # scope: hikka_only
 # scope: hikka_min 1.1.12

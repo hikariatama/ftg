@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/50/000000/youtube.png
+# meta pic: https://img.icons8.com/plasticine/400/000000/youtube-play--v2.png
 # meta developer: @hikariatama
 # scope: hikka_only
 # scope: ffmpeg

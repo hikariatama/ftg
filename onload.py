@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/50/000000/event-log.png
+# meta pic: https://img.icons8.com/stickers/500/000000/start.png
 # meta developer: @hikariatama
 # scope: hikka_only
 # scope: hikka_min 1.0.18

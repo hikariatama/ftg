@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/color-glass/50/000000/txt.png
+# meta pic: https://img.icons8.com/external-soft-fill-juicy-fish/480/000000/external-big-cute-monsters-soft-fill-soft-fill-juicy-fish-4.png
 # meta developer: @hikariatama
 # scope: hikka_only
 

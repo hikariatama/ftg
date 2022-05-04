@@ -10,7 +10,7 @@ __version__ = (2, 0, 0)
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-prettycons-flat-prettycons/47/000000/external-tic-tac-toe-games-prettycons-flat-prettycons.png
+# meta pic: https://img.icons8.com/external-icongeek26-flat-icongeek26/512/000000/external-tic-tac-toe-playground-icongeek26-flat-icongeek26.png
 # meta developer: @hikariatama
 # scope: inline
 # scope: hikka_only

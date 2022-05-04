@@ -10,7 +10,7 @@ __version__ = (2, 0, 0)
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://i.pinimg.com/originals/49/da/ad/49daadd583d0dd45e4737bc4ed5697f9.jpg
+# meta pic: https://img.icons8.com/fluency/240/000000/guest-male.png
 # meta developer: @hikariatama
 # scope: hikka_only
 

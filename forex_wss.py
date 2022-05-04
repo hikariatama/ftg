@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/50/000000/crowdfunding.png
+# meta pic: https://img.icons8.com/external-smashingstocks-thin-outline-color-smashing-stocks/270/000000/external-forex-finance-smashingstocks-thin-outline-color-smashing-stocks.png
 # meta developer: @hikariatama
 # scope: inline
 # scope: hikka_only

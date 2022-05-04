@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/bank-card-back-side.png
+# meta pic: https://img.icons8.com/fluency/240/000000/sim-card-chip.png
 # meta developer: @hikariatama
 
 from .. import loader, utils

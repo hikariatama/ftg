@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/anime.png
+# meta pic: https://img.icons8.com/color/480/000000/sarada-uchiha.png
 # scope: hikka_only
 # meta developer: @hikariatama
 # requires: urllib requests

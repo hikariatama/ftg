@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta title: PM->BL
-# meta pic: https://img.icons8.com/fluency/48/000000/poison.png
+# meta pic: https://img.icons8.com/external-dreamcreateicons-flat-dreamcreateicons/512/000000/external-death-halloween-dreamcreateicons-flat-dreamcreateicons.png
 # meta developer: @hikariatama
 # scope: hikka_only
 # scope: hikka_min 1.1.12

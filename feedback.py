@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/000000/external-feedback-influencer-marketing-wanicon-lineal-color-wanicon.png
+# meta pic: https://img.icons8.com/stickers/500/000000/feedback.png
 # meta developer: @hikariatama
 # scope: inline
 # scope: hikka_only

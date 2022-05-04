@@ -8,10 +8,10 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-icongeek26-linear-colour-icongeek26/64/000000/external-short-clothes-icongeek26-linear-colour-icongeek26.png
+# meta pic: https://img.icons8.com/external-xnimrodx-lineal-color-xnimrodx/512/000000/external-short-shopping-mall-xnimrodx-lineal-color-xnimrodx.png
 # meta developer: @hikariatama
 
-from .. import loader, utils, main
+from .. import loader, utils
 from telethon.tl.types import Message, MessageEntityUrl
 import logging
 import requests

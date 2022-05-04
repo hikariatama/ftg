@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://cdn-icons-png.flaticon.com/512/2405/2405001.png
+# meta pic: https://img.icons8.com/color/480/000000/hinata.png
 # scope: inline
 # scope: hikka_only
 # meta developer: @hikariatama

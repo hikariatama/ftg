@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/stickers/100/000000/like.png
+# meta pic: https://img.icons8.com/color/480/000000/filled-like.png
 # meta developer: @hikariatama
 # scope: inline
 # scope: hikka_only

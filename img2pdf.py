@@ -8,9 +8,8 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/pdf-mail.png
+# meta pic: https://img.icons8.com/stickers/500/000000/pdf.png
 # meta developer: @hikariatama
-# scope: non_heroku
 # requires: Pillow
 
 from .. import loader, utils

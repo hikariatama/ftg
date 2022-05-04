@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/spotify.png
+# meta pic: https://img.icons8.com/plasticine/400/000000/spotify--v2.png
 # meta developer: @hikariatama
 # requires: spotipy Pillow
 
@@ -25,7 +25,7 @@ import traceback
 from math import ceil
 from types import FunctionType
 from telethon.tl.types import Message
-from .. import loader, utils, main
+from .. import loader, utils
 from PIL import Image, ImageDraw, ImageFont
 
 logger = logging.getLogger(__name__)

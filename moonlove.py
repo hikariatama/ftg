@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/new-moon_1f311.png
+# meta pic: https://img.icons8.com/emoji/256/000000/waxing-crescent-moon.png
 # meta developer: @hikariatama
 # scope: hikka_only
 # scope: hikka_min 1.1.7

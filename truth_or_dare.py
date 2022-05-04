@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-wanicon-flat-wanicon/344/external-game-free-time-wanicon-flat-wanicon.png
+# meta pic: https://img.icons8.com/external-flaticons-flat-flat-icons/512/000000/external-game-seo-flaticons-flat-flat-icons.png
 # scope: inline
 # scope: hikka_only
 # scope: hikka_min 1.0.25

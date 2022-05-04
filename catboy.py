@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/color/48/000000/neko-boy.png
+# meta pic: https://img.icons8.com/color/480/000000/tanjiro-kamado.png
 # meta developer: @hikariatama
 # requires: requests
 # scope: hikka_only

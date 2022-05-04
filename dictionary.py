@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-flat-satawat-anukul/64/000000/external-dictionary-education-flat-flat-satawat-anukul-2.png
+# meta pic: https://img.icons8.com/external-flat-satawat-anukul/512/000000/external-dictionary-education-flat-flat-satawat-anukul.png
 # meta developer: @hikariatama
 # requires: aiohttp urllib bs4
 # scope: inline

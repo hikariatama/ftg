@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/emoji/48/000000/shiffle-tracks-button-emoji.png
+# meta pic: https://img.icons8.com/fluency/240/000000/shuffle.png
 # meta developer: @hikariatama
 # scope: inline
 # scope: hikka_only

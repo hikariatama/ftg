@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/color/344/neural_connections.png
+# meta pic: https://img.icons8.com/color/480/000000/brain--v1.png
 # meta developer: @hikariatama
 # scope: hikka_only
 

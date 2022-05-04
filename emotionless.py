@@ -8,10 +8,9 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-vitaliy-gorbachev-flat-vitaly-gorbachev/58/000000/external-sad-social-media-vitaliy-gorbachev-flat-vitaly-gorbachev.png
+# meta pic: https://img.icons8.com/external-vitaliy-gorbachev-flat-vitaly-gorbachev/464/000000/external-sad-social-media-vitaliy-gorbachev-flat-vitaly-gorbachev.png
 # meta developer: @hikariatama
 # scope: hikka_only
-# requires: telethon-mod
 
 from .. import loader, utils
 from telethon.tl.types import Message

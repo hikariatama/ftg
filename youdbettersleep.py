@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/sleep.png
+# meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/512/000000/external-sleep-productivity-flaticons-lineal-color-flat-icons.png
 # meta developer: @hikariatama
 # scope: hikka_only
 
@@ -91,8 +91,8 @@ class YouDBetterSleepMod(loader.Module):
             return
 
         if self.get("until", 0) <= time.time():
-            self.get("until", 0)
-            self.get("asleep", False)
+            self.set("until", 0)
+            self.set("asleep", False)
             await self.inline.bot.send_message(
                 self._tg_id,
                 self.strings("awake"),

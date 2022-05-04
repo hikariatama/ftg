@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/broom.png
+# meta pic: https://img.icons8.com/external-icongeek26-flat-icongeek26/512/000000/external-broom-magic-and-fairy-tale-icongeek26-flat-icongeek26.png
 # meta developer: @hikariatama
 # scope: hikka_only
 

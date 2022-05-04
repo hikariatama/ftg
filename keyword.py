@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 @loader.tds
 class KeywordMod(loader.Module):
-    """Create custom filters with regexes and commands"""
+    """Allows you to create custom filters with regexes, commands and unlimited funcionality"""
 
     strings = {
         "name": "Keyword",

@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/spell-check.png
+# meta pic: https://img.icons8.com/fluency/240/000000/spell-check.png
 # meta developer: @hikariatama
 # scope: hikka_only
 # requires: requests cloudscraper requests_toolbelt aiohttp bs4 langid

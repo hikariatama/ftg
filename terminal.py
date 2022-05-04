@@ -24,7 +24,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-filled-outline-lima-studio/344/external-terminal-coding-filled-outline-lima-studio.png
+# meta pic: https://img.icons8.com/external-flat-lima-studio/512/000000/external-terminal-coding-flat-lima-studio.png
 # meta developer: @bsolute
 # scope: hikka_only
 # scope: hikka_min 1.1.12

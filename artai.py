@@ -10,7 +10,7 @@ __version__ = (1, 0, 1)
 # 🔒 Licensed under the CC BY-NC-ND 4.0
 # 🌐 https://creativecommons.org/licenses/by-nc-nd/4.0
 
-# meta pic: https://img.icons8.com/fluency/344/class-dojo.png
+# meta pic: https://img.icons8.com/fluency/240/000000/class-dojo.png
 # meta developer: @hikariatama
 # scope: hikka_only
 

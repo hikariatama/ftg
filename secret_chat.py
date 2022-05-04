@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-wanicon-flat-wanicon/64/000000/external-secret-emoji-wanicon-flat-wanicon.png
+# meta pic: https://img.icons8.com/external-justicon-lineal-color-justicon/512/000000/external-unlock-marketing-and-growth-justicon-lineal-color-justicon.png
 # meta developer: @hikariatama
 # scope: hikka_only
 # scope: hikka_min 1.1.12

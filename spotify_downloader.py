@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/spotify.png
+# meta pic: https://img.icons8.com/plasticine/400/000000/spotify--v2.png
 # meta developer: @hikariatama
 
 from .. import loader, utils

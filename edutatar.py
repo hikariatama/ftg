@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/dictionary.png
+# meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/512/000000/external-education-job-search-flaticons-lineal-color-flat-icons.png
 # meta developer: @hikariatama
 
 from .. import loader, utils

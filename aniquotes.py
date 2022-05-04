@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/344/external-anime-addiction-flaticons-lineal-color-flat-icons.png
+# meta pic: https://img.icons8.com/stickers/500/000000/naruto.png
 # meta developer: @hikariatama
 # scope: hikka_only
 

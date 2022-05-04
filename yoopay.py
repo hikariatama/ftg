@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/coin-wallet.png
+# meta pic: https://img.icons8.com/external-photo3ideastudio-flat-photo3ideastudio/512/000000/external-payment-supermarket-photo3ideastudio-flat-photo3ideastudio.png
 # meta developer: @hikariatama
 
 from .. import loader, utils

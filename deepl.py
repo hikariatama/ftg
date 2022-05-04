@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-kosonicon-flat-kosonicon/50/000000/external-translate-chat-messages-kosonicon-flat-kosonicon.png
+# meta pic: https://img.icons8.com/external-xnimrodx-lineal-color-xnimrodx/512/000000/external-translate-discussion-xnimrodx-lineal-color-xnimrodx.png
 # meta developer: @hikariatama
 
 from .. import loader, utils

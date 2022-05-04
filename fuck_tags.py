@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/radio-waves.png
+# meta pic: https://img.icons8.com/emoji/256/000000/middle-finger-light-skin-tone.png
 # meta developer: @hikariatama
 # scope: hikka_only
 

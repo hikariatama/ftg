@@ -10,7 +10,7 @@ __version__ = (2, 0, 0)
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/cute-clipart/64/000000/playstation-buttons.png
+# meta pic: https://img.icons8.com/color/480/000000/playstation-buttons.png
 # meta developer: @hikariatama
 # scope: inline
 # scope: hikka_only
