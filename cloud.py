@@ -24,6 +24,7 @@ import inspect
 import io
 import difflib
 import logging
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +40,7 @@ class ModuleCloudMod(loader.Module):
         "cannot_join": "🚫 <b>Am I banned in hikari. chat?</b>",
         "args": "🚫 <b>Args not specified</b>",
         "mod404": "🚫 <b>Module {} not found</b>",
-        "ilink": '<b><u>{name}</u> - <a href="https://mods.hikariatama.ru/view/{file}">source</a></b> | <i>By @hikarimods with ❤️‍🩹</i>\nℹ️ <i>{desc}</i>\n{hikka_only}\n🌃 <b>Install:</b> <code>.dlmod https://mods.hikariatama.ru/{file}</code>',
-        "hikka_only": "\n🌘 <b>Exclusively for <u>Hikka</u></b>\n",
+        "ilink": '💻 <b><u>{name}</u> - <a href="https://mods.hikariatama.ru/view/{file}">source</a></b> | <i>By @hikarimods with 💗</i>\nℹ️ <i>{desc}</i>\n\n🌃 <b>Install:</b> <code>.dlmod https://mods.hikariatama.ru/{file}</code>',
         "404": "😔 <b>Module not found</b>"
     }
 
@@ -49,7 +49,6 @@ class ModuleCloudMod(loader.Module):
         "cannot_join": "🚫 <b>Может я забанен в чате Хикари?</b>",
         "args": "🚫 <b>Нет аргументов</b>",
         "mod404": "🚫 <b>Модуль {} не найден</b>",
-        "hikka_only": "\n🌘 <b>Эсклюзивно для <u>Hikka</u></b>\n",
         "_cmd_doc_addmod": "<файл> - Отправить модуль в @hikka_talks для добавления в базу",
         "_cmd_doc_cloud": "<command \\ mod_name> - Поиск модуля в @hikarimods_database",
         "_cmd_doc_imod": "<command \\ mod_name> - Поиск модуля в @hikarimods",
@@ -122,22 +121,19 @@ class ModuleCloudMod(loader.Module):
         if badge.status_code == 404:
             return await utils.answer(message, self.strings("mod404").format(args))
 
-        img = requests.get(badge.json()["badge"]).content
+        img = requests.get(badge.json()["badge"] + f"?t={round(time.time())}").content
         info = badge.json()["info"]
-
-        hikka_only = self.strings("hikka_only") if info["hikka_only"] else ""
-        del info["hikka_only"]
 
         if not message.media or not message.out:
             await self._client.send_file(
                 message.peer_id,
                 img,
-                caption=self.strings("ilink").format(hikka_only=hikka_only, **info),
+                caption=self.strings("ilink").format(**info),
             )
             await message.delete()
         else:
             await message.edit(
-                self.strings("ilink").format(hikka_only=hikka_only, **info), file=img
+                self.strings("ilink").format(**info), file=img
             )
 
     async def verifmodcmd(self, message: Message) -> None:

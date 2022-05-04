@@ -8,14 +8,15 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/tongue-out.png
+# meta pic: https://img.icons8.com/color/480/000000/comedy.png
 # meta developer: @hikariatama
-# scope: hikka_only
 
 from .. import loader, utils
 import io
 import json
 from telethon.tl.types import Message
+from telethon.utils import get_display_name
+import grapheme
 
 
 @loader.tds
@@ -54,7 +55,24 @@ class RPMod(loader.Module):
 
     async def client_ready(self, client, db):
         self._client = client
-        self.rp = self.get("rp", {})
+        self.rp = self.get(
+            "rp",
+            {
+                "поцеловать": " 💋 поцеловал",
+                "чмок": " ❤️ чмокнул",
+                "обнять": "☺️ обнял",
+                "лизнуть": "👅 лизнул",
+                "напоить": "🥃 напоил",
+                "связать": "⛓ связал",
+                "приковать": "🔗 приковал",
+                "трахнуть": "👉👌 сочно трахнул",
+                "убить": "🔪 убил",
+                "уничтожить": " 💥 низвёл до атомов",
+                "расстрелять": "🔫 расстрелял",
+                "отдаться": "🥵 страстно отдался",
+                "раб": "⛓ забрал в рабство",
+            },
+        )
         self.chats = self.get("active", [])
 
     async def rpcmd(self, message: Message):
@@ -96,7 +114,7 @@ class RPMod(loader.Module):
             message,
             self.strings("rplist").format(
                 "\n".join(
-                    [f"    🇨🇭 {command} - {msg}" for command, msg in self.rp.items()]
+                    [f"    ▫️ {command} - {msg}" for command, msg in self.rp.items()]
                 )
             ),
         )
@@ -127,35 +145,36 @@ class RPMod(loader.Module):
 
     async def rpchatscmd(self, message: Message):
         """List chats, where RPM is active"""
-        res = f"🦊 <b>RPM is active in {len(self.chats)} chats:</b>\n\n"
-        for chat in self.chats:
-            chat_obj = await self._client.get_entity(int(chat))
-            if getattr(chat_obj, "title", False):
-                chat_name = chat_obj.title
-            else:
-                chat_name = chat_obj.first_name
-
-            res += f"    🇯🇵 {chat_name}" + "\n"
-
-        await utils.answer(message, res)
+        await utils.answer(
+            message,
+            f"🦊 <b>RPM is active in {len(self.chats)} chats:</b>\n\n"
+            + "\n".join(
+                [
+                    f"    🇯🇵 {utils.escape_html(get_display_name(await self._client.get_entity(int(chat))))}"
+                    for chat in self.chats
+                ]
+            ),
+        )
 
     async def watcher(self, message: Message):
         cid = str(utils.get_chat_id(message))
         if (
             cid not in self.chats
             or not isinstance(message, Message)
-            or not hasattr(message, "text")
-            or message.text.split(maxsplit=1)[0].lower() not in self.rp
+            or not hasattr(message, "raw_text")
+            or message.raw_text.split(maxsplit=1)[0].lower() not in self.rp
         ):
             return
 
-        cmd = message.text.split(maxsplit=1)[0].lower()
+        cmd = message.raw_text.split(maxsplit=1)[0].lower()
         msg = self.rp[cmd]
 
         entity = None
 
         try:
-            entity = await self._client.get_entity(message.text.split(maxsplit=2)[1])
+            entity = await self._client.get_entity(
+                message.raw_text.split(maxsplit=2)[1]
+            )
         except Exception:
             pass
 
@@ -174,7 +193,14 @@ class RPMod(loader.Module):
 
         sender = await self._client.get_entity(message.sender_id)
 
+        if utils.emoji_pattern.match(next(grapheme.graphemes(msg))):
+            msg = list(grapheme.graphemes(msg))
+            emoji = msg[0]
+            msg = "".join(msg[1:])
+        else:
+            emoji = "🦊"
+
         await utils.answer(
             message,
-            f'🦊 <a href="tg://user?id={sender.id}">{sender.first_name}</a> <b>{msg}</b> <a href="tg://user?id={reply.id}">{reply.first_name}</a>',
+            f'{emoji} <a href="tg://user?id={sender.id}">{utils.escape_html(sender.first_name)}</a> <b>{utils.escape_html(msg)}</b> <a href="tg://user?id={reply.id}">{utils.escape_html(reply.first_name)}</a>',
         )
