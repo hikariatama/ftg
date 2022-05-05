@@ -10,6 +10,8 @@
 
 # meta pic: https://img.icons8.com/external-xnimrodx-lineal-color-xnimrodx/512/000000/external-translate-discussion-xnimrodx-lineal-color-xnimrodx.png
 # meta developer: @hikariatama
+# scope: hikka_only
+# scope: hikka_min 1.1.14
 
 from .. import loader, utils
 from telethon.tl.types import Message
@@ -101,7 +103,9 @@ class DeepLMod(loader.Module):
     }
 
     def __init__(self):
-        self.config = loader.ModuleConfig("proxy", "", lambda: "Proxy url")
+        self.config = loader.ModuleConfig(
+            loader.ConfigValue("proxy", "", lambda: "Proxy url")
+        )
 
     async def deeplcmd(self, message: Message):
         """<text or reply> - Translate text via DeepL scraping"""

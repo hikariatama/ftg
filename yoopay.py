@@ -10,6 +10,8 @@
 
 # meta pic: https://img.icons8.com/external-photo3ideastudio-flat-photo3ideastudio/512/000000/external-payment-supermarket-photo3ideastudio-flat-photo3ideastudio.png
 # meta developer: @hikariatama
+# scope: hikka_only
+# scope: hikka_min 1.1.14
 
 from .. import loader, utils
 from yoomoney import Quickpay
@@ -36,7 +38,7 @@ class YooMoneyMod(loader.Module):
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            "account", "", lambda: "Yoomoney wallet (16 digits)"
+            loader.ConfigValue("account", "", lambda: "Yoomoney wallet (16 digits)")
         )
 
     @loader.unrestricted

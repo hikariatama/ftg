@@ -27,7 +27,7 @@
 # meta pic: https://img.icons8.com/external-flat-lima-studio/512/000000/external-terminal-coding-flat-lima-studio.png
 # meta developer: @bsolute
 # scope: hikka_only
-# scope: hikka_min 1.1.12
+# scope: hikka_min 1.1.14
 
 from .. import loader, utils
 import logging
@@ -45,32 +45,56 @@ class TerminalMod(loader.Module):
 
     strings = {
         "name": "Terminal",
-        "flood_wait_protect_cfg_doc": "How long to wait in seconds between edits in commands",
-        "what_to_kill": "<b>Reply to a terminal command to terminate it</b>",
-        "kill_fail": "<b>Could not kill process</b>",
-        "killed": "<b>Killed</b>",
-        "no_cmd": "<b>No command is running in that message</b>",
-        "running": "<b>Running command</b> <code>{}</code>",
+        "fw_protect": "How long to wait in seconds between edits in commands",
+        "what_to_kill": "🚫 <b>Reply to a terminal command to terminate it</b>",
+        "kill_fail": "🚫 <b>Could not kill process</b>",
+        "killed": "🚫 <b>Killed</b>",
+        "no_cmd": "🚫 <b>No command is running in that message</b>",
+        "running": "<b>🔄 System call</b> <code>{}</code>",
         "finished": "\n<b>Command finished with return code</b> <code>{}</code>",
-        "stdout": "\n<b>Stdout:</b>\n<code>",
-        "stderr": "</code>\n\n<b>Stderr:</b>\n<code>",
+        "stdout": "\n<b>📼 Stdout:</b>\n<code>",
+        "stderr": "</code>\n\n<b>🚫 Stderr:</b>\n<code>",
         "end": "</code>",
-        "auth_fail": "<b>Authentication failed, please try again</b>",
-        "auth_needed": '<a href="tg://user?id={}">Interactive authentication required</a>',
+        "auth_fail": "🚫 <b>Authentication failed, please try again</b>",
+        "auth_needed": '<a href="tg://user?id={}">🔐 Interactive authentication required</a>',
         "auth_msg": (
-            "<b>Please edit this message to the password for</b> "
+            "🔐 <b>Please edit this message to the password for</b> "
             "<code>{}</code> <b>to run</b> <code>{}</code>"
         ),
-        "auth_locked": "<b>Authentication failed, please try again later</b>",
-        "auth_ongoing": "<b>Authenticating...</b>",
-        "done": "<b>Done</b>",
+        "auth_locked": "🚫 <b>Authentication failed, please try again later</b>",
+        "auth_ongoing": "🕐 <b>Authenticating...</b>",
+        "done": "✅ <b>Done</b>",
+    }
+
+    strings_ru = {
+        "fw_protect": "Задержка между редактированиями",
+        "what_to_kill": "🚫 <b>Ответь на выполняемую команду для ее завершения</b>",
+        "kill_fail": "🚫 <b>Не могу убить процесс</b>",
+        "killed": "<b>Убит</b>",
+        "no_cmd": "🚫 <b>В этом сообщении не выполняется команда</b>",
+        "running": "<b>🔄 Выполняю команду</b> <code>{}</code>",
+        "finished": "\n<b>Команда завершилась с кодом выхода </b> <code>{}</code>",
+        "stdout": "\n<b>📼 Вывод:</b>\n<code>",
+        "stderr": "</code>\n\n<b>🚫 Ошибки:</b>\n<code>",
+        "end": "</code>",
+        "auth_fail": "🚫 <b>Аутентификация неуспешна, попробуй еще раз</b>",
+        "auth_needed": '<a href="tg://user?id={}">🔐 Необходима аутентификация</a>',
+        "auth_msg": (
+            "🔐 <b>Пожалуйста, отредактируй это сообщение с паролем от рута для</b> "
+            "<code>{}</code> <b>, чтобы выполнить</b> <code>{}</code>"
+        ),
+        "auth_locked": "🚫 <b>Аутентификация не удалась. Попробуй позже</b>",
+        "auth_ongoing": "🕐 <b>Аутентификация...</b>",
+        "done": "✅ <b>Ура</b>",
     }
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            "FLOOD_WAIT_PROTECT",
-            2,
-            lambda: self.strings("flood_wait_protect_cfg_doc"),
+            loader.ConfigValue(
+                "FLOOD_WAIT_PROTECT",
+                2,
+                lambda: self.strings("fw_protect"),
+            ),
         )
         self.activecmds = {}
 
@@ -154,7 +178,9 @@ class TerminalMod(loader.Module):
         if hash_msg(await message.get_reply_message()) in self.activecmds:
             try:
                 if "-f" not in utils.get_args_raw(message):
-                    self.activecmds[hash_msg(await message.get_reply_message())].terminate()
+                    self.activecmds[
+                        hash_msg(await message.get_reply_message())
+                    ].terminate()
                 else:
                     self.activecmds[hash_msg(await message.get_reply_message())].kill()
             except Exception:
@@ -229,9 +255,7 @@ class MessageEditor:
         text = self.strings("running").format(utils.escape_html(self.command))  # fmt: skip
 
         if self.rc is not None:
-            text += self.strings("finished").format(
-                utils.escape_html(str(self.rc))
-            )
+            text += self.strings("finished").format(utils.escape_html(str(self.rc)))
 
         text += self.strings("stdout")
         text += utils.escape_html(self.stdout[max(len(self.stdout) - 2048, 0) :])
@@ -296,9 +320,7 @@ class SudoMessageEditor(MessageEditor):
 
         if lastlines[0] == self.PASS_REQ and self.state == 0:
             logger.debug("Success to find sudo log!")
-            text = self.strings("auth_needed").format(
-                self._tg_id
-            )
+            text = self.strings("auth_needed").format(self._tg_id)
 
             try:
                 await utils.answer(self.message, text)
@@ -312,7 +334,6 @@ class SudoMessageEditor(MessageEditor):
             self.authmsg = await self.message[0].client.send_message(
                 "me",
                 self.strings("auth_msg").format(command, user),
-
             )
             logger.debug("sent message to self")
 
@@ -330,9 +351,7 @@ class SudoMessageEditor(MessageEditor):
             and (self.state == 1 or self.state == 3 or self.state == 4)
         ):
             logger.debug("password wrong lots of times")
-            await utils.answer(
-                self.message, self.strings("auth_locked")
-            )
+            await utils.answer(self.message, self.strings("auth_locked"))
             await self.authmsg.delete()
             self.state = 2
             handled = True
@@ -369,9 +388,7 @@ class SudoMessageEditor(MessageEditor):
         if hash_msg(message) == hash_msg(self.authmsg):
             # The user has provided interactive authentication. Send password to stdin for sudo.
             try:
-                self.authmsg = await utils.answer(
-                    message, self.strings("auth_ongoing")
-                )
+                self.authmsg = await utils.answer(message, self.strings("auth_ongoing"))
             except telethon.errors.rpcerrorlist.MessageNotModifiedError:
                 # Try to clear personal info if the edit fails
                 await message.delete()

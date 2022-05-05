@@ -17,7 +17,7 @@ __version__ = (11, 0, 3)
 # scope: disable_onload_docs
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.1.12
+# scope: hikka_min 1.1.14
 # requires: aiohttp
 
 import re
@@ -796,21 +796,22 @@ class HikariChatMod(loader.Module):
         "configure": "Настроить",
         "toggle": "Включить\\выключить",
         "protections": "<b>🐻 <code>.AntiArab</code> - Банит арабов\n<b>🐺 <code>.AntiHelp</code> - Удаляет часто используемые команды юзерботов\n<b>🐵 <code>.AntiTagAll</code> - Запрещает использование модуля TagAll\n<b>👋 <code>.Welcome</code> - Приветствует новых участников\n<b>🐶 <code>.AntiRaid</code> - Банит всех вновь вступивших\n<b>📯 <code>.AntiChannel</code> - Запрещает писать от лица каналов\n<b>🪙 <code>.AntiSpoiler</code> - Зарещает использование спойлеров\n<b>🎑 <code>.AntiGIF</code> - Запрещает GIF-ки\n<b>🔞 <code>.AntiNSFW</code> - Запрещает 18+ фото и стикеры\n<b>⏱ <code>.AntiFlood</code> - Запрещает флудить\n<b>😒 <code>.AntiExplicit</code> - Запрещает материться\n<b>⚙️ <code>.AntiService</code> - Удаляет сервисные сообщения\n<b>🌀 <code>.AntiZALGO</code> - Банит пользователей с деструктивными никами\n<b>🎨 <code>.AntiStick</code> - Запрещает флудить стикерами\n<b>🥷 <code>.BanNinja</code> - Автоматическая версия защиты AntiRaid\n<b>⚰️ <code>.AntiLagSticks</code> - Банит стикеры, из-за которых лагает Телеграм\n<b>👾 Администрирование: </b><code>.ban</code> <code>.kick</code> <code>.mute</code>\n<code>.unban</code> <code>.unmute</code>\n<b>👮‍♂️ Предупреждения:</b> <code>.warn</code> <code>.warns</code>\n<code>.dwarn</code> <code>.clrwarns</code> <b>- Система предупреждений</b>\n<b>💼 Федерации:</b> <code>.fadd</code> <code>.frm</code> <code>.newfed</code>\n<code>.namefed</code> <code>.fban</code> <code>.rmfed</code> <code>.feds</code>\n<code>.fpromote</code> <code>.fdemote</code>\n<code>.fdef</code> <code>.fdeflist</code> <b>- Управление сеткой чатов</b>\n<b>🗒 Федеративные заметки:</b> <code>.fsave</code> <code>.fstop</code> <code>.fnotes</code>",
-        "fed": "💼 <b>Федерация \"{}\":</b>\n🔰 <b>Чаты:</b>\n<b>{}</b>\n🔰 <b>Каналы:</b>\n<b>{}</b>\n🔰 <b>Админы:</b>\n<b>{}</b>\n🔰 <b>Предупреждения: {}</b>\n",
+        "fed": '💼 <b>Федерация "{}":</b>\n🔰 <b>Чаты:</b>\n<b>{}</b>\n🔰 <b>Каналы:</b>\n<b>{}</b>\n🔰 <b>Админы:</b>\n<b>{}</b>\n🔰 <b>Предупреждения: {}</b>\n',
         "version": "<b>🌊 {}</b>\n\n<b>😌 Автор: @hikariatama</b>\n<b>📥 Скачано из @hikarimods</b>\n<b>Статус: {}</b>",
         "confirm_rmfed": "⚠️ <b>Внимание! Это действие нельзя отменить! Ты уверен, что хочешь удалить федерацию </b><code>{}</code><b>?</b>",
         "_cls_doc": "Must-have модуль администратора чата",
-        
     }
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            "silent",
-            False,
-            lambda: "Do not notify about protections actions",
-            "join_ratelimit",
-            10,
-            lambda: "How many users per minute need to join until ban starts",
+            loader.ConfigValue(
+                "silent", False, lambda: "Do not notify about protections actions"
+            ),
+            loader.ConfigValue(
+                "join_ratelimit",
+                10,
+                lambda: "How many users per minute need to join until ban starts",
+            ),
         )
 
     async def on_unload(self):
@@ -3500,6 +3501,7 @@ class HikariChatMod(loader.Module):
 
         if chat_id in self._ban_ninja:
             if self._ban_ninja[chat_id] > time.time():
+                self._ban_ninja[chat_id] = time.time() + 5 * 60
                 await self.inline.bot.kick_chat_member(int(f"-100{chat_id}"), user_id)
 
                 self._ban_ninja_progress[chat_id] += 1
@@ -3517,7 +3519,6 @@ class HikariChatMod(loader.Module):
                         int(f"-100{chat_id}"),
                         message.action_message.id,
                     )
-
                 logger.debug(f"BanNinja is active in chat {chat.title}, I kicked {get_full_name(user)}")  # fmt: skip
                 return True
 
@@ -3568,7 +3569,9 @@ class HikariChatMod(loader.Module):
 
             self._ban_ninja_forms[chat_id] = form
             self._ban_ninja_progress[chat_id] = int(self.config["join_ratelimit"])
-            self._ban_ninja_tasks[chat_id] = asyncio.ensure_future(self._update_ban_ninja(chat_id))
+            self._ban_ninja_tasks[chat_id] = asyncio.ensure_future(
+                self._update_ban_ninja(chat_id)
+            )
 
             await (
                 await self._clnraid(
@@ -3599,7 +3602,10 @@ class HikariChatMod(loader.Module):
                         m.id,
                     )
 
-            await self._client.pin_message(int(chat_id), form.form["message_id"])
+            try:
+                await self._client.pin_message(int(chat_id), form.form["message_id"])
+            except Exception:
+                pass
 
         return False
 
@@ -3609,10 +3615,13 @@ class HikariChatMod(loader.Module):
             del self._ban_ninja[chat_id]
             await call.edit(self.strings("smart_anti_raid_stopped"))
             await call.answer("Success")
-            await self._client.unpin_message(
-                int(chat_id),
-                self._ban_ninja_forms[str(chat_id)].form["message_id"],
-            )
+            try:
+                await self._client.unpin_message(
+                    int(chat_id),
+                    self._ban_ninja_forms[str(chat_id)].form["message_id"],
+                )
+            except Exception:
+                pass
             return
 
         await call.answer("Already stopped")

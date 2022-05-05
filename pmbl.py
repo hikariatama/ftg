@@ -12,7 +12,7 @@
 # meta pic: https://img.icons8.com/external-dreamcreateicons-flat-dreamcreateicons/512/000000/external-death-halloween-dreamcreateicons-flat-dreamcreateicons.png
 # meta developer: @hikariatama
 # scope: hikka_only
-# scope: hikka_min 1.1.12
+# scope: hikka_min 1.1.14
 
 from .. import loader, utils
 from telethon.tl.types import Message, PeerUser, User
@@ -72,27 +72,30 @@ class PMBLMod(loader.Module):
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            "ignore_contacts",
-            True,
-            lambda: "Ignore contacts?",
-            #
-            "ignore_active",
-            True,
-            lambda: "Ignore peers, where you participated?",
-            #
-            "active_threshold",
-            5,
-            lambda: "What number of your messages is required to trust peer",
-            #
-            "custom_message",
-            "",
-            lambda: "Custom message to notify untrusted peers. Leave empty for default one",
-            "photo_url",
-            "https://kartinkin.net/uploads/posts/2021-07/1625528600_10-kartinkin-com-p-anime-kirito-anime-krasivo-11.jpg",
-            lambda: "Photo, which is sent along with banned notification",
-            "use_maid",
-            0,
-            lambda: "Whether to replace normal Kirito with maid-Kirito",
+            loader.ConfigValue("ignore_contacts", True, lambda: "Ignore contacts?"),
+            loader.ConfigValue(
+                "ignore_active", True, lambda: "Ignore peers, where you participated?"
+            ),
+            loader.ConfigValue(
+                "active_threshold",
+                5,
+                lambda: "What number of your messages is required to trust peer",
+            ),
+            loader.ConfigValue(
+                "custom_message",
+                "",
+                lambda: "Custom message to notify untrusted peers. Leave empty for default one",
+            ),
+            loader.ConfigValue(
+                "photo_url",
+                "https://kartinkin.net/uploads/posts/2021-07/1625528600_10-kartinkin-com-p-anime-kirito-anime-krasivo-11.jpg",
+                lambda: "Photo, which is sent along with banned notification",
+            ),
+            loader.ConfigValue(
+                "use_maid",
+                0,
+                lambda: "Whether to replace normal Kirito with maid-Kirito",
+            ),
         )
 
     async def client_ready(self, client, db):
@@ -264,7 +267,10 @@ class PMBLMod(loader.Module):
             )
         )[0]
 
-        if getattr(message, "raw_text", False) and first_message.sender_id == self._tg_id:
+        if (
+            getattr(message, "raw_text", False)
+            and first_message.sender_id == self._tg_id
+        ):
             return self._approve(cid, "started_by_you")
         else:
             started_by_you = False

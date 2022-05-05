@@ -11,9 +11,9 @@
 # meta pic: https://img.icons8.com/stickers/500/000000/start.png
 # meta developer: @hikariatama
 # scope: hikka_only
-# scope: hikka_min 1.0.18
+# scope: hikka_min 1.1.14
 
-from .. import loader, utils, main
+from .. import loader, utils
 import logging
 
 logger = logging.getLogger(__name__)
@@ -28,21 +28,19 @@ class OnloadExecutorMod(loader.Module):
     async def client_ready(self, client, db):
         self.c, _ = await utils.asset_channel(
             client,
-            "onload-commands",
-            "All commands from this chat will be executed once FTG is started, be careful!",
+            "hikka-onload",
+            "All commands from this chat will be executed once Hikka is started, be careful!",
             archive=True,
-        )
-
-        self.prefix = utils.escape_html(
-            (db.get(main.__name__, "command_prefix", False) or ".")[0]
+            avatar="https://raw.githubusercontent.com/hikariatama/assets/master/hikka-onload.png",
+            _folder="hikka",
         )
 
         async for message in client.iter_messages(self.c):
-            if (getattr(message, "raw_text", "") or "").startswith(self.prefix):
+            if (getattr(message, "raw_text", "") or "").startswith(self.get_prefix()):
                 try:
                     m = await client.send_message("me", message.raw_text)
                     await self.allmodules.commands[message.raw_text[1:].split()[0]](m)
-                    logger.info("Registered onload command")
+                    logger.debug("Registered onload command")
                     await m.delete()
                 except Exception:
                     logger.exception(f"Exception while executing command {message.raw_text[:15]}...")  # fmt: skip

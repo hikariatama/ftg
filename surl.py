@@ -10,6 +10,8 @@
 
 # meta pic: https://img.icons8.com/external-xnimrodx-lineal-color-xnimrodx/512/000000/external-short-shopping-mall-xnimrodx-lineal-color-xnimrodx.png
 # meta developer: @hikariatama
+# scope: hikka_only
+# scope: hikka_min 1.1.14
 
 from .. import loader, utils
 from telethon.tl.types import Message, MessageEntityUrl
@@ -39,12 +41,14 @@ class AutoShortenerMod(loader.Module):
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            "threshold",
-            80,
-            lambda: "Urls larger than this value will be automatically shortened",
-            "auto_engine",
-            "owo",
-            lambda: "Engine to auto-shorten urls with",
+            loader.ConfigValue(
+                "threshold",
+                80,
+                lambda: "Urls larger than this value will be automatically shortened",
+            ),
+            loader.ConfigValue(
+                "auto_engine", "owo", lambda: "Engine to auto-shorten urls with"
+            ),
         )
 
     async def client_ready(self, client, db):

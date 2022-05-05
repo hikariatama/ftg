@@ -68,8 +68,8 @@ class StatusesMod(loader.Module):
             return
 
         if getattr(message.to_id, "user_id", None) == self._tg_id:
-            user = message.sender_id
-            if user in self._ratelimit or user.is_self or user.bot or user.verified:
+            user = await message.get_sender()
+            if user.id in self._ratelimit or user.is_self or user.bot or user.verified:
                 return
         elif not message.mentioned:
             return

@@ -10,9 +10,10 @@
 
 # meta pic: https://img.icons8.com/stickers/500/000000/data-backup.png
 # meta developer: @hikariatama
+# scope: hikka_only
+# scope: hikka_min 1.1.14
 
 from .. import loader, utils
-import asyncio
 import datetime
 import io
 import json
@@ -65,8 +66,6 @@ class BackuperMod(loader.Module):
                 message,
                 self.strings("reply_to_file"),
             )
-            await asyncio.sleep(3)
-            await message.delete()
             return
 
         file = await self._client.download_file(reply.media, bytes)
@@ -76,18 +75,18 @@ class BackuperMod(loader.Module):
         self._db.save()
         # print(decoded_text)
         await utils.answer(message, self.strings("db_restored"))
-        await self.allmodules.commands["restart"](await message.respond("_"))
+        await self.allmodules.commands["restart"](await message.respond(f"{self.get_prefix()}restart --force"))
 
     async def backupmodscmd(self, message: Message):
         """Create backup of mods"""
-        data = json.dumps(self._db.get("hikka.modules.loader", "loaded_modules", {}))
+        data = json.dumps(self._db.get("Loader", "loaded_modules", {}))
         txt = io.BytesIO(data.encode("utf-8"))
         txt.name = f"mods-{getattr(datetime, 'datetime', datetime).now().strftime('%d-%m-%Y-%H-%M')}.json"
         await self._client.send_file(
             utils.get_chat_id(message),
             txt,
             caption=self.strings("modules_backup").format(
-                len(self._db.get("hikka.modules.loader", "loaded_modules", {}))
+                len(self._db.get("Loader", "loaded_modules", {}))
             ),
         )
         await message.delete()
@@ -97,8 +96,6 @@ class BackuperMod(loader.Module):
         reply = await message.get_reply_message()
         if not reply or not reply.media:
             await utils.answer(message, self.strings("reply_to_file"))
-            await asyncio.sleep(3)
-            await message.delete()
             return
 
         file = await self._client.download_file(reply.media, bytes)
@@ -107,10 +104,10 @@ class BackuperMod(loader.Module):
         assert isinstance(decoded_text, dict)
 
         self._db.set(
-            "hikka.modules.loader",
+            "Loader",
             "loaded_modules",
             decoded_text,
         )
         
         await utils.answer(message, self.strings("mods_restored"))
-        await self.allmodules.commands["restart"](await message.respond("_"))
+        await self.allmodules.commands["restart"](await message.respond(f"{self.get_prefix()}restart --force"))

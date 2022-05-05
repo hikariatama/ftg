@@ -12,6 +12,7 @@
 # meta developer: @hikariatama
 # scope: inline
 # scope: hikka_only
+# scope: hikka_min 1.1.14
 # requires: aiohttp
 
 from .. import loader, utils
@@ -61,12 +62,16 @@ class WakaTimeMod(loader.Module):
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            "wakatime_username",
-            "",
-            lambda: "Your WakaTime username to parse data from",
-            "update_interval",
-            300,
-            lambda: "Messages update interval. Not recommended < 300 seconds",
+            loader.ConfigValue(
+                "wakatime_username",
+                "",
+                lambda: "Your WakaTime username to parse data from",
+            ),
+            loader.ConfigValue(
+                "update_interval",
+                300,
+                lambda: "Messages update interval. Not recommended < 300 seconds",
+            ),
         )
 
     async def client_ready(self, client, db):
@@ -74,7 +79,6 @@ class WakaTimeMod(loader.Module):
         self._client = client
         self._me = await client.get_me()
         self._endpoint = "https://github-readme-stats.vercel.app/api/wakatime?username={}&show_icons=false&hide_progress=true&layout=true"
-
         self._faces = ["🐻‍❄️", "🐻", "🐼", "🐯", "🦁", "🦉", "🐺", "🐰", "🦊", "🐬", "🦈", "🦥", "💁‍♂️", "🥷", "🧑‍💻"]  # fmt: skip
 
         self._faces_markup = utils.chunks(

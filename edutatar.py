@@ -10,6 +10,8 @@
 
 # meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/512/000000/external-education-job-search-flaticons-lineal-color-flat-icons.png
 # meta developer: @hikariatama
+# scope: hikka_only
+# scope: hikka_min 1.1.14
 
 from .. import loader, utils
 import asyncio
@@ -65,18 +67,18 @@ class EduTatarMod(loader.Module):
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            "edu_tatar_login",
-            False,
-            lambda: "Login from edu.tatar.ru",
-            "edu_tatar_pass",
-            False,
-            lambda: "Password from edu.tatar.ru",
-            "marks_parse_delay",
-            300,
-            lambda: "Delay for parsing new marks in seconds",
-            "proxy",
-            "",
-            lambda: "Proxy for correct work of module",
+            loader.ConfigValue(
+                "edu_tatar_login", False, lambda: "Login from edu.tatar.ru"
+            ),
+            loader.ConfigValue(
+                "edu_tatar_pass", False, lambda: "Password from edu.tatar.ru"
+            ),
+            loader.ConfigValue(
+                "marks_parse_delay",
+                300,
+                lambda: "Delay for parsing new marks in seconds",
+            ),
+            loader.ConfigValue("proxy", "", lambda: "Proxy for correct work of module"),
         )
 
     async def client_ready(self, client, db):

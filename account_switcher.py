@@ -13,17 +13,17 @@ __version__ = (2, 0, 0)
 # meta pic: https://img.icons8.com/fluency/240/000000/guest-male.png
 # meta developer: @hikariatama
 # scope: hikka_only
+# scope: hikka_min 1.1.14
 
 from .. import loader, utils
 import re
-import requests
 import logging
 import io
 
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.functions.account import UpdateProfileRequest
 from telethon.tl.functions.photos import UploadProfilePhotoRequest
-from telethon.tl.functions.channels import EditPhotoRequest, InviteToChannelRequest
+from telethon.tl.functions.channels import InviteToChannelRequest
 from aiogram.utils.exceptions import ChatNotFound
 
 from telethon.tl.types import Message as TelethonMessage
@@ -41,7 +41,7 @@ class AccountSwitcherMod(loader.Module):
 
     strings = {
         "name": "AccountSwitcher",
-        "account_saved": "📼 <b>Account saved!</b>",
+        "account_saved": '📼 <b><a href="https://t.me/c/{}/{}">Account</a> saved!</b>',
         "restore_btn": "👆 Restore",
         "desc": "This chat will handle your saved profiles",
         "first_name_restored": "✅ First name restored\n",
@@ -56,7 +56,7 @@ class AccountSwitcherMod(loader.Module):
     }
 
     strings_ru = {
-        "account_saved": "📼 <b>Аккаунт сохранен!</b>",
+        "account_saved": '📼 <b><a href="https://t.me/c/{}/{}">Аккаунт</a> сохранен!</b>',
         "restore_btn": "👆 Восстановить",
         "desc": "Тут будут появляться сохраненные профили",
         "first_name_restored": "✅ Имя восстановлено\n",
@@ -77,29 +77,18 @@ class AccountSwitcherMod(loader.Module):
         self._client = client
         self._accs_db, is_new = await utils.asset_channel(
             self._client,
-            "acc-switcher-db",
+            "hikka-acc-switcher",
             self.strings("desc"),
             silent=True,
+            archive=True,
+            avatar="https://raw.githubusercontent.com/hikariatama/assets/master/hikka-acc-switcher.png",
+            _folder="hikka",
         )
 
         self._accs_db_id = int(f"-100{self._accs_db.id}")
 
         if not is_new:
             return
-
-        f = (
-            await utils.run_sync(
-                requests.get,
-                "https://i.pinimg.com/originals/49/da/ad/49daadd583d0dd45e4737bc4ed5697f9.jpg",
-            )
-        ).content
-
-        await client(
-            EditPhotoRequest(
-                channel=self._accs_db,
-                photo=await self._client.upload_file(f, file_name="photo.png"),
-            )
-        )
 
         try:
             await self._client(
@@ -115,7 +104,7 @@ class AccountSwitcherMod(loader.Module):
         last_name: str,
         bio: str,
         no_retry: bool = False,
-    ):
+    ) -> int:
         info = (
             f"<code>{utils.escape_html(first_name)}</code> "
             f"<code>{utils.escape_html(last_name)}</code>\n\n"
@@ -124,27 +113,31 @@ class AccountSwitcherMod(loader.Module):
 
         try:
             if photo is not None:
-                photo = io.BytesIO(photo)
-                photo.name = "pfp.jpg"
+                photo_io = io.BytesIO(photo)
+                photo_io.name = "pfp.jpg"
 
-                await self.inline.bot.send_document(
-                    self._accs_db_id,
-                    photo,
-                    caption=info,
-                    parse_mode="HTML",
-                    reply_markup=self.inline._generate_markup(
-                        {"text": self.strings("restore_btn"), "data": "accrest"}
-                    ),
-                )
+                return (
+                    await self.inline.bot.send_document(
+                        self._accs_db_id,
+                        photo_io,
+                        caption=info,
+                        parse_mode="HTML",
+                        reply_markup=self.inline._generate_markup(
+                            {"text": self.strings("restore_btn"), "data": "accrest"}
+                        ),
+                    )
+                ).message_id
             else:
-                await self.inline.bot.send_message(
-                    self._accs_db_id,
-                    info,
-                    parse_mode="HTML",
-                    reply_markup=self.inline._generate_markup(
-                        {"text": self.strings("restore_btn"), "data": "accrest"}
-                    ),
-                )
+                return (
+                    await self.inline.bot.send_message(
+                        self._accs_db_id,
+                        info,
+                        parse_mode="HTML",
+                        reply_markup=self.inline._generate_markup(
+                            {"text": self.strings("restore_btn"), "data": "accrest"}
+                        ),
+                    )
+                ).message_id
         except ChatNotFound:
             if no_retry:
                 logger.exception("Can't restore account")
@@ -173,7 +166,7 @@ class AccountSwitcherMod(loader.Module):
         full = await self._client(GetFullUserRequest("me"))
         acc = await self._client.get_entity("me")
 
-        await self._save_acc(
+        message_id = await self._save_acc(
             (await self._client.download_profile_photo(acc, bytes))
             if full.full_user.profile_photo
             else None,
@@ -186,7 +179,9 @@ class AccountSwitcherMod(loader.Module):
             ),
         )
 
-        await utils.answer(message, self.strings("account_saved"))
+        await utils.answer(
+            message, self.strings("account_saved").format(self._accs_db.id, message_id)
+        )
 
     async def _restore(self, reply: Union[TelethonMessage, AiogramMessage]) -> str:
         log = ""
