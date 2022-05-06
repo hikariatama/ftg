@@ -12,7 +12,7 @@
 # meta developer: @hikariatama
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.1.12
+# scope: hikka_min 1.1.15
 
 import abc
 from .. import loader, utils
@@ -60,10 +60,10 @@ class FeedbackMod(loader.Module):
 
         self._ratelimit = {}
 
-        self._markup = self.inline._generate_markup(
+        self._markup = self.inline.generate_markup(
             {"text": "✍️ Leave a message [1 per minute]", "data": "fb_leave_message"}
         )
-        self._cancel = self.inline._generate_markup(
+        self._cancel = self.inline.generate_markup(
             {"text": "🚫 Cancel", "data": "fb_cancel"}
         )
 

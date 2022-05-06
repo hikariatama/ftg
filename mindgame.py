@@ -11,6 +11,7 @@
 # meta pic: https://img.icons8.com/color/480/000000/brain--v1.png
 # meta developer: @hikariatama
 # scope: hikka_only
+# scope: hikka_min 1.1.15
 
 from .. import loader, utils
 from ..inline.types import InlineCall
@@ -51,7 +52,7 @@ class MindGameMod(loader.Module):
 
     _ratelimit = []
 
-    def _generate_markup(self, counter: int) -> list:
+    def generate_markup(self, counter: int) -> list:
         fail_emoji, next_step_emoji = random.choice(EMOJIES)
         markup = [
             {"text": fail_emoji, "callback": self._incorrect} for _ in range(8**2 - 1)
@@ -70,7 +71,7 @@ class MindGameMod(loader.Module):
         await self.inline.form(
             message=message,
             text=self.strings("header").format(0),
-            reply_markup=self._generate_markup(0),
+            reply_markup=self.generate_markup(0),
             disable_security=True,
         )
 
@@ -81,7 +82,7 @@ class MindGameMod(loader.Module):
 
         await call.edit(
             self.strings("header").format(counter),
-            self._generate_markup(counter),
+            self.generate_markup(counter),
         )
 
         await call.answer("Correct!")

@@ -33,10 +33,6 @@ class SpotifyDownloaderMod(loader.Module):
             return await utils.answer(message, "<b>No args.</b>")
 
         message = await utils.answer(message, "<b>Loading...</b>")
-        try:
-            message = message[0]
-        except Exception:
-            pass
         music = await self._client.inline_query("spotifysavebot", args)
         for mus in music:
             if mus.result.type == "audio":

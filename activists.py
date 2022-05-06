@@ -62,7 +62,6 @@ class ActivistsMod(loader.Module):
         quantity = int(args) if args.isdigit() else 15
 
         message = await utils.answer(message, self.strings("searching"))
-        message = message[0] if isinstance(message, (list, tuple, set)) else message
 
         st = time.perf_counter()
 

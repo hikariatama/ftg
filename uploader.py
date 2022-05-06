@@ -1,3 +1,5 @@
+__version__ = (2, 0, 0)
+
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
 #
@@ -32,29 +34,30 @@ class FileUploaderMod(loader.Module):
 
     strings = {
         "name": "Uploader",
-        "uploading": "📤 <b>Uploading...</b>",
+        "uploading": "🚀 <b>Uploading...</b>",
         "noargs": "🚫 <b>No file specified</b>",
         "err": "🚫 <b>Upload error</b>",
-        "uploaded": "🌐 <code>{}</code>",
+        "uploaded": '🎡 <b>File <a href="{0}">uploaded</a></b>!\n\n<code>{0}</code>',
         "imgur_blocked": "🚫 <b>Unban @ImgUploadBot</b>",
         "not_an_image": "🚫 <b>This platform only supports images</b>",
     }
 
     strings_ru = {
-        "uploading": "📤 <b>Загрузка...</b>",
+        "uploading": "🚀 <b>Загрузка...</b>",
         "noargs": "🚫 <b>Файл не указан</b>",
         "err": "🚫 <b>Ошибка загрузки</b>",
-        "uploaded": "🌐 <code>{}</code>",
+        "uploaded": '🎡 <b>Файл <a href="{0}">загружен</a></b>!\n\n<code>{0}</code>',
         "imgur_blocked": "🚫 <b>Разблокируй @ImgUploadBot</b>",
         "not_an_image": "🚫 <b>Эта платформа поддерживает только изображения</b>",
         "_cmd_doc_imgur": "Загрузить на imgur.com",
         "_cmd_doc_oxo": "Загрузить на 0x0.st",
-        "_cls_doc": "Загружает файлы на разные платформы",
+        "_cmd_doc_x0": "Загрузить на x0.at",
+        "_cmd_doc_skynet": "Загрузить на децентрализованную платформу SkyNet",
+        "_cls_doc": "Загружает файлы на различные хостинги",
     }
 
     async def client_ready(self, client, db):
         self._client = client
-        self._db = db
 
     async def get_media(self, message: Message):
         reply = await message.get_reply_message()
@@ -106,13 +109,41 @@ class FileUploaderMod(loader.Module):
             return
 
         try:
-            x0at = requests.post("https://x0.at", files={"file": file})
+            x0at = await utils.run_sync(
+                requests.post,
+                "https://x0.at",
+                files={"file": file},
+            )
         except ConnectionError:
             await utils.answer(message, self.strings("err"))
             return
 
         url = x0at.text
         await utils.answer(message, self.strings("uploaded").format(url))
+
+    async def skynetcmd(self, message: Message):
+        """Upload to decentralized SkyNet"""
+        message = await utils.answer(message, self.strings("uploading"))
+        file = await self.get_media(message)
+        if not file:
+            return
+
+        try:
+            skynet = await utils.run_sync(
+                requests.post,
+                "https://siasky.net/skynet/skyfile",
+                files={"file": file},
+            )
+        except ConnectionError:
+            await utils.answer(message, self.strings("err"))
+            return
+
+        await utils.answer(
+            message,
+            self.strings("uploaded").format(
+                f"https://siasky.net/{skynet.json()['skylink']}"
+            ),
+        )
 
     async def imgurcmd(self, message: Message):
         """Upload to imgur.com"""
@@ -138,7 +169,7 @@ class FileUploaderMod(loader.Module):
                 url = (
                     re.search(
                         r'<meta property="og:image" data-react-helmet="true" content="(.*?)"',
-                        requests.get(response.raw_text).text,
+                        (await utils.run_sync(requests.get, response.raw_text)).text,
                     )
                     .group(1)
                     .split("?")[0]
@@ -156,10 +187,14 @@ class FileUploaderMod(loader.Module):
             return
 
         try:
-            x0at = requests.post("https://0x0.st", files={"file": file})
+            oxo = await utils.run_sync(
+                requests.post,
+                "https://0x0.st",
+                files={"file": file},
+            )
         except ConnectionError:
             await utils.answer(message, self.strings("err"))
             return
 
-        url = x0at.text
+        url = oxo.text
         await utils.answer(message, self.strings("uploaded").format(url))

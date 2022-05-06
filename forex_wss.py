@@ -12,6 +12,7 @@
 # meta developer: @hikariatama
 # scope: inline
 # scope: hikka_only
+# scope: hikka_min 1.1.15
 # requires: websockets requests
 
 from .. import loader, utils
@@ -89,7 +90,7 @@ class RealTimeValutesMod(loader.Module):
 
         self._ratelimit = 0
 
-        self._reload_markup = self.inline._generate_markup(
+        self._reload_markup = self.inline.generate_markup(
             {"text": "🔄 Update", "data": "update_exchanges"}
         )
 

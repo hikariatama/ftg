@@ -564,8 +564,8 @@ class HikariChatMod(loader.Module):
         "nofed": "💼 <b>Current chat is not in any federation</b>",
         "fban": '💼 <b><a href="{}">{}</a> banned in federation {} {}\nReason: </b><i>{}</i>\n\n{}',
         "fmute": '💼 <b><a href="{}">{}</a> muted in federation {} {}\nReason: </b><i>{}</i>\n\n{}',
-        "funban": '💼 <b><a href="{}">{}</a> unbanned in federation </b><i>{}</i>',
-        "funmute": '💼 <b><a href="{}">{}</a> unmuted in federation </b><i>{}</i>',
+        "funban": '💼 <b><a href="{}">{}</a> unbanned in federation </b><i>{}</i>\n',
+        "funmute": '💼 <b><a href="{}">{}</a> unmuted in federation </b><i>{}</i>\n',
         "feds_header": "💼 <b>Federations:</b>\n\n",
         "fed": (
             '💼 <b>Federation "{}" info:</b>\n'
@@ -1764,8 +1764,6 @@ class HikariChatMod(loader.Module):
         kicked = 0
 
         message = await utils.answer(message, self.strings("cleaning"))
-        if not isinstance(message, Message):
-            message = message[0]
 
         async for user in self._client.iter_participants(chat):
             if user.deleted:

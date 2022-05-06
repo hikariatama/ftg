@@ -52,9 +52,6 @@ class AniSearchMod(loader.Module):
             return
 
         message = await utils.answer(message, self.strings("searching"))
-        if isinstance(message, (tuple, list, set)):
-            message = message[0]
-
         search_result = requests.post(
             "https://api.trace.moe/search",
             files={

@@ -13,7 +13,7 @@ __version__ = (2, 0, 0)
 # meta pic: https://img.icons8.com/fluency/240/000000/guest-male.png
 # meta developer: @hikariatama
 # scope: hikka_only
-# scope: hikka_min 1.1.14
+# scope: hikka_min 1.1.15
 
 from .. import loader, utils
 import re
@@ -122,7 +122,7 @@ class AccountSwitcherMod(loader.Module):
                         photo_io,
                         caption=info,
                         parse_mode="HTML",
-                        reply_markup=self.inline._generate_markup(
+                        reply_markup=self.inline.generate_markup(
                             {"text": self.strings("restore_btn"), "data": "accrest"}
                         ),
                     )
@@ -133,7 +133,7 @@ class AccountSwitcherMod(loader.Module):
                         self._accs_db_id,
                         info,
                         parse_mode="HTML",
-                        reply_markup=self.inline._generate_markup(
+                        reply_markup=self.inline.generate_markup(
                             {"text": self.strings("restore_btn"), "data": "accrest"}
                         ),
                     )

@@ -51,7 +51,7 @@ class TerminalMod(loader.Module):
         "killed": "🚫 <b>Killed</b>",
         "no_cmd": "🚫 <b>No command is running in that message</b>",
         "running": "<b>🔄 System call</b> <code>{}</code>",
-        "finished": "\n<b>Command finished with return code</b> <code>{}</code>",
+        "finished": "\n<b>Exit code</b> <code>{}</code>",
         "stdout": "\n<b>📼 Stdout:</b>\n<code>",
         "stderr": "</code>\n\n<b>🚫 Stderr:</b>\n<code>",
         "end": "</code>",
@@ -72,8 +72,8 @@ class TerminalMod(loader.Module):
         "kill_fail": "🚫 <b>Не могу убить процесс</b>",
         "killed": "<b>Убит</b>",
         "no_cmd": "🚫 <b>В этом сообщении не выполняется команда</b>",
-        "running": "<b>🔄 Выполняю команду</b> <code>{}</code>",
-        "finished": "\n<b>Команда завершилась с кодом выхода </b> <code>{}</code>",
+        "running": "<b>🔄 Системная команда</b> <code>{}</code>",
+        "finished": "\n<b>Код выхода </b> <code>{}</code>",
         "stdout": "\n<b>📼 Вывод:</b>\n<code>",
         "stderr": "</code>\n\n<b>🚫 Ошибки:</b>\n<code>",
         "end": "</code>",
@@ -259,8 +259,8 @@ class MessageEditor:
 
         text += self.strings("stdout")
         text += utils.escape_html(self.stdout[max(len(self.stdout) - 2048, 0) :])
-        text += self.strings("stderr")
-        text += utils.escape_html(self.stderr[max(len(self.stderr) - 1024, 0) :])
+        stderr = utils.escape_html(self.stderr[max(len(self.stderr) - 1024, 0) :])
+        text += (self.strings("stderr") + stderr) if stderr else ""
         text += self.strings("end")
 
         try:

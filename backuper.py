@@ -11,7 +11,7 @@
 # meta pic: https://img.icons8.com/stickers/500/000000/data-backup.png
 # meta developer: @hikariatama
 # scope: hikka_only
-# scope: hikka_min 1.1.14
+# scope: hikka_min 1.1.15
 
 from .. import loader, utils
 import datetime
@@ -70,23 +70,27 @@ class BackuperMod(loader.Module):
 
         file = await self._client.download_file(reply.media, bytes)
         decoded_text = json.loads(file.decode("utf-8"))
+
+        if not self._db.process_db_autofix(decoded_text):
+            raise RuntimeError("Attempted to restore broken database")
+
         self._db.clear()
         self._db.update(**decoded_text)
-        self._db.save()
-        # print(decoded_text)
         await utils.answer(message, self.strings("db_restored"))
-        await self.allmodules.commands["restart"](await message.respond(f"{self.get_prefix()}restart --force"))
+        await self.allmodules.commands["restart"](
+            await message.respond(f"{self.get_prefix()}restart --force")
+        )
 
     async def backupmodscmd(self, message: Message):
         """Create backup of mods"""
-        data = json.dumps(self._db.get("Loader", "loaded_modules", {}))
+        data = json.dumps(self.lookup("Loader").get("loaded_modules", {}))
         txt = io.BytesIO(data.encode("utf-8"))
         txt.name = f"mods-{getattr(datetime, 'datetime', datetime).now().strftime('%d-%m-%Y-%H-%M')}.json"
         await self._client.send_file(
             utils.get_chat_id(message),
             txt,
             caption=self.strings("modules_backup").format(
-                len(self._db.get("Loader", "loaded_modules", {}))
+                len(self.lookup("Loader").get("loaded_modules", {}))
             ),
         )
         await message.delete()
@@ -101,13 +105,15 @@ class BackuperMod(loader.Module):
         file = await self._client.download_file(reply.media, bytes)
         decoded_text = json.loads(file.decode("utf-8"))
 
-        assert isinstance(decoded_text, dict)
+        if not isinstance(decoded_text, dict) or not all(
+            isinstance(key, str) and isinstance(value, str)
+            for key, value in decoded_text.items()
+        ):
+            raise RuntimeError("Invalid backup")
 
-        self._db.set(
-            "Loader",
-            "loaded_modules",
-            decoded_text,
-        )
-        
+        self.lookup("Loader").set("loaded_modules", decoded_text)
+
         await utils.answer(message, self.strings("mods_restored"))
-        await self.allmodules.commands["restart"](await message.respond(f"{self.get_prefix()}restart --force"))
+        await self.allmodules.commands["restart"](
+            await message.respond(f"{self.get_prefix()}restart --force")
+        )
