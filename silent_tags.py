@@ -13,11 +13,13 @@
 # scope: hikka_only
 # scope: hikka_min 1.0.18
 
-from .. import loader, utils
-import logging
 import asyncio
-from telethon.tl.types import Message
+import logging
 import time
+
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

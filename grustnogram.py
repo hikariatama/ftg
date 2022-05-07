@@ -17,21 +17,20 @@
 
 __version__ = (1, 0, 1)
 
-from .. import loader, utils
-from telethon.tl.types import Message
-import logging
-import requests
-import json
-
-from PIL import Image, ImageDraw, ImageFont
+import asyncio
 import io
+import json
+import logging
+import random
+import string
 import textwrap
 
-import string
+import requests
+from PIL import Image, ImageDraw, ImageFont
 from requests_toolbelt import MultipartEncoder
-import random
-import asyncio
+from telethon.tl.types import Message
 
+from .. import loader, utils
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -310,7 +309,9 @@ class GrustnoGramMod(loader.Module):
                     await asyncio.sleep(30)
                     continue
 
-                logger.debug(f"Got {res['data']['notifications_count']} notification(-s) from GrustnoGram")
+                logger.debug(
+                    f"Got {res['data']['notifications_count']} notification(-s) from GrustnoGram"
+                )
 
                 res = (
                     await utils.run_sync(
@@ -349,7 +350,9 @@ class GrustnoGramMod(loader.Module):
                                 disable_web_page_preview=True,
                             )
                         else:
-                            logger.warning(f"Unknown notification type {json.dumps(notification, indent=4)}")
+                            logger.warning(
+                                f"Unknown notification type {json.dumps(notification, indent=4)}"
+                            )
 
                 await asyncio.sleep(10)
         except Exception:

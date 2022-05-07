@@ -14,38 +14,34 @@
 # scope: disable_onload_docs
 # requires: Pillow moviepy emoji
 
-from .. import loader, utils
+import asyncio
+import io
 import logging
+import os
+import random
 import time
 
+import moviepy.editor as mp
 from emoji import distinct_emoji_lis
-
 from PIL import Image
-import io
-import random
-
-from telethon.tl.types import (
-    Message,
-    InputDocument,
-    InputMediaUploadedDocument,
-    InputStickerSetShortName,
-    InputPeerSelf,
-)
-
-from telethon.utils import get_input_document
 from telethon.errors.rpcerrorlist import RPCError
-
 from telethon.tl.functions.messages import (
+    ClearRecentStickersRequest,
     GetStickerSetRequest,
     InstallStickerSetRequest,
     UninstallStickerSetRequest,
     UploadMediaRequest,
-    ClearRecentStickersRequest,
 )
+from telethon.tl.types import (
+    InputDocument,
+    InputMediaUploadedDocument,
+    InputPeerSelf,
+    InputStickerSetShortName,
+    Message,
+)
+from telethon.utils import get_input_document
 
-import asyncio
-import os
-import moviepy.editor as mp
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

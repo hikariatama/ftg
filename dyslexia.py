@@ -14,10 +14,12 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.7
 
-from .. import loader, utils
-from random import shuffle
 import re
+from random import shuffle
+
 from telethon.tl.types import Message
+
+from .. import loader, utils
 
 
 def dyslex(text: str) -> str:

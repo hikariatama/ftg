@@ -13,14 +13,15 @@
 # scope: hikka_only
 # meta developer: @hikariatama
 
-from .. import loader, utils
-from telethon.tl.types import Message
-import logging
-import requests
 import functools
+import logging
+
+import requests
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
-
 categories = ["waifu", "neko", "shinobu", "megumin", "cuddle", "cry", "hug", "awoo", "kiss", "lick", "pat", "smug", "bonk", "yeet", "blush", "smile", "wave", "highfive", "handhold", "nom", "bite", "glomp", "slap"]  # fmt: skip
 nsfw_categories = ["waifu", "neko", "trap", "blowjob"]  # fmt: skip
 
@@ -47,6 +48,7 @@ async def photo(type_: str, category: str) -> list:
 @loader.tds
 class WaifuMod(loader.Module):
     """Unleash best waifus of all time"""
+
     strings = {"name": "Waifu"}
 
     async def waifucmd(self, message: Message):

@@ -13,19 +13,20 @@
 # scope: hikka_only
 # requires: aiohttp urllib Pillow
 
-from .. import loader, utils
+import io
+import json
+import logging
+import os
+import random
+import tempfile
+from urllib.parse import quote_plus
+
+import aiohttp
+import requests
+from PIL import Image, ImageEnhance, ImageOps
 from telethon.tl.types import Message
 
-import logging
-import random
-import aiohttp
-import json
-from urllib.parse import quote_plus
-from PIL import Image, ImageOps, ImageEnhance
-import tempfile
-import io
-import requests
-import os
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +117,9 @@ async def wolfram_compute(query: str) -> tuple:
                                         Image.open(
                                             io.BytesIO(
                                                 (
-                                                    await utils.run_sync(requests.get, image)
+                                                    await utils.run_sync(
+                                                        requests.get, image
+                                                    )
                                                 ).content
                                             )
                                         ),

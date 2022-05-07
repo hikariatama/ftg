@@ -15,9 +15,11 @@
 # scope: hikka_min 1.1.7
 
 import random
-from .. import utils, loader
 from asyncio import sleep
+
 from telethon.tl.types import Message
+
+from .. import loader, utils
 from ..inline.types import InlineCall
 
 

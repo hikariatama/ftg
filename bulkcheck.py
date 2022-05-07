@@ -13,12 +13,13 @@
 # scope: hikka_only
 # meta developer: @hikariatama
 
-from .. import loader, utils
 import logging
-import requests
 
+import requests
 from telethon.tl.types import Message
 from telethon.utils import get_display_name
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

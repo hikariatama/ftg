@@ -13,12 +13,26 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.15
 
-from .. import loader, utils
 import datetime
 import io
 import json
+import logging
+import os
+import zipfile
 
 from telethon.tl.types import Message
+
+from .. import loader, utils
+
+logger = logging.getLogger(__name__)
+
+DATA_DIR = (
+    os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
+    if "OKTETO" not in os.environ
+    else "/data"
+)
+
+LOADED_MODULES_DIR = os.path.join(DATA_DIR, "loaded_modules")
 
 
 @loader.tds
@@ -28,15 +42,15 @@ class BackuperMod(loader.Module):
     strings = {
         "name": "Backuper",
         "backup_caption": "☝️ <b>This is your database backup. Do not give it to anyone, it contains personal info.</b>",
-        "reply_to_file": "🚫 <b>Reply to .json file</b>",
+        "reply_to_file": "🚫 <b>Reply to .json or .zip file</b>",
         "db_restored": "🔄 <b>Database updated, restarting...</b>",
         "modules_backup": "🗃 <b>Backup mods ({})</b>",
-        "mods_restored": "✅ <b>Modes restored, restarting</b>",
+        "mods_restored": "✅ <b>Mods restored, restarting</b>",
     }
 
     strings_ru = {
         "backup_caption": "☝️ <b>Это - бекап базы данных. Никому его не передавай, он содержит личную информацию.</b>",
-        "reply_to_file": "🚫 <b>Ответь на .{} файл</b>",
+        "reply_to_file": "🚫 <b>Ответь на .json или .zip файл</b>",
         "db_restored": "🔄 <b>База обновлена, перезагружаюсь...</b>",
         "modules_backup": "🗃 <b>Бекап модулей ({})</b>",
         "mods_restored": "✅ <b>Модули восстановлены, перезагружаюсь</b>",
@@ -76,6 +90,7 @@ class BackuperMod(loader.Module):
 
         self._db.clear()
         self._db.update(**decoded_text)
+        self._db.save()
         await utils.answer(message, self.strings("db_restored"))
         await self.allmodules.commands["restart"](
             await message.respond(f"{self.get_prefix()}restart --force")
@@ -83,15 +98,29 @@ class BackuperMod(loader.Module):
 
     async def backupmodscmd(self, message: Message):
         """Create backup of mods"""
-        data = json.dumps(self.lookup("Loader").get("loaded_modules", {}))
-        txt = io.BytesIO(data.encode("utf-8"))
-        txt.name = f"mods-{getattr(datetime, 'datetime', datetime).now().strftime('%d-%m-%Y-%H-%M')}.json"
+        mods_quantity = len(self.lookup("Loader").get("loaded_modules", {}))
+
+        result = io.BytesIO()
+        result.name = "mods.zip"
+
+        db_mods = json.dumps(self.lookup("Loader").get("loaded_modules", {})).encode()
+
+        with zipfile.ZipFile(result, "w", zipfile.ZIP_DEFLATED) as zipf:
+            for root, dirs, files in os.walk(LOADED_MODULES_DIR):
+                for file in files:
+                    with open(os.path.join(root, file), "rb") as f:
+                        zipf.writestr(file, f.read())
+                        mods_quantity += 1
+
+            zipf.writestr("db_mods.json", db_mods)
+
+        archive = io.BytesIO(result.getvalue())
+        archive.name = f"mods-{getattr(datetime, 'datetime', datetime).now().strftime('%d-%m-%Y-%H-%M')}.zip"
+
         await self._client.send_file(
             utils.get_chat_id(message),
-            txt,
-            caption=self.strings("modules_backup").format(
-                len(self.lookup("Loader").get("loaded_modules", {}))
-            ),
+            archive,
+            caption=self.strings("modules_backup").format(mods_quantity),
         )
         await message.delete()
 
@@ -103,15 +132,42 @@ class BackuperMod(loader.Module):
             return
 
         file = await self._client.download_file(reply.media, bytes)
-        decoded_text = json.loads(file.decode("utf-8"))
+        try:
+            decoded_text = json.loads(file.decode("utf-8"))
+        except Exception:
+            try:
+                file = io.BytesIO(file)
+                file.name = "mods.zip"
 
-        if not isinstance(decoded_text, dict) or not all(
-            isinstance(key, str) and isinstance(value, str)
-            for key, value in decoded_text.items()
-        ):
-            raise RuntimeError("Invalid backup")
+                with zipfile.ZipFile(file) as zf:
+                    for name in zf.namelist():
+                        with zf.open(name, "r") as module:
+                            if name == "db_mods.json":
+                                db_mods = json.loads(module.read().decode())
+                                if isinstance(db_mods, dict) and all(
+                                    isinstance(key, str) and isinstance(value, str)
+                                    for key, value in db_mods.items()
+                                ):
+                                    self.lookup("Loader").set("loaded_modules", db_mods)
 
-        self.lookup("Loader").set("loaded_modules", decoded_text)
+                                continue
+
+                            with open(
+                                os.path.join(LOADED_MODULES_DIR, name), "wb"
+                            ) as f:
+                                f.write(module.read())
+            except Exception:
+                logger.exception("Can't restore mods")
+                await utils.answer(message, self.strings("reply_to_file"))
+                return
+        else:
+            if not isinstance(decoded_text, dict) or not all(
+                isinstance(key, str) and isinstance(value, str)
+                for key, value in decoded_text.items()
+            ):
+                raise RuntimeError("Invalid backup")
+
+            self.lookup("Loader").set("loaded_modules", decoded_text)
 
         await utils.answer(message, self.strings("mods_restored"))
         await self.allmodules.commands["restart"](

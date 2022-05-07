@@ -11,8 +11,9 @@
 # meta pic: https://img.icons8.com/fluency/240/000000/last-48-hours.png
 # meta developer: @hikariatama
 
-from .. import loader
 from telethon.tl.types import Message
+
+from .. import loader
 
 
 @loader.tds

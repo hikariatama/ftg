@@ -1,4 +1,4 @@
-__version__ = (11, 0, 3)
+__version__ = (11, 0, 4)
 
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
@@ -20,55 +20,51 @@ __version__ = (11, 0, 3)
 # scope: hikka_min 1.1.14
 # requires: aiohttp
 
-import re
-import io
 import abc
-import time
-import json
-import imghdr
-import logging
 import asyncio
 import functools
-import websockets
+import imghdr
+import io
+import json
+import logging
+import re
+import time
+from math import ceil
+from types import FunctionType
+from typing import List, Union
+
 import aiohttp
-
-
+import requests
+import websockets
+from aiogram.types import CallbackQuery, ChatPermissions
+from aiogram.utils.exceptions import MessageCantBeDeleted, MessageToDeleteNotFound
+from telethon.errors import ChatAdminRequiredError, UserAdminInvalidError
+from telethon.tl.functions.channels import (
+    EditAdminRequest,
+    EditBannedRequest,
+    GetFullChannelRequest,
+    GetParticipantRequest,
+    InviteToChannelRequest,
+)
 from telethon.tl.types import (
-    Message,
-    User,
     Channel,
-    Chat,
-    MessageMediaUnsupported,
-    MessageEntitySpoiler,
-    DocumentAttributeAnimated,
-    UserStatusOnline,
-    ChatBannedRights,
     ChannelParticipantCreator,
+    Chat,
     ChatAdminRights,
+    ChatBannedRights,
+    DocumentAttributeAnimated,
+    Message,
+    MessageEntitySpoiler,
+    MessageMediaUnsupported,
+    User,
+    UserStatusOnline,
 )
 
-from types import FunctionType
-from typing import Union, List
-from aiogram.types import CallbackQuery, ChatPermissions
-from aiogram.utils.exceptions import MessageToDeleteNotFound, MessageCantBeDeleted
 from .. import loader, utils
 from ..inline.types import InlineCall
 
-from telethon.errors import UserAdminInvalidError, ChatAdminRequiredError
-
-from telethon.tl.functions.channels import (
-    EditBannedRequest,
-    GetParticipantRequest,
-    InviteToChannelRequest,
-    EditAdminRequest,
-    GetFullChannelRequest,
-)
-
-from math import ceil
-import requests
-
 try:
-    from PIL import ImageFont, Image, ImageDraw
+    from PIL import Image, ImageDraw, ImageFont
 except ImportError:
     PIL_AVAILABLE = False
 else:
@@ -562,8 +558,8 @@ class HikariChatMod(loader.Module):
         "joinfed": "💼 <b>Federation joined</b>",
         "namedfed": "💼 <b>Federation renamed to {}</b>",
         "nofed": "💼 <b>Current chat is not in any federation</b>",
-        "fban": '💼 <b><a href="{}">{}</a> banned in federation {} {}\nReason: </b><i>{}</i>\n\n{}',
-        "fmute": '💼 <b><a href="{}">{}</a> muted in federation {} {}\nReason: </b><i>{}</i>\n\n{}',
+        "fban": '💼 <b><a href="{}">{}</a> banned in federation {} {}\nReason: </b><i>{}</i>\n{}',
+        "fmute": '💼 <b><a href="{}">{}</a> muted in federation {} {}\nReason: </b><i>{}</i>\n{}',
         "funban": '💼 <b><a href="{}">{}</a> unbanned in federation </b><i>{}</i>\n',
         "funmute": '💼 <b><a href="{}">{}</a> unmuted in federation </b><i>{}</i>\n',
         "feds_header": "💼 <b>Federations:</b>\n\n",
@@ -2080,7 +2076,7 @@ class HikariChatMod(loader.Module):
 
         self.api.request(
             {
-                "action": "delete chat from federation",
+                "action": "remove chat from federation",
                 "args": {"uid": self.api.feds[fed]["uid"], "cid": chat},
             },
             message,
@@ -3458,10 +3454,13 @@ class HikariChatMod(loader.Module):
             and str(chat_id) not in self._ban_ninja
             and getattr(message, "action_message", False)
         ):
-            await self.inline.bot.delete_message(
-                int(f"-100{chat_id}"),
-                message.action_message.id,
-            )
+            try:
+                await self.inline.bot.delete_message(
+                    int(f"-100{chat_id}"),
+                    message.action_message.id,
+                )
+            except Exception:
+                await message.delete()
 
     async def _update_ban_ninja(self, chat_id: str):
         while chat_id in self._ban_ninja_forms:
@@ -3888,7 +3887,11 @@ class HikariChatMod(loader.Module):
             and getattr(message, "sender_id", 0) < 0
         ):
             await self.ban(chat_id, user_id, 0, "", None, True)
-            await self.inline.bot.delete_message(int(f"-100{chat_id}"), message.id)
+            try:
+                await self.inline.bot.delete_message(int(f"-100{chat_id}"), message.id)
+            except Exception:
+                await message.delete()
+
             return True
 
         return False

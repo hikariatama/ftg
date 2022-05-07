@@ -13,9 +13,10 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.14
 
-from .. import loader, utils
-from yoomoney import Quickpay
 from telethon.tl.types import Message
+from yoomoney import Quickpay
+
+from .. import loader, utils
 
 
 @loader.tds
@@ -45,7 +46,7 @@ class YooMoneyMod(loader.Module):
     async def yoopaycmd(self, message: Message):
         """<sum> <title> ; <comment> - Send payment link
         E.g: .yoopay 100 For coffee ; Bro, buy me a coffe, here is the link"""
-        if len(self.config["account"]) != 16:
+        if len(str(self.config["account"])) != 16:
             await utils.answer(message, self.strings("no_account"))
             return
 

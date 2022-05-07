@@ -13,13 +13,14 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.14
 
-from .. import loader, utils
-from telethon.tl.types import Message
 import logging
-
-import requests
 import random
 import time
+
+import requests
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 
 def translate(text, target="en", proxy=None):

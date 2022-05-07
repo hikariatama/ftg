@@ -13,20 +13,24 @@
 # meta developer: @hikariatama
 # requires: urllib requests
 
-from .. import loader, utils
-import requests
-import json
-from urllib.parse import quote_plus
 import asyncio
-import random
-from telethon.tl.types import Message
 import functools
+import json
+import random
+from urllib.parse import quote_plus
+
+import requests
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 phrases = ["Uwu", "Senpai", "Uff", "Meow", "Bonk", "Ara-ara", "Hewwo", "You're cute!"]
 
 
 async def photo(self, args: str) -> str:
-    return (await utils.run_sync(requests.get, f"{self.endpoints['img']}{args}")).json()["url"]
+    return (
+        await utils.run_sync(requests.get, f"{self.endpoints['img']}{args}")
+    ).json()["url"]
 
 
 @loader.tds

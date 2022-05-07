@@ -14,15 +14,17 @@
 # scope: hikka_min 1.0.11
 # requires: requests
 
-from .. import loader, utils
-import requests
-import logging
-from telethon.tl.types import Message
-from typing import List, Union
 import functools
-from telethon.utils import get_display_name
-from ..inline.types import InlineQuery
+import logging
 import random
+from typing import List, Union
+
+import requests
+from telethon.tl.types import Message
+from telethon.utils import get_display_name
+
+from .. import loader, utils
+from ..inline.types import InlineQuery
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +100,8 @@ async def fetch_multiple_subreddits(subreddits: List[str]) -> Union[List[str], b
 
     try:
         return [
-            i["children"]["items"][0]["mediaSources"][0]["url"] for i in r["data"].values()
+            i["children"]["items"][0]["mediaSources"][0]["url"]
+            for i in r["data"].values()
         ]
     except KeyError:
         return False
@@ -196,7 +199,7 @@ class ScrolllerMod(loader.Module):
                     "caption": functools.partial(
                         caption,
                         subreddit=subreddit,
-                    )
+                    ),
                 }
                 for i, subreddit in enumerate(subreddits)
             ],

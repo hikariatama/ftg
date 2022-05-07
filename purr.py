@@ -13,12 +13,14 @@
 # scope: ffmpeg
 # requires: pydub python-ffmpeg
 
-from .. import loader, utils
-import requests
-import random
 import io
+import random
+
+import requests
 from pydub import AudioSegment
 from telethon.tl.types import Message
+
+from .. import loader, utils
 
 
 @loader.tds

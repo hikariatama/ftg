@@ -11,11 +11,13 @@
 # meta pic: https://img.icons8.com/external-phatplus-lineal-color-phatplus/512/000000/external-rate-email-phatplus-lineal-color-phatplus.png
 # meta developer: @hikariatama
 
-from .. import loader, utils
-import requests
-import re
 import hashlib
+import re
+
+import requests
 from telethon.tl.types import Message
+
+from .. import loader, utils
 
 
 @loader.tds
@@ -72,7 +74,7 @@ class RateModuleMod(loader.Module):
                     getattr(reply, "media", None)
                     if getattr(reply, "media", None) is not None
                     else getattr(message, "media", None),
-                    bytes
+                    bytes,
                 )
             except Exception:
                 return await utils.answer(
@@ -92,9 +94,7 @@ class RateModuleMod(loader.Module):
             try:
                 code = (await utils.run_sync(requests.get, args)).text
             except Exception:
-                return await utils.answer(
-                    message, self.strings("cannot_check_file")
-                )
+                return await utils.answer(message, self.strings("cannot_check_file"))
 
         try:
             mod_name = re.search(

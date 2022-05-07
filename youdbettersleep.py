@@ -12,10 +12,12 @@
 # meta developer: @hikariatama
 # scope: hikka_only
 
-from .. import loader, utils
 import re
 import time
+
 from telethon.tl.types import Message
+
+from .. import loader, utils
 
 
 def s2time(temp_time: str) -> int:

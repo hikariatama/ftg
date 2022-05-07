@@ -11,9 +11,11 @@
 # meta pic: https://img.icons8.com/tiny-color/256/000000/experimental-note-tiny-color.png
 # meta developer: @hikariatama
 
-from .. import loader, utils  # noqa
-from telethon.tl.types import Message  # noqa
 import logging
+
+from telethon.tl.types import Message  # noqa
+
+from .. import loader, utils  # noqa
 
 logger = logging.getLogger(__name__)
 

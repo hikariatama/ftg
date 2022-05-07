@@ -14,15 +14,17 @@ __version__ = (1, 0, 1)
 # meta developer: @hikariatama
 # scope: hikka_only
 
-from .. import loader, utils
-from telethon.tl.types import Message
-import logging
-import requests
-import random
-import base64
-from typing import Union
 import asyncio
+import base64
 import io
+import logging
+import random
+from typing import Union
+
+import requests
+from telethon.tl.types import Message
+
+from .. import loader, utils
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -190,7 +192,9 @@ class ArtAIMod(loader.Module):
             }
 
             for engine in statuses:
-                suffix = lambda: f" | <i>Engine: {engine}</i>\n\n{''.join(statuses.values())}"  # noqa: E731
+                suffix = (
+                    lambda: f" | <i>Engine: {engine}</i>\n\n{''.join(statuses.values())}"
+                )  # noqa: E731
                 async for status in animefy(media, engine):
                     if status == "QUEUED":
                         await call.edit(self.strings("queued") + suffix())

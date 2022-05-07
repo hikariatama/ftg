@@ -14,15 +14,17 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.14
 
-from .. import loader, utils
-from telethon.tl.types import Message, PeerUser, User
+import asyncio
 import logging
+import time
+from typing import Union
+
 from telethon.tl.functions.contacts import BlockRequest
 from telethon.tl.functions.messages import DeleteHistoryRequest, ReportSpamRequest
-import time
-from telethon.utils import get_peer_id, get_display_name
-from typing import Union
-import asyncio
+from telethon.tl.types import Message, PeerUser, User
+from telethon.utils import get_display_name, get_peer_id
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

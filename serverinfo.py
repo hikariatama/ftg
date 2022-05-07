@@ -13,12 +13,14 @@
 # scope: hikka_only
 # requires: psutil
 
-from .. import loader, utils
 import os
-import psutil
 import platform
 import sys
+
+import psutil
 from telethon.tl.types import Message
+
+from .. import loader, utils
 
 
 def b2mb(b):

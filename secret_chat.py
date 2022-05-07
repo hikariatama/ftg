@@ -13,14 +13,16 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.12
 
-from .. import loader, utils
-from telethon.tl.types import Message
-import logging
-from telethon_secret_chat import SecretChatManager
-from telethon.utils import get_display_name
-from telethon.tl.functions.channels import CreateChannelRequest
-from telethon.events import NewMessage
 import io
+import logging
+
+from telethon.events import NewMessage
+from telethon.tl.functions.channels import CreateChannelRequest
+from telethon.tl.types import Message
+from telethon.utils import get_display_name
+from telethon_secret_chat import SecretChatManager
+
+from .. import loader, utils
 
 # requires: telethon_secret_chat
 

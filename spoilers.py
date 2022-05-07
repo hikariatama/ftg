@@ -16,10 +16,12 @@ __version__ = (1, 0, 3)
 # scope: hikka_only
 # scope: hikka_min 1.1.12
 
-from .. import loader, utils
 import logging
-from ..inline.types import InlineQuery, InlineCall
+
 from telethon.utils import get_display_name
+
+from .. import loader, utils
+from ..inline.types import InlineCall, InlineQuery
 
 logger = logging.getLogger(__name__)
 
@@ -101,6 +103,6 @@ class SpoilersMod(loader.Module):
             return
 
         await call.answer(text, show_alert=True)
-        
+
         if call.from_user.id != self._tg_id:
             await call.edit(self.strings("seen"))

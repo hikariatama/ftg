@@ -14,11 +14,13 @@
 # scope: hikka_only
 # scope: hikka_min 1.0.7
 
-from .. import loader, utils
-from telethon.tl.types import Message
-import requests
-import functools
 import asyncio
+import functools
+
+import requests
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 
 async def photo(nsfw: bool) -> str:
@@ -26,7 +28,9 @@ async def photo(nsfw: bool) -> str:
     while tag == "not_found":
         try:
             img = (
-                await utils.run_sync(requests.get, "https://nekos.moe/api/v1/random/image")
+                await utils.run_sync(
+                    requests.get, "https://nekos.moe/api/v1/random/image"
+                )
             ).json()["images"][0]
         except KeyError:
             await asyncio.sleep(1)

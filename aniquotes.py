@@ -12,10 +12,12 @@
 # meta developer: @hikariatama
 # scope: hikka_only
 
-from .. import loader, utils
-from telethon.tl.types import Message
 import logging
 from random import choice
+
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

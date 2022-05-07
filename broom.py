@@ -12,15 +12,16 @@
 # meta developer: @hikariatama
 # scope: hikka_only
 
-from .. import loader, utils
 import asyncio
-import re
-import requests
 import json
+import re
 
-from telethon.tl.types import Message, User
+import requests
 from telethon.tl.functions.contacts import BlockRequest
 from telethon.tl.functions.messages import DeleteHistoryRequest
+from telethon.tl.types import Message, User
+
+from .. import loader, utils
 
 
 @loader.tds
@@ -178,9 +179,7 @@ class MagicBroomMod(loader.Module):
         if "--deadrepos" in args or "-2" in args:
             counter = 0
             mods = []
-            for mod in self._db.get(
-                "hikka.modules.loader", "loaded_modules"
-            ):
+            for mod in self._db.get("hikka.modules.loader", "loaded_modules"):
                 if ("http://" in mod or "https://" in mod) and requests.get(
                     mod
                 ).status_code == 404:
@@ -216,9 +215,7 @@ class MagicBroomMod(loader.Module):
                     link = x.split(".", 3)[2].replace("%d", ".")
                     if (
                         link
-                        not in self._db.get(
-                            "hikka.modules.loader", "loaded_modules"
-                        )
+                        not in self._db.get("hikka.modules.loader", "loaded_modules")
                         and link != "loader"
                     ):
                         todel.append(x)

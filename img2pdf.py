@@ -12,11 +12,13 @@
 # meta developer: @hikariatama
 # requires: Pillow
 
-from .. import loader, utils
-from PIL import Image, UnidentifiedImageError
 import io
 import logging
+
+from PIL import Image, UnidentifiedImageError
 from telethon.tl.types import Message
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

@@ -12,12 +12,13 @@
 # meta developer: @hikariatama
 # scope: hikka_only
 
-from .. import loader, utils
+import io
+import logging
 
 import requests
-import logging
 from telethon.tl.types import Message
-import io
+
+from .. import loader, utils
 
 # requires: urllib requests
 

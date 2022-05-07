@@ -13,12 +13,14 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.15
 
-from .. import loader, utils
-from ..inline.types import InlineCall
-from telethon.tl.types import Message
 import logging
 import random
+
 import grapheme
+from telethon.tl.types import Message
+
+from .. import loader, utils
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 EMOJIES = utils.chunks(

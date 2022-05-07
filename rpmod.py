@@ -11,12 +11,14 @@
 # meta pic: https://img.icons8.com/color/480/000000/comedy.png
 # meta developer: @hikariatama
 
-from .. import loader, utils
 import io
 import json
+
+import grapheme
 from telethon.tl.types import Message
 from telethon.utils import get_display_name
-import grapheme
+
+from .. import loader, utils
 
 
 @loader.tds
@@ -158,15 +160,22 @@ class RPMod(loader.Module):
 
     async def watcher(self, message: Message):
         cid = str(utils.get_chat_id(message))
-        if (
-            cid not in self.chats
-            or not isinstance(message, Message)
-            or not hasattr(message, "raw_text")
-            or message.raw_text.split(maxsplit=1)[0].lower() not in self.rp
-        ):
+        try:
+            if (
+                cid not in self.chats
+                or not isinstance(message, Message)
+                or not hasattr(message, "raw_text")
+                or message.raw_text.split(maxsplit=1)[0].lower() not in self.rp
+            ):
+                return
+        except IndexError:
             return
 
-        cmd = message.raw_text.split(maxsplit=1)[0].lower()
+        try:
+            cmd = message.raw_text.split(maxsplit=1)[0].lower()
+        except IndexError:
+            return
+
         msg = self.rp[cmd]
 
         entity = None

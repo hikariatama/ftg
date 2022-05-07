@@ -11,11 +11,13 @@
 # meta pic: https://img.icons8.com/fluency/452/texshop.png
 # meta developer: @hikariatama
 
-from .. import loader, utils
-from telethon.tl.types import Message
-import logging
-import matplotlib.pyplot as plt
 import io
+import logging
+
+import matplotlib.pyplot as plt
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

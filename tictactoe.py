@@ -16,13 +16,15 @@ __version__ = (2, 0, 0)
 # scope: hikka_only
 # scope: hikka_min 1.0.25
 
-import enum
 import copy
-from .. import loader, utils
-from telethon.tl.types import Message
-from typing import List
+import enum
 from random import choice
+from typing import List
+
+from telethon.tl.types import Message
 from telethon.utils import get_display_name
+
+from .. import loader, utils
 from ..inline.types import InlineCall
 
 phrases = [
@@ -286,9 +288,7 @@ class TicTacToeMod(loader.Module):
 
         await call.edit(**self._render(call.form["uid"]))
 
-    async def _process_click_ai(
-        self, call: InlineCall, i: int, j: int, line: str
-    ):
+    async def _process_click_ai(self, call: InlineCall, i: int, j: int, line: str):
         if call.form["uid"] not in self._games:
             await call.answer(self.strings("game_discarded"))
             await call.delete()
@@ -350,7 +350,9 @@ class TicTacToeMod(loader.Module):
         text = self.strings("normal_game").format(
             choice(phrases),
             game["name"],
-            utils.escape_html(get_display_name(self._me)) if game["turn"] == self._me.id else game["name"],
+            utils.escape_html(get_display_name(self._me))
+            if game["turn"] == self._me.id
+            else game["name"],
         )
         score = game["score"].split("|")
         kb = []
@@ -417,7 +419,9 @@ class TicTacToeMod(loader.Module):
                 first: "x",
                 (call.from_user.id if call.from_user.id != first else self._me.id): "o",
             },
-            "name": utils.escape_html(get_display_name(await self._client.get_entity(call.from_user.id))),
+            "name": utils.escape_html(
+                get_display_name(await self._client.get_entity(call.from_user.id))
+            ),
             "score": "...|...|...",
         }
 
@@ -528,7 +532,10 @@ class TicTacToeMod(loader.Module):
         await self.inline.form(
             self.strings("gamestart_ai"),
             message=message,
-            reply_markup={"text": "🧠 Let's go!", "callback": self.inline__start_game_ai},
+            reply_markup={
+                "text": "🧠 Let's go!",
+                "callback": self.inline__start_game_ai,
+            },
             ttl=15 * 60,
             disable_security=True,
         )

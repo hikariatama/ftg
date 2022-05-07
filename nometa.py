@@ -11,8 +11,9 @@
 # meta pic: https://img.icons8.com/emoji/256/000000/waving-hand-emoji.png
 # meta developer: @hikariatama
 
-from .. import loader
 from telethon.tl.types import Message
+
+from .. import loader
 
 
 @loader.tds

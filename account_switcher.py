@@ -15,22 +15,21 @@ __version__ = (2, 0, 0)
 # scope: hikka_only
 # scope: hikka_min 1.1.15
 
-from .. import loader, utils
-import re
-import logging
 import io
-
-from telethon.tl.functions.users import GetFullUserRequest
-from telethon.tl.functions.account import UpdateProfileRequest
-from telethon.tl.functions.photos import UploadProfilePhotoRequest
-from telethon.tl.functions.channels import InviteToChannelRequest
-from aiogram.utils.exceptions import ChatNotFound
-
-from telethon.tl.types import Message as TelethonMessage
-from aiogram.types import Message as AiogramMessage
-from ..inline.types import InlineCall
-
+import logging
+import re
 from typing import Union
+
+from aiogram.types import Message as AiogramMessage
+from aiogram.utils.exceptions import ChatNotFound
+from telethon.tl.functions.account import UpdateProfileRequest
+from telethon.tl.functions.channels import InviteToChannelRequest
+from telethon.tl.functions.photos import UploadProfilePhotoRequest
+from telethon.tl.functions.users import GetFullUserRequest
+from telethon.tl.types import Message as TelethonMessage
+
+from .. import loader, utils
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 
@@ -211,13 +210,13 @@ class AccountSwitcherMod(loader.Module):
 
             log += (
                 self.strings("last_name_restored")
-                if last_name
+                if last_name != "None"
                 else self.strings("last_name_unsaved")
             )
 
             log += (
                 self.strings("bio_restored")
-                if bio is not None
+                if bio != "None"
                 else self.strings("bio_unsaved")
             )
         except Exception:

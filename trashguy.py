@@ -15,10 +15,12 @@
 # requires: grapheme
 # meta developer: @hikariatama
 
-from .. import loader, utils
-from telethon.tl.types import Message
 import logging
+
 import grapheme
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

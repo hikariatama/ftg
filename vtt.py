@@ -14,13 +14,14 @@
 # scope: hikka_only
 # requires: pydub speechrecognition python-ffmpeg
 
-from .. import loader, utils
+import asyncio
 from time import time
-from telethon.tl.types import Message
 
 import speech_recognition as sr
 from pydub import AudioSegment
-import asyncio
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 
 @loader.tds

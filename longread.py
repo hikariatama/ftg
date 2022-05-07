@@ -15,9 +15,10 @@ __version__ = (1, 0, 1)
 # scope: hikka_only
 # scope: hikka_min 1.1.6
 
-from .. import loader
 import logging
-from ..inline.types import InlineQuery, InlineCall
+
+from .. import loader
+from ..inline.types import InlineCall, InlineQuery
 
 logger = logging.getLogger(__name__)
 

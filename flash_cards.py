@@ -11,14 +11,15 @@
 # meta pic: https://img.icons8.com/stickers/500/000000/cards.png
 # meta developer: @hikariatama
 
-from .. import loader, utils
 import asyncio
-from random import randint
+import io
 import json
 import re
-import io
+from random import randint
 
 from telethon.tl.types import Message
+
+from .. import loader, utils
 
 TEMPLATE = """
 <!DOCTYPE html>
@@ -336,9 +337,7 @@ class FlashCardsMod(loader.Module):
             if "#Decks" in reply.text:
                 await self.deckscmd(reply)
             elif "#Deck" in reply.text:
-                await reply.edit(
-                    reply.text + "\n" + self.strings("deck_removed")
-                )
+                await reply.edit(reply.text + "\n" + self.strings("deck_removed"))
         await utils.answer(message, self.strings("deck_removed"))
 
     async def listdeckcmd(self, message: Message):

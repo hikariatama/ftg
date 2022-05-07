@@ -15,13 +15,15 @@ __version__ = (2, 0, 0)
 # scope: hikka_only
 # meta developer: @hikariatama
 
-from .. import loader, utils
-from telethon.tl.types import Message
-from ..inline.types import InlineCall, InlineQuery
 import logging
-import requests
 import time
 from urllib.parse import quote_plus
+
+import requests
+from telethon.tl.types import Message
+
+from .. import loader, utils
+from ..inline.types import InlineCall, InlineQuery
 
 logger = logging.getLogger(__name__)
 

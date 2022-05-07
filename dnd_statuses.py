@@ -13,11 +13,13 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.12
 
-from .. import loader, utils
 import asyncio
+import logging
+
 from telethon import types
 from telethon.tl.types import Message
-import logging
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 
@@ -81,16 +83,12 @@ class StatusesMod(loader.Module):
 
         m = await utils.answer(
             message,
-            self.get("texts", {"": ""})[
-                self.get("status", "")
-            ],
+            self.get("texts", {"": ""})[self.get("status", "")],
         )
 
         self._sent_messages += [m]
 
-        if not self.get("notif", {"": False})[
-            self.get("status", "")
-        ]:
+        if not self.get("notif", {"": False})[self.get("status", "")]:
             await self._client.send_read_acknowledge(
                 message.peer_id,
                 clear_mentions=True,

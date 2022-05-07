@@ -15,19 +15,18 @@
 # scope: hikka_min 1.1.14
 # requires: aiohttp
 
-from .. import loader, utils
-from telethon.tl.types import Message
-import logging
-import aiohttp
-import re
-from ..inline.types import InlineCall
-from random import choice
-from telethon.utils import get_display_name
 import asyncio
-from telethon.errors.rpcerrorlist import (
-    MessageNotModifiedError,
-    FloodWaitError,
-)
+import logging
+import re
+from random import choice
+
+import aiohttp
+from telethon.errors.rpcerrorlist import FloodWaitError, MessageNotModifiedError
+from telethon.tl.types import Message
+from telethon.utils import get_display_name
+
+from .. import loader, utils
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 

@@ -15,20 +15,22 @@ __version__ = (2, 0, 0)
 # scope: hikka_only
 # scope: hikka_min 1.1.12
 
-from .. import loader, utils
-import re
-import datetime
-import time
-import logging
-import requests
 import asyncio
-from telethon.tl.types import Message
+import datetime
+import logging
+import re
+import time
+
+import requests
 from telethon.tl.functions.channels import (
     CreateChannelRequest,
     DeleteChannelRequest,
     EditPhotoRequest,
 )
 from telethon.tl.functions.messages import ExportChatInviteRequest
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +58,7 @@ class TempChatsMod(loader.Module):
         "tmp_cancelled": "🚫 <b>Чат </b><code>{}</code><b> будет жить вечно!</b>",
         "delete_error": "🚫 <b>Произошла ошибка удаления чата. Сделай это вручную.</b>",
         "temp_chat_header": "<b>⚠️ Этот чат</b> (<code>{}</code>)<b> является временным и будет удален {}.</b>",
-        "chat_created": "✅ <b><a href=\"{}\">Чат</a> создан</b>",
+        "chat_created": '✅ <b><a href="{}">Чат</a> создан</b>',
         "delete_error_me": "🚫 <b>Ошибка удаления чата {}</b>",
         "_cmd_doc_tmpchat": "<время> <название> - Создать новый временный чат",
         "_cmd_doc_tmpcurrent": "<время> - Создать новый временный чат",

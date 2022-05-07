@@ -12,9 +12,11 @@
 # meta developer: @hikariatama
 # scope: hikka_only
 
-from .. import loader, utils
 import asyncio
+
 from telethon.tl.types import Message
+
+from .. import loader, utils
 
 
 @loader.tds

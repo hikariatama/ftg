@@ -15,9 +15,10 @@
 # scope: hikka_min 1.0.7
 # scope: inline
 
-from .. import loader, utils
-from telethon.tl.types import Message
 import requests
+from telethon.tl.types import Message
+
+from .. import loader, utils
 from ..inline.types import InlineQuery
 
 

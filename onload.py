@@ -13,8 +13,9 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.14
 
-from .. import loader, utils
 import logging
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

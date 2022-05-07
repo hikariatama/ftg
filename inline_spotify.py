@@ -15,14 +15,16 @@ __version__ = (2, 0, 0)
 # scope: inline
 # scope: hikka_only
 
-from .. import loader
-from telethon.tl.types import Message
-from ..inline.types import InlineCall, InlineMessage
-from typing import Union
-import logging
 import asyncio
+import logging
 import time
 from math import ceil
+from typing import Union
+
+from telethon.tl.types import Message
+
+from .. import loader
+from ..inline.types import InlineCall, InlineMessage
 
 logger = logging.getLogger(__name__)
 

@@ -14,8 +14,9 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.6
 
-from .. import loader
 from telethon.tl.types import Message
+
+from .. import loader
 
 
 @loader.tds

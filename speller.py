@@ -13,20 +13,22 @@
 # scope: hikka_only
 # requires: requests cloudscraper requests_toolbelt aiohttp bs4 langid
 
-from .. import loader, utils
-from telethon.tl.types import Message
-import logging
-import cloudscraper
-import requests
-import random
-import string
-from requests_toolbelt import MultipartEncoder
-import re
-import aiohttp
 import asyncio
-from bs4 import BeautifulSoup
-import langid
+import logging
+import random
+import re
+import string
 from typing import Union
+
+import aiohttp
+import cloudscraper
+import langid
+import requests
+from bs4 import BeautifulSoup
+from requests_toolbelt import MultipartEncoder
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

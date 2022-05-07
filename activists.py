@@ -12,11 +12,13 @@
 # meta developer: @hikariatama
 # scope: hikka_only
 
-from .. import loader, utils
-from telethon.tl.types import Message, User, Chat
 import logging
 import time
+
+from telethon.tl.types import Chat, Message, User
 from telethon.utils import get_display_name
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +80,9 @@ class ActivistsMod(loader.Module):
 
         stats = [
             user[0]
-            for user in list(sorted(list(temp.items()), key=lambda x: x[1], reverse=True))
+            for user in list(
+                sorted(list(temp.items()), key=lambda x: x[1], reverse=True)
+            )
         ]
 
         top_users = []

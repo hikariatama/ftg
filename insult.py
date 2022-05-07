@@ -11,10 +11,11 @@
 # meta pic: https://img.icons8.com/color/480/000000/angry--v1.png
 # meta developer: @hikariatama
 
-from .. import loader, utils
 import random
 
 from telethon.tl.types import Message
+
+from .. import loader, utils
 
 
 @loader.tds

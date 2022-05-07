@@ -17,11 +17,13 @@
 # scope: inline
 # scope: hikka_only
 
-from .. import loader, utils
-from telethon.tl.types import Message
 import logging
 import re
+
 import requests as rqsts
+from telethon.tl.types import Message
+
+from .. import loader, utils
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)

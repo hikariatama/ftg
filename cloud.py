@@ -12,19 +12,21 @@
 # meta developer: @hikariatama
 # requires: hashlib base64
 
-from .. import loader, utils
 import asyncio
-import re
-import requests
-import telethon
-import hashlib
 import base64
-from telethon.tl.types import Message
+import difflib
+import hashlib
 import inspect
 import io
-import difflib
 import logging
+import re
 import time
+
+import requests
+import telethon
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +43,7 @@ class ModuleCloudMod(loader.Module):
         "args": "🚫 <b>Args not specified</b>",
         "mod404": "🚫 <b>Module {} not found</b>",
         "ilink": '💻 <b><u>{name}</u> - <a href="https://mods.hikariatama.ru/view/{file}">source</a></b> | <i>By @hikarimods with 💗</i>\nℹ️ <i>{desc}</i>\n\n🌃 <b>Install:</b> <code>.dlmod https://mods.hikariatama.ru/{file}</code>',
-        "404": "😔 <b>Module not found</b>"
+        "404": "😔 <b>Module not found</b>",
     }
 
     strings_ru = {
@@ -132,9 +134,7 @@ class ModuleCloudMod(loader.Module):
             )
             await message.delete()
         else:
-            await message.edit(
-                self.strings("ilink").format(**info), file=img
-            )
+            await message.edit(self.strings("ilink").format(**info), file=img)
 
     async def verifmodcmd(self, message: Message) -> None:
         """<filename>;<title>;<description>;<tags> - Verfiy module [only for @hikarimods admins]"""

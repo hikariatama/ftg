@@ -14,11 +14,13 @@
 # scope: ffmpeg
 # requires: pytube python-ffmpeg
 
-from .. import loader, utils
-from pytube import YouTube
 import os
 import subprocess
+
+from pytube import YouTube
 from telethon.tl.types import Message
+
+from .. import loader, utils
 
 
 @loader.tds
@@ -90,6 +92,6 @@ class YouTubeMod(loader.Module):
 
         await self._client.send_file(message.peer_id, path)
         os.remove(path)
-        
+
         if message.out:
             await message.delete()

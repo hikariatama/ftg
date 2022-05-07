@@ -14,21 +14,23 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.14
 
+import asyncio
+import functools
 import io
+import logging
 import re
 import time
-import asyncio
-import logging
-import spotipy
-import requests
-import telethon
-import functools
 import traceback
 from math import ceil
 from types import FunctionType
-from telethon.tl.types import Message
-from .. import loader, utils
+
+import requests
+import spotipy
+import telethon
 from PIL import Image, ImageDraw, ImageFont
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 
@@ -163,7 +165,7 @@ class SpotifyMod(loader.Module):
         "paused": "⏸ <b>Пауза</b>",
         "deauth": "🚪 <b>Авторизация отменена</b>",
         "restarted": "🔙 <b>Начал трек сначала</b>",
-        "liked": "❤️ <b>Поставил \"Мне нравится\" текущему треку</b>",
+        "liked": '❤️ <b>Поставил "Мне нравится" текущему треку</b>',
         "autobio": "🎧 <b>Обновление био включено {}</b>",
         "404": "🚫 <b>Нет результатов</b>",
         "playing_track": "🎹 <b>{} добавлен в очередь</b>",
@@ -190,7 +192,11 @@ class SpotifyMod(loader.Module):
         )
         self.name = self.strings["name"]
         self.config = loader.ModuleConfig(
-            loader.ConfigValue("AutoBioTemplate", "🎧 {} ───○ 🔊 ᴴᴰ", lambda: "Template for Spotify AutoBio")
+            loader.ConfigValue(
+                "AutoBioTemplate",
+                "🎧 {} ───○ 🔊 ᴴᴰ",
+                lambda: "Template for Spotify AutoBio",
+            )
         )
         self.bio_task = None
 

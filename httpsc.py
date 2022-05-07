@@ -11,8 +11,9 @@
 # meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/512/000000/external-status-agile-flaticons-lineal-color-flat-icons-2.png
 # meta developer: @hikariatama
 
-from .. import loader, utils
 from telethon.tl.types import Message
+
+from .. import loader, utils
 
 responses = {
     100: ("ℹ️ Continue", "Запрос принят, продолжай"),

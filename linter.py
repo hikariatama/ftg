@@ -12,13 +12,15 @@
 # meta developer: @hikariatama
 # requires: black
 
-from .. import loader, utils
-from telethon.tl.types import Message
-import logging
-import requests
-import re
 import io
+import logging
+import re
 from random import choice
+
+import requests
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 logging.getLogger("blib2to3.pgen2.driver").setLevel(logging.ERROR)
 

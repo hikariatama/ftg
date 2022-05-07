@@ -11,10 +11,12 @@
 # meta pic: https://img.icons8.com/fluency/240/000000/sim-card-chip.png
 # meta developer: @hikariatama
 
-from .. import loader, utils
-import requests
 import json
+
+import requests
 from telethon.tl.types import Message
+
+from .. import loader, utils
 
 
 @loader.tds

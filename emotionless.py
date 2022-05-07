@@ -12,15 +12,16 @@
 # meta developer: @hikariatama
 # scope: hikka_only
 
-from .. import loader, utils
-from telethon.tl.types import Message
-from telethon.events import Raw
-from telethon.tl.types import UpdateMessageReactions
-from telethon.tl.functions.messages import ReadReactionsRequest
-from telethon.utils import get_input_peer
-import logging
 import asyncio
+import logging
 import time
+
+from telethon.events import Raw
+from telethon.tl.functions.messages import ReadReactionsRequest
+from telethon.tl.types import Message, UpdateMessageReactions
+from telethon.utils import get_input_peer
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +83,9 @@ class EmotionlessMod(loader.Module):
             ):
                 return
 
-            self._flood_protect = list(filter(lambda x: x > time.time(), self._flood_protect))
+            self._flood_protect = list(
+                filter(lambda x: x > time.time(), self._flood_protect)
+            )
 
             if len(self._flood_protect) > self._threshold:
                 self._queue[utils.get_chat_id(event)] = time.time() + 15
