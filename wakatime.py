@@ -18,15 +18,12 @@
 import asyncio
 import logging
 import re
-from random import choice
 
 import aiohttp
 from telethon.errors.rpcerrorlist import FloodWaitError, MessageNotModifiedError
 from telethon.tl.types import Message
-from telethon.utils import get_display_name
 
 from .. import loader, utils
-from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 
@@ -37,21 +34,15 @@ class WakaTimeMod(loader.Module):
 
     strings = {
         "name": "WakaTime",
-        "face_set": "{} <b>Face saved</b>",
-        "pick_face": "🙂 <b>Pick a face, which will be shown in WakaTime widget</b>",
-        "widget": "{} <b>I'm {}.</b>\n\n<b>▪️ I'm &lt;dev/&gt; and this is my week:</b>\n\n{}",
         "state": "🙂 <b>WakaTime widgets are now {}</b>\n{}",
-        "tutorial": "ℹ️ <b>To enable widget, send a message to a preffered chat with text </b><code>$WAKATIME_WIDGET$</code>",
+        "tutorial": "ℹ️ <b>To enable widget, send a message to a preffered chat with text </b><code>{WAKATIME}</code>",
         "configuring": "🙂 <b>WakaTime widget is ready and will be updated soon</b>",
         "set_username": "🙂 <b>You need to set your WakaTime username in </b><code>.config</code>",
     }
 
     strings_ru = {
-        "face_set": "{} <b>Эмодзи сохранен</b>",
-        "pick_face": "🙂 <b>Выбери эмодзи, который будет отображаться в виджете WakaTime</b>",
-        "widget": "{} <b>Я {}.</b>\n\n<b>▪️ Я &lt;разработчик/&gt; и это как прошла моя неделя:</b>\n\n{}",
         "state": "🙂 <b>Виджеты WakaTime теперь {}</b>\n{}",
-        "tutorial": "ℹ️ <b>Для активации виджета, отправь </b><code>$WAKATIME_WIDGET$</code> <b>в нужный чат</b>",
+        "tutorial": "ℹ️ <b>Для активации виджета, отправь </b><code>{WAKATIME}</code> <b>в нужный чат</b>",
         "configuring": "🙂 <b>Виджет WakaTime готов и скоро будет обновлен</b>",
         "set_username": "🙂 <b>Необходимо установить юзернейм на WakaTime в </b><code>.config</code>",
         "_cmd_doc_wakaface": "Выбрать эмодзи, которое будет отображаться в виджетах",
@@ -76,17 +67,7 @@ class WakaTimeMod(loader.Module):
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
-        self._me = await client.get_me()
         self._endpoint = "https://github-readme-stats.vercel.app/api/wakatime?username={}&show_icons=false&hide_progress=true&layout=true"
-        self._faces = ["🐻‍❄️", "🐻", "🐼", "🐯", "🦁", "🦉", "🐺", "🐰", "🦊", "🐬", "🦈", "🦥", "💁‍♂️", "🥷", "🧑‍💻"]  # fmt: skip
-
-        self._faces_markup = utils.chunks(
-            [
-                {"text": i, "callback": self._set_face, "args": (i,)}
-                for i in self._faces
-            ],
-            5,
-        )
 
         self._task = asyncio.ensure_future(self._parse())
 
@@ -118,11 +99,15 @@ class WakaTimeMod(loader.Module):
                 )
             ]
 
-            formatted = self._format(results)
-
             for widget in self.get("widgets", []):
                 try:
-                    await self._client.edit_message(*widget, formatted)
+                    await self._client.edit_message(
+                        *widget[:2],
+                        self._format(
+                            results,
+                            widget[2] if len(widget) > 2 else "{WAKATIME}",
+                        ),
+                    )
                 except MessageNotModifiedError:
                     pass
                 except FloodWaitError:
@@ -139,30 +124,14 @@ class WakaTimeMod(loader.Module):
 
             await asyncio.sleep(int(self.config["update_interval"]))
 
-    def _format(self, stats: list) -> str:
+    def _format(self, stats: list, template: str) -> str:
         result = ""
         for stat in stats:
             hrs = f"{stat[1]} hrs " if stat[1] else ""
             mins = f"{stat[2]} mins" if stat[2] else ""
             result += f"▫️ <b>{stat[0]}</b>: <i>{hrs}{mins}</i>\n"
 
-        return self.strings("widget").format(
-            self.get("face", choice(self._faces)),
-            utils.escape_html(get_display_name(self._me)),
-            result,
-        )
-
-    async def _set_face(self, call: InlineCall, face: str):
-        self.set("face", face)
-        await call.edit(self.strings("face_set").format(face))
-
-    async def wakafacecmd(self, message: Message):
-        """Choose a face, which will be shown in widgets"""
-        await self.inline.form(
-            self.strings("pick_face"),
-            reply_markup=self._faces_markup,
-            message=message,
-        )
+        return template.format(WAKATIME=result)
 
     async def wakatogglecmd(self, message: Message):
         """Toggle widgets' updates"""
@@ -180,13 +149,15 @@ class WakaTimeMod(loader.Module):
         )
 
     async def watcher(self, message: Message):
-        if getattr(message, "raw_text", "") != "$WAKATIME_WIDGET$" or not message.out:
+        if "{WAKATIME}" not in getattr(message, "text", "") or not message.out:
             return
 
         chat_id = utils.get_chat_id(message)
         message_id = message.id
 
-        self.set("widgets", self.get("widgets", []) + [(chat_id, message_id)])
+        self.set(
+            "widgets", self.get("widgets", []) + [(chat_id, message_id, message.text)]
+        )
 
         await utils.answer(message, self.strings("configuring"))
         await self._parse(do_not_loop=True)

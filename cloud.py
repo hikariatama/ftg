@@ -44,6 +44,7 @@ class ModuleCloudMod(loader.Module):
         "mod404": "🚫 <b>Module {} not found</b>",
         "ilink": '💻 <b><u>{name}</u> - <a href="https://mods.hikariatama.ru/view/{file}">source</a></b> | <i>By @hikarimods with 💗</i>\nℹ️ <i>{desc}</i>\n\n🌃 <b>Install:</b> <code>.dlmod https://mods.hikariatama.ru/{file}</code>',
         "404": "😔 <b>Module not found</b>",
+        "not_exact": "⚠️ <b>No exact match occured, so the closest result is shown instead</b>",
     }
 
     strings_ru = {
@@ -57,6 +58,7 @@ class ModuleCloudMod(loader.Module):
         "_cmd_doc_ilink": "<modname> - Получить баннер модуля Хикари",
         "_cmd_doc_verifmod": "<filename>;<title>;<description>;<tags> - Верифицировать модуль [только для админов @hikarimods]",
         "_cls_doc": "Поиск и предложение модулей в HikariMods Database",
+        "not_exact": "⚠️ <b>Точного совпадения не нашлось, поэтому был выбран наиболее подходящее</b>",
     }
 
     async def client_ready(self, client, db):
@@ -197,6 +199,7 @@ class ModuleCloudMod(loader.Module):
     async def mlcmd(self, message: Message):
         """<module name> - Send link to module"""
         args = utils.get_args_raw(message)
+        exact = True
         if not args:
             await utils.answer(message, "🚫 <b>No args</b>")
             return
@@ -225,6 +228,7 @@ class ModuleCloudMod(loader.Module):
                             )
                         )
                     )
+                    exact = False
                 except Exception:
                     await utils.answer(message, self.strings("404"))
                     return
@@ -243,7 +247,7 @@ class ModuleCloudMod(loader.Module):
             text = (
                 f"<b>🧳 {utils.escape_html(class_name)}</b>"
                 if not utils.check_url(link)
-                else f'📼 <b><a href="{link}">Link</a> for {utils.escape_html(class_name)}:</b> <code>{link}</code>'
+                else f'📼 <b><a href="{link}">Link</a> for {utils.escape_html(class_name)}:</b> <code>{link}</code>\n\n{self.strings("not_exact") if not exact else ""}'
             )
 
             file = io.BytesIO(sys_module.__loader__.data)

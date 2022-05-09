@@ -1,4 +1,4 @@
-__version__ = (11, 0, 4)
+__version__ = (11, 1, 1)
 
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
@@ -46,6 +46,7 @@ from telethon.tl.functions.channels import (
     GetParticipantRequest,
     InviteToChannelRequest,
 )
+from telethon.tl.functions.messages import EditChatDefaultBannedRightsRequest
 from telethon.tl.types import (
     Channel,
     ChannelParticipantCreator,
@@ -634,9 +635,18 @@ class HikariChatMod(loader.Module):
         "clnraid_stop": "🚨 Stop",
         "clnraid_complete": "🥷 <b>RaidCleaner complete! Removed: {} user(-s)</b>",
         "clnraid_cancelled": "🥷 <b>RaidCleaner cancelled. Removed: {} user(-s)</b>",
-        "smart_anti_raid_active": "🥷 <b>BanNinja protection triggered</b>\n<i>Deleted {} bot(-s)</i>",
+        "smart_anti_raid_active": (
+            "🥷 <b>BanNinja is working hard to prevent intrusion to this chat.</b>\n\n"
+            "⚠️ <b>I've forbidden sending messages until attack is fully released</b>\n\n"
+            "<i>Deleted {} bot(-s)</i>"
+        ),
         "smart_anti_raid_off": "🚨 Stop",
         "smart_anti_raid_stopped": "🥷 <b>BanNinja Stopped</b>",
+        "banninja_report": (
+            "🥷 <b>BanNinja has done his job.</b>\n"
+            "<i>Deleted {} bot(-s)</i>\n\n"
+            "🏹 <i>«BanNinja can handle any size of attack»</i> © <code>@hikariatama</code>"
+        ),
         "confirm_rmfed": (
             "⚠️ <b>Warning! This operation can't be reverted! Are you sure, "
             "you want to delete federation </b><code>{}</code><b>?</b>"
@@ -653,7 +663,11 @@ class HikariChatMod(loader.Module):
 
     strings_ru = {
         "from_where": "🚫 <b>Ответь на сообщение, начиная с которого надо удалить.</b>",
-        "smart_anti_raid_active": "🥷 <b>Сработала защита BanNinja</b>\n<i>Удалено {} ботов</i>",
+        "smart_anti_raid_active": (
+            "🥷 <b>BanNinja работает в поте лица, отбивая атаку на этот чат.</b>\n\n"
+            "⚠️ <b>Я запретил отправку сообщений на время рейда</b>\n\n"
+            "<i>Удалено {} бот(-ов)</i>"
+        ),
         "smart_anti_raid_off": "🚨 Остановить",
         "smart_anti_raid_stopped": "🥷 <b>BanNinja остановлен</b>",
         "error": "😵 <b>Произошла ошибка HikariChat</b>",
@@ -740,10 +754,15 @@ class HikariChatMod(loader.Module):
         "clnraid_started": "🥷 <b>RaidCleaner активен... Найдено {} пользователей для бана...</b>",
         "clnraid_confirm": "🥷 <b>Подтвердите запуск RaidCleaner на {} пользователях</b>",
         "clnraid_yes": "🥷 Начать",
+        "banninja_report": (
+            "🥷 <b>BanNinja закончил работу.</b>\n"
+            "<i>Удалено {} бот(-ов)</i>\n\n"
+            "🏹 <i>«BanNinja can handle any size of attack»</i> © <code>@hikariatama</code>"
+        ),
         "clnraid_cancel": "🚫 Отменить",
         "clnraid_stop": "🚨 Остановить",
-        "clnraid_complete": "🥷 <b>RaidCleaner закончил работу! Удалено: {} пользователь(-ей)</b>",
-        "clnraid_cancelled": "🥷 <b>RaidCleaner остановлен. Удалено: {} пользователь(-ей)</b>",
+        "clnraid_complete": "🥷 <b>RaidCleaner закончил работу! Удалено: {} бот(-ов)</b>",
+        "clnraid_cancelled": "🥷 <b>RaidCleaner остановлен. Удалено: {} бот(-ов)</b>",
         "confirm_rmfed_btn": "🗑 Удалить",
         "decline_rmfed_btn": "🚫 Отменить",
         "pil_unavailable": "🚫 <b>Библиотека Pillow недоступна</b>",
@@ -807,6 +826,11 @@ class HikariChatMod(loader.Module):
                 "join_ratelimit",
                 10,
                 lambda: "How many users per minute need to join until ban starts",
+            ),
+            loader.ConfigValue(
+                "banninja_cooldown",
+                300,
+                lambda: "How long is banninja supposed to be active in seconds",
             ),
         )
 
@@ -3463,18 +3487,29 @@ class HikariChatMod(loader.Module):
                 await message.delete()
 
     async def _update_ban_ninja(self, chat_id: str):
-        while chat_id in self._ban_ninja_forms:
+        while (
+            chat_id in self._ban_ninja_forms and self._ban_ninja[chat_id] > time.time()
+        ):
+            try:
+                await self._ban_ninja_forms[chat_id].edit(
+                    self.strings("smart_anti_raid_active").format(
+                        self._ban_ninja_progress[chat_id]
+                    ),
+                    {
+                        "text": self.strings("smart_anti_raid_off"),
+                        "callback": self.disable_smart_anti_raid,
+                        "args": (chat_id,),
+                    },
+                )
+            except Exception:
+                pass
+
             await asyncio.sleep(15)
-            await self._ban_ninja_forms[chat_id].edit(
-                self.strings("smart_anti_raid_active").format(
-                    self._ban_ninja_progress[chat_id]
-                ),
-                {
-                    "text": self.strings("smart_anti_raid_off"),
-                    "callback": self.disable_smart_anti_raid,
-                    "args": (chat_id,),
-                },
-            )
+
+        try:
+            await self.disable_smart_anti_raid(None, chat_id)
+        except Exception:
+            pass
 
     @error_handler
     async def p__banninja(
@@ -3498,7 +3533,9 @@ class HikariChatMod(loader.Module):
 
         if chat_id in self._ban_ninja:
             if self._ban_ninja[chat_id] > time.time():
-                self._ban_ninja[chat_id] = time.time() + 5 * 60
+                self._ban_ninja[chat_id] = time.time() + int(
+                    self.config["banninja_cooldown"]
+                )
                 await self.inline.bot.kick_chat_member(int(f"-100{chat_id}"), user_id)
 
                 self._ban_ninja_progress[chat_id] += 1
@@ -3519,18 +3556,7 @@ class HikariChatMod(loader.Module):
                 logger.debug(f"BanNinja is active in chat {chat.title}, I kicked {get_full_name(user)}")  # fmt: skip
                 return True
 
-            del self._ban_ninja[chat_id]
-
-            if chat_id in self._ban_ninja_forms:
-                await self._ban_ninja_forms[chat_id].delete()
-                del self._ban_ninja_forms[chat_id]
-
-            if chat_id in self._ban_ninja_progress:
-                del self._ban_ninja_progress[chat_id]
-
-            if chat_id in self._ban_ninja_tasks:
-                self._ban_ninja_tasks[chat_id].cancel()
-                del self._ban_ninja_tasks[chat_id]
+            await self.disable_smart_anti_raid(None, chat_id)
 
         if chat_id not in self._join_ratelimit:
             self._join_ratelimit[chat_id] = []
@@ -3551,7 +3577,9 @@ class HikariChatMod(loader.Module):
             if chat_id in self._ban_ninja:
                 return False
 
-            self._ban_ninja[chat_id] = round(time.time()) + (5 * 60)
+            self._ban_ninja[chat_id] = round(time.time()) + int(
+                self.config["banninja_cooldown"]
+            )
             form = await self.inline.form(
                 self.strings("smart_anti_raid_active").format(
                     self.config["join_ratelimit"]
@@ -3563,6 +3591,17 @@ class HikariChatMod(loader.Module):
                     "args": (chat_id,),
                 },
             )
+
+            try:
+                self._ban_ninja_default_rights[chat_id] = chat.default_banned_rights
+                await self._client(
+                    EditChatDefaultBannedRightsRequest(
+                        chat.id,
+                        ChatBannedRights(send_messages=True, until_date=2**31 - 1),
+                    )
+                )
+            except Exception:
+                pass
 
             self._ban_ninja_forms[chat_id] = form
             self._ban_ninja_progress[chat_id] = int(self.config["join_ratelimit"])
@@ -3610,8 +3649,12 @@ class HikariChatMod(loader.Module):
         chat_id = str(chat_id)
         if chat_id in self._ban_ninja:
             del self._ban_ninja[chat_id]
-            await call.edit(self.strings("smart_anti_raid_stopped"))
-            await call.answer("Success")
+            if call:
+                await call.edit(self.strings("smart_anti_raid_stopped"))
+
+            if call:
+                await call.answer("Success")
+
             try:
                 await self._client.unpin_message(
                     int(chat_id),
@@ -3619,6 +3662,36 @@ class HikariChatMod(loader.Module):
                 )
             except Exception:
                 pass
+
+            try:
+                await self._client(
+                    EditChatDefaultBannedRightsRequest(
+                        int(chat_id),
+                        self._ban_ninja_default_rights[chat_id],
+                    )
+                )
+                del self._ban_ninja_default_rights[chat_id]
+            except Exception:
+                pass
+
+            await self._client.send_message(
+                int(chat_id),
+                self.strings("banninja_report").format(
+                    self._ban_ninja_progress[chat_id]
+                ),
+            )
+
+            if chat_id in self._ban_ninja_forms:
+                await self._ban_ninja_forms[chat_id].delete()
+                del self._ban_ninja_forms[chat_id]
+
+            if chat_id in self._ban_ninja_progress:
+                del self._ban_ninja_progress[chat_id]
+
+            if chat_id in self._ban_ninja_tasks:
+                self._ban_ninja_tasks[chat_id].cancel()
+                del self._ban_ninja_tasks[chat_id]
+
             return
 
         await call.answer("Already stopped")
@@ -3809,7 +3882,7 @@ class HikariChatMod(loader.Module):
             try:
                 await self.inline.bot.delete_message(
                     int(f"-100{chat_id}"),
-                    getattr(message, "id", message.action_message.id),
+                    getattr(message, "action_message", message).id,
                 )
             except MessageToDeleteNotFound:
                 pass
@@ -3817,7 +3890,7 @@ class HikariChatMod(loader.Module):
                 await self._promote_bot(chat_id)
                 await self.inline.bot.delete_message(
                     int(f"-100{chat_id}"),
-                    getattr(message, "id", message.action_message.id),
+                    getattr(message, "action_message", message).id,
                 )
 
     @error_handler
@@ -4122,7 +4195,7 @@ class HikariChatMod(loader.Module):
                 )
                 and len(
                     re.findall(
-                        "[\u200f\u200e\u0300-\u0361\u0316-\u0362\u0334-\u0338\u0363-\u036F\u3164\ud83d\udd07\u0020\u00A0\u2000-\u2009\u200A\u2028\u205F]",
+                        "[\u200f\u200e\u0300-\u0361\u0316-\u0362\u0334-\u0338\u0363-\u036F\u3164\ud83d\udd07\u0020\u00A0\u2000-\u2009\u200A\u2028\u205F\u1160\ufff4]",
                         get_full_name(user),
                     )
                 )
@@ -4405,6 +4478,7 @@ class HikariChatMod(loader.Module):
     _ban_ninja_forms = {}
     _ban_ninja_progress = {}
     _ban_ninja_tasks = {}
+    _ban_ninja_default_rights = {}
 
     flood_timeout = FLOOD_TIMEOUT
     flood_threshold = FLOOD_TRESHOLD
