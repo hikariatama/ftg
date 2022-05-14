@@ -79,7 +79,7 @@ class NekosLifeMod(loader.Module):
         await self.inline.gallery(
             message=message,
             next_handler=pic,
-            caption=lambda: f"<i>{random.choice(phrases)}</i> {utils.escape_html(utils.ascii_face())}",
+            caption=lambda: f"<i>{random.choice(phrases)}</i> {utils.ascii_face()}",
         )
 
     @loader.pm

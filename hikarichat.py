@@ -1,4 +1,4 @@
-__version__ = (11, 1, 1)
+__version__ = (11, 1, 3)
 
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
@@ -3516,9 +3516,7 @@ class HikariChatMod(loader.Module):
         self,
         chat_id: Union[str, int],
         user_id: Union[str, int],
-        user: Union[User, Channel],
         message: Message,
-        chat: Union[Chat, Channel],
     ) -> bool:
         if not (
             self.api.should_protect(chat_id, "banninja")
@@ -3553,7 +3551,7 @@ class HikariChatMod(loader.Module):
                         int(f"-100{chat_id}"),
                         message.action_message.id,
                     )
-                logger.debug(f"BanNinja is active in chat {chat.title}, I kicked {get_full_name(user)}")  # fmt: skip
+                logger.debug(f"BanNinja is active in chat {chat_id=}, I kicked {user_id=}")  # fmt: skip
                 return True
 
             await self.disable_smart_anti_raid(None, chat_id)
@@ -3584,7 +3582,7 @@ class HikariChatMod(loader.Module):
                 self.strings("smart_anti_raid_active").format(
                     self.config["join_ratelimit"]
                 ),
-                message=chat.id,
+                message=int(chat_id),
                 reply_markup={
                     "text": self.strings("smart_anti_raid_off"),
                     "callback": self.disable_smart_anti_raid,
@@ -3593,6 +3591,7 @@ class HikariChatMod(loader.Module):
             )
 
             try:
+                chat = await message.get_chat()
                 self._ban_ninja_default_rights[chat_id] = chat.default_banned_rights
                 await self._client(
                     EditChatDefaultBannedRightsRequest(
@@ -3614,11 +3613,11 @@ class HikariChatMod(loader.Module):
                     call=(
                         await self.inline.form(
                             self.strings("clnraid_started").format("*loading*"),
-                            message=chat.id,
+                            message=int(chat_id),
                             reply_markup={"text": ".", "callback": self.inline__close},
                         )
                     ),
-                    chat_id=chat.id,
+                    chat_id=int(chat_id),
                     quantity=int(self.config["join_ratelimit"]),
                 )
             ).delete()
@@ -4262,7 +4261,7 @@ class HikariChatMod(loader.Module):
             while self._global_queue:
                 await self._global_queue_handler_process(self._global_queue.pop(0))
 
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.001)
 
     @error_handler
     async def _global_queue_handler_process(self, message: Message):
@@ -4282,28 +4281,26 @@ class HikariChatMod(loader.Module):
 
         await self.p__antiservice(chat_id, message)
 
-        if getattr(message, "user_joined", False) or getattr(
-            message, "user_added", False
-        ):
-            user_id = (await message.get_user()).id
-        else:
+        try:
+            user_id = (
+                getattr(message, "sender_id", False)
+                or message.action_message.action.users[0]
+            )
+        except Exception:
             try:
-                user_id = (
-                    getattr(message, "sender_id", False)
-                    or message.action_message.action.users[0]
-                )
+                user_id = message.action_message.action.from_id.user_id
             except Exception:
                 try:
-                    user_id = message.action_message.action.from_id.user_id
+                    user_id = message.from_id.user_id
                 except Exception:
                     try:
-                        user_id = message.from_id.user_id
+                        user_id = message.action_message.from_id.user_id
                     except Exception:
                         try:
-                            user_id = message.action_message.from_id.user_id
+                            user_id = message.action.from_user.id
                         except Exception:
                             try:
-                                user_id = message.action.from_user.id
+                                user_id = (await message.get_user()).id
                             except Exception:
                                 logger.debug(f"Can't extract entity from event {type(message)}")  # fmt: skip
                                 return
@@ -4311,6 +4308,9 @@ class HikariChatMod(loader.Module):
         user_id = (
             int(str(user_id)[4:]) if str(user_id).startswith("-100") else int(user_id)
         )
+
+        if await self.p__banninja(chat_id, user_id, message):
+            return
 
         fed = await self.find_fed(message)
 
@@ -4400,9 +4400,6 @@ class HikariChatMod(loader.Module):
         user_name = get_full_name(user)
 
         args = (chat_id, user_id, user, message)
-
-        if await self.p__banninja(*args, chat):
-            return
 
         if await self.p__antiraid(*args, chat):
             return

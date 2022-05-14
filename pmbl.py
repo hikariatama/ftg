@@ -234,7 +234,12 @@ class PMBLMod(loader.Module):
             or not isinstance(message, Message)
             or not isinstance(message.peer_id, PeerUser)
             or not self.get("state", False)
-            or utils.get_chat_id(message) == 1271266957  # Ignore @replies
+            or utils.get_chat_id(message)
+            in {
+                1271266957,  # @replies
+                777000,  # Telegram Notifications
+                self._tg_id,  # Self
+            }
         ):
             return
 

@@ -43,7 +43,7 @@ class CatboyMod(loader.Module):
     async def catboycmd(self, message: Message):
         """Send catboy picture"""
         await self.inline.gallery(
-            caption=lambda: f"<i>{utils.escape_html(utils.ascii_face())}</i>",
+            caption=lambda: f"<i>{utils.ascii_face()}</i>",
             message=message,
             next_handler=photo,
             preload=5,
@@ -61,9 +61,9 @@ class CatboyMod(loader.Module):
                     "description": "Send catboy photo",
                     "next_handler": photo,
                     "thumb_handler": photo,  # Optional
-                    "caption": lambda: f"<i>Enjoy! {utils.escape_html(utils.ascii_face())}</i>",  # Optional
+                    "caption": lambda: f"<i>Enjoy! {utils.ascii_face()}</i>",  # Optional
                     # Because of ^ this lambda, face will be generated every time the photo is switched
-                    # "caption": f"<i>Enjoy! {utils.escape_html(utils.ascii_face())}</i>",
+                    # "caption": f"<i>Enjoy! {utils.ascii_face()}</i>",
                     # If you make it without lambda ^, it will be generated once
                 }
             ],

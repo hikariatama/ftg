@@ -1,3 +1,5 @@
+__version__ = (2, 0, 0)
+
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
 #
@@ -7,9 +9,10 @@
 #
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# Updated by a https://t.me/vsecoder
 
 # meta pic: https://img.icons8.com/color/480/000000/wakanim.png
-# meta developer: @hikariatama
+# meta developer: @hikariatama, @vsecoder
 # scope: inline
 # scope: hikka_only
 # scope: hikka_min 1.1.14
@@ -17,7 +20,7 @@
 
 import asyncio
 import logging
-import re
+import json
 
 import aiohttp
 from telethon.errors.rpcerrorlist import FloodWaitError, MessageNotModifiedError
@@ -35,6 +38,7 @@ class WakaTimeMod(loader.Module):
     strings = {
         "name": "WakaTime",
         "state": "🙂 <b>WakaTime widgets are now {}</b>\n{}",
+        "error": "<b>WakaTime error</b>\n\n{}",
         "tutorial": "ℹ️ <b>To enable widget, send a message to a preffered chat with text </b><code>{WAKATIME}</code>",
         "configuring": "🙂 <b>WakaTime widget is ready and will be updated soon</b>",
         "set_username": "🙂 <b>You need to set your WakaTime username in </b><code>.config</code>",
@@ -42,6 +46,7 @@ class WakaTimeMod(loader.Module):
 
     strings_ru = {
         "state": "🙂 <b>Виджеты WakaTime теперь {}</b>\n{}",
+        "error": "<b>WakaTime error</b>\n\n{}",
         "tutorial": "ℹ️ <b>Для активации виджета, отправь </b><code>{WAKATIME}</code> <b>в нужный чат</b>",
         "configuring": "🙂 <b>Виджет WakaTime готов и скоро будет обновлен</b>",
         "set_username": "🙂 <b>Необходимо установить юзернейм на WakaTime в </b><code>.config</code>",
@@ -67,7 +72,9 @@ class WakaTimeMod(loader.Module):
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
-        self._endpoint = "https://github-readme-stats.vercel.app/api/wakatime?username={}&show_icons=false&hide_progress=true&layout=true"
+        self._endpoint = "https://wakatime.com/api/v1/users/{}/stats/last_7_days"
+
+        self.set("widgets", list(map(tuple, self.get("widgets", []))))
 
         self._task = asyncio.ensure_future(self._parse())
 
@@ -82,22 +89,12 @@ class WakaTimeMod(loader.Module):
 
             async with aiohttp.ClientSession() as session:
                 async with session.request(
-                    "GET", self._endpoint.format(self.config["wakatime_username"])
+                    "GET",
+                    self._endpoint.format(self.config["wakatime_username"]),
                 ) as resp:
                     r = await resp.text()
 
-            r = r.replace(" ", "").replace("\n", "")
-            results = [
-                (
-                    i[0],
-                    int(re.sub(r"[^\d]", "", i[1])) if i[1] else 0,
-                    int(re.sub(r"[^\d]", "", i[2])) if i[2] else 0,
-                )
-                for i in re.findall(
-                    r'<textclass.*?data-testid=".*?>(.*?):<\/text><textclass="stat".*?>(\d+hrs)?(\d+mins)<\/text>',
-                    r,
-                )
-            ]
+            results = json.loads(r)["data"]
 
             for widget in self.get("widgets", []):
                 try:
@@ -113,7 +110,7 @@ class WakaTimeMod(loader.Module):
                 except FloodWaitError:
                     pass
                 except Exception:
-                    logger.exception("Wakatime widget update failed")
+                    logger.debug("Wakatime widget update failed")
                     self.set(
                         "widgets", list(set(self.get("widgets", [])) - set([widget]))
                     )
@@ -125,13 +122,15 @@ class WakaTimeMod(loader.Module):
             await asyncio.sleep(int(self.config["update_interval"]))
 
     def _format(self, stats: list, template: str) -> str:
-        result = ""
-        for stat in stats:
-            hrs = f"{stat[1]} hrs " if stat[1] else ""
-            mins = f"{stat[2]} mins" if stat[2] else ""
-            result += f"▫️ <b>{stat[0]}</b>: <i>{hrs}{mins}</i>\n"
-
-        return template.format(WAKATIME=result)
+        return template.format(
+            WAKATIME="\n".join(
+                [
+                    f" ▫️ <b>{stat['name']}</b>: <i>{stat['text']}</i>"
+                    for stat in stats["languages"]
+                    if stat["text"] != "0 secs"
+                ]
+            )
+        )
 
     async def wakatogglecmd(self, message: Message):
         """Toggle widgets' updates"""
@@ -149,15 +148,20 @@ class WakaTimeMod(loader.Module):
         )
 
     async def watcher(self, message: Message):
-        if "{WAKATIME}" not in getattr(message, "text", "") or not message.out:
-            return
+        try:
+            if "{WAKATIME}" not in getattr(message, "text", "") or not message.out:
+                return
 
-        chat_id = utils.get_chat_id(message)
-        message_id = message.id
+            chat_id = utils.get_chat_id(message)
+            message_id = message.id
 
-        self.set(
-            "widgets", self.get("widgets", []) + [(chat_id, message_id, message.text)]
-        )
+            self.set(
+                "widgets",
+                self.get("widgets", []) + [(chat_id, message_id, message.text)],
+            )
 
-        await utils.answer(message, self.strings("configuring"))
-        await self._parse(do_not_loop=True)
+            await utils.answer(message, self.strings("configuring"))
+            await self._parse(do_not_loop=True)
+        except Exception as e:
+            logger.exception("Can't send widget")
+            await utils.answer(message, self.strings("error").format(e))

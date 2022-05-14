@@ -57,7 +57,7 @@ class CatgirlMod(loader.Module):
     async def catgirlcmd(self, message: Message):
         """[nsfw] - Send catgirl picture"""
         await self.inline.gallery(
-            caption=lambda: f"<i>{utils.escape_html(utils.ascii_face())}</i>",
+            caption=lambda: f"<i>{utils.ascii_face()}</i>",
             message=message,
             next_handler=functools.partial(
                 photo,

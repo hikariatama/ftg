@@ -49,7 +49,7 @@ async def photos(subreddit: str, quantity: int) -> List[str]:
 
 
 def caption(subreddit: dict) -> str:
-    return f"{'🔞' if subreddit['isNsfw'] else '👨‍👩‍👧'} <b>{utils.escape_html(subreddit['secondaryTitle'])} ({utils.escape_html(subreddit['url'])})</b>\n\n<i>{utils.escape_html(subreddit['description'])}</i>\n\n<i>Enjoy! {utils.escape_html(utils.ascii_face())}</i>"
+    return f"{'🔞' if subreddit['isNsfw'] else '👨‍👩‍👧'} <b>{utils.escape_html(subreddit['secondaryTitle'])} ({utils.escape_html(subreddit['url'])})</b>\n\n<i>{utils.escape_html(subreddit['description'])}</i>\n\n<i>Enjoy! {utils.ascii_face()}</i>"
 
 
 async def search_subreddit(query: str) -> List[dict]:
@@ -150,7 +150,7 @@ class ScrolllerMod(loader.Module):
         await self.inline.gallery(
             message=message,
             next_handler=functools.partial(photos, subreddit=subreddit, quantity=15),
-            caption=lambda: f"<i>Enjoy this {subreddit} photos &lt;3\n{utils.escape_html(utils.ascii_face())}</i>\n\n{for_}",
+            caption=lambda: f"<i>Enjoy this {subreddit} photos &lt;3\n{utils.ascii_face()}</i>\n\n{for_}",
             always_allow=[reply.sender_id] if reply else [],
         )
 

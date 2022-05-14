@@ -1,4 +1,4 @@
-__version__ = (2, 0, 0)
+__version__ = (2, 0, 1)
 
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
@@ -19,6 +19,7 @@ import io
 import logging
 import random
 import re
+import os
 
 import requests
 from telethon.errors.rpcerrorlist import YouBlockedUserError
@@ -59,6 +60,9 @@ class FileUploaderMod(loader.Module):
 
     async def client_ready(self, client, db):
         self._client = client
+        if "OKTETO" not in os.environ:
+            self.x0cmd = self.x0cm_
+            self.oxocmd = self.oxocm_
 
     async def get_media(self, message: Message):
         reply = await message.get_reply_message()
@@ -75,7 +79,11 @@ class FileUploaderMod(loader.Module):
             file = io.BytesIO(bytes(reply.raw_text, "utf-8"))
             file.name = "file.txt"
         else:
-            file = io.BytesIO(await self._client.download_file(m.media, bytes))
+            file = io.BytesIO(
+                (
+                    await self.fast_download(m.document, message_object=message)
+                ).getvalue()
+            )
             file.name = (
                 m.file.name
                 or (
@@ -102,7 +110,7 @@ class FileUploaderMod(loader.Module):
 
         return file
 
-    async def x0cmd(self, message: Message):
+    async def x0cm_(self, message: Message):
         """Upload to x0.at"""
         message = await utils.answer(message, self.strings("uploading"))
         file = await self.get_media(message)
@@ -180,7 +188,7 @@ class FileUploaderMod(loader.Module):
 
             await utils.answer(message, self.strings("uploaded").format(url))
 
-    async def oxocmd(self, message: Message):
+    async def oxocm_(self, message: Message):
         """Upload to 0x0.st"""
         message = await utils.answer(message, self.strings("uploading"))
         file = await self.get_media(message)

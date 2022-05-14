@@ -212,7 +212,7 @@ class StickManagerMod(loader.Module):
             )
             return
 
-        await utils.answer(message, self.strings("processing"))
+        message = await utils.answer(message, self.strings("processing"))
 
         shortname, name = args
         shortname, name = shortname.strip().lower(), name.strip()
@@ -353,7 +353,7 @@ class StickManagerMod(loader.Module):
 
         shortname, name = args
 
-        await utils.answer(message, self.strings("processing"))
+        message = await utils.answer(message, self.strings("processing"))
 
         stick = await self.prepare_vid(reply)
         assert stick
@@ -491,7 +491,7 @@ class StickManagerMod(loader.Module):
         """Sync existing stickersets with @stickers"""
         q = 0
 
-        await utils.answer(message, self.strings("processing"))
+        message = await utils.answer(message, self.strings("processing"))
 
         async with self._client.conversation("@stickers") as conv:
             m = await conv.send_message("/cancel")
@@ -644,7 +644,7 @@ class StickManagerMod(loader.Module):
             )
             return
 
-        await utils.answer(message, self.strings("processing"))
+        message = await utils.answer(message, self.strings("processing"))
 
         async with self._client.conversation("@stickers") as conv:
             try:
@@ -820,10 +820,10 @@ class StickManagerMod(loader.Module):
 
                 pack = pack[0]
 
-            await utils.answer(message, self.strings("processing_gif"))
+            message = await utils.answer(message, self.strings("processing_gif"))
             stick = await self.prepare_vid(reply)
         else:
-            await utils.answer(message, self.strings("processing"))
+            message = await utils.answer(message, self.strings("processing"))
             stick = await self.prepare(reply)
 
         async with self._client.conversation("@stickers") as conv:
