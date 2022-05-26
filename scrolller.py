@@ -45,7 +45,7 @@ async def photos(subreddit: str, quantity: int) -> List[str]:
     ).json()
 
     posts = ans["data"]["getSubreddit"]["children"]["items"]
-    return [post["mediaSources"][0]["url"] for post in posts]
+    return [post["mediaSources"][-1]["url"] for post in posts]
 
 
 def caption(subreddit: dict) -> str:

@@ -11,7 +11,7 @@
 # meta pic: https://img.icons8.com/external-photo3ideastudio-flat-photo3ideastudio/512/000000/external-payment-supermarket-photo3ideastudio-flat-photo3ideastudio.png
 # meta developer: @hikariatama
 # scope: hikka_only
-# scope: hikka_min 1.1.14
+# scope: hikka_min 1.1.23
 
 from telethon.tl.types import Message
 from yoomoney import Quickpay
@@ -25,34 +25,41 @@ class YooMoneyMod(loader.Module):
 
     strings = {
         "name": "Yoomoney",
-        "payme": '<b>🦊 {}\n💳<a href="{}">Pay {} RUB 💳</a></b>',
+        "payme": '<b>💳 {}\n<a href="{}">Pay {} RUB 💳</a></b>',
         "args": "<b>🚫 Incorrect args</b>",
         "no_account": "<b>🚫 You need to configure module</b>",
     }
 
     strings_ru = {
-        "payme": '<b>🦊 {}\n💳<a href="{}">Оплатить {} RUB 💳</a></b>',
+        "payme": '<b>💳 {}\n<a href="{}">Оплатить {} RUB 💳</a></b>',
         "hikka.modules.yoopay.args": "<b>🚫 Неверные аргументы</b>",
         "hikka.modules.yoopay.no_account": "<b>🚫 Необходима конфигурация модуля</b>",
-        "hikka.modules.yoopay._cmd_doc_yoopay": "<сумма> <заголовок> ; <комментарий> - Отправить ссылку на оплату\nПример: .yoopay 100 На кофе ; Бро, купи мне кофейку, вот ссылка",
+        "hikka.modules.yoopay._cmd_doc_yoopay": (
+            "<сумма> <заголовок> ; <комментарий> - Отправить ссылку на оплату\n"
+            "Пример: .yoopay 100 На кофе ; Бро, купи мне кофейку, вот ссылка"
+        ),
     }
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            loader.ConfigValue("account", "", lambda: "Yoomoney wallet (16 digits)")
+            loader.ConfigValue(
+                "account",
+                doc=lambda: "Yoomoney wallet ID",
+                validator=loader.validators.Integer(digits=16),
+            ),
         )
 
     @loader.unrestricted
     async def yoopaycmd(self, message: Message):
         """<sum> <title> ; <comment> - Send payment link
-        E.g: .yoopay 100 For coffee ; Bro, buy me a coffe, here is the link"""
-        if len(str(self.config["account"])) != 16:
+E.g: .yoopay 100 For coffee ; Bro, buy me a coffe, here is the link"""
+        if not self.config["account"]:
             await utils.answer(message, self.strings("no_account"))
             return
 
         args = utils.get_args_raw(message)
         try:
-            amount, titlecomm = args.split(" ", 1)
+            amount, titlecomm = args.split(maxsplit=1)
             amount = int(amount)
             title, comment = titlecomm.split(";", 1)
             if amount < 2:
@@ -68,12 +75,13 @@ class YooMoneyMod(loader.Module):
             targets=title.strip(),
             paymentType="SB",
             sum=amount,
-            label="Перевод физлицу",
+            label="Money transfer to an individual",
         )
+
         await utils.answer(
             message,
             self.strings("payme").format(
-                comment.strip(),
+                utils.escape_html(comment.strip()),
                 quickpay.redirected_url,
                 amount,
             ),

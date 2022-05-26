@@ -1,3 +1,5 @@
+__version__ = (2, 0, 0)
+
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
 #
@@ -321,7 +323,12 @@ class StickManagerMod(loader.Module):
         self.set("stickersets", self.stickersets)
 
         await utils.answer(
-            message, self.strings("created").format(emoji, name, shortname)
+            message,
+            self.strings("created").format(
+                emoji,
+                name,
+                shortname,
+            ),
         )
 
     async def newvidpackcmd(self, message: Message):
@@ -562,8 +569,12 @@ class StickManagerMod(loader.Module):
 
         res = self.strings("packs_header")
         for shortname, info in self.stickersets.items():
-            alias = f' (<code>{info["alias"]}</code>)' if info["alias"] else ""
-            res += f"{info['emoji']} <b>{info['title']}</b> <a href=\"https://t.me/addstickers/{shortname}\">add</a>{alias}\n"
+            alias = (
+                f' (<code>{utils.escape_html(info["alias"])}</code>)'
+                if info["alias"]
+                else f" (<code>{utils.escape_html(shortname)}</code>)"
+            )
+            res += f"{info['emoji']} <b>{utils.escape_html(info['title'])}</b> <a href=\"https://t.me/addstickers/{shortname}\">add</a>{alias}\n"
 
         await utils.answer(message, res)
 
@@ -595,7 +606,7 @@ class StickManagerMod(loader.Module):
                 await utils.answer(message, self.strings("pack404").format(pack))
                 return
 
-            if any(alias == _["alias"] for _ in self.stickersets.values()):
+            if any(alias == pack["alias"] for pack in self.stickersets.values()):
                 await utils.answer(message, self.strings("alias_exists").format(alias))
                 return
 
@@ -605,7 +616,7 @@ class StickManagerMod(loader.Module):
                 message,
                 self.strings("created_alias").format(
                     self.stickersets[pack]["emoji"],
-                    self.stickersets[pack]["title"],
+                    utils.escape_html(self.stickersets[pack]["title"]),
                     alias,
                 ),
             )
@@ -621,7 +632,11 @@ class StickManagerMod(loader.Module):
         self.default = pack["shortname"]
         self.set("default", self.default)
         await utils.answer(
-            message, self.strings("default").format(pack["emoji"], pack["title"])
+            message,
+            self.strings("default").format(
+                pack["emoji"],
+                utils.escape_html(pack["title"]),
+            ),
         )
 
     async def rmpackcmd(self, message: Message):
@@ -702,7 +717,11 @@ class StickManagerMod(loader.Module):
         del self.stickersets[pack["shortname"]]
         self.set("stickersets", self.stickersets)
         await utils.answer(
-            message, self.strings("packremoved").format(pack["emoji"], pack["title"])
+            message,
+            self.strings("packremoved").format(
+                pack["emoji"],
+                utils.escape_html(pack["title"]),
+            ),
         )
 
     async def unstickcmd(self, message: Message):

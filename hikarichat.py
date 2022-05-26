@@ -17,7 +17,7 @@ __version__ = (11, 1, 3)
 # scope: disable_onload_docs
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.1.14
+# scope: hikka_min 1.1.23
 # requires: aiohttp
 
 import abc
@@ -32,6 +32,7 @@ import time
 from math import ceil
 from types import FunctionType
 from typing import List, Union
+import contextlib
 
 import aiohttp
 import requests
@@ -280,9 +281,9 @@ class HikariChatAPI:
 
     async def init(
         self,
-        client: "TelegramClient",  # noqa: F821
-        db: "Database",  # noqa: F821
-        module: "HikariChatMod",  # noqa: F821
+        client: "TelegramClient",  # type: ignore
+        db: "Database",  # type: ignore
+        module: "HikariChatMod",
     ):
         """Entry point"""
         self._client = client
@@ -299,7 +300,7 @@ class HikariChatAPI:
         self._connected = False
         self._inited = False
 
-        if not self._db.get("HikkaDL", "token"):
+        if not self.module.get("token"):
             await self._get_token()
 
         self._task = asyncio.ensure_future(self._connect())
@@ -307,7 +308,7 @@ class HikariChatAPI:
 
     async def _wss(self):
         async with websockets.connect(
-            f"wss://hikarichat.hikariatama.ru/ws/{self._db.get('HikkaDL', 'token')}"
+            f"wss://hikarichat.hikariatama.ru/ws/{self.module.get('token')}"
         ) as wss:
             init = json.loads(await wss.recv())
 
@@ -390,7 +391,7 @@ class HikariChatAPI:
         )
 
     async def nsfw(self, photo: bytes) -> str:
-        if not self._db.get("HikkaDL", "token"):
+        if not self.moduleget("token"):
             logger.warning("Token is not sent, NSFW check forbidden")
             return "sfw"
 
@@ -398,7 +399,7 @@ class HikariChatAPI:
             async with session.request(
                 "POST",
                 "https://hikarichat.hikariatama.ru/check_nsfw",
-                headers={"Authorization": f"Bearer {self._db.get('HikkaDL', 'token')}"},
+                headers={"Authorization": f"Bearer {self.module.get('token')}"},
                 data={"file": photo},
             ) as resp:
                 r = await resp.text()
@@ -430,7 +431,7 @@ class HikariChatAPI:
             if not token.startswith("kirito_") and not token.startswith("asuna_"):
                 raise loader.LoadError("Can't get token")
 
-            self._db.set("HikkaDL", "token", token)
+            self.module.set("token", token)
 
         await self._client.delete_dialog(self._bot)
 
@@ -820,17 +821,22 @@ class HikariChatMod(loader.Module):
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
-                "silent", False, lambda: "Do not notify about protections actions"
+                "silent",
+                False,
+                lambda: "Do not notify about protections actions",
+                validator=loader.validators.Boolean(),
             ),
             loader.ConfigValue(
                 "join_ratelimit",
                 10,
                 lambda: "How many users per minute need to join until ban starts",
+                validator=loader.validators.Integer(minimum=1),
             ),
             loader.ConfigValue(
                 "banninja_cooldown",
                 300,
                 lambda: "How long is banninja supposed to be active in seconds",
+                validator=loader.validators.Integer(minimum=15),
             ),
         )
 
@@ -911,10 +917,8 @@ class HikariChatMod(loader.Module):
                 if func.__name__ == "watcher":
                     return
 
-                try:
+                with contextlib.suppress(Exception):
                     await utils.answer(args[1], args[0].strings("error"))
-                except Exception:
-                    pass
 
         wrapped.__doc__ = func.__doc__
         wrapped.__module__ = func.__module__
@@ -1056,13 +1060,15 @@ class HikariChatMod(loader.Module):
                     "args": {
                         "chat": chat,
                         "protection": protection,
-                        "state": "on" if not current_state else "off",
+                        "state": "off" if current_state else "on",
                     },
                 }
             )
+
             await call.answer(
-                f"{PROTECTS[protection]} -> {'on' if not current_state else 'off'}"
+                f"{PROTECTS[protection]} -> {'off' if current_state else 'on'}"
             )
+
             if current_state:
                 del self.api.chats[str(chat)][protection]
             else:
@@ -4488,8 +4494,8 @@ class HikariChatMod(loader.Module):
 
     async def client_ready(
         self,
-        client: "TelegramClient",  # noqa
-        db: "hikka.database.Database",  # noqa
+        client: "TelegramClient",  # type: ignore
+        db: "hikka.database.Database",  # type: ignore
     ):
         """Entry point"""
         global api

@@ -38,14 +38,15 @@ class CarbonMod(loader.Module):
     strings_ru = {
         "args": "🚫 <b>Не указаны аргументы</b>",
         "loading": "🕐 <b>Обработка...</b>",
-        "_cls_doc": "Создает симпотичные фотки кода",
+        "_cls_doc": "Создает симпатичные фотки кода",
+        "_cmd_doc_carbon": "<код> - Сделать красивую фотку кода",
     }
 
     async def client_ready(self, client, db):
         self._client = client
 
     async def carboncmd(self, message: Message):
-        """<code> - Сделать красивую фотку кода"""
+        """<code> - Create beautiful code image"""
         args = utils.get_args_raw(message)
 
         try:

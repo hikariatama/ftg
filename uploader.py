@@ -25,7 +25,7 @@ import requests
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.types import Message
 
-from .. import loader, utils
+from .. import loader, utils, main
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +81,10 @@ class FileUploaderMod(loader.Module):
         else:
             file = io.BytesIO(
                 (
-                    await self.fast_download(m.document, message_object=message)
+                    await self.fast_download(
+                        m.document if main.__version__ < (1, 1, 28) else m,
+                        message_object=message,
+                    )
                 ).getvalue()
             )
             file.name = (

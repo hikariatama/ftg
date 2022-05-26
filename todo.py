@@ -35,6 +35,9 @@ class TodoMod(loader.Module):
         "task_not_found": "<b>🚫 Задача не найдена</b",
         "new_task": "<b>Задача </b><code>#{}</code>:\n<pre>{}</pre>\n{}",
         "_cls_doc": "Простой планнер задач",
+        "_cmd_doc_td": "[importance:int] <item> - Добавить задачу в todo",
+        "_cmd_doc_tdl": "Показать активные задачи",
+        "_cmd_doc_utd": "<id> - Удалить задачу из todo",
     }
 
     async def client_ready(self, client, db):
@@ -50,12 +53,12 @@ class TodoMod(loader.Module):
         ]
 
     async def tdcmd(self, message: Message):
-        """<importance:int> <item> - Добавить задачу в todo"""
+        """[importance:int] <item> - Add task"""
 
         args = utils.get_args_raw(message)
         try:
             importance = int(args.split()[0])
-            task = args.split(" ", 1)[1]
+            task = args.split(maxsplit=1)[1]
         except Exception:
             importance = 0
             task = args
@@ -86,7 +89,7 @@ class TodoMod(loader.Module):
         )
 
     async def tdlcmd(self, message: Message):
-        """Показать активные задачи"""
+        """Show active tasks"""
         res = "<b>#ToDo:</b>\n"
         items = {len(self.imp_levels) - i - 1: [] for i in range(len(self.imp_levels))}
         for item_id, item in self.todolist.items():
@@ -107,7 +110,7 @@ class TodoMod(loader.Module):
         await utils.answer(message, res)
 
     async def utdcmd(self, message: Message):
-        """<id> - Удалить задачу из todo"""
+        """<id> - Remove task from todo"""
         args = utils.get_args_raw(message)
         if args.startswith("#"):
             args = args[1:]

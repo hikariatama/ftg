@@ -30,7 +30,7 @@ class LongReadMod(loader.Module):
     strings = {
         "name": "LongRead",
         "no_text": "🚫 <b>Please, specify text to hide</b>",
-        "longread": "🗄 <b>This is long read</b>\n<i>Click button to show text!\nThis button is active withing 6 hours</i>",
+        "longread": "🗄 <b>This is long read</b>\n<i>Click button to show text!\nThis button is active within 6 hours</i>",
     }
 
     strings_ru = {

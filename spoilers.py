@@ -1,4 +1,4 @@
-__version__ = (1, 0, 3)
+__version__ = (1, 0, 4)
 
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
@@ -38,7 +38,7 @@ class SpoilersMod(loader.Module):
         "not4u": "This button is not for you",
         "seen": "🕔 <b>Seen</b>",
         "open": "👀 Open",
-        "in_the_end": "Specify username in the end",
+        "in_the_end": "Specify username as first argument",
     }
 
     strings_ru = {
@@ -48,7 +48,7 @@ class SpoilersMod(loader.Module):
         "not4u": "Эта кнопка не для тебя",
         "seen": "🕔 <b>Просмотрено</b>",
         "open": "👀 Открыть",
-        "in_the_end": "Укажи @username в конце",
+        "in_the_end": "Укажи @username или ID первым аргументом",
         "_ihandle_doc_hide": "Создать спойлер",
         "_cls_doc": "Создает спойлеры, которые доступны только определенным пользователям",
     }
@@ -63,9 +63,14 @@ class SpoilersMod(loader.Module):
         for_user = self.strings("in_the_end")
         for_user_id = None
         user = None
-        if len(text.split()) > 1 and text.split()[-1].startswith("@"):
+        if len(text.split()) > 1:
             try:
-                user = await self._client.get_entity(text.split()[-1])
+                possible_entity = text.split()[0]
+
+                if possible_entity.isdigit():
+                    possible_entity = int(possible_entity)
+
+                user = await self._client.get_entity(possible_entity)
             except Exception:
                 pass
             else:
@@ -77,7 +82,8 @@ class SpoilersMod(loader.Module):
             "description": self.strings("only_he_can_open"),
             "message": (
                 self.strings("message").format(
-                    for_user_id, utils.escape_html(get_display_name(user))
+                    for_user_id,
+                    utils.escape_html(get_display_name(user)),
                 )
                 if user
                 else self.strings("user_not_specified")
@@ -86,7 +92,7 @@ class SpoilersMod(loader.Module):
             "reply_markup": {
                 "text": self.strings("open"),
                 "callback": self._handler,
-                "args": (" ".join(text.split(" ")[:-1]), for_user_id),
+                "args": (" ".join(text.split(" ")[1:]), for_user_id),
                 "always_allow": [for_user_id],
             }
             if for_user_id

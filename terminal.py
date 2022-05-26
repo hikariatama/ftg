@@ -27,7 +27,7 @@
 # meta pic: https://img.icons8.com/external-flat-lima-studio/512/000000/external-terminal-coding-flat-lima-studio.png
 # meta developer: @bsolute
 # scope: hikka_only
-# scope: hikka_min 1.1.14
+# scope: hikka_min 1.1.23
 
 import asyncio
 import logging
@@ -96,6 +96,7 @@ class TerminalMod(loader.Module):
                 "FLOOD_WAIT_PROTECT",
                 2,
                 lambda: self.strings("fw_protect"),
+                validator=loader.validators.Integer(minimum=0),
             ),
         )
         self.activecmds = {}
