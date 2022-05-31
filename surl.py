@@ -47,9 +47,13 @@ class AutoShortenerMod(loader.Module):
                 "threshold",
                 80,
                 lambda: "Urls larger than this value will be automatically shortened",
+                validator=loader.validators.Integer(minimum=50),
             ),
             loader.ConfigValue(
-                "auto_engine", "owo", lambda: "Engine to auto-shorten urls with"
+                "auto_engine",
+                "owo",
+                lambda: "Engine to auto-shorten urls with",
+                validator=loader.validators.Choice(["owo", "gg", "gay"]),
             ),
         )
 

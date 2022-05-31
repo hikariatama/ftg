@@ -1,4 +1,4 @@
-__version__ = (2, 0, 0)
+__version__ = (2, 0, 1)
 
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
@@ -169,12 +169,10 @@ class AccountSwitcherMod(loader.Module):
             (await self._client.download_profile_photo(acc, bytes))
             if full.full_user.profile_photo
             else None,
-            getattr(acc, "first_name", ""),
-            getattr(acc, "last_name", ""),
+            getattr(acc, "first_name", "None"),
+            getattr(acc, "last_name", "None"),
             (
-                full.full_user.about
-                if getattr(full.full_user, "about", "") is not None
-                else ""
+                getattr(full.full_user, "about", "None")
             ),
         )
 
@@ -199,6 +197,15 @@ class AccountSwitcherMod(loader.Module):
             )
         )
 
+        if first_name == "None":
+            first_name = None
+
+        if last_name == "None":
+            last_name = None
+
+        if bio == "None":
+            bio = None
+
         try:
             await self._client(UpdateProfileRequest(first_name, last_name, bio))
 
@@ -210,13 +217,13 @@ class AccountSwitcherMod(loader.Module):
 
             log += (
                 self.strings("last_name_restored")
-                if last_name != "None"
+                if last_name
                 else self.strings("last_name_unsaved")
             )
 
             log += (
                 self.strings("bio_restored")
-                if bio != "None"
+                if bio
                 else self.strings("bio_unsaved")
             )
         except Exception:

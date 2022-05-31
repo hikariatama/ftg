@@ -69,15 +69,16 @@ class EduTatarMod(loader.Module):
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
-                "edu_tatar_login", False, lambda: "Login from edu.tatar.ru"
+                "edu_tatar_login", doc=lambda: "Login from edu.tatar.ru"
             ),
             loader.ConfigValue(
-                "edu_tatar_pass", False, lambda: "Password from edu.tatar.ru"
+                "edu_tatar_pass", doc=lambda: "Password from edu.tatar.ru"
             ),
             loader.ConfigValue(
                 "marks_parse_delay",
                 300,
                 lambda: "Delay for parsing new marks in seconds",
+                validator=loader.validators.Integer(minimum=0),
             ),
             loader.ConfigValue("proxy", "", lambda: "Proxy for correct work of module"),
         )

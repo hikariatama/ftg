@@ -1,4 +1,5 @@
-__version__ = (1, 0, 1)
+__version__ = (1, 0, 2)
+
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
 #
@@ -17,8 +18,9 @@ __version__ = (1, 0, 1)
 
 import logging
 
-from .. import loader
+from .. import loader, utils
 from ..inline.types import InlineCall, InlineQuery
+from telethon.tl.types import Message
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +41,23 @@ class LongReadMod(loader.Module):
         "_cmd_doc_lr": "<text> - Создать лонгрид",
         "_cls_doc": "Пакует лонгриды под спойлеры",
     }
+
+    async def lrcmd(self, message: Message):
+        """<text> - Create new hidden message"""
+        args = utils.get_args_raw(message)
+        if not args:
+            return
+
+        await self.inline.form(
+            self.strings("longread"),
+            message,
+            reply_markup={
+                "text": "📖 Open spoiler",
+                "callback": self._handler,
+                "args": (args,),
+            },
+            disable_security=True,
+        )
 
     async def lr_inline_handler(self, query: InlineQuery):
         """Create new hidden message"""

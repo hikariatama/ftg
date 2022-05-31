@@ -1,4 +1,4 @@
-__version__ = (1, 0, 1)
+__version__ = (1, 0, 2)
 
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
@@ -37,7 +37,7 @@ def base(bytes_: bytes) -> str:
 async def animefy(image: bytes, engine: str) -> Union[bytes, bool]:
     answ = await utils.run_sync(
         requests.post,
-        "https://hf.space/embed/akhaliq/JoJoGAN/api/queue/push/",
+        "https://hf.space/embed/akhaliq/JoJoGAN/api/predict/",
         headers={
             "accept": "*/*",
             "accept-encoding": "gzip, deflate, br",
@@ -63,41 +63,14 @@ async def animefy(image: bytes, engine: str) -> Union[bytes, bool]:
                     for _ in range(11)
                 ]
             ),
-            "action": "predict",
         },
     )
 
-    hash_ = answ.json()["hash"]
-
-    status = "WAIT"
-    while True:
-        ans = (
-            await utils.run_sync(
-                requests.post,
-                "https://hf.space/embed/akhaliq/JoJoGAN/api/queue/status/",
-                json={"hash": hash_},
-            )
-        ).json()
-        status = ans["status"]
-        logger.debug(ans)
-
-        if status in {"COMPLETE", "FAILED"}:
-            break
-
-        yield status
-        await asyncio.sleep(2)
-
-    if status == "COMPLETE":
-        raw = base64.decodebytes(ans["data"]["data"][0].split("base64,")[1].encode())
-        file = io.BytesIO(raw)
-        file.name = "photo.jpg"
-        yield file
-        return
-
-    logger.error(answ.text)
-
-    yield "FAILED"
-    return
+    file = io.BytesIO(
+        base64.decodebytes(answ.json()["data"][0].split("base64,")[1].encode())
+    )
+    file.name = "photo.jpg"
+    return file
 
 
 @loader.tds
@@ -108,17 +81,13 @@ class ArtAIMod(loader.Module):
         "name": "ArtAI",
         "no_reply": "🚫 <b>Reply to a photo required</b>",
         "pick_engine": "👩‍🎤 <b>Please, choose engine to process this photo</b>",
-        "processing": "⌚️ <b>Processing...</b>",
-        "downloading": "⬇️ <b>Downloading...</b>",
         "uploading": "☁️ <b>Uploading...</b>",
-        "failed": "🚫 <b>Failed</b>",
         "success": (
             "🎨 <b>This is nice</b>|"
             "🎨 <b>Shee-e-esh</b>|"
             "🎨 <b>I'm the artist, this is my POV!</b>|"
             "🎨 <b>Do not blame me, I'm the artist</b>"
         ),
-        "queued": "🚽 <b>Waiting in queue...</b>",
     }
 
     async def client_ready(self, client, db):
@@ -159,23 +128,14 @@ class ArtAIMod(loader.Module):
         )
 
         if engine != "All":
-            async for status in animefy(media, engine):
-                if status == "QUEUED":
-                    await call.edit(self.strings("queued"))
-                elif status == "PENDING":
-                    await call.edit(self.strings("processing"))
-                elif status == "FAILED":
-                    await call.edit(self.strings("failed"))
-                    return
-                else:
-                    await call.delete()
-                    await self._client.send_file(
-                        chat_id,
-                        file=status,
-                        reply_to=message_id,
-                        caption=random.choice(self.strings("success").split("|")),
-                    )
-                    return
+            await self._client.send_file(
+                chat_id,
+                file=await animefy(media, engine),
+                reply_to=message_id,
+                caption=random.choice(self.strings("success").split("|")),
+            )
+            await call.delete()
+            return
         else:
             res = []
 
@@ -193,31 +153,22 @@ class ArtAIMod(loader.Module):
 
             for engine in statuses:
                 suffix = (
-                    lambda: f" | <i>Engine: {engine}</i>\n\n{''.join(statuses.values())}"
-                )  # noqa: E731
-                async for status in animefy(media, engine):
-                    if status == "QUEUED":
-                        await call.edit(self.strings("queued") + suffix())
-                        statuses[engine] = "🟨"
-                    elif status == "PENDING":
-                        await call.edit(self.strings("processing") + suffix())
-                        statuses[engine] = "🟦"
-                    elif status == "FAILED":
-                        await call.edit(self.strings("failed") + suffix())
-                        statuses[engine] = "🟥"
-                        break
-                    else:
-                        statuses[engine] = "🟩"
-                        res += [status]
-                        break
+                    lambda: f"<i>Processing image...</i>\n\n{''.join(statuses.values())}"
+                )
+                res += [await animefy(media, engine)]
+                statuses[engine] = "🟩"
+                await call.edit(suffix())
 
             await call.delete()
-            await self._client.send_file(
-                chat_id,
-                file=res,
-                reply_to=message_id,
-                caption=random.choice(self.strings("success").split("|")),
-            )
+            try:
+                await self._client.send_file(
+                    chat_id,
+                    file=res,
+                    reply_to=message_id,
+                    caption=random.choice(self.strings("success").split("|")),
+                )
+            except TypeError:
+                pass
 
     def _gen_markup(self, reply: Message) -> list:
         engines = [

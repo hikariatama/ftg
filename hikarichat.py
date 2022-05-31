@@ -391,7 +391,7 @@ class HikariChatAPI:
         )
 
     async def nsfw(self, photo: bytes) -> str:
-        if not self.moduleget("token"):
+        if not self.module.get("token"):
             logger.warning("Token is not sent, NSFW check forbidden")
             return "sfw"
 
@@ -1229,6 +1229,7 @@ class HikariChatMod(loader.Module):
                         "text": self.strings("btn_unban"),
                         "data": f"ub/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
                     },
+                    silent=True,
                 )
 
                 if isinstance(message, Message):
@@ -1245,6 +1246,7 @@ class HikariChatMod(loader.Module):
                         "text": self.strings("btn_unban"),
                         "data": f"ub/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
                     },
+                    silent=True,
                 )
         else:
             await (utils.answer if message else self._client.send_message)(
@@ -1315,6 +1317,7 @@ class HikariChatMod(loader.Module):
                         "text": self.strings("btn_unmute"),
                         "data": f"um/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
                     },
+                    silent=True,
                 )
 
                 if isinstance(message, Message):
@@ -1331,6 +1334,7 @@ class HikariChatMod(loader.Module):
                         "text": self.strings("btn_unmute"),
                         "data": f"um/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
                     },
+                    silent=True,
                 )
         else:
             await (utils.answer if message else self._client.send_message)(
@@ -1963,6 +1967,7 @@ class HikariChatMod(loader.Module):
                     "callback": self.inline__close,
                 },
             ],
+            silent=True,
         )
 
     @error_handler
@@ -2196,9 +2201,12 @@ class HikariChatMod(loader.Module):
                     + "</b>",
                     message=self.get("logchat"),
                     **punishment_info,
+                    silent=True,
                 )
             else:
-                await self.inline.form(text=msg, message=message, **punishment_info)
+                await self.inline.form(
+                    text=msg, message=message, **punishment_info, silent=True
+                )
         else:
             await utils.answer(message, msg)
 
@@ -2395,9 +2403,12 @@ class HikariChatMod(loader.Module):
                     + "</b>",
                     message=self.get("logchat"),
                     **punishment_info,
+                    silent=True,
                 )
             else:
-                await self.inline.form(text=msg, message=message, **punishment_info)
+                await self.inline.form(
+                    text=msg, message=message, **punishment_info, silent=True
+                )
         else:
             await utils.answer(message, msg)
 
@@ -2777,7 +2788,8 @@ class HikariChatMod(loader.Module):
             await self.inline.form(
                 message=message,
                 **(await self.get_config(chat_id)),
-                **({"manual_security": True} if hasattr(self, "hikka") else {}),
+                manual_security=True,
+                silent=True,
             )
         except KeyError:
             await utils.answer(message, self.strings("no_protects"))
@@ -2895,9 +2907,12 @@ class HikariChatMod(loader.Module):
                         ),
                         message=self.get("logchat"),
                         **punishment_info,
+                        silent=True,
                     )
                 else:
-                    await self.inline.form(text=msg, message=message, **punishment_info)
+                    await self.inline.form(
+                        text=msg, message=message, **punishment_info, silent=True
+                    )
             else:
                 await utils.answer(message, msg)
 
@@ -3385,6 +3400,7 @@ class HikariChatMod(loader.Module):
                     "callback": self.inline__close,
                 },
             ],
+            silent=True,
         )
 
     async def _clnraid(
@@ -3594,6 +3610,7 @@ class HikariChatMod(loader.Module):
                     "callback": self.disable_smart_anti_raid,
                     "args": (chat_id,),
                 },
+                silent=True,
             )
 
             try:
@@ -3621,6 +3638,7 @@ class HikariChatMod(loader.Module):
                             self.strings("clnraid_started").format("*loading*"),
                             message=int(chat_id),
                             reply_markup={"text": ".", "callback": self.inline__close},
+                            silent=True,
                         )
                     ),
                     chat_id=int(chat_id),
@@ -3875,6 +3893,7 @@ class HikariChatMod(loader.Module):
                             },
                         ],
                     ],
+                    silent=True,
                 )
             else:
                 await (utils.answer if message else self._client.send_message)(
@@ -4382,6 +4401,7 @@ class HikariChatMod(loader.Module):
                             message=message,
                             text="\n".join(txt_r),
                             reply_markup=buttons,
+                            silent=True,
                         )
 
             if int(user_id) in (

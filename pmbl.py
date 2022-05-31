@@ -1,3 +1,5 @@
+__version__ = (2, 0, 0)
+
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
 #
@@ -42,7 +44,7 @@ class PMBLMod(loader.Module):
 
     strings = {
         "name": "PMBL",
-        "state": "📴 <b>PM->BL is now {}</b>\n<i>Report spam? - {}\nDelete dialog? - {}</i>",
+        "state": "⚔️ <b>PM->BL is now {}</b>\n<i>Report spam? - {}\nDelete dialog? - {}</i>",
         "args": "ℹ️ <b>Example usage: </b><code>.pmblsett 0 0</code>",
         "args_pmban": "ℹ️ <b>Example usage: </b><code>.pmbanlast 5</code>",
         "config": "😶‍🌫️ <b>Yeiks! Config saved</b>\n<i>Report spam? - {}\nDelete dialog? - {}</i>",
@@ -57,7 +59,7 @@ class PMBLMod(loader.Module):
 
     strings_ru = {
         "hello": "😊 <b>Приветики!</b>\n<b>Я Кирито</b> - охранник твоих личных сообщений. Я буду блокировать всех захватчиков.\n\nИспользуй<code>.pmbl</code> для включения защиты, <code>.pmblsett</code> для ее настройки и <code>.pmbanlast</code> если уже слишком поздно, и твои лс атаковали.\n\n<i>Рад быть твоим телохранителем!</i>",
-        "state": "📴 <b>Текущее состояние PM->BL: {}</b>\n<i>Сообщать о спаме? - {}\nУдалять диалог? - {}</i>",
+        "state": "⚔️ <b>Текущее состояние PM->BL: {}</b>\n<i>Сообщать о спаме? - {}\nУдалять диалог? - {}</i>",
         "args": "ℹ️ <b>Пример: </b><code>.pmblsett 0 0</code>",
         "args_pmban": "ℹ️ <b>Пример: </b><code>.pmbanlast 5</code>",
         "config": "😶‍🌫️ <b>Йей! Конфиг сохранен</b>\n<i>Сообщать о спаме? - {}\nУдалять диалог? - {}</i>",
@@ -74,29 +76,39 @@ class PMBLMod(loader.Module):
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            loader.ConfigValue("ignore_contacts", True, lambda: "Ignore contacts?"),
             loader.ConfigValue(
-                "ignore_active", True, lambda: "Ignore peers, where you participated?"
+                "ignore_contacts",
+                True,
+                lambda: "Ignore contacts?",
+                validator=loader.validators.Boolean(),
+            ),
+            loader.ConfigValue(
+                "ignore_active",
+                True,
+                lambda: "Ignore peers, where you participated?",
+                validator=loader.validators.Boolean(),
             ),
             loader.ConfigValue(
                 "active_threshold",
                 5,
                 lambda: "What number of your messages is required to trust peer",
+                validator=loader.validators.Integer(minimum=1),
             ),
             loader.ConfigValue(
                 "custom_message",
-                "",
-                lambda: "Custom message to notify untrusted peers. Leave empty for default one",
+                doc=lambda: "Custom message to notify untrusted peers. Leave empty for default one",
             ),
             loader.ConfigValue(
                 "photo_url",
                 "https://kartinkin.net/uploads/posts/2021-07/1625528600_10-kartinkin-com-p-anime-kirito-anime-krasivo-11.jpg",
                 lambda: "Photo, which is sent along with banned notification",
+                validator=loader.validators.Link(),
             ),
             loader.ConfigValue(
                 "use_maid",
-                0,
+                False,
                 lambda: "Whether to replace normal Kirito with maid-Kirito",
+                validator=loader.validators.Boolean(),
             ),
         )
 
@@ -118,7 +130,7 @@ class PMBLMod(loader.Module):
             self.set("ignore_qs", True)
 
     async def pmblcmd(self, message: Message):
-        """Toggle PMAntiRaid"""
+        """Toggle PMBL"""
         current = self.get("state", False)
         new = not current
         self.set("state", new)
@@ -132,7 +144,7 @@ class PMBLMod(loader.Module):
         )
 
     async def pmblsettcmd(self, message: Message):
-        """<report spam?> <delete dialog?> - Configure PMAntiRaid - all params are 1/0"""
+        """<report spam?> <delete dialog?> - Configure PMBL - all params are 1/0"""
         args = utils.get_args(message)
         if not args or len(args) != 2 or any(not _.isdigit() for _ in args):
             await utils.answer(message, self.strings("args"))

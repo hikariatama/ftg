@@ -59,13 +59,13 @@ class WakaTimeMod(loader.Module):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "wakatime_username",
-                "",
-                lambda: "Your WakaTime username to parse data from",
+                doc=lambda: "Your WakaTime username to parse data from",
             ),
             loader.ConfigValue(
                 "update_interval",
                 300,
                 lambda: "Messages update interval. Not recommended < 300 seconds",
+                validator=loader.validators.Integer(minimum=100),
             ),
         )
 

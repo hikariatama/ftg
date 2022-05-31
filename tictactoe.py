@@ -343,7 +343,7 @@ class TicTacToeMod(loader.Module):
 {board[2][0]} | {board[2][1]} | {board[2][2]}"""
 
     def _render(self, uid: str) -> dict:
-        if uid not in self._games or uid not in self.inline._forms:
+        if uid not in self._games or uid not in self.inline._units:
             return
 
         game = self._games[uid]
@@ -464,7 +464,7 @@ class TicTacToeMod(loader.Module):
         )
 
     def _render_ai(self, uid: str) -> dict:
-        if uid not in self._games or uid not in self.inline._forms:
+        if uid not in self._games or uid not in self.inline._units:
             return
 
         game = self._games[uid]

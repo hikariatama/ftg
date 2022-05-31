@@ -61,7 +61,8 @@ class FileUploaderMod(loader.Module):
     async def client_ready(self, client, db):
         self._client = client
         if "OKTETO" not in os.environ:
-            self.x0cmd = self.x0cm_
+            # x0.at is temporarily disabled
+            # self.x0cmd = self.x0cm_
             self.oxocmd = self.oxocm_
 
     async def get_media(self, message: Message):
