@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-flat-satawat-anukul/512/000000/external-dictionary-education-flat-flat-satawat-anukul.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # requires: aiohttp urllib bs4
 # scope: inline
 # scope: hikka_only

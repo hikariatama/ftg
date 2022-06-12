@@ -11,7 +11,7 @@
 # meta pic: https://img.icons8.com/external-smashingstocks-circular-smashing-stocks/452/external-mortarboard-education-smashingstocks-circular-smashing-stocks.png
 # scope: inline
 # scope: hikka_only
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # requires: bs4
 
 from .. import loader, utils

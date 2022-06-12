@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/stickers/500/000000/feedback.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
 # scope: hikka_min 1.1.15

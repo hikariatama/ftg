@@ -12,7 +12,7 @@
 # scope: inline
 # scope: hikka_only
 # scope: hikka_min 1.0.25
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 import json
 import logging

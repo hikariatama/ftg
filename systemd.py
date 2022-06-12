@@ -11,7 +11,7 @@
 # meta pic: https://img.icons8.com/plasticine/344/apple-settings--v2.png
 # scope: inline
 # scope: hikka_only
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 # ⚠️ Please, ensure that userbot has enough rights to control units
 # Put these lines in /etc/sudoers:

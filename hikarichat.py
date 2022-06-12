@@ -12,7 +12,7 @@ __version__ = (11, 1, 3)
 
 # meta pic: https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/google/313/foggy_1f301.png
 # meta desc: Chat administrator toolkit with everything you need and much more
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 # scope: disable_onload_docs
 # scope: inline
@@ -3868,8 +3868,13 @@ class HikariChatMod(loader.Module):
             )
 
             if self._is_inline:
+                m = await self._client.send_message(
+                    chat.id,
+                    "🌘 <b>Reporting message to admins...</b>",
+                    reply_to=message.reply_to_msg_id,
+                )
                 await self.inline.form(
-                    message=chat.id,
+                    message=m,
                     text=msg,
                     reply_markup=[
                         [

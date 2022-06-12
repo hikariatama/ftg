@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/stickers/100/000000/commit-git.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_only
 
 import logging

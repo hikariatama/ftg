@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/stickers/500/000000/cards.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 import asyncio
 import io

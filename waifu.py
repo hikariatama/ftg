@@ -11,7 +11,7 @@
 # meta pic: https://img.icons8.com/color/480/000000/hinata.png
 # scope: inline
 # scope: hikka_only
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 import functools
 import logging

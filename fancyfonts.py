@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-wanicon-lineal-color-wanicon/344/external-font-graphic-design-wanicon-lineal-color-wanicon.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
 

@@ -11,7 +11,7 @@ __version__ = (2, 0, 0)
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/stickers/500/000000/voice-id.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: ffmpeg
 # scope: hikka_only
 # requires: pydub speechrecognition python-ffmpeg

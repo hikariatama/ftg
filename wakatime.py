@@ -12,7 +12,7 @@ __version__ = (2, 0, 0)
 # Updated by a https://t.me/vsecoder
 
 # meta pic: https://img.icons8.com/color/480/000000/wakanim.png
-# meta developer: @hikariatama, @vsecoder
+# meta developer: @hikarimods, @vsecoder
 # scope: inline
 # scope: hikka_only
 # scope: hikka_min 1.1.14

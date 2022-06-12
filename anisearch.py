@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-flatart-icons-flat-flatarticons/512/000000/external-frame-valentines-day-flatart-icons-flat-flatarticons-1.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 import logging
 

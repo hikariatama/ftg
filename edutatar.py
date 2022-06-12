@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/512/000000/external-education-job-search-flaticons-lineal-color-flat-icons.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_only
 # scope: hikka_min 1.1.14
 
@@ -17,6 +17,7 @@ import asyncio
 import re
 import time
 from datetime import datetime, timedelta
+import contextlib
 
 import requests
 from telethon.tl.types import Message
@@ -125,11 +126,9 @@ class EduTatarMod(loader.Module):
         if args == "":
             offset = 0
 
-        try:
+        with contextlib.suppress(Exception):
             offset = abs(int(args))
             offset = offset * 60 * 60 * 24
-        except:
-            pass
 
         now = datetime.now()
         today = now - timedelta(hours=now.hour, minutes=now.minute, seconds=now.second)
@@ -214,10 +213,8 @@ class EduTatarMod(loader.Module):
         marks_new = self._db.get("eduTatar", "marks", {}).copy()
         for subject, current_marks_2 in list(marks_new.items()):
             current_marks_1 = [] if subject not in marks_tmp else marks_tmp[subject]
-            try:
+            with contextlib.suppress(KeyError):
                 subject = filters[subject]
-            except KeyError:
-                pass
 
             for i in range(min(len(current_marks_1), len(current_marks_2))):
                 if current_marks_1[i] != current_marks_2[i]:

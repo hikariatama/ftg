@@ -9,10 +9,11 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/color/344/wolfram-alpha.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_only
 # requires: aiohttp urllib Pillow
 
+import contextlib
 import io
 import json
 import logging
@@ -92,7 +93,7 @@ async def wolfram_compute(query: str) -> tuple:
                         ]
 
                 if not images:
-                    try:
+                    with contextlib.suppress(Exception):
                         images = [
                             next(
                                 subpod["img"]["src"]
@@ -104,8 +105,6 @@ async def wolfram_compute(query: str) -> tuple:
                                 if "img" in subpod and "src" in subpod["img"]
                             )
                         ]
-                    except Exception:
-                        pass
 
                 if images:
                     files = []

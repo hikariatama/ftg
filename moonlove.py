@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/emoji/256/000000/waxing-crescent-moon.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_only
 # scope: hikka_min 1.1.7
 

@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/stickers/500/000000/cloud.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # requires: hashlib base64
 
 import asyncio
@@ -21,6 +21,7 @@ import io
 import logging
 import re
 import time
+import contextlib
 
 import requests
 import telethon
@@ -42,7 +43,7 @@ class ModuleCloudMod(loader.Module):
         "cannot_join": "🚫 <b>Am I banned in hikari. chat?</b>",
         "args": "🚫 <b>Args not specified</b>",
         "mod404": "🚫 <b>Module {} not found</b>",
-        "ilink": '💻 <b><u>{name}</u> - <a href="https://mods.hikariatama.ru/view/{file}">source</a></b> | <i>By @hikarimods with 💗</i>\nℹ️ <i>{desc}</i>\n\n🌃 <b>Install:</b> <code>.dlmod https://mods.hikariatama.ru/{file}</code>',
+        "ilink": '💻 <b><u>{name}</u> - <a href="https://mods.hikariatama.ru/view/{file}.py">source</a></b>\nℹ️ <i>{desc}</i>\n\n<i>By @hikarimods with 💗</i>\n\n🌘 <code>.dlmod {file}</code>',
         "404": "😔 <b>Module not found</b>",
         "not_exact": "⚠️ <b>No exact match occured, so the closest result is shown instead</b>",
     }
@@ -81,15 +82,13 @@ class ModuleCloudMod(loader.Module):
             msgs = await self._client.get_messages(entity, limit=100)
 
         for msg in msgs:
-            try:
+            with contextlib.suppress(Exception):
                 c = any(
                     word not in msg.raw_text.lower() for word in args.lower().split()
                 )
                 if not c:
                     await utils.answer(message, msg.text)
                     return
-            except Exception:  # Ignore errors when trying to get text of e.g. service message
-                pass
 
         await utils.answer(message, self.strings("mod404").format(args))
 
@@ -127,6 +126,7 @@ class ModuleCloudMod(loader.Module):
 
         img = requests.get(badge.json()["badge"] + f"?t={round(time.time())}").content
         info = badge.json()["info"]
+        info["file"] = info["file"].split(".")[0]
 
         if not message.media or not message.out:
             await self._client.send_file(

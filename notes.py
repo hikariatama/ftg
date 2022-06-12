@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/tiny-color/256/000000/experimental-note-tiny-color.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 import logging
 

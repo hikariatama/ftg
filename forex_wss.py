@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-smashingstocks-thin-outline-color-smashing-stocks/270/000000/external-forex-finance-smashingstocks-thin-outline-color-smashing-stocks.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
 # scope: hikka_min 1.1.15

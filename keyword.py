@@ -9,11 +9,12 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/fluency/48/000000/macbook-chat.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_only
 
 import logging
 import re
+import contextlib
 
 from telethon.tl.types import Message
 
@@ -185,10 +186,7 @@ class KeywordMod(loader.Module):
         return await utils.answer(message, self.strings("kwbl_list").format(res))
 
     async def watcher(self, message: Message):
-        try:
-            # logger.debug(message)
-            # if message.out: return
-
+        with contextlib.suppress(Exception):
             cid = utils.get_chat_id(message)
             if cid in self.bl:
                 return
@@ -251,11 +249,6 @@ class KeywordMod(loader.Module):
                 else:
                     ms = await message.respond(ph[0])
 
-                try:
-                    ms = ms[0]
-                except Exception:
-                    pass
-
                 ms.text = ph[0][2:]
 
                 if len(ph) > 5 and ph[5]:
@@ -269,5 +262,3 @@ class KeywordMod(loader.Module):
                     else:
                         await ms.respond(self.strings("no_command"))
 
-        except Exception:
-            pass

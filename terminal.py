@@ -33,6 +33,7 @@ import asyncio
 import logging
 import os
 import re
+import contextlib
 
 import telethon
 
@@ -266,13 +267,12 @@ class MessageEditor:
         text += (self.strings("stderr") + stderr) if stderr else ""
         text += self.strings("end")
 
-        try:
-            self.message = await utils.answer(self.message, text)
-        except telethon.errors.rpcerrorlist.MessageNotModifiedError:
-            pass
-        except telethon.errors.rpcerrorlist.MessageTooLongError as e:
-            logger.error(e)
-            logger.error(text)
+        with contextlib.suppress(telethon.errors.rpcerrorlist.MessageNotModifiedError):
+            try:
+                self.message = await utils.answer(self.message, text)
+            except telethon.errors.rpcerrorlist.MessageTooLongError as e:
+                logger.error(e)
+                logger.error(text)
         # The message is never empty due to the template header
 
     async def cmd_ended(self, rc):
@@ -442,12 +442,9 @@ class RawMessageEditor(SudoMessageEditor):
 
         logger.debug(text)
 
-        try:
-            await utils.answer(self.message, text)
-        except telethon.errors.rpcerrorlist.MessageNotModifiedError:
-            pass
-        except (telethon.errors.rpcerrorlist.MessageEmptyError, ValueError):
-            pass
-        except telethon.errors.rpcerrorlist.MessageTooLongError as e:
-            logger.error(e)
-            logger.error(text)
+        with contextlib.suppress(telethon.errors.rpcerrorlist.MessageNotModifiedError, telethon.errors.rpcerrorlist.MessageEmptyError, ValueError):
+            try:
+                await utils.answer(self.message, text)
+            except telethon.errors.rpcerrorlist.MessageTooLongError as e:
+                logger.error(e)
+                logger.error(text)

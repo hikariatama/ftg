@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/fluency/240/000000/sim-card-chip.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 import json
 

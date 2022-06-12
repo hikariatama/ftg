@@ -12,13 +12,14 @@ __version__ = (2, 0, 0)
 
 # meta title: PM->BL
 # meta pic: https://img.icons8.com/external-dreamcreateicons-flat-dreamcreateicons/512/000000/external-death-halloween-dreamcreateicons-flat-dreamcreateicons.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_only
 # scope: hikka_min 1.1.14
 
 import asyncio
 import logging
 import time
+import contextlib
 from typing import Union
 
 from telethon.tl.functions.contacts import BlockRequest
@@ -222,10 +223,8 @@ class PMBLMod(loader.Module):
         try:
             user = await self._client.get_entity(args)
         except Exception:
-            try:
+            with contextlib.suppress(Exception):
                 user = await self._client.get_entity(reply.sender_id) if reply else None
-            except Exception:
-                pass
 
         if not user:
             chat = await message.get_chat()
@@ -261,7 +260,7 @@ class PMBLMod(loader.Module):
 
         contact, started_by_you, active_peer = None, None, None
 
-        try:
+        with contextlib.suppress(ValueError):
             entity = await self._client.get_entity(message.peer_id)
 
             if entity.bot:
@@ -272,11 +271,6 @@ class PMBLMod(loader.Module):
                     return self._approve(cid, "ignore_contacts")
                 else:
                     contact = False
-        except ValueError:
-            # If we were not able to resolve entity
-            # user is not a contact. So just ignore
-            # this exception
-            pass
 
         first_message = (
             await self._client.get_messages(

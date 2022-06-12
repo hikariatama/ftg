@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/stickers/500/000000/data-backup.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_only
 # scope: hikka_min 1.1.15
 
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
-    if "OKTETO" not in os.environ
+    if "OKTETO" not in os.environ and "DOCKER" not in os.environ
     else "/data"
 )
 
@@ -106,11 +106,12 @@ class BackuperMod(loader.Module):
         db_mods = json.dumps(self.lookup("Loader").get("loaded_modules", {})).encode()
 
         with zipfile.ZipFile(result, "w", zipfile.ZIP_DEFLATED) as zipf:
-            for root, dirs, files in os.walk(LOADED_MODULES_DIR):
-                for file in files:
-                    with open(os.path.join(root, file), "rb") as f:
-                        zipf.writestr(file, f.read())
-                        mods_quantity += 1
+            if "DYNO" not in os.environ:
+                for root, _, files in os.walk(LOADED_MODULES_DIR):
+                    for file in files:
+                        with open(os.path.join(root, file), "rb") as f:
+                            zipf.writestr(file, f.read())
+                            mods_quantity += 1
 
             zipf.writestr("db_mods.json", db_mods)
 
@@ -152,10 +153,11 @@ class BackuperMod(loader.Module):
 
                                 continue
 
-                            with open(
-                                os.path.join(LOADED_MODULES_DIR, name), "wb"
-                            ) as f:
-                                f.write(module.read())
+                            if "DYNO" not in os.environ:
+                                with open(
+                                    os.path.join(LOADED_MODULES_DIR, name), "wb"
+                                ) as f:
+                                    f.write(module.read())
             except Exception:
                 logger.exception("Can't restore mods")
                 await utils.answer(message, self.strings("reply_to_file"))

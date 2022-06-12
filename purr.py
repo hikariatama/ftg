@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/cute-clipart/512/000000/pixel-cat.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: ffmpeg
 # requires: pydub python-ffmpeg
 

@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/512/000000/external-sleep-productivity-flaticons-lineal-color-flat-icons.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_only
 
 import re

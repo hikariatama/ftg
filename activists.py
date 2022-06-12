@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-flaticons-flat-flat-icons/512/000000/external-person-100-most-used-icons-flaticons-flat-flat-icons-2.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_only
 
 import logging

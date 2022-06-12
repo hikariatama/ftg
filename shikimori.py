@@ -13,7 +13,7 @@ __version__ = (2, 0, 0)
 # meta pic: https://i.imgur.com/MTkqvXX.jpeg
 # scope: inline
 # scope: hikka_only
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 import logging
 import time

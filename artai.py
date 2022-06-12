@@ -11,7 +11,7 @@ __version__ = (1, 0, 2)
 # 🌐 https://creativecommons.org/licenses/by-nc-nd/4.0
 
 # meta pic: https://img.icons8.com/fluency/240/000000/class-dojo.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_only
 
 import asyncio

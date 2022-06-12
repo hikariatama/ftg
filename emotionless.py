@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-vitaliy-gorbachev-flat-vitaly-gorbachev/464/000000/external-sad-social-media-vitaliy-gorbachev-flat-vitaly-gorbachev.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_only
 
 import asyncio
@@ -87,8 +87,14 @@ class EmotionlessMod(loader.Module):
                 filter(lambda x: x > time.time(), self._flood_protect)
             )
 
+            chat = next(
+                getattr(event.peer, attribute)
+                for attribute in {"channel_id", "chat_id", "user_id"}
+                if hasattr(event.peer, attribute)
+            )
+
             if len(self._flood_protect) > self._threshold:
-                self._queue[utils.get_chat_id(event)] = time.time() + 15
+                self._queue[chat] = time.time() + 15
                 logger.debug(f"Flood protect triggered, chat {event} added to queue")
                 return
 

@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-icongeek26-linear-colour-icongeek26/512/000000/external-plot-data-analytics-icongeek26-linear-colour-icongeek26.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # requires: matplotlib
 
 import io

@@ -11,7 +11,7 @@
 # meta pic: https://img.icons8.com/color-glass/344/phone.png
 # requires: requests
 # scope: hikka_only
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 import logging
 

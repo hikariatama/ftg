@@ -13,7 +13,7 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.7
 # requires: grapheme
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 import logging
 

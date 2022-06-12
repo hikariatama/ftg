@@ -9,10 +9,11 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-soft-fill-juicy-fish/480/000000/external-big-cute-monsters-soft-fill-soft-fill-juicy-fish-4.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_only
 
 import logging
+import contextlib
 
 from telethon.tl.types import Message
 
@@ -60,13 +61,12 @@ def process(cir, text):
         row_result = []
         for i, line in enumerate(row):
             for letter in chunk:
-                try:
+                with contextlib.suppress(IndexError):
                     l_ = letter[i]
                     if len(l_) < 5:
                         l_ += " " * (5 - len(l_))
                     line += f"{l_} "
-                except IndexError:
-                    pass
+
             row_result += [line]
 
         result += "\n".join([r for r in row_result if r.strip()]) + "\n"

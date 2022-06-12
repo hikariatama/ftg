@@ -1,4 +1,4 @@
-__version__ = (2, 0, 0)
+__version__ = (2, 0, 1)
 
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
@@ -11,9 +11,10 @@ __version__ = (2, 0, 0)
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/color/480/000000/playstation-buttons.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
+# scope: hikka_min 1.2.4
 
 import asyncio
 import logging
@@ -89,13 +90,13 @@ class InlineSpotifyMod(loader.Module):
 
     async def inline_close(self, call: InlineCall):
         if any(
-            call.form["id"] == getattr(i, "unit_uid", None) for i in self._active_forms
+            call.form["id"] == getattr(i, "unit_id", None) for i in self._active_forms
         ):
             self._active_forms.remove(
                 next(
                     i
                     for i in self._active_forms
-                    if call.form["id"] == getattr(i, "unit_uid", None)
+                    if call.form["id"] == getattr(i, "unit_id", None)
                 )
             )
 
@@ -150,11 +151,11 @@ class InlineSpotifyMod(loader.Module):
     ):
         try:
             if not uid:
-                uid = getattr(call, "unit_uid", call.form["id"])
+                uid = getattr(call, "unit_id", call.form["id"])
 
             until = time.time() + 5 * 60
             while (
-                any(uid == i.unit_uid for i in self._active_forms)
+                any(uid == i.unit_id for i in self._active_forms)
                 and until > time.time()
                 or once
             ):

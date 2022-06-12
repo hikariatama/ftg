@@ -10,7 +10,7 @@
 
 # meta pic: https://img.icons8.com/color/480/000000/sarada-uchiha.png
 # scope: hikka_only
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # requires: urllib requests
 
 import asyncio

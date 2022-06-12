@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-xnimrodx-lineal-color-xnimrodx/512/000000/external-short-shopping-mall-xnimrodx-lineal-color-xnimrodx.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_only
 # scope: hikka_min 1.1.14
 

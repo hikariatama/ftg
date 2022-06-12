@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/emoji/256/000000/waving-hand-emoji.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 from telethon.tl.types import Message
 

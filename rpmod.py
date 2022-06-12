@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/color/480/000000/comedy.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 import io
 import json
