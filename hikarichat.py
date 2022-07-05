@@ -1,4 +1,5 @@
-__version__ = (11, 1, 3)
+__version__ = (12, 3, 0)
+# Now actually free
 
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
@@ -10,15 +11,15 @@ __version__ = (11, 1, 3)
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/google/313/foggy_1f301.png
-# meta desc: Chat administrator toolkit with everything you need and much more
+# meta pic: https://img.icons8.com/external-flaticons-flat-flat-icons/344/external-exclusive-black-friday-flaticons-flat-flat-icons.png
+# meta desc: Chat administrator toolkit, now with powerful free version
 # meta developer: @hikarimods
 
 # scope: disable_onload_docs
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.1.23
-# requires: aiohttp
+# scope: hikka_min 1.2.7
+# requires: aiohttp websockets
 
 import abc
 import asyncio
@@ -27,11 +28,12 @@ import imghdr
 import io
 import json
 import logging
+import random
 import re
 import time
 from math import ceil
 from types import FunctionType
-from typing import List, Union
+from typing import List, Union, Optional
 import contextlib
 
 import aiohttp
@@ -61,39 +63,26 @@ from telethon.tl.types import (
     User,
     UserStatusOnline,
 )
+from telethon.errors.rpcerrorlist import WebpageCurlFailedError
 
 from .. import loader, utils
-from ..inline.types import InlineCall
+from ..inline.types import InlineCall, InlineMessage
+
 
 try:
     from PIL import Image, ImageDraw, ImageFont
 except ImportError:
     PIL_AVAILABLE = False
 else:
-    font = requests.get("https://github.com/hikariatama/assets/raw/master/EversonMono.ttf").content  # fmt: skip
     PIL_AVAILABLE = True
-
 
 logger = logging.getLogger(__name__)
 
 version = f"v{__version__[0]}.{__version__[1]}.{__version__[2]}stable"
-ver = f"<u>HikariChat {version}</u>"
+ver = f"<i>HikariChat {version}</i>"
 
 FLOOD_TIMEOUT = 0.8
 FLOOD_TRESHOLD = 4
-
-
-def get_link(user: User or Channel) -> str:
-    """Get link to object (User or Channel)"""
-    return (
-        f"tg://user?id={user.id}"
-        if isinstance(user, User)
-        else (
-            f"tg://resolve?domain={user.username}"
-            if getattr(user, "username", None)
-            else ""
-        )
-    )
 
 
 PROTECTS = {
@@ -106,66 +95,22 @@ PROTECTS = {
     "antispoiler": "🪙 AntiSpoiler",
     "report": "📣 Report",
     "antiexplicit": "😒 AntiExplicit",
-    "antiraid": "🐶 AntiRaid",
     "antiservice": "⚙️ AntiService",
     "antigif": "🎑 AntiGIF",
     "antizalgo": "🌀 AntiZALGO",
     "antistick": "🎨 AntiStick",
+    "antilagsticks": "⚰️ AntiLagSticks",
+    "cas": "🛡 CAS",
+    "bnd": "💬 BND",
+    "ndspam": "🐳 NDSpam",
+    "antiraid": "🐶 AntiRaid",
     "banninja": "🥷 BanNinja",
     "welcome": "👋 Welcome",
-    "antilagsticks": "⚰️ AntiLagSticks",
+    "captcha": "🚥 Captcha",
 }
 
 
-API_FEATURES = {
-    "clrallwarns",
-    "clrwarns",
-    "delwarn",
-    "dwarn",
-    "fadd",
-    "fban",
-    "fclean",
-    "fdef",
-    "fdeflist",
-    "fdemote",
-    "feds",
-    "fed",
-    "fmute",
-    "fnotes",
-    "fpromote",
-    "frename",
-    "frm",
-    "fsave",
-    "fstop",
-    "funban",
-    "funmute",
-    "newfed",
-    "pchat",
-    "protects",
-    "rmfed",
-    "warn",
-    "warns",
-    "welcome",
-    "banninja",
-    "antistick",
-    "antizalgo",
-    "antiarab",
-    "antihelp",
-    "antitagall",
-    "antiraid",
-    "antichannel",
-    "antispoiler",
-    "antigif",
-    "antinsfw",
-    "antiflood",
-    "report",
-    "antiexplicit",
-    "antiservice",
-    "antilagsticks",
-}
-
-
-def fit(line, max_size):
+def fit(line: str, max_size: int) -> str:
     if len(line) >= max_size:
         return line
 
@@ -197,49 +142,14 @@ def gen_table(t: List[List[str]]) -> bytes:
     return "\n".join(table.splitlines()[:-1]) + "\n" + f"┗{('┷'.join(rows_lines))}┛\n"
 
 
-def render_table(t: List[List[str]]) -> bytes:
-    table = gen_table(t)
-
-    fnt = ImageFont.truetype(io.BytesIO(font), 20, encoding="utf-8")
-
-    def get_t_size(text, fnt):
-        if "\n" not in text:
-            return fnt.getsize(text)
-
-        w, h = 0, 0
-
-        for line in text.split("\n"):
-            line_size = fnt.getsize(line)
-            if line_size[0] > w:
-                w = line_size[0]
-
-            h += line_size[1]
-
-        w += 10
-        h += 10
-        return (w, h)
-
-    t_size = get_t_size(table, fnt)
-    img = Image.new("RGB", t_size, (30, 30, 30))
-
-    d = ImageDraw.Draw(img)
-    d.text((5, 5), table, font=fnt, fill=(200, 200, 200))
-
-    imgByteArr = io.BytesIO()
-    img.save(imgByteArr, format="PNG")
-    imgByteArr = imgByteArr.getvalue()
-
-    return imgByteArr
-
-
-def get_first_name(user: User or Channel) -> str:
+def get_first_name(user: Union[User, Channel]) -> str:
     """Returns first name of user or channel title"""
     return utils.escape_html(
         user.first_name if isinstance(user, User) else user.title
     ).strip()
 
 
-def get_full_name(user: User or Channel) -> str:
+def get_full_name(user: Union[User, Channel]) -> str:
     return utils.escape_html(
         user.title
         if isinstance(user, Channel)
@@ -248,17 +158,6 @@ def get_full_name(user: User or Channel) -> str:
             + (user.last_name if getattr(user, "last_name", False) else "")
         )
     ).strip()
-
-
-async def get_message_link(message: Message, chat: Chat or Channel = None) -> str:
-    if not chat:
-        chat = await message.get_chat()
-
-    return (
-        f"https://t.me/{chat.username}/{message.id}"
-        if getattr(chat, "username", False)
-        else f"https://t.me/c/{chat.id}/{message.id}"
-    )
 
 
 BANNED_RIGHTS = {
@@ -277,18 +176,6 @@ BANNED_RIGHTS = {
 
 class HikariChatAPI:
     def __init__(self):
-        pass
-
-    async def init(
-        self,
-        client: "TelegramClient",  # type: ignore
-        db: "Database",  # type: ignore
-        module: "HikariChatMod",
-    ):
-        """Entry point"""
-        self._client = client
-        self._db = db
-        self.module = module
         self._bot = "@hikka_userbot"
 
         self._queue = []
@@ -299,6 +186,18 @@ class HikariChatAPI:
         self._show_warning = True
         self._connected = False
         self._inited = False
+        self._local = False
+
+    async def init(
+        self,
+        client: "TelegramClient",  # type: ignore
+        db: "Database",  # type: ignore
+        module: loader.Module,
+    ):
+        """Entry point"""
+        self._client = client
+        self._db = db
+        self.module = module
 
         if not self.module.get("token"):
             await self._get_token()
@@ -317,9 +216,8 @@ class HikariChatAPI:
             if init["event"] == "startup":
                 self.variables = init["variables"]
             elif init["event"] == "license_violation":
-                self.init_done.set()
                 await wss.close()
-                return
+                raise Exception("local")
 
             self.init_done.set()
 
@@ -359,7 +257,21 @@ class HikariChatAPI:
                 logger.debug("HikariChat disconnection traceback", exc_info=True)
 
                 if not self._inited:
-                    logger.warning("HikariChatLite is active, federative functions removed")  # fmt: skip
+                    self._local = True
+                    self.variables = json.loads(
+                        (
+                            await utils.run_sync(
+                                requests.get,
+                                "https://gist.githubusercontent.com/hikariatama/31a8246c9c6ad0b451324969d6ff2940/raw/608509efd7fee6fa876227e1c8c3c7dc0a952892/variables.json",
+                            )
+                        ).text
+                    )
+                    self._feds = self.module.get("feds", {})
+                    delattr(self, "feds")
+                    self.chats = self.module.get("chats", {})
+                    self._processor_task = asyncio.ensure_future(
+                        self._queue_processor()
+                    )
                     self.init_done.set()
                     self._task.cancel()
                     return
@@ -371,7 +283,7 @@ class HikariChatAPI:
 
             await asyncio.sleep(5)
 
-    def request(self, payload: dict, message: Union[Message, None] = None):
+    def request(self, payload: dict, message: Optional[Message] = None):
         if isinstance(message, Message):
             payload = {
                 **payload,
@@ -435,6 +347,305 @@ class HikariChatAPI:
 
         await self._client.delete_dialog(self._bot)
 
+    def __getattr__(self, attribute: str):
+        if self._local and attribute == "feds":
+            return {fed["shortname"]: fed for fed in self._feds.values()}
+
+        raise AttributeError
+
+    async def _queue_processor(self):
+        while True:
+            if not self._queue:
+                await asyncio.sleep(1)
+                continue
+
+            ERROR = "🚫 <b>API Error: </b><code>{}</code>"
+
+            async def assert_arguments(args: set, item: dict) -> bool:
+                if any(i not in item.get("args", {}) for i in args):
+                    if "chat_id" in item:
+                        await self._client.edit_message(
+                            item["chat_id"],
+                            item["message_id"],
+                            "🚫 <b>Bad API arguments, PROKAZNIK!</b>",
+                        )
+                    return False
+
+                return True
+
+            async def error(msg: str, item: dict):
+                if "chat_id" in item:
+                    await self._client.edit_message(
+                        item["chat_id"],
+                        item["message_id"],
+                        ERROR.format(msg),
+                    )
+
+            feds_copy = self._feds.copy()
+            chats_copy = self.chats.copy()
+
+            item = self._queue.pop(0)
+            u = str(self._client._tg_id)
+
+            if item["action"] == "create federation":
+                if not await assert_arguments({"shortname", "name"}, item):
+                    continue
+
+                t = "fed_" + "".join(
+                    [
+                        random.choice(list("abcdefghijklmnopqrstuvwyz1234567890"))
+                        for _ in range(32)
+                    ]
+                )
+
+                self._feds[t] = {
+                    "shortname": item["args"]["shortname"],
+                    "name": item["args"]["name"],
+                    "chats": [],
+                    "warns": {},
+                    "admins": [u],
+                    "owner": u,
+                    "fdef": [],
+                    "notes": {},
+                    "uid": t,
+                }
+
+            if item["action"] == "add chat to federation":
+                if not await assert_arguments({"uid", "cid"}, item):
+                    continue
+
+                if item["args"]["uid"] not in self._feds:
+                    await error("Federation doesn't exist", item)
+                    continue
+
+                if str(item["args"]["cid"]) in self._feds[item["args"]["uid"]]["chats"]:
+                    await error("Chat is already in this federation", item)
+                    continue
+
+                self._feds[item["args"]["uid"]]["chats"] += [str(item["args"]["cid"])]
+
+            if item["action"] == "remove chat from federation":
+                if not await assert_arguments({"uid", "cid"}, item):
+                    continue
+
+                if item["args"]["uid"] not in self._feds:
+                    await error("Federation doesn't exist", item)
+                    continue
+
+                if (
+                    str(item["args"]["cid"])
+                    not in self._feds[item["args"]["uid"]]["chats"]
+                ):
+                    await error("Chat is not in this federation", item)
+                    continue
+
+                self._feds[item["args"]["uid"]]["chats"].remove(
+                    str(item["args"]["cid"])
+                )
+
+            if item["action"] == "update protections":
+                if not await assert_arguments({"protection", "state", "chat"}, item):
+                    continue
+
+                chat, protection, state = (
+                    str(item["args"]["chat"]),
+                    item["args"]["protection"],
+                    item["args"]["state"],
+                )
+
+                if protection not in self.variables["protections"] + ["welcome"]:
+                    await error("Unknown protection type", item)
+                    continue
+
+                if (
+                    protection in self.variables["argumented_protects"]
+                    and state not in self.variables["protect_actions"]
+                    or protection not in self.variables["argumented_protects"]
+                    and protection in self.variables["protections"]
+                    and state not in {"on", "off"}
+                ):
+                    await error("Protection state invalid", item)
+                    continue
+
+                if chat not in self.chats:
+                    self.chats[chat] = {}
+
+                if state == "off":
+                    if protection in self.chats[chat]:
+                        del self.chats[chat][protection]
+                else:
+                    self.chats[chat][protection] = [state, u]
+
+            if item["action"] == "delete federation":
+                if not await assert_arguments({"uid"}, item):
+                    continue
+
+                uid = item["args"]["uid"]
+
+                if uid not in self._feds:
+                    await error("Federation doesn't exist", item)
+                    continue
+
+                del self._feds[uid]
+
+            if item["action"] == "rename federation":
+                if not await assert_arguments({"uid", "name"}, item):
+                    continue
+
+                uid, name = item["args"]["uid"], item["args"]["name"]
+
+                if uid not in self._feds:
+                    await error("Federation doesn't exist", item)
+                    continue
+
+                self._feds[uid]["name"] = name
+
+            if item["action"] == "protect user":
+                if not await assert_arguments({"uid", "user"}, item):
+                    continue
+
+                uid, user = item["args"]["uid"], item["args"]["user"]
+                user = str(user)
+
+                if not user.isdigit():
+                    await error("Unexpected format for user", item)
+                    continue
+
+                if uid not in self._feds:
+                    await error("Federation doesn't exist", item)
+                    continue
+
+                if user in self._feds[uid]["fdef"]:
+                    self._feds[uid]["fdef"].remove(user)
+                else:
+                    self._feds[uid]["fdef"] += [user]
+
+            if item["action"] == "warn user":
+                if not await assert_arguments({"uid", "user", "reason"}, item):
+                    continue
+
+                uid, user, reason = (
+                    item["args"]["uid"],
+                    item["args"]["user"],
+                    item["args"]["reason"],
+                )
+                user = str(user)
+
+                if not user.isdigit():
+                    await error("Unexpected format for user", item)
+                    continue
+
+                if uid not in self._feds:
+                    await error("Federation doesn't exist", item)
+                    continue
+
+                if user not in self._feds[uid]["warns"]:
+                    self._feds[uid]["warns"][user] = []
+
+                self._feds[uid]["warns"][user] += [reason]
+
+            if item["action"] == "forgive user warn":
+                if not await assert_arguments({"uid", "user"}, item):
+                    continue
+
+                uid, user = item["args"]["uid"], item["args"]["user"]
+                user = str(user)
+
+                if not user.isdigit():
+                    await error("Unexpected format for user", item)
+                    continue
+
+                if uid not in self._feds:
+                    await error("Federation doesn't exist", item)
+                    continue
+
+                if (
+                    user not in self._feds[uid]["warns"]
+                    or not self._feds[uid]["warns"][user]
+                ):
+                    await error("This user has no warns yet", item)
+                    continue
+
+                del self._feds[uid]["warns"][user][-1]
+
+            if item["action"] == "clear all user warns":
+                if not await assert_arguments({"uid", "user"}, item):
+                    continue
+
+                uid, user = item["args"]["uid"], item["args"]["user"]
+                user = str(user)
+
+                if not user.isdigit():
+                    if not item["args"].get("silent", False):
+                        await error("Unexpected format for user", item)
+                    continue
+
+                if uid not in self._feds:
+                    if not item["args"].get("silent", False):
+                        await error("Federation doesn't exist", item)
+                    continue
+
+                if not self._feds[uid].get("warns", {}).get(user):
+                    if not item["args"].get("silent", False):
+                        await error("This user has no warns yet", item)
+                    continue
+
+                del self._feds[uid]["warns"][user]
+
+            if item["action"] == "clear federation warns":
+                if not await assert_arguments({"uid"}, item):
+                    continue
+
+                uid = item["args"]["uid"]
+
+                if uid not in self._feds:
+                    await error("Federation doesn't exist", item)
+                    continue
+
+                if not self._feds[uid].get("warns"):
+                    await error("This federation has no warns yet", item)
+                    continue
+
+                del self._feds[uid]["warns"]
+
+            if item["action"] == "new note":
+                if not await assert_arguments({"uid", "shortname", "note"}, item):
+                    continue
+
+                uid, shortname, note = (
+                    item["args"]["uid"],
+                    item["args"]["shortname"],
+                    item["args"]["note"],
+                )
+
+                if uid not in self._feds:
+                    await error("Federation doesn't exist", item)
+                    continue
+
+                self._feds[uid]["notes"][shortname] = {"creator": u, "text": note}
+
+            if item["action"] == "delete note":
+                if not await assert_arguments({"uid", "shortname"}, item):
+                    continue
+
+                uid, shortname = item["args"]["uid"], item["args"]["shortname"]
+
+                if uid not in self._feds:
+                    await error("Federation doesn't exist", item)
+                    continue
+
+                if shortname not in self._feds[uid]["notes"]:
+                    await error(f"Note not found ({uid=}, {shortname=})", item)
+                    continue
+
+                del self._feds[uid]["notes"][shortname]
+
+            if feds_copy != self._feds:
+                self.module.set("feds", self._feds)
+
+            if chats_copy != self.chats:
+                self.module.set("chats", self.chats)
+
 
 api = HikariChatAPI()
 
@@ -469,6 +680,10 @@ class HikariChatMod(loader.Module):
         "antihelp_off": "🐺 <b>AntiHelp is now off in this chat</b>",
         "antiraid_on": "🐶 <b>AntiRaid is now on in this chat\nAction: {}</b>",
         "antiraid_off": "🐶 <b>AntiRaid is now off in this chat</b>",
+        "bnd_on": "💬 <b>Block-Non-Discussion is now on in this chat\nAction: {}</b>",
+        "bnd_off": "💬 <b>Block-Non-Discussion is now off in this chat</b>",
+        "ndspam_on": "🐳 <b>Non-Discussion-Whale is now on in this chat",
+        "ndspam_off": "🐳 <b>Non-Discussion-Whale is now off in this chat</b>",
         "antiraid": '🐶 <b>AntiRaid is On. I {} <a href="{}">{}</a> in chat {}</b>',
         "antichannel_on": "📯 <b>AntiChannel is now on in this chat</b>",
         "antichannel_off": "📯 <b>AntiChannel is now off in this chat</b>",
@@ -486,16 +701,22 @@ class HikariChatMod(loader.Module):
         "banninja_off": "🥷 <b>BanNinja is now off in this chat</b>",
         "antiexplicit_on": "😒 <b>AntiExplicit is now on in this chat\nAction: {}</b>",
         "antiexplicit_off": "😒 <b>AntiExplicit is now off in this chat</b>",
+        "captcha_on": "🚥 <b>Captcha is now on in this chat\nAction: {}</b>",
+        "captcha_off": "🚥 <b>Captcha is now off in this chat</b>",
+        "cas_on": "🛡 <b>CAS is now on in this chat\nAction: {}</b>",
+        "cas_off": "🛡 <b>CAS is now off in this chat</b>",
         "antinsfw_on": "🔞 <b>AntiNSFW is now on in this chat\nAction: {}</b>",
         "antinsfw_off": "🔞 <b>AntiNSFW is now off in this chat</b>",
-        "arabic_nickname": '🐻 <b>Seems like <a href="{}">{}</a> is Arab.\n👊 Action: I {}</b>',
-        "zalgo": '🌀 <b>Seems like <a href="{}">{}</a> has ZALGO in his nickname.\n👊 Action: I {}</b>',
-        "stick": '🎨 <b>Seems like <a href="{}">{}</a> is flooding stickers.\n👊 Action: I {}</b>',
-        "explicit": '😒 <b>Seems like <a href="{}">{}</a> sent explicit content.\n👊 Action: I {}</b>',
-        "destructive_stick": '🚫 <b>Seems like <a href="{}">{}</a> sent destructive sticker.\n👊 Action: I {}</b>',
-        "nsfw_content": '🔞 <b>Seems like <a href="{}">{}</a> sent NSFW content.\n👊 Action: I {}</b>',
-        "flood": '⏱ <b>Seems like <a href="{}">{}</a> is flooding.\n👊 Action: I {}</b>',
-        "tagall": '🐵 <b>Seems like <a href="{}">{}</a> used TagAll.\n👊 Action: I {}</b>',
+        "arabic_nickname": '🐻 <b><a href="{}">{}</a> has hieroglyphics in his nickname.\n👊 Action: I {}</b>',
+        "zalgo": '🌀 <b><a href="{}">{}</a> has ZALGO in his nickname.\n👊 Action: I {}</b>',
+        "bnd": '💬 <b><a href="{}">{}</a> sent a message to channel comments without being chat member.\n👊 Action: I {}</b>',
+        "cas": '🛡 <b><a href="{}">{}</a> appears to be in Combat Anti Spam database.\n👊 Action: I {}</b>',
+        "stick": '🎨 <b><a href="{}">{}</a> is flooding stickers.\n👊 Action: I {}</b>',
+        "explicit": '😒 <b><a href="{}">{}</a> sent explicit content.\n👊 Action: I {}</b>',
+        "destructive_stick": '🚫 <b><a href="{}">{}</a> sent destructive sticker.\n👊 Action: I {}</b>',
+        "nsfw_content": '🔞 <b><a href="{}">{}</a> sent NSFW content.\n👊 Action: I {}</b>',
+        "flood": '⏱ <b><a href="{}">{}</a> is flooding.\n👊 Action: I {}</b>',
+        "tagall": '🐵 <b><a href="{}">{}</a> used TagAll.\n👊 Action: I {}</b>',
         "sex_datings": '🔞 <b><a href="{}">{}</a> is suspicious 🧐\n👊 Action: I {}</b>',
         "fwarn": '👮‍♂️💼 <b><a href="{}">{}</a></b> got {}/{} federative warn\nReason: <b>{}</b>\n\n{}',
         "no_fed_warns": "👮‍♂️ <b>This federation has no warns yet</b>",
@@ -523,6 +744,10 @@ class HikariChatMod(loader.Module):
             "<b>⚙️ <code>.AntiService</code> - Removes service messages\n"
             "<b>🌀 <code>.AntiZALGO</code> - Penalty for users with ZALGO in nickname\n"
             "<b>🎨 <code>.AntiStick</code> - Prevents stickers flood\n"
+            "<b>🚥 <code>.Captcha</code> - Requires every new participant to complete captcha\n"
+            "<b>🛡 <code>.CAS</code> - Check every new participant through Combat Anti Spam\n"
+            "<b>💬 <code>.BND</code> - Restricts messages from users, which are not a participants of chat (comments)\n"
+            "<b>🐳 <code>.NDSpam</code> - Automatic channel comments raid protection\n"
             "<b>🥷 <code>.BanNinja</code> - Automatic version of AntiRaid\n"
             "<b>⚰️ <code>.AntiLagSticks</code> - Bans laggy stickers\n"
             "<b>👾 Admin: </b><code>.ban</code> <code>.kick</code> <code>.mute</code>\n"
@@ -587,10 +812,10 @@ class HikariChatMod(loader.Module):
         "usage": "ℹ️ <b>Usage: .{} &lt;on/off&gt;</b>",
         "chat_only": "ℹ️ <b>This command is for chats only</b>",
         "version": (
-            "<b>🌊 {}</b>\n\n"
-            "<b>😌 Author: @hikariatama</b>\n"
+            "<b>🪆 {}</b>\n\n"
+            "<b>😌 Author: t.me/hikariatama</b>\n"
             "<b>📥 Downloaded from @hikarimods</b>\n"
-            "<b>Status: {}</b>"
+            "<b>{}</b>"
         ),
         "error": "😵 <b>HikariChat Issued error</b>",
         "reported": '💼 <b><a href="{}">{}</a> reported this message to admins\nReason: </b><i>{}</i>',
@@ -632,13 +857,13 @@ class HikariChatMod(loader.Module):
         "clnraid_started": "🥷 <b>RaidCleaner is in progress... Found {} users to kick...</b>",
         "clnraid_confirm": "🥷 <b>Please, confirm that you want to start RaidCleaner on {} users</b>",
         "clnraid_yes": "🥷 Start",
-        "clnraid_cancel": "🚫 Cancel",
+        "clnraid_cancel": "🔻 Cancel",
         "clnraid_stop": "🚨 Stop",
         "clnraid_complete": "🥷 <b>RaidCleaner complete! Removed: {} user(-s)</b>",
         "clnraid_cancelled": "🥷 <b>RaidCleaner cancelled. Removed: {} user(-s)</b>",
         "smart_anti_raid_active": (
             "🥷 <b>BanNinja is working hard to prevent intrusion to this chat.</b>\n\n"
-            "⚠️ <b>I've forbidden sending messages until attack is fully released</b>\n\n"
+            "{}"
             "<i>Deleted {} bot(-s)</i>"
         ),
         "smart_anti_raid_off": "🚨 Stop",
@@ -648,27 +873,51 @@ class HikariChatMod(loader.Module):
             "<i>Deleted {} bot(-s)</i>\n\n"
             "🏹 <i>«BanNinja can handle any size of attack»</i> © <code>@hikariatama</code>"
         ),
+        "ndspam_active": (
+            "🐳 <b>Non-Discussion-Whale is working hard to prevent intrusion to attached channel comments.</b>\n\n"
+            "{}"
+            "<i>Deleted {} bot(-s)</i>"
+        ),
+        "forbid_messages": "⚠️ <b>I've forbidden sending messages until attack is fully released</b>\n\n",
+        "ndspam_off": "🚨 Stop",
+        "ndspam_stopped": "🥷 <b>BanNinja Stopped</b>",
+        "ndspam_report": (
+            "🥷 <b>BanNinja has done his job.</b>\n"
+            "<i>Deleted {} bot(-s)</i>\n\n"
+            "🏹 <i>«BanNinja can handle any size of attack»</i> © <code>@hikariatama</code>"
+        ),
         "confirm_rmfed": (
             "⚠️ <b>Warning! This operation can't be reverted! Are you sure, "
             "you want to delete federation </b><code>{}</code><b>?</b>"
         ),
         "confirm_rmfed_btn": "🗑 Delete",
-        "decline_rmfed_btn": "🚫 Cancel",
+        "decline_rmfed_btn": "🔻 Cancel",
         "pil_unavailable": "🚫 <b>Pillow package unavailable</b>",
         "action": "<action>",
         "configure": "Configure",
         "toggle": "Toggle",
         "no_protects": "🚫 <b>This chat has no active protections to show</b>",
         "from_where": "🚫 <b>Reply to a message to purge from</b>",
+        "no_notes": "🚫 <b>No notes found</b>",
+        "complete_captcha": '🚥 <b><a href="tg://user?id={}">{}</a>, please, complete captcha within 5 minutes</b>',
+        "captcha_timeout": '🚥 <b><a href="{}">{}</a> have not completed captcha in time.\n👊 Action: I {}</b>',
+        "captcha_failed": '🚥 <b><a href="{}">{}</a> failed captcha.\n👊 Action: I {}</b>',
     }
 
     strings_ru = {
+        "complete_captcha": '🚥 <b><a href="tg://user?id={}">{}</a>, пожалуйста, пройди капчу в течение 5 минут</b>',
+        "captcha_timeout": '🚥 <b><a href="{}">{}</a> не прошел капчу вовремя.\n👊 Действие: {}</b>',
+        "captcha_failed": '🚥 <b><a href="{}">{}</a> не прошел капчу.\n👊 Действие: {}</b>',
+        "cas_on": "🛡 <b>CAS теперь включен в этом чате\nДействие: {}</b>",
+        "cas_off": "🛡 <b>CAS теперь выключен в этом чате</b>",
+        "cas": '🛡 <b><a href="{}">{}</a> appears to be in Combat Anti Spam database.\n👊 Action: I {}</b>',
         "from_where": "🚫 <b>Ответь на сообщение, начиная с которого надо удалить.</b>",
         "smart_anti_raid_active": (
             "🥷 <b>BanNinja работает в поте лица, отбивая атаку на этот чат.</b>\n\n"
-            "⚠️ <b>Я запретил отправку сообщений на время рейда</b>\n\n"
+            "{}"
             "<i>Удалено {} бот(-ов)</i>"
         ),
+        "forbid_messages": "⚠️ <b>Я запретил отправку сообщений, пока атака не будет полностью отражена</b>\n\n",
         "smart_anti_raid_off": "🚨 Остановить",
         "smart_anti_raid_stopped": "🥷 <b>BanNinja остановлен</b>",
         "error": "😵 <b>Произошла ошибка HikariChat</b>",
@@ -686,6 +935,10 @@ class HikariChatMod(loader.Module):
         "antihelp_off": "🐺 <b>AntiHelp теперь выключен в этом чате</b>",
         "antiraid_on": "🐶 <b>AntiRaid теперь включен в этом чате\nДействие: {}</b>",
         "antiraid_off": "🐶 <b>AntiRaid теперь выключен в этом чате</b>",
+        "bnd_on": "💬 <b>Block-Non-Discussion теперь включен в этом чате\nДействие: {}</b>",
+        "bnd_off": "💬 <b>Block-Non-Discussion теперь выключен в этом чате</b>",
+        "ndspam_on": "🐳 <b>Non-Discussion-Whale теперь включен в этом чате",
+        "ndspam_off": "🐳 <b>Non-Discussion-Whale теперь выключен в этом чате</b>",
         "antichannel_on": "📯 <b>AntiChannel теперь включен в этом чате</b>",
         "antichannel_off": "📯 <b>AntiChannel теперь выключен в этом чате</b>",
         "report_on": "📣 <b>Report теперь включен в этом чате</b>",
@@ -704,6 +957,8 @@ class HikariChatMod(loader.Module):
         "antiexplicit_off": "😒 <b>AntiExplicit теперь выключен в этом чате</b>",
         "antinsfw_on": "🔞 <b>AntiNSFW теперь включен в этом чате\nДействие: {}</b>",
         "antinsfw_off": "🔞 <b>AntiNSFW теперь выключен в этом чате</b>",
+        "captcha_on": "🚥 <b>Captcha теперь включена в этом чате\nДействие: {}</b>",
+        "captcha_off": "🚥 <b>Captcha теперь выключена в этом чате</b>",
         "no_fed_warns": "👮‍♂️ <b>This federation has no warns yet</b>",
         "warns_adm_fed": "👮‍♂️ <b>Warns in this federation</b>:\n",
         "welcome": "👋 <b>Теперь я буду приветствовать людей в этом чате</b>\n{}",
@@ -760,12 +1015,12 @@ class HikariChatMod(loader.Module):
             "<i>Удалено {} бот(-ов)</i>\n\n"
             "🏹 <i>«BanNinja can handle any size of attack»</i> © <code>@hikariatama</code>"
         ),
-        "clnraid_cancel": "🚫 Отменить",
+        "clnraid_cancel": "🔻 Отмена",
         "clnraid_stop": "🚨 Остановить",
         "clnraid_complete": "🥷 <b>RaidCleaner закончил работу! Удалено: {} бот(-ов)</b>",
         "clnraid_cancelled": "🥷 <b>RaidCleaner остановлен. Удалено: {} бот(-ов)</b>",
         "confirm_rmfed_btn": "🗑 Удалить",
-        "decline_rmfed_btn": "🚫 Отменить",
+        "decline_rmfed_btn": "🔻 Отмена",
         "pil_unavailable": "🚫 <b>Библиотека Pillow недоступна</b>",
         "_cmd_doc_version": "Получить информацию о модуле",
         "_cmd_doc_deleted": "Очистка удалнных аккаунтов в чате",
@@ -811,11 +1066,11 @@ class HikariChatMod(loader.Module):
         "action": "<действие>",
         "configure": "Настроить",
         "toggle": "Включить\\выключить",
-        "protections": "<b>🐻 <code>.AntiArab</code> - Банит арабов\n<b>🐺 <code>.AntiHelp</code> - Удаляет часто используемые команды юзерботов\n<b>🐵 <code>.AntiTagAll</code> - Запрещает использование модуля TagAll\n<b>👋 <code>.Welcome</code> - Приветствует новых участников\n<b>🐶 <code>.AntiRaid</code> - Банит всех вновь вступивших\n<b>📯 <code>.AntiChannel</code> - Запрещает писать от лица каналов\n<b>🪙 <code>.AntiSpoiler</code> - Зарещает использование спойлеров\n<b>🎑 <code>.AntiGIF</code> - Запрещает GIF-ки\n<b>🔞 <code>.AntiNSFW</code> - Запрещает 18+ фото и стикеры\n<b>⏱ <code>.AntiFlood</code> - Запрещает флудить\n<b>😒 <code>.AntiExplicit</code> - Запрещает материться\n<b>⚙️ <code>.AntiService</code> - Удаляет сервисные сообщения\n<b>🌀 <code>.AntiZALGO</code> - Банит пользователей с деструктивными никами\n<b>🎨 <code>.AntiStick</code> - Запрещает флудить стикерами\n<b>🥷 <code>.BanNinja</code> - Автоматическая версия защиты AntiRaid\n<b>⚰️ <code>.AntiLagSticks</code> - Банит стикеры, из-за которых лагает Телеграм\n<b>👾 Администрирование: </b><code>.ban</code> <code>.kick</code> <code>.mute</code>\n<code>.unban</code> <code>.unmute</code>\n<b>👮‍♂️ Предупреждения:</b> <code>.warn</code> <code>.warns</code>\n<code>.dwarn</code> <code>.clrwarns</code> <b>- Система предупреждений</b>\n<b>💼 Федерации:</b> <code>.fadd</code> <code>.frm</code> <code>.newfed</code>\n<code>.namefed</code> <code>.fban</code> <code>.rmfed</code> <code>.feds</code>\n<code>.fpromote</code> <code>.fdemote</code>\n<code>.fdef</code> <code>.fdeflist</code> <b>- Управление сеткой чатов</b>\n<b>🗒 Федеративные заметки:</b> <code>.fsave</code> <code>.fstop</code> <code>.fnotes</code>",
         "fed": '💼 <b>Федерация "{}":</b>\n🔰 <b>Чаты:</b>\n<b>{}</b>\n🔰 <b>Каналы:</b>\n<b>{}</b>\n🔰 <b>Админы:</b>\n<b>{}</b>\n🔰 <b>Предупреждения: {}</b>\n',
-        "version": "<b>🌊 {}</b>\n\n<b>😌 Автор: @hikariatama</b>\n<b>📥 Скачано из @hikarimods</b>\n<b>Статус: {}</b>",
+        "version": "<b>🪆 {}</b>\n\n<b>😌 Автор: t.me/hikariatama</b>\n<b>📥 Скачано из @hikarimods</b>\n<b>{}</b>",
         "confirm_rmfed": "⚠️ <b>Внимание! Это действие нельзя отменить! Ты уверен, что хочешь удалить федерацию </b><code>{}</code><b>?</b>",
         "_cls_doc": "Must-have модуль администратора чата",
+        "no_notes": "🚫 <b>Нет заметок</b>",
     }
 
     def __init__(self):
@@ -838,14 +1093,68 @@ class HikariChatMod(loader.Module):
                 lambda: "How long is banninja supposed to be active in seconds",
                 validator=loader.validators.Integer(minimum=15),
             ),
+            loader.ConfigValue(
+                "warns_limit",
+                7,
+                lambda: "How many warns can be issued before ban",
+                validator=loader.validators.Integer(minimum=1),
+            ),
+            loader.ConfigValue(
+                "close_on_raid",
+                True,
+                lambda: "Close chat on raid",
+                validator=loader.validators.Boolean(),
+            ),
         )
 
-    async def on_unload(self):
-        self.api._task.cancel()
-        self._pt_task.cancel()
+    def render_table(self, t: List[List[str]]) -> bytes:
+        table = gen_table(t)
 
-        for _, form in self._ban_ninja_forms.items():
-            await form.delete()
+        fnt = ImageFont.truetype(io.BytesIO(self.font), 20, encoding="utf-8")
+
+        def get_t_size(text, fnt):
+            if "\n" not in text:
+                return fnt.getsize(text)
+
+            w, h = 0, 0
+
+            for line in text.split("\n"):
+                line_size = fnt.getsize(line)
+                if line_size[0] > w:
+                    w = line_size[0]
+
+                h += line_size[1]
+
+            w += 10
+            h += 10
+            return (w, h)
+
+        t_size = get_t_size(table, fnt)
+        img = Image.new("RGB", t_size, (30, 30, 30))
+
+        d = ImageDraw.Draw(img)
+        d.text((5, 5), table, font=fnt, fill=(200, 200, 200))
+
+        imgByteArr = io.BytesIO()
+        img.save(imgByteArr, format="PNG")
+        imgByteArr = imgByteArr.getvalue()
+
+        return imgByteArr
+
+    async def on_unload(self):
+        with contextlib.suppress(Exception):
+            self.api._task.cancel()
+
+        with contextlib.suppress(Exception):
+            self._pt_task.cancel()
+
+        with contextlib.suppress(Exception):
+            self.api._processor_task.cancel()
+
+        with contextlib.suppress(Exception):
+            for _, form in self._ban_ninja_forms.items():
+                with contextlib.suppress(Exception):
+                    await form.delete()
 
     def lookup(self, modname: str):
         return next(
@@ -900,7 +1209,7 @@ class HikariChatMod(loader.Module):
 
     def error_handler(func) -> FunctionType:
         """
-        Decorator to handle functions' errors and send reports to @hikariatama
+        Decorator to handle functions' errors
         """
 
         @functools.wraps(func)
@@ -913,12 +1222,8 @@ class HikariChatMod(loader.Module):
                 if func.__name__.startswith("p__"):
                     return
 
-                # await api.report_error(traceback.format_exc())
                 if func.__name__ == "watcher":
                     return
-
-                with contextlib.suppress(Exception):
-                    await utils.answer(args[1], args[0].strings("error"))
 
         wrapped.__doc__ = func.__doc__
         wrapped.__module__ = func.__module__
@@ -930,11 +1235,17 @@ class HikariChatMod(loader.Module):
         cinfo = await self._client.get_entity(int(chat))
 
         answer_message = (
-            f"🌊 <b>HikariChat protection</b>\n<b>{get_full_name(cinfo)}</b>\n\n"
+            f"🪆 <b>HikariChat protection</b>\n<b>{get_full_name(cinfo)}</b>\n\n"
         )
 
+        protections = {
+            key: value
+            for key, value in PROTECTS.items()
+            if key in self.api.variables["protections"]
+        }
+
         btns = []
-        for protection, style in PROTECTS.items():
+        for protection, style in protections.items():
             answer_message += (
                 f"    <b>{style}</b>: {info[protection][0]}\n"
                 if protection in info
@@ -956,24 +1267,19 @@ class HikariChatMod(loader.Module):
 
         answer_message += f"\n💼 <b>{fed['name']}</b>" if fed else ""
 
-        btns = utils.chunks(btns, 3) + [
-            [{"text": "❌ Close", "callback": self._inline_close}]
-        ]
+        btns = utils.chunks(btns, 3) + [[{"text": "❌ Close", "action": "close"}]]
 
         return {"text": answer_message, "reply_markup": btns}
 
     async def _inline_config(self, call: CallbackQuery, chat: Union[str, int]):
         await call.edit(**(await self.get_config(chat)))
 
-    async def _inline_close(self, call: CallbackQuery):
-        await call.delete()
-
     async def _change_protection_state(
         self,
         call: CallbackQuery,
         chat: Union[str, int],
         protection: str,
-        state: Union[str, None] = None,
+        state: Optional[str] = None,
     ):
         if protection == "welcome":
             await call.answer("Use .welcome to configure this option!", show_alert=True)
@@ -1202,7 +1508,7 @@ class HikariChatMod(loader.Module):
             return
 
         msg = self.strings("ban").format(
-            get_link(user),
+            utils.get_link(user),
             get_full_name(user),
             f"for {period // 60} min(-s)" if period else "forever",
             reason,
@@ -1217,10 +1523,10 @@ class HikariChatMod(loader.Module):
                 await self.inline.form(
                     message=self.get("logchat"),
                     text=self.strings("ban_log").format(
-                        get_link(user),
+                        utils.get_link(user),
                         get_full_name(user),
                         f"for {period // 60} min(-s)" if period else "forever",
-                        get_link(chat),
+                        utils.get_link(chat),
                         get_full_name(chat),
                         reason,
                         "",
@@ -1290,7 +1596,7 @@ class HikariChatMod(loader.Module):
             return
 
         msg = self.strings("mute").format(
-            get_link(user),
+            utils.get_link(user),
             get_full_name(user),
             f"for {period // 60} min(-s)" if period else "forever",
             reason,
@@ -1305,10 +1611,10 @@ class HikariChatMod(loader.Module):
                 await self.inline.form(
                     message=self.get("logchat"),
                     text=self.strings("mute_log").format(
-                        get_link(user),
+                        utils.get_link(user),
                         get_full_name(user),
                         f"for {period // 60} min(-s)" if period else "forever",
-                        get_link(chat),
+                        utils.get_link(chat),
                         get_full_name(chat),
                         reason,
                         "",
@@ -1395,9 +1701,9 @@ class HikariChatMod(loader.Module):
                 **{right: True for right in BANNED_RIGHTS.keys()},
             )
             msg = self.strings("inline_unbanned").format(
-                get_link(user),
+                utils.get_link(user),
                 get_full_name(user),
-                get_link(adm),
+                utils.get_link(adm),
                 get_full_name(adm),
             )
             try:
@@ -1418,9 +1724,9 @@ class HikariChatMod(loader.Module):
                 chat, user, until_date=0, send_messages=True
             )
             msg = self.strings("inline_unmuted").format(
-                get_link(user),
+                utils.get_link(user),
                 get_full_name(user),
-                get_link(adm),
+                utils.get_link(adm),
                 get_full_name(adm),
             )
             try:
@@ -1447,9 +1753,9 @@ class HikariChatMod(loader.Module):
             )
 
             msg = self.strings("inline_unwarned").format(
-                get_link(user),
+                utils.get_link(user),
                 get_full_name(user),
-                get_link(adm),
+                utils.get_link(adm),
                 get_full_name(adm),
             )
 
@@ -1473,9 +1779,9 @@ class HikariChatMod(loader.Module):
             await self.funbancmd(m)
             await m.delete()
             msg = self.strings("inline_funbanned").format(
-                get_link(user),
+                utils.get_link(user),
                 get_full_name(user),
-                get_link(adm),
+                utils.get_link(adm),
                 get_full_name(adm),
             )
             try:
@@ -1498,9 +1804,9 @@ class HikariChatMod(loader.Module):
             await self.funmutecmd(m)
             await m.delete()
             msg = self.strings("inline_funmuted").format(
-                get_link(user),
+                utils.get_link(user),
                 get_full_name(user),
-                get_link(adm),
+                utils.get_link(adm),
                 get_full_name(adm),
             )
             try:
@@ -1523,9 +1829,9 @@ class HikariChatMod(loader.Module):
             await self.fbancmd(m)
             await m.delete()
             msg = self.strings("inline_fbanned").format(
-                get_link(user),
+                utils.get_link(user),
                 get_full_name(user),
-                get_link(adm),
+                utils.get_link(adm),
                 get_full_name(adm),
             )
             try:
@@ -1544,9 +1850,9 @@ class HikariChatMod(loader.Module):
 
             await self.mute(chat, user, 0, silent=True)
             msg = self.strings("inline_muted").format(
-                get_link(user),
+                utils.get_link(user),
                 get_full_name(user),
-                get_link(adm),
+                utils.get_link(adm),
                 get_full_name(adm),
             )
             try:
@@ -1564,7 +1870,7 @@ class HikariChatMod(loader.Module):
                 return
 
             msg = self.strings("inline_deleted").format(
-                get_link(adm),
+                utils.get_link(adm),
                 get_full_name(adm),
             )
 
@@ -1619,7 +1925,7 @@ class HikariChatMod(loader.Module):
 
         return user, t, utils.escape_html(args or self.strings("no_reason")).strip()
 
-    async def find_fed(self, message: Union[Message, int]) -> None or str:
+    async def find_fed(self, message: Union[Message, int]) -> str:
         """Find if chat belongs to any federation"""
         return next(
             (
@@ -1643,13 +1949,17 @@ class HikariChatMod(loader.Module):
         violation: str,
         action: str,
         user_name: str,
+        fulltime: bool = False,
+        message: Message = None,
     ):
         """
         Callback, called if the protection is triggered
         Queue is being used to prevent spammy behavior
         It is being processed in a loop `_punish_queue_handler`
         """
-        self._punish_queue += [[chat_id, user, violation, action, user_name]]
+        self._punish_queue += [
+            [chat_id, user, violation, action, user_name, fulltime, message]
+        ]
 
     @error_handler
     async def purgecmd(self, message: Message):
@@ -1712,7 +2022,15 @@ class HikariChatMod(loader.Module):
     @loader.loop(interval=0.5, autostart=True)
     async def _punish_queue_handler(self):
         while self._punish_queue:
-            chat_id, user, violation, action, user_name = self._punish_queue.pop()
+            (
+                chat_id,
+                user,
+                violation,
+                action,
+                user_name,
+                fulltime,
+                message,
+            ) = self._punish_queue.pop()
             if str(chat_id) not in self._flood_fw_protection:
                 self._flood_fw_protection[str(chat_id)] = {}
 
@@ -1722,10 +2040,16 @@ class HikariChatMod(loader.Module):
             ):
                 continue
 
+            comment = None
+
             if action == "ban":
                 comment = "banned him"
                 await self.ban(
-                    chat_id, user, 0, violation, silent=self.config["silent"]
+                    chat_id,
+                    user,
+                    0,
+                    violation,
+                    silent=str(chat_id) in self._ban_ninja or self.config["silent"],
                 )
             elif action == "fban":
                 comment = "f-banned him"
@@ -1736,15 +2060,30 @@ class HikariChatMod(loader.Module):
                     )
                 )
             elif action == "delmsg":
-                continue
+                # Do nothing...
+                ...
             elif action == "kick":
                 comment = "kicked him"
                 await self._client.kick_participant(chat_id, user)
             elif action == "mute":
-                comment = "muted him for 1 hour"
-                await self.mute(
-                    chat_id, user, 60 * 60, violation, silent=self.config["silent"]
-                )
+                if fulltime:
+                    comment = "muted him forever"
+                    await self.mute(
+                        chat_id,
+                        user,
+                        0,
+                        violation,
+                        silent=str(chat_id) in self._ban_ninja or self.config["silent"],
+                    )
+                else:
+                    comment = "muted him for 1 hour"
+                    await self.mute(
+                        chat_id,
+                        user,
+                        60 * 60,
+                        violation,
+                        silent=str(chat_id) in self._ban_ninja or self.config["silent"],
+                    )
             elif action == "warn":
                 comment = "warned him"
                 warn_msg = await self._client.send_message(
@@ -1752,17 +2091,28 @@ class HikariChatMod(loader.Module):
                 )
                 await self.allmodules.commands["warn"](warn_msg)
                 await warn_msg.delete()
-            else:
-                comment = "just chill 😶‍🌫️"
 
-            if not self.config["silent"]:
+            if message is not None:
+                try:
+                    await self.inline.bot.delete_message(
+                        int(f"-100{chat_id}"),
+                        message.id,
+                    )
+                except Exception:
+                    with contextlib.suppress(Exception):
+                        await message.delete()
+
+            if not comment:
+                continue
+
+            if str(chat_id) not in self._ban_ninja and not self.config["silent"]:
                 self._flood_fw_protection[str(chat_id)][str(user.id)] = round(
                     time.time() + 10
                 )
                 await self._client.send_message(
                     chat_id,
                     self.strings(violation).format(
-                        get_link(user),
+                        utils.get_link(user),
                         user_name,
                         comment,
                     ),
@@ -1777,7 +2127,7 @@ class HikariChatMod(loader.Module):
                 ver,
                 "✅ Connected"
                 if self.api._connected
-                else ("🔁 Connecting..." if self.api._inited else "💔 Lite version"),
+                else ("🔁 Connecting..." if self.api._inited else "🗃 Local"),
             ),
         )
 
@@ -1857,7 +2207,9 @@ class HikariChatMod(loader.Module):
                             pass
 
                 overall += kicked
-                cleaned_in += [f'👥 <a href="{get_link(chat)}">{utils.escape_html(chat.title)}</a> - {kicked}']  # fmt: skip
+                cleaned_in += [
+                    f'👥 <a href="{utils.get_link(chat)}">{utils.escape_html(chat.title)}</a> - {kicked}'
+                ]
             except UserAdminInvalidError:
                 pass
 
@@ -1884,10 +2236,11 @@ class HikariChatMod(loader.Module):
                                 kicked += 1
                             except Exception:
                                 pass
-                    # fmt: skip
 
                     overall += kicked
-                    cleaned_in_c += [f'📣 <a href="{get_link(channel)}">{utils.escape_html(channel.title)}</a> - {kicked}']  # fmt: skip
+                    cleaned_in_c += [
+                        f'📣 <a href="{utils.get_link(channel)}">{utils.escape_html(channel.title)}</a> - {kicked}'
+                    ]
                 except ChatAdminRequiredError:
                     pass
 
@@ -1935,9 +2288,6 @@ class HikariChatMod(loader.Module):
 
         await call.edit(self.strings("rmfed").format(name))
 
-    async def inline__close(self, call: CallbackQuery):
-        await call.delete()
-
     @error_handler
     @chat_command
     async def rmfedcmd(self, message: Message):
@@ -1964,7 +2314,7 @@ class HikariChatMod(loader.Module):
                 },
                 {
                     "text": self.strings("decline_rmfed_btn"),
-                    "callback": self.inline__close,
+                    "action": "close",
                 },
             ],
             silent=True,
@@ -2012,7 +2362,7 @@ class HikariChatMod(loader.Module):
         await utils.answer(
             message,
             self.strings("fpromoted").format(
-                get_link(obj),
+                utils.get_link(obj),
                 name,
                 self.api.feds[fed]["name"],
             ),
@@ -2159,13 +2509,15 @@ class HikariChatMod(loader.Module):
 
             try:
                 await self.ban(chat, user, t, reason, message, silent=True)
-                banned_in += [f'<a href="{get_link(chat)}">{get_full_name(chat)}</a>']
+                banned_in += [
+                    f'<a href="{utils.get_link(chat)}">{get_full_name(chat)}</a>'
+                ]
             except Exception:
                 pass
 
         msg = (
             self.strings("fban").format(
-                get_link(user),
+                utils.get_link(user),
                 get_first_name(user),
                 self.api.feds[fed]["name"],
                 f"for {t // 60} min(-s)" if t else "forever",
@@ -2189,7 +2541,7 @@ class HikariChatMod(loader.Module):
                 await utils.answer(message, msg)
                 await self.inline.form(
                     text=self.strings("fban").format(
-                        get_link(user),
+                        utils.get_link(user),
                         get_first_name(user),
                         self.api.feds[fed]["name"],
                         f"for {t // 60} min(-s)" if t else "forever",
@@ -2245,22 +2597,23 @@ class HikariChatMod(loader.Module):
         if not utils.get_args_raw(message):
             self.set("logchat", "")
             await utils.answer(message, self.strings("logchat_removed"))
-        else:
-            logchat = utils.get_args_raw(message)
-            if logchat.isdigit():
-                logchat = int(logchat)
+            return
 
-            try:
-                logchat = await self._client.get_entity(logchat)
-            except Exception:
-                await utils.answer(message, self.strings("logchat_invalid"))
-                return
+        logchat = utils.get_args_raw(message)
+        if logchat.isdigit():
+            logchat = int(logchat)
 
-            self.set("logchat", logchat.id)
-            await utils.answer(
-                message,
-                self.strings("logchat_set").format(utils.escape_html(logchat.title)),
-            )
+        try:
+            logchat = await self._client.get_entity(logchat)
+        except Exception:
+            await utils.answer(message, self.strings("logchat_invalid"))
+            return
+
+        self.set("logchat", logchat.id)
+        await utils.answer(
+            message,
+            self.strings("logchat_set").format(utils.escape_html(logchat.title)),
+        )
 
     @error_handler
     @chat_command
@@ -2278,7 +2631,7 @@ class HikariChatMod(loader.Module):
             await utils.answer(message, self.strings("args"))
             return
 
-        user, t, reason = a
+        user, _, _ = a
 
         chats = self.api.feds[fed]["chats"]
 
@@ -2308,7 +2661,7 @@ class HikariChatMod(loader.Module):
 
         m = (
             self.strings("funban").format(
-                get_link(user),
+                utils.get_link(user),
                 get_first_name(user),
                 self.api.feds[fed]["name"],
             )
@@ -2321,10 +2674,6 @@ class HikariChatMod(loader.Module):
             await self._client.send_message(self.get("logchat"), m)
 
         await utils.answer(message, m)
-
-        reply = await message.get_reply_message()
-        if reply:
-            await reply.delete()
 
     @error_handler
     @chat_command
@@ -2361,13 +2710,15 @@ class HikariChatMod(loader.Module):
 
             try:
                 await self.mute(chat, user, t, reason, message, silent=True)
-                muted_in += [f'<a href="{get_link(chat)}">{get_full_name(chat)}</a>']
+                muted_in += [
+                    f'<a href="{utils.get_link(chat)}">{get_full_name(chat)}</a>'
+                ]
             except Exception:
                 pass
 
         msg = (
             self.strings("fmute").format(
-                get_link(user),
+                utils.get_link(user),
                 get_first_name(user),
                 self.api.feds[fed]["name"],
                 f"for {t // 60} min(-s)" if t else "forever",
@@ -2391,7 +2742,7 @@ class HikariChatMod(loader.Module):
                 await utils.answer(message, msg)
                 await self.inline.form(
                     text=self.strings("fmute").format(
-                        get_link(user),
+                        utils.get_link(user),
                         get_first_name(user),
                         self.api.feds[fed]["name"],
                         f"for {t // 60} min(-s)" if t else "forever",
@@ -2412,10 +2763,6 @@ class HikariChatMod(loader.Module):
         else:
             await utils.answer(message, msg)
 
-        reply = await message.get_reply_message()
-        if reply:
-            await reply.delete()
-
     @error_handler
     @chat_command
     async def funmutecmd(self, message: Message):
@@ -2432,7 +2779,7 @@ class HikariChatMod(loader.Module):
             await utils.answer(message, self.strings("args"))
             return
 
-        user, t, reason = a
+        user, _, _ = a
 
         chats = self.api.feds[fed]["chats"]
 
@@ -2462,7 +2809,7 @@ class HikariChatMod(loader.Module):
 
         msg = (
             self.strings("funmute").format(
-                get_link(user),
+                utils.get_link(user),
                 get_first_name(user),
                 self.api.feds[fed]["name"],
             )
@@ -2475,10 +2822,6 @@ class HikariChatMod(loader.Module):
 
         if self.get("logchat"):
             await self._client.send_message(self.get("logchat"), msg)
-
-        reply = await message.get_reply_message()
-        if reply:
-            await reply.delete()
 
     @error_handler
     @chat_command
@@ -2515,7 +2858,7 @@ class HikariChatMod(loader.Module):
         try:
             await self._client.kick_participant(utils.get_chat_id(message), user)
             msg = self.strings("kick").format(
-                get_link(user),
+                utils.get_link(user),
                 get_first_name(user),
                 reason,
                 self.get("punish_suffix", ""),
@@ -2526,9 +2869,9 @@ class HikariChatMod(loader.Module):
                 await self._client.send_message(
                     self.get("logchat"),
                     self.strings("kick_log").format(
-                        get_link(user),
+                        utils.get_link(user),
                         get_first_name(user),
-                        get_link(chat),
+                        utils.get_link(chat),
                         get_first_name(chat),
                         reason,
                         "",
@@ -2611,18 +2954,23 @@ class HikariChatMod(loader.Module):
 
         try:
             await self._client.edit_permissions(
-                chat, user, until_date=0, send_messages=True
+                chat,
+                user,
+                until_date=0,
+                send_messages=True,
             )
-            msg = self.strings("unmuted").format(get_link(user), get_first_name(user))
+            msg = self.strings("unmuted").format(
+                utils.get_link(user), get_first_name(user)
+            )
             await utils.answer(message, msg)
 
             if self.get("logchat"):
                 await self._client.send_message(
                     self.get("logchat"),
                     self.strings("unmuted_log").format(
-                        get_link(user),
+                        utils.get_link(user),
                         get_first_name(user),
-                        get_link(chat),
+                        utils.get_link(chat),
                         get_first_name(chat),
                     ),
                 )
@@ -2662,16 +3010,18 @@ class HikariChatMod(loader.Module):
                 until_date=0,
                 **{right: True for right in BANNED_RIGHTS.keys()},
             )
-            msg = self.strings("unban").format(get_link(user), get_first_name(user))
+            msg = self.strings("unban").format(
+                utils.get_link(user), get_first_name(user)
+            )
             await utils.answer(message, msg)
 
             if self.get("logchat"):
                 await self._client.send_message(
                     self.get("logchat"),
                     self.strings("unban_log").format(
-                        get_link(user),
+                        utils.get_link(user),
                         get_first_name(user),
-                        get_link(chat),
+                        utils.get_link(chat),
                         get_first_name(chat),
                     ),
                 )
@@ -2682,7 +3032,18 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def protectscmd(self, message: Message):
         """List available filters"""
-        await utils.answer(message, self.strings("protections"))
+        await utils.answer(
+            message,
+            self.strings("protections")
+            if self.api._inited
+            else "\n".join(
+                [
+                    line
+                    for line in self.strings("protections").splitlines()
+                    if "antinsfw" not in line.lower() and "report" not in line.lower()
+                ]
+            ),
+        )
 
     @error_handler
     async def fedscmd(self, message: Message):
@@ -2743,7 +3104,7 @@ class HikariChatMod(loader.Module):
                 if isinstance(getattr(user, "status", None), UserStatusOnline)
                 else ""
             )
-            admins += f' <b>👤 <a href="{get_link(user)}">{name}</a></b>{status}\n'
+            admins += f' <b>👤 <a href="{utils.get_link(user)}">{name}</a></b>{status}\n'
 
         chats = ""
         channels = ""
@@ -2760,13 +3121,11 @@ class HikariChatMod(loader.Module):
                     channel = await self._client.get_entity(
                         self._linked_channels[str(chat)]
                     )
-                    channels += f' <b>📣 <a href="{get_link(channel)}">{utils.escape_html(channel.title)}</a></b>\n'
+                    channels += f' <b>📣 <a href="{utils.get_link(channel)}">{utils.escape_html(channel.title)}</a></b>\n'
                 except Exception:
                     pass
 
-            chats += (
-                f' <b>🫂 <a href="{get_link(c)}">{utils.escape_html(c.title)}</a></b>\n'
-            )
+            chats += f' <b>🫂 <a href="{utils.get_link(c)}">{utils.escape_html(c.title)}</a></b>\n'
 
         await utils.answer(
             message,
@@ -2843,31 +3202,38 @@ class HikariChatMod(loader.Module):
             },
             message,
         )
-        warns = self.api.feds[fed]["warns"].get(str(user.id), []) + [reason]
+        warns = self.api.feds[fed].get("warns", {}).get(str(user.id), []) + [reason]
 
-        if len(warns) >= 7:
+        if len(warns) >= self.config["warns_limit"]:
             user_name = get_first_name(user)
             chats = self.api.feds[fed]["chats"]
             for c in chats:
+                if str(c).isdigit():
+                    c = int(str(c))
+
                 await self._client(
                     EditBannedRequest(
                         c,
                         user,
                         ChatBannedRights(
-                            until_date=time.time() + 60**2 * 24,
+                            until_date=time.time() + 60**2 * 24 * 7,
                             send_messages=True,
                         ),
                     )
                 )
 
-                await self._client.send_message(
-                    c,
-                    self.strings("warns_limit").format(
-                        get_link(user), user_name, "muted him for 24 hours"
-                    ),
-                )
+                if c == utils.get_chat_id(message):
+                    await self._client.send_message(
+                        c,
+                        self.strings("warns_limit").format(
+                            utils.get_link(user),
+                            user_name,
+                            "muted him in federation for 7 days",
+                        ),
+                    )
 
-            await message.delete()
+            if message.out:
+                await message.delete()
 
             self.api.request(
                 {
@@ -2878,10 +3244,10 @@ class HikariChatMod(loader.Module):
             )
         else:
             msg = self.strings("fwarn", message).format(
-                get_link(user),
+                utils.get_link(user),
                 get_first_name(user),
                 len(warns),
-                7,
+                self.config["warns_limit"],
                 reason,
                 self.get("punish_suffix", ""),
             )
@@ -2898,10 +3264,10 @@ class HikariChatMod(loader.Module):
                     await utils.answer(message, msg)
                     await self.inline.form(
                         text=self.strings("fwarn", message).format(
-                            get_link(user),
+                            utils.get_link(user),
                             get_first_name(user),
                             len(warns),
-                            7,
+                            self.config["warns_limit"],
                             reason,
                             "",
                         ),
@@ -2935,7 +3301,7 @@ class HikariChatMod(loader.Module):
             await utils.answer(message, self.strings("no_fed"))
             return
 
-        warns = self.api.feds[fed]["warns"]
+        warns = self.api.feds[fed].get("warns", {})
 
         if not warns:
             await utils.answer(message, self.strings("no_fed_warns"))
@@ -2957,7 +3323,7 @@ class HikariChatMod(loader.Module):
                 await utils.answer(
                     message,
                     self.strings("no_warns").format(
-                        get_link(user_obj), get_full_name(user_obj)
+                        utils.get_link(user_obj), get_full_name(user_obj)
                     ),
                 )
             else:
@@ -2981,10 +3347,10 @@ class HikariChatMod(loader.Module):
                 await utils.answer(
                     message,
                     self.strings("warns").format(
-                        get_link(user_obj),
+                        utils.get_link(user_obj),
                         get_full_name(user_obj),
                         len(warns[str(usid)]),
-                        7,
+                        self.config["warns_limit"],
                         _warns,
                     ),
                 )
@@ -3010,7 +3376,11 @@ class HikariChatMod(loader.Module):
                     else:
                         name = user_obj.title
 
-                    res += f'🐺 <b><a href="{get_link(user_obj)}">' + name + "</a></b>\n"
+                    res += (
+                        f'🐺 <b><a href="{utils.get_link(user_obj)}">'
+                        + name
+                        + "</a></b>\n"
+                    )
                     processed = []
                     for warn in _warns.copy():
                         if warn in processed:
@@ -3068,7 +3438,9 @@ class HikariChatMod(loader.Module):
             message,
         )
 
-        msg = self.strings("dwarn_fed").format(get_link(user), get_first_name(user))
+        msg = self.strings("dwarn_fed").format(
+            utils.get_link(user), get_first_name(user)
+        )
 
         await utils.answer(message, msg)
 
@@ -3110,7 +3482,9 @@ class HikariChatMod(loader.Module):
 
         await utils.answer(
             message,
-            self.strings("clrwarns_fed").format(get_link(user), get_first_name(user)),
+            self.strings("clrwarns_fed").format(
+                utils.get_link(user), get_first_name(user)
+            ),
         )
 
     @error_handler
@@ -3189,7 +3563,7 @@ class HikariChatMod(loader.Module):
         await utils.answer(
             message,
             self.strings("defense").format(
-                get_link(user),
+                utils.get_link(user),
                 get_first_name(user),
                 "on" if str(user.id) not in self.api.feds[fed]["fdef"] else "off",
             ),
@@ -3271,7 +3645,9 @@ class HikariChatMod(loader.Module):
                 if int(note["creator"]) not in cache:
                     obj = await self._client.get_entity(int(note["creator"]))
                     cache[int(note["creator"])] = obj.first_name or obj.title
-                key = f'<a href="{get_link(obj)}">{cache[int(note["creator"])]}</a>'
+                key = (
+                    f'<a href="{utils.get_link(obj)}">{cache[int(note["creator"])]}</a>'
+                )
                 if key not in res:
                     res[key] = ""
                 res[key] += f"  <code>{shortname}</code>\n"
@@ -3282,6 +3658,11 @@ class HikariChatMod(loader.Module):
                 res[key] += f"  <code>{shortname}</code>\n"
 
         notes = "".join(f"\nby {owner}:\n{note}" for owner, note in res.items())
+
+        if not notes and not from_watcher:
+            await utils.answer(message, self.strings("no_notes"))
+            return
+
         if not notes:
             return
 
@@ -3318,7 +3699,7 @@ class HikariChatMod(loader.Module):
 
             tit = get_full_name(u)
 
-            res += f'  🇻🇦 <a href="{get_link(u)}">{tit}</a>\n'
+            res += f'  🇻🇦 <a href="{utils.get_link(u)}">{tit}</a>\n'
 
         await utils.answer(message, self.strings("defense_list").format(res))
         return
@@ -3384,7 +3765,10 @@ class HikariChatMod(loader.Module):
             await utils.answer(message, self.strings("clnraid_args"))
             return
 
-        args = int(args)
+        args = min(
+            int(args),
+            (await self._client.get_participants(message.peer_id, limit=1)).total,
+        )
 
         await self.inline.form(
             message=message,
@@ -3397,7 +3781,7 @@ class HikariChatMod(loader.Module):
                 },
                 {
                     "text": self.strings("clnraid_cancel"),
-                    "callback": self.inline__close,
+                    "action": "close",
                 },
             ],
             silent=True,
@@ -3405,10 +3789,10 @@ class HikariChatMod(loader.Module):
 
     async def _clnraid(
         self,
-        call: Union[InlineCall, None],
+        call: Union[InlineCall, InlineMessage],
         chat_id: int,
         quantity: int,
-    ) -> Union[InlineCall, None]:
+    ) -> InlineCall:
         if call is not None:
             await call.edit(self.strings("clnraid_started").format(quantity))
 
@@ -3474,7 +3858,7 @@ class HikariChatMod(loader.Module):
 
         await self._client.send_file(
             message.peer_id,
-            render_table(
+            self.render_table(
                 [
                     [
                         "Chat",
@@ -3515,7 +3899,8 @@ class HikariChatMod(loader.Module):
             try:
                 await self._ban_ninja_forms[chat_id].edit(
                     self.strings("smart_anti_raid_active").format(
-                        self._ban_ninja_progress[chat_id]
+                        self.strings("forbid_messages") if self.config["close_on_raid"] else "",
+                        self._ban_ninja_progress[chat_id],
                     ),
                     {
                         "text": self.strings("smart_anti_raid_off"),
@@ -3532,6 +3917,22 @@ class HikariChatMod(loader.Module):
             await self.disable_smart_anti_raid(None, chat_id)
         except Exception:
             pass
+
+    @error_handler
+    async def p__ndspam(
+        self,
+        chat_id: Union[str, int],
+        user_id: Union[str, int],
+        message: Message,
+    ) -> bool:
+        if not (
+            self.api.should_protect(chat_id, "ndspam")
+            and (
+                getattr(message, "user_joined", False)
+                or getattr(message, "user_added", False)
+            )
+        ):
+            return False
 
     @error_handler
     async def p__banninja(
@@ -3573,7 +3974,9 @@ class HikariChatMod(loader.Module):
                         int(f"-100{chat_id}"),
                         message.action_message.id,
                     )
-                logger.debug(f"BanNinja is active in chat {chat_id=}, I kicked {user_id=}")  # fmt: skip
+                logger.debug(
+                    f"BanNinja is active in chat {chat_id=}, I kicked {user_id=}"
+                )
                 return True
 
             await self.disable_smart_anti_raid(None, chat_id)
@@ -3593,16 +3996,17 @@ class HikariChatMod(loader.Module):
 
         self.set("join_ratelimit", self._join_ratelimit)
 
-        if len(self._join_ratelimit[chat_id]) >= int(self.config["join_ratelimit"]):
+        if len(self._join_ratelimit[chat_id]) >= self.config["join_ratelimit"]:
             if chat_id in self._ban_ninja:
                 return False
 
-            self._ban_ninja[chat_id] = round(time.time()) + int(
-                self.config["banninja_cooldown"]
+            self._ban_ninja[chat_id] = (
+                round(time.time()) + self.config["banninja_cooldown"]
             )
             form = await self.inline.form(
                 self.strings("smart_anti_raid_active").format(
-                    self.config["join_ratelimit"]
+                    self.strings("forbid_messages") if self.config["close_on_raid"] else "",
+                    self.config["join_ratelimit"],
                 ),
                 message=int(chat_id),
                 reply_markup={
@@ -3613,20 +4017,23 @@ class HikariChatMod(loader.Module):
                 silent=True,
             )
 
-            try:
-                chat = await message.get_chat()
-                self._ban_ninja_default_rights[chat_id] = chat.default_banned_rights
-                await self._client(
-                    EditChatDefaultBannedRightsRequest(
-                        chat.id,
-                        ChatBannedRights(send_messages=True, until_date=2**31 - 1),
+            if self.config["close_on_raid"]:
+                try:
+                    chat = await message.get_chat()
+                    self._ban_ninja_default_rights[chat_id] = chat.default_banned_rights
+                    await self._client(
+                        EditChatDefaultBannedRightsRequest(
+                            chat.id,
+                            ChatBannedRights(
+                                send_messages=True, until_date=2**31 - 1
+                            ),
+                        )
                     )
-                )
-            except Exception:
-                pass
+                except Exception:
+                    pass
 
             self._ban_ninja_forms[chat_id] = form
-            self._ban_ninja_progress[chat_id] = int(self.config["join_ratelimit"])
+            self._ban_ninja_progress[chat_id] = self.config["join_ratelimit"]
             self._ban_ninja_tasks[chat_id] = asyncio.ensure_future(
                 self._update_ban_ninja(chat_id)
             )
@@ -3637,16 +4044,27 @@ class HikariChatMod(loader.Module):
                         await self.inline.form(
                             self.strings("clnraid_started").format("*loading*"),
                             message=int(chat_id),
-                            reply_markup={"text": ".", "callback": self.inline__close},
+                            reply_markup={"text": ".", "action": "close"},
                             silent=True,
                         )
                     ),
                     chat_id=int(chat_id),
-                    quantity=int(self.config["join_ratelimit"]),
+                    quantity=self.config["join_ratelimit"],
                 )
             ).delete()
 
-            for m in self._ban_ninja_messages:
+            messages = []
+            users = []
+            for u, m in self._ban_ninja_messages:
+                if u not in users:
+                    if len(users) > self.config["join_ratelimit"]:
+                        break
+
+                    users += [u]
+
+                messages += [m]
+
+            for m in messages:
                 try:
                     await self.inline.bot.delete_message(
                         int(f"-100{utils.get_chat_id(m)}"),
@@ -3660,6 +4078,8 @@ class HikariChatMod(loader.Module):
                         int(f"-100{utils.get_chat_id(m)}"),
                         m.id,
                     )
+                except Exception:
+                    await m.delete()
 
             try:
                 await self._client.pin_message(int(chat_id), form.form["message_id"])
@@ -3686,16 +4106,17 @@ class HikariChatMod(loader.Module):
             except Exception:
                 pass
 
-            try:
-                await self._client(
-                    EditChatDefaultBannedRightsRequest(
-                        int(chat_id),
-                        self._ban_ninja_default_rights[chat_id],
+            if self.config["close_on_raid"]:
+                try:
+                    await self._client(
+                        EditChatDefaultBannedRightsRequest(
+                            int(chat_id),
+                            self._ban_ninja_default_rights[chat_id],
+                        )
                     )
-                )
-                del self._ban_ninja_default_rights[chat_id]
-            except Exception:
-                pass
+                    del self._ban_ninja_default_rights[chat_id]
+                except Exception:
+                    pass
 
             await self._client.send_message(
                 int(chat_id),
@@ -3774,6 +4195,166 @@ class HikariChatMod(loader.Module):
 
         return False
 
+    async def _captcha_invalid(
+        self,
+        call: InlineCall,
+        chat_id: int,
+        user: User,
+    ):
+        if call.from_user.id != user.id:
+            await call.answer("Not for you....")
+            return
+
+        with contextlib.suppress(KeyError):
+            del self._captcha_db[chat_id][user.id]
+
+        await call.answer("Sorry ☹️")
+
+        await self.punish(
+            chat_id,
+            user,
+            "captcha_failed",
+            self.api.chats[str(chat_id)]["captcha"][0],
+            get_full_name(user),
+            fulltime=True,
+            message=None,
+        )
+
+        with contextlib.suppress(Exception):
+            await self._captcha_messages[chat_id][user.id].delete()
+
+    async def _captcha_valid(self, call: InlineCall, chat_id: int, user_id: int):
+        if call.from_user.id != user_id:
+            await call.answer("Not for you....")
+            return
+
+        if self._captcha_db[chat_id][user_id]["unmute"]:
+            await self._client.edit_permissions(
+                int(chat_id),
+                int(user_id),
+                until_date=0,
+                send_messages=True,
+            )
+
+        with contextlib.suppress(KeyError):
+            del self._captcha_db[chat_id][user_id]
+
+        with contextlib.suppress(Exception):
+            await self._captcha_messages[chat_id][user_id].delete()
+
+        await call.answer("Welcome!")
+
+    @error_handler
+    async def p__captcha(
+        self,
+        chat_id: Union[str, int],
+        user_id: Union[str, int],
+        user: Union[User, Channel],
+        message: Message,
+        chat: Chat,
+    ) -> bool:
+        if not (
+            self.api.should_protect(chat_id, "captcha")
+            and str(chat_id) not in self._ban_ninja
+            and (
+                getattr(message, "user_joined", False)
+                or getattr(message, "user_added", False)
+            )
+        ):
+            return False
+
+        valid = utils.rand(6)
+        invalid = [utils.rand(6) for _ in range(5)]
+
+        markup = [
+            {
+                "text": i,
+                "callback": self._captcha_invalid,
+                "args": (chat_id, user),
+            }
+            for i in invalid
+        ] + [
+            {"text": valid, "callback": self._captcha_valid, "args": (chat_id, user_id)}
+        ]
+
+        random.shuffle(markup)
+        markup = utils.chunks(markup, 2)
+
+        unmute = False
+
+        if not (
+            await self._client.get_permissions(int(chat_id), int(user_id))
+        ).is_banned:
+            unmute = True
+            await self.mute(chat, user, 5 * 60, "captcha_processing", silent=True)
+
+        for _ in range(5):
+            try:
+                m = await self.inline.form(
+                    message=chat_id,
+                    text=self.strings("complete_captcha").format(
+                        user.id, get_full_name(user)
+                    ),
+                    photo=f"https://hikarichat.hikariatama.ru/captcha/{valid}",
+                    reply_markup=markup,
+                    disable_security=True,
+                )
+            except WebpageCurlFailedError:
+                await asyncio.sleep(0.5)
+            else:
+                break
+
+        if chat_id not in self._captcha_db:
+            self._captcha_db[chat_id] = {}
+
+        if chat_id not in self._captcha_messages:
+            self._captcha_messages[chat_id] = {}
+
+        self._captcha_db[chat_id][user_id] = {
+            "time": time.time() + 5 * 60,
+            "user": user,
+            "unmute": unmute,
+        }
+
+        self._captcha_messages[chat_id][user_id] = m
+
+        self._ban_ninja_messages = [(user_id, m)] + self._ban_ninja_messages
+
+    @error_handler
+    async def p__cas(
+        self,
+        chat_id: Union[str, int],
+        user_id: Union[str, int],
+        user: Union[User, Channel],
+        message: Message,
+        chat: Chat,
+    ) -> bool:
+        if not (
+            self.api.should_protect(chat_id, "cas")
+            and str(chat_id) not in self._ban_ninja
+            and (
+                getattr(message, "user_joined", False)
+                or getattr(message, "user_added", False)
+            )
+        ):
+            return False
+
+        return (
+            self.api.chats[str(chat_id)]["cas"][0]
+            if (
+                (
+                    await utils.run_sync(
+                        requests.get,
+                        f"https://api.cas.chat/check?user_id={user_id}",
+                    )
+                )
+                .json()
+                .get("result", {})
+                .get("offenses", False)
+            )
+            else False
+        )
+
     @error_handler
     async def p__welcome(
         self,
@@ -3783,7 +4364,7 @@ class HikariChatMod(loader.Module):
         message: Message,
         chat: Chat,
     ) -> bool:
-        if (
+        if not (
             self.api.should_protect(chat_id, "welcome")
             and str(chat_id) not in self._ban_ninja
             and (
@@ -3791,25 +4372,23 @@ class HikariChatMod(loader.Module):
                 or getattr(message, "user_added", False)
             )
         ):
-            m = await self._client.send_message(
-                chat_id,
-                self.api.chats[str(chat_id)]["welcome"][0]
-                .replace("{user}", get_full_name(user))
-                .replace("{chat}", utils.escape_html(chat.title))
-                .replace(
-                    "{mention}", f'<a href="{get_link(user)}">{get_full_name(user)}</a>'
-                ),
-                reply_to=message.action_message.id,
-            )
+            return False
 
-            self._ban_ninja_messages = [m] + self._ban_ninja_messages
-            self._ban_ninja_messages = self._ban_ninja_messages[
-                : int(self.config["join_ratelimit"])
-            ]
+        m = await self._client.send_message(
+            chat_id,
+            self.api.chats[str(chat_id)]["welcome"][0]
+            .replace("{user}", get_full_name(user))
+            .replace("{chat}", utils.escape_html(chat.title))
+            .replace(
+                "{mention}",
+                f'<a href="{utils.get_link(user)}">{get_full_name(user)}</a>',
+            ),
+            reply_to=message.action_message.id,
+        )
 
-            return True
+        self._ban_ninja_messages = [(user_id, m)] + self._ban_ninja_messages
 
-        return False
+        return True
 
     @error_handler
     async def p__report(
@@ -3851,8 +4430,8 @@ class HikariChatMod(loader.Module):
                     "args": {
                         "chat": chat_id,
                         "reason": reason,
-                        "link": await get_message_link(reply, chat),
-                        "user_link": get_link(user),
+                        "link": await utils.get_message_link(reply, chat),
+                        "user_link": utils.get_link(user),
                         "user_name": get_full_name(user),
                         "text_thumbnail": (getattr(reply, "raw_text", "") or "")[:1024]
                         or "<media>",
@@ -3862,7 +4441,7 @@ class HikariChatMod(loader.Module):
             )
 
             msg = self.strings("reported").format(
-                get_link(user),
+                utils.get_link(user),
                 get_full_name(user),
                 reason,
             )
@@ -3932,7 +4511,9 @@ class HikariChatMod(loader.Module):
                 )
             )
         except Exception:
-            logger.warning("Unable to invite cleaner to chat. Maybe he's already there?")  # fmt: skip
+            logger.warning(
+                "Unable to invite cleaner to chat. Maybe he's already there?"
+            )
 
         try:
             await self._client(
@@ -3965,7 +4546,11 @@ class HikariChatMod(loader.Module):
                 if time.time() - item > self.flood_timeout:
                     self._flood_cache[str(chat_id)][str(user_id)].remove(item)
 
-            self._flood_cache[str(chat_id)][str(user_id)].append(round(time.time(), 2))
+            self._flood_cache[str(chat_id)][str(user_id)].append(
+                round(time.mktime(message.date.timetuple()))
+                if getattr(message, "date", False)
+                else round(time.time())
+            )
             self.set("flood_cache", self._flood_cache)
 
             if (
@@ -4218,10 +4803,6 @@ class HikariChatMod(loader.Module):
             self.api.chats[str(chat_id)]["antizalgo"][0]
             if (
                 self.api.should_protect(chat_id, "antizalgo")
-                and (
-                    getattr(message, "user_joined", False)
-                    or getattr(message, "user_added", False)
-                )
                 and len(
                     re.findall(
                         "[\u200f\u200e\u0300-\u0361\u0316-\u0362\u0334-\u0338\u0363-\u036F\u3164\ud83d\udd07\u0020\u00A0\u2000-\u2009\u200A\u2028\u205F\u1160\ufff4]",
@@ -4229,10 +4810,46 @@ class HikariChatMod(loader.Module):
                     )
                 )
                 / len(get_full_name(user))
-                >= 0.5
+                >= 0.6
             )
             else False
         )
+
+    @error_handler
+    async def p__bnd(
+        self,
+        chat_id: Union[str, int],
+        user_id: Union[str, int],
+        user: Union[User, Channel],
+        message: Message,
+    ) -> Union[bool, str]:
+        if not self.api.should_protect(chat_id, "bnd"):
+            return False
+
+        if (
+            self.get("bnd_cache", {}).get(str(chat_id), {}).get(str(user_id), 0)
+            >= time.time()
+        ):
+            return False
+
+        try:
+            assert (
+                (
+                    await self.inline.bot.get_chat_member(
+                        int(f"-100{chat_id}"),
+                        int(user_id),
+                    )
+                ).status
+            ) not in {"left", "kicked"}
+        except Exception:
+            return self.api.chats[str(chat_id)]["bnd"][0]
+        else:
+            bnd_cache = self.get("bnd_cache", {})
+            bnd_cache.setdefault(str(chat_id), {}).update(
+                {str(user_id): round(time.time()) + 60}
+            )
+            self.set("bnd_cache", bnd_cache)
+            return False
 
     @error_handler
     async def p__antistick(
@@ -4291,7 +4908,21 @@ class HikariChatMod(loader.Module):
             while self._global_queue:
                 await self._global_queue_handler_process(self._global_queue.pop(0))
 
-            await asyncio.sleep(0.001)
+            for chat_id, info in self._captcha_db.copy().items():
+                for user_id, captcha in info.copy().items():
+                    if captcha["time"] + 5 * 60 < time.time():
+                        del self._captcha_db[chat_id][user_id]
+                        await self.punish(
+                            chat_id,
+                            captcha["user"],
+                            "captcha_timeout",
+                            self.api.chats[str(chat_id)]["captcha"][0],
+                            get_full_name(captcha["user"]),
+                            fulltime=True,
+                            message=None,
+                        )
+
+            await asyncio.sleep(0.01)
 
     @error_handler
     async def _global_queue_handler_process(self, message: Message):
@@ -4332,7 +4963,9 @@ class HikariChatMod(loader.Module):
                             try:
                                 user_id = (await message.get_user()).id
                             except Exception:
-                                logger.debug(f"Can't extract entity from event {type(message)}")  # fmt: skip
+                                logger.debug(
+                                    f"Can't extract entity from event {type(message)}"
+                                )
                                 return
 
         user_id = (
@@ -4340,6 +4973,9 @@ class HikariChatMod(loader.Module):
         )
 
         if await self.p__banninja(chat_id, user_id, message):
+            return
+        
+        if await self.p__ndspam(chat_id, user_id, message):
             return
 
         fed = await self.find_fed(message)
@@ -4351,11 +4987,7 @@ class HikariChatMod(loader.Module):
                     str(user_id) not in self._ratelimit["notes"]
                     or self._ratelimit["notes"][str(user_id)] < time.time()
                 )
-                and not (
-                    message.raw_text.startswith(self.get_prefix())
-                    and len(message.raw_text) > 1
-                    and message.raw_text[1] != self.get_prefix()
-                )
+                and not message.raw_text.startswith(self.get_prefix())
             ):
                 logger.debug("Checking message for notes...")
                 if message.raw_text.lower().strip() in ["#заметки", "#notes", "/notes"]:
@@ -4435,17 +5067,28 @@ class HikariChatMod(loader.Module):
         if await self.p__antiraid(*args, chat):
             return
 
+        cas_result = False
+        if self.api.should_protect(chat_id, "cas"):
+            cas_result = await self.p__cas(*args, chat)
+
+        if cas_result:
+            await self.punish(chat_id, user, "cas", cas_result, user_name, message=message)
+            return
+
         r = await self.p__antiarab(*args)
         if r:
-            await self.punish(chat_id, user, "arabic_nickname", r, user_name)
+            await self.punish(
+                chat_id, user, "arabic_nickname", r, user_name, message=message
+            )
             return
 
-        r = await self.p__antizalgo(*args)
-        if r:
-            await self.punish(chat_id, user, "zalgo", r, user_name)
+        if await self.p__welcome(*args, chat) and not self.api.should_protect(
+            chat_id,
+            "captcha",
+        ):
             return
 
-        if await self.p__welcome(*args, chat):
+        if await self.p__captcha(*args, chat):
             return
 
         if getattr(message, "action", ""):
@@ -4453,13 +5096,22 @@ class HikariChatMod(loader.Module):
 
         await self.p__report(*args)
 
+        r = await self.p__bnd(*args)
+        if r:
+            await self.punish(chat_id, user, "bnd", r, user_name, message=message)
+            return
+
         r = await self.p__antiflood(*args)
         if r:
-            await self.punish(chat_id, user, "flood", r, user_name)
-            await message.delete()
+            await self.punish(chat_id, user, "flood", r, user_name, message=message)
             return
 
         if await self.p__antichannel(*args):
+            return
+
+        r = await self.p__antizalgo(*args)
+        if r:
+            await self.punish(chat_id, user, "zalgo", r, user_name, message=message)
             return
 
         if await self.p__antigif(*args):
@@ -4467,12 +5119,14 @@ class HikariChatMod(loader.Module):
 
         r = await self.p__antilagsticks(*args)
         if r:
-            await self.punish(chat_id, user, "destructive_stick", "ban", user_name)
+            await self.punish(
+                chat_id, user, "destructive_stick", "ban", user_name, message=message
+            )
             return
 
         r = await self.p__antistick(*args)
         if r:
-            await self.punish(chat_id, user, "stick", r, user_name)
+            await self.punish(chat_id, user, "stick", r, user_name, message=message)
             return
 
         if await self.p__antispoiler(*args):
@@ -4480,19 +5134,19 @@ class HikariChatMod(loader.Module):
 
         r = await self.p__antiexplicit(*args)
         if r:
-            await self.punish(chat_id, user, "explicit", r, user_name)
-            await message.delete()
+            await self.punish(chat_id, user, "explicit", r, user_name, message=message)
             return
 
         r = await self.p__antinsfw(*args)
         if r:
-            await self.punish(chat_id, user, "nsfw_content", r, user_name)
+            await self.punish(
+                chat_id, user, "nsfw_content", r, user_name, message=message
+            )
             return
 
         r = await self.p__antitagall(*args)
         if r:
-            await self.punish(chat_id, user, "tagall", r, user_name)
-            await message.delete()
+            await self.punish(chat_id, user, "tagall", r, user_name, message=message)
             return
 
         await self.p__antihelp(*args)
@@ -4500,6 +5154,9 @@ class HikariChatMod(loader.Module):
     _punish_queue = []
     _raid_cleaners = []
     _global_queue = []
+
+    _captcha_db = {}
+    _captcha_messages = {}
 
     _ban_ninja = {}
     _ban_ninja_messages = []
@@ -4538,34 +5195,25 @@ class HikariChatMod(loader.Module):
         self.api = api
         await api.init(client, db, self)
 
-        if self.api._inited:
-            for protection in self.api.variables["protections"]:
-                setattr(self, f"{protection}cmd", self.protection_template(protection))
-        else:
-            if not hasattr(self, "hikka"):
-                raise loader.LoadError("This module is supported only by Hikka")
-
-            asyncio.ensure_future(self._remove_paid_features())
+        for protection in self.api.variables["protections"]:
+            setattr(self, f"{protection}cmd", self.protection_template(protection))
 
         # We can override class docstings because of abc meta
         self.__doc__ = (
-            "Advanced chat admin toolkit\n"
-            + f"Version: {version}\n"
-            + ("💔 Lite" if not self.api._inited else "🌘 Full")
+            "Advanced chat admin toolkit\nNow became free...\n\n💻 Developer: t.me/hikariatama\n📣 Downloaded from: @hikarimods\n\n"
+            + f"📦Version: {version}\n"
+            + ("🗃 Local" if not self.api._inited else "⭐️ Full")
         )
 
         self._pt_task = asyncio.ensure_future(self._global_queue_handler())
 
-    async def _remove_paid_features(self):
-        await asyncio.sleep(1)
-        counter = 0
-        for feature in API_FEATURES:
-            if feature in self.commands:
-                del self.commands[feature]
-                counter += 1
+        if PIL_AVAILABLE:
+            asyncio.ensure_future(self._download_font())
 
-            if feature in self.allmodules.commands:
-                del self.allmodules.commands[feature]
-                counter += 1
-
-        logger.debug(f"Removed {counter} paid features")
+    async def _download_font(self):
+        self.font = (
+            await utils.run_sync(
+                requests.get,
+                "https://github.com/hikariatama/assets/raw/master/EversonMono.ttf",
+            )
+        ).content

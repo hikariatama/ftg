@@ -48,23 +48,23 @@ class PMBLMod(loader.Module):
         "state": "⚔️ <b>PM->BL is now {}</b>\n<i>Report spam? - {}\nDelete dialog? - {}</i>",
         "args": "ℹ️ <b>Example usage: </b><code>.pmblsett 0 0</code>",
         "args_pmban": "ℹ️ <b>Example usage: </b><code>.pmbanlast 5</code>",
-        "config": "😶‍🌫️ <b>Yeiks! Config saved</b>\n<i>Report spam? - {}\nDelete dialog? - {}</i>",
-        "banned": "😊 <b>Hewwo •ᴗ•</b>\nI'm Kirito, the <b>guardian</b> of this account and you are <b>not approved</b>! You can contact my owner <b>in chat</b>, if you need help.\n<b>Sorry, but I need to ban you in terms of security</b> 😥",
+        "config": "😶‍🌫️ <b>Config saved</b>\n<i>Report spam? - {}\nDelete dialog? - {}</i>",
+        "banned": "😊 <b>Hey there •ᴗ•</b>\n<b>Unit «SIGMA»<b>, the <b>guardian</b> of this account. You are <b>not approved</b>! You can contact my owner <b>in chat</b>, if you need help.\n<b>I need to ban you in terms of security</b>",
         "removing": "😶‍🌫️ <b>Removing {} last dialogs...</b>",
         "removed": "😶‍🌫️ <b>Removed {} last dialogs!</b>",
         "user_not_specified": "🚫 <b>You haven't specified user</b>",
         "approved": '😶‍🌫️ <b><a href="tg://user?id={}">{}</a> approved in pm</b>',
         "banned_log": '👮 <b>I banned <a href="tg://user?id={}">{}</a>.</b>\n\n<b>{} Contact</b>\n<b>{} Started by you</b>\n<b>{} Active conversation</b>\n\n<b>✊ Actions</b>\n\n<b>{} Reported spam</b>\n<b>{} Deleted dialog</b>\n<b>{} Banned</b>\n\n<b>ℹ️ Message</b>\n<code>{}</code>',
-        "hello": "😊 <b>Hewwo!</b>\n<b>I'm Kirito</b> - your personal personal messages guardian. I will block everyone, who's trying to intrude you.\n\nUse <code>.pmbl</code> to enable protection, <code>.pmblsett</code> to configure it and <code>.pmbanlast</code> if you've already been pm-raided.\n\n<i>Glad to be your safeguard!</i>",
+        "hello": "🔏 <b>Unit «SIGMA»</b> protects your personal messages from intrusions. It will block everyone, who's trying to invade you.\n\nUse <code>.pmbl</code> to enable protection, <code>.pmblsett</code> to configure it and <code>.pmbanlast</code> if you've already been pm-raided.",
     }
 
     strings_ru = {
-        "hello": "😊 <b>Приветики!</b>\n<b>Я Кирито</b> - охранник твоих личных сообщений. Я буду блокировать всех захватчиков.\n\nИспользуй<code>.pmbl</code> для включения защиты, <code>.pmblsett</code> для ее настройки и <code>.pmbanlast</code> если уже слишком поздно, и твои лс атаковали.\n\n<i>Рад быть твоим телохранителем!</i>",
         "state": "⚔️ <b>Текущее состояние PM->BL: {}</b>\n<i>Сообщать о спаме? - {}\nУдалять диалог? - {}</i>",
         "args": "ℹ️ <b>Пример: </b><code>.pmblsett 0 0</code>",
         "args_pmban": "ℹ️ <b>Пример: </b><code>.pmbanlast 5</code>",
-        "config": "😶‍🌫️ <b>Йей! Конфиг сохранен</b>\n<i>Сообщать о спаме? - {}\nУдалять диалог? - {}</i>",
-        "banned": "🤵 <b>Пожалуйста, подождите •ᴗ•</b>\nЯ <b>защитник</b> этого аккаунта, и вы <b>не подтверждены</b>! Вы можете связаться с моим владельцем <b>в чате</b>, если вам нужна помощь.\n<b>Сожалею, но я должен забанить вас с целью соблюдения безопасности</b> 😥",
+        "config": "😶‍🌫️ <b>Конфиг сохранен</b>\n<i>Сообщать о спаме? - {}\nУдалять диалог? - {}</i>",
+        "banned": "😊 <b>Добрый день •ᴗ•</b>\n<b>Юнит «SIGMA»<b>, <b>защитник</b> этого аккаунта. Вы <b>не потверждены</b>! Вы можете связаться с моим владельцем <b>в чате</b>, если нужна помощь.\n<b>Я вынужден заблокировать вас из соображений безопасности</b>",
+        "hello": "🔏 <b>Юнит «SIGMA»</b> защищает твои личные сообщенния от неизвестных пользователей. Он будет блокировать всех, кто не соответствует настройкам.\n\nВведи <code>.pmbl</code> для активации защиты, <code>.pmblsett</code> для ее настройки и <code>.pmbanlast</code> если нужно очистить уже прошедший рейд на личные сообщения.",
         "removing": "😶‍🌫️ <b>Удаляю {} последних диалогов...</b>",
         "removed": "😶‍🌫️ <b>Удалил {} последних диалогов!</b>",
         "user_not_specified": "🚫 <b>Укажи пользователя</b>",
@@ -100,16 +100,10 @@ class PMBLMod(loader.Module):
                 doc=lambda: "Custom message to notify untrusted peers. Leave empty for default one",
             ),
             loader.ConfigValue(
-                "photo_url",
-                "https://kartinkin.net/uploads/posts/2021-07/1625528600_10-kartinkin-com-p-anime-kirito-anime-krasivo-11.jpg",
+                "photo",
+                "https://github.com/hikariatama/assets/raw/master/unit_sigma.png",
                 lambda: "Photo, which is sent along with banned notification",
                 validator=loader.validators.Link(),
-            ),
-            loader.ConfigValue(
-                "use_maid",
-                False,
-                lambda: "Whether to replace normal Kirito with maid-Kirito",
-                validator=loader.validators.Boolean(),
             ),
         )
 
@@ -120,15 +114,15 @@ class PMBLMod(loader.Module):
         self._ratelimit = []
         self._ratelimit_timeout = 5 * 60
         self._ratelimit_threshold = 10
-        if not self.get("ignore_qs", False):
+        if not self.get("ignore_hello", False):
             await self.inline.bot.send_photo(
                 self._tg_id,
-                photo=r"https://static.zerochan.net/Kirito.%28GGO%29.full.2814614.jpg",
+                photo=r"https://github.com/hikariatama/assets/raw/master/unit_sigma.png",
                 caption=self.strings("hello"),
                 parse_mode="HTML",
             )
 
-            self.set("ignore_qs", True)
+            self.set("ignore_hello", True)
 
     async def pmblcmd(self, message: Message):
         """Toggle PMBL"""
@@ -260,8 +254,13 @@ class PMBLMod(loader.Module):
 
         contact, started_by_you, active_peer = None, None, None
 
+        peer = (
+            getattr(getattr(message, "sender", None), "username", None)
+            or message.peer_id
+        )
+
         with contextlib.suppress(ValueError):
-            entity = await self._client.get_entity(message.peer_id)
+            entity = await self._client.get_entity(peer)
 
             if entity.bot:
                 return self._approve(cid, "bot")
@@ -274,7 +273,7 @@ class PMBLMod(loader.Module):
 
         first_message = (
             await self._client.get_messages(
-                message.peer_id,
+                peer,
                 limit=1,
                 reverse=True,
             )
@@ -291,7 +290,7 @@ class PMBLMod(loader.Module):
         if self.config["ignore_active"]:
             q = 0
 
-            async for msg in self._client.iter_messages(message.peer_id, limit=200):
+            async for msg in self._client.iter_messages(peer, limit=200):
                 if msg.sender_id == self._tg_id:
                     q += 1
 
@@ -310,10 +309,8 @@ class PMBLMod(loader.Module):
         if len(self._ratelimit) < self._ratelimit_threshold:
             try:
                 await self._client.send_file(
-                    message.peer_id,
-                    self.config["photo_url"]
-                    if not int(self.config["use_maid"])
-                    else "http://img0.reactor.cc/pics/post/full/Kirito-Sword-Art-Online-Anime-Maid-2200117.jpeg",
+                    peer,
+                    self.config["photo"],
                     caption=self.config["custom_message"] or self.strings("banned"),
                 )
             except Exception:
@@ -325,16 +322,16 @@ class PMBLMod(loader.Module):
             self._ratelimit += [round(time.time())]
 
             try:
-                peer = await self._client.get_entity(message.peer_id)
+                dialog = await self._client.get_entity(peer)
             except ValueError:
                 await asyncio.sleep(1)
-                peer = await self._client.get_entity(message.peer_id)
+                dialog = await self._client.get_entity(peer)
 
             await self.inline.bot.send_message(
-                (await self._client.get_me()).id,
+                self._client._tg_id,
                 self.strings("banned_log").format(
-                    peer.id,
-                    utils.escape_html(peer.first_name),
+                    dialog.id,
+                    utils.escape_html(dialog.first_name),
                     format_(contact),
                     format_(started_by_you),
                     format_(active_peer),

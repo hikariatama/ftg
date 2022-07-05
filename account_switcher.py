@@ -163,7 +163,7 @@ class AccountSwitcherMod(loader.Module):
     async def accsavecmd(self, message: TelethonMessage):
         """Save account for future restoring"""
         full = await self._client(GetFullUserRequest("me"))
-        acc = await self._client.get_entity("me")
+        acc = await self._client.force_get_entity("me")
 
         message_id = await self._save_acc(
             (await self._client.download_profile_photo(acc, bytes))

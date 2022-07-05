@@ -26,19 +26,6 @@ from .. import loader, utils
 def b2mb(b):
     return round(b / 1024 / 1024, 1)
 
-
-def find_lib(lib: str) -> str:
-    try:
-        if lib == "Telethon":
-            lib = "Telethon | grep -v Telethon-Mod"
-        ver = os.popen(f"python3 -m pip freeze | grep {lib}").read().split("==")[1]
-        if "\n" in ver:
-            return ver.split("\n")[0]
-        return ver
-    except Exception:
-        return "Not Installed"
-
-
 @loader.tds
 class serverInfoMod(loader.Module):
     """Show server info"""
@@ -46,12 +33,12 @@ class serverInfoMod(loader.Module):
     strings = {
         "name": "ServerInfo",
         "loading": "<b>👾 Loading server info...</b>",
-        "servinfo": "<b><u>👾 Server Info:</u>\n\n<u>🗄 Used resources:</u>\n    CPU: {} Cores {}%\n    RAM: {} / {}MB ({}%)\n\n<u>🧾 Dist info</u>\n    Kernel: {}\n    Arch: {}\n    OS: {}\n\n<u>📦 Python libs:</u>\n    Telethon: {}\n    Telethon-Mod: {}\n    Python-Git: {}\n    Python: {}\n    Pip: {}</b>",
+        "servinfo": "<b><u>👾 Server Info:</u>\n\n<u>🗄 Used resources:</u>\n    CPU: {} Cores {}%\n    RAM: {} / {}MB ({}%)\n\n<u>🧾 Dist info</u>\n    Kernel: {}\n    Arch: {}\n    OS: {}</b>",
     }
 
     strings_ru = {
         "loading": "<b>👾 Загрузка информации о сервере...</b>",
-        "servinfo": "<b><u>👾 Информация о сервере:</u>\n\n<u>🗄 Задействованные ресурсы:</u>\n    CPU: {} ядер {}%\n    RAM: {} / {}MB ({}%)\n\n<u>🧾 Информация о ядре</u>\n    Kernel: {}\n    Arch: {}\n    OS: {}\n\n<u>📦 Библиотеки Python:</u>\n    Telethon: {}\n    Telethon-Mod: {}\n    Python-Git: {}\n    Python: {}\n    Pip: {}</b>",
+        "servinfo": "<b><u>👾 Информация о сервере:</u>\n\n<u>🗄 Задействованные ресурсы:</u>\n    CPU: {} ядер {}%\n    RAM: {} / {}MB ({}%)\n\n<u>🧾 Информация о ядре</u>\n    Kernel: {}\n    Arch: {}\n    OS: {}</b>",
         "_cmd_doc_serverinfo": "Показать информацию о сервере",
         "_cls_doc": "Показывает информацию о сервере",
     }
@@ -104,21 +91,6 @@ class serverInfoMod(loader.Module):
             b = system.find('DISTRIB_DESCRIPTION="') + 21
             system = system[b : system.find('"', b)]
             inf.append(utils.escape_html(system))
-        except Exception:
-            inf.append("n/a")
-
-        try:
-            inf.append(find_lib("Telethon"))
-        except Exception:
-            inf.append("n/a")
-
-        try:
-            inf.append(find_lib("Telethon-Mod"))
-        except Exception:
-            inf.append("n/a")
-
-        try:
-            inf.append(find_lib("python-git"))
         except Exception:
             inf.append("n/a")
 

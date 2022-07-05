@@ -1,3 +1,5 @@
+__version__ = (1, 0, 1)
+
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
 # █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
 #
@@ -10,30 +12,36 @@
 
 # meta pic: https://img.icons8.com/plasticine/400/000000/spotify--v2.png
 # meta developer: @hikarimods
-# requires: spotipy Pillow
+# requires: spotipy Pillow YouTubeMusicAPI youtube-dl
 # scope: hikka_only
-# scope: hikka_min 1.1.14
+# scope: hikka_min 1.2.9
 
 import asyncio
 import functools
 import io
 import logging
 import re
+import tempfile
 import time
 import traceback
 from math import ceil
 import contextlib
 from types import FunctionType
+from YouTubeMusicAPI import YouTubeMusicAPI
+from youtube_dl import YoutubeDL
 
 import requests
 import spotipy
-import telethon
 from PIL import Image, ImageDraw, ImageFont
 from telethon.tl.types import Message
+from telethon.tl.functions.account import UpdateProfileRequest
+from telethon.errors.rpcerrorlist import FloodWaitError
 
 from .. import loader, utils
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
+logging.getLogger("spotipy").setLevel(logging.CRITICAL)
 
 
 SIZE = (1200, 320)
@@ -95,7 +103,6 @@ def create_badge(thumb_url, title, artist):
     thumb_size = SIZE[1] - INNER_MARGIN[1] * 2
 
     thumb = thumb.resize((thumb_size, thumb_size))
-    # thumb = add_corners(thumb, 10)
 
     im.paste(thumb, INNER_MARGIN)
 
@@ -115,16 +122,11 @@ def create_badge(thumb_url, title, artist):
     return img.getvalue()
 
 
-def create_file(audio):
-    thumb = requests.get(audio["album"]["images"][0]["url"]).content
-    name = audio["name"]
-    artist = ", ".join([_["name"] for _ in audio["artists"]])
-    file = requests.get(audio["preview_url"]).content
-
-    file = io.BytesIO(file)
-    file.name = f"{name} - {artist}.mp3"
-
-    return {"file": file, "thumb": thumb}
+def create_file(audio: dict) -> dict:
+    return {
+        "audio_url": audio["preview_url"],
+        "performer": ", ".join([_["name"] for _ in audio["artists"]]),
+    }
 
 
 @loader.tds
@@ -204,6 +206,7 @@ class SpotifyMod(loader.Module):
         try:
             current_playback = self.sp.current_playback()
             track = current_playback["item"]["name"]
+            track = re.sub(r"([(].*?[)])", "", track).strip()
         except Exception:
             return
 
@@ -211,9 +214,9 @@ class SpotifyMod(loader.Module):
 
         try:
             await self._client(
-                telethon.tl.functions.account.UpdateProfileRequest(about=bio[:70])
+                UpdateProfileRequest(about=bio[: 140 if self._premium else 70])
             )
-        except telethon.errors.rpcerrorlist.FloodWaitError as e:
+        except FloodWaitError as e:
             logger.info(f"Sleeping {max(e.seconds, 60)} bc of floodwait")
             await asyncio.sleep(max(e.seconds, 60))
             return
@@ -221,6 +224,7 @@ class SpotifyMod(loader.Module):
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
+        self._premium = getattr(await client.get_me(), "premium", False)
         try:
             self.sp = spotipy.Spotify(auth=self.get("acs_tkn")["access_token"])
         except Exception:
@@ -362,7 +366,7 @@ class SpotifyMod(loader.Module):
         """Find info about track"""
         args = utils.get_args_raw(message)
         if not args:
-            await utils.answere(message, self.strings("404"))
+            await utils.answer(message, self.strings("404"))
 
         try:
             track = self.sp.track(args)
@@ -377,27 +381,19 @@ class SpotifyMod(loader.Module):
                 await utils.answer(message, self.strings("404"))
                 return
 
-        try:
-            name = track["name"]
-            track_id = track["id"]
-        except Exception:
-            name = None
-            track_id = None
+        name = track.get("name", None)
+        track_id = track.get("id", None)
+        track_url = track.get("external_urls", {}).get("spotify", None)
+        artists = [
+            artist["name"] for artist in track.get("artists", []) if "name" in artist
+        ]
 
-        try:
-            track_url = track["external_urls"]["spotify"]
-        except Exception:
-            track_url = None
-
-        try:
-            artists = [artist["name"] for artist in track["artists"]]
-        except Exception:
-            artists = None
+        full_song_name = f"{name} - {', '.join(artists)}"
 
         result = "🎧 <b>Listen to this: </b>\n"
         result += (
             (
-                f"    <code>{name} - {', '.join(artists)}</code>"
+                f"    <code>{full_song_name}</code>"
                 if artists
                 else f"<code>{track}</code>"
             )
@@ -411,14 +407,62 @@ class SpotifyMod(loader.Module):
         )
         result += f"\n<code>🞆───────── 0:00 / {track['duration_ms'] // 1000 // 60:02}:{track['duration_ms'] // 1000 % 60:02}</code>"
 
-        with contextlib.suppress(Exception):
-            await self._client.send_file(
-                message.peer_id,
-                caption=result,
-                **create_file(track),
-            )
-            await message.delete()
-            return
+        form = await self.inline.form(
+            result,
+            message=message,
+            reply_markup={
+                "text": "🎧 Looking for full track...",
+                "data": "empty",
+            },
+            audio=(
+                {
+                    "url": track["preview_url"],
+                    "title": name,
+                    "performer": ", ".join(artists),
+                    "duration": 30,
+                }
+                if track["preview_url"]
+                else {
+                    "url": "https://siasky.net/RAALHGo4TQq8kJidWt5RXGsYs8_0r2tLREY_wvnAllGHSA",
+                    "title": "Preview not available",
+                    "performer": "",
+                    "duration": 6,
+                }
+            ),
+        )
+        try:
+            with tempfile.TemporaryDirectory() as path:
+                track = await self._download_audio(full_song_name, path)
+
+                await self._client.send_file(
+                    utils.get_chat_id(message),
+                    track,
+                    caption=result,
+                )
+
+            await form.delete()
+        except Exception:
+            await form.edit(result, None)
+
+    async def _download_audio(self, name: str, path: str):
+        track = YouTubeMusicAPI().track(name)
+        with YoutubeDL(
+            {
+                "outtmpl": path + "/%(title)s.%(ext)s",
+                "format": "bestaudio/best",
+                "postprocessors": [
+                    {
+                        "key": "FFmpegExtractAudio",
+                        "preferredcodec": "mp3",
+                        "preferredquality": "192",
+                    }
+                ],
+            }
+        ) as ydl:
+            meta = await utils.run_sync(ydl.extract_info, track["url"], download=False)
+            await utils.run_sync(ydl.download, [track["url"]])
+
+        return path + "/" + meta["title"] + ".mp3"
 
     @error_handler
     @tokenized
@@ -459,7 +503,8 @@ class SpotifyMod(loader.Module):
         else:
             self.sp_auth.get_authorize_url()
             await utils.answer(
-                message, self.strings("auth").format(self.sp_auth.get_authorize_url())
+                message,
+                self.strings("auth").format(self.sp_auth.get_authorize_url()),
             )
 
     @error_handler
@@ -489,12 +534,14 @@ class SpotifyMod(loader.Module):
         new = not current
         self.set("autobio", new)
         await utils.answer(
-            message, self.strings("autobio").format("enabled" if new else "disabled")
+            message,
+            self.strings("autobio").format("enabled" if new else "disabled"),
         )
+
         if new:
-            self.bio_task = asyncio.ensure_future(self.autobio())
+            self.autobio.start()
         else:
-            self.stop()
+            self.autobio.stop()
 
     @error_handler
     @tokenized
@@ -513,6 +560,7 @@ class SpotifyMod(loader.Module):
     async def snowcmd(self, message: Message):
         """Show current playback badge"""
         current_playback = self.sp.current_playback()
+
         try:
             device = (
                 current_playback["device"]["name"]
@@ -522,45 +570,36 @@ class SpotifyMod(loader.Module):
         except Exception:
             device = None
 
-        try:
-            volume = current_playback["device"]["volume_percent"]
-        except Exception:
-            volume = 0
+        volume = current_playback.get("device", {}).get("volume_percent", 0)
 
         try:
             playlist_id = current_playback["context"]["uri"].split(":")[-1]
             playlist = self.sp.playlist(playlist_id)
 
-            try:
-                playlist_name = playlist["name"]
-            except Exception:
-                playlist_name = None
+            playlist_name = playlist.get("name", None)
 
             try:
                 playlist_owner = f'<a href="https://open.spotify.com/user/{playlist["owner"]["id"]}">{playlist["owner"]["display_name"]}</a>'
-            except Exception:
+            except KeyError:
                 playlist_owner = None
-
         except Exception:
             playlist_name = None
             playlist_owner = None
 
-        try:
-            track = current_playback["item"]["name"]
-            track_id = current_playback["item"]["id"]
-        except Exception:
-            track = None
-            track_id = None
+        track = current_playback.get("item", {}).get("name", None)
+        track_id = current_playback.get("item", {}).get("id", None)
 
-        try:
-            track_url = current_playback["item"]["external_urls"]["spotify"]
-        except Exception:
-            track_url = None
+        track_url = (
+            current_playback.get("item", {})
+            .get("external_urls", {})
+            .get("spotify", None)
+        )
 
-        try:
-            artists = [artist["name"] for artist in current_playback["item"]["artists"]]
-        except Exception:
-            artists = None
+        artists = [
+            artist["name"]
+            for artist in current_playback.get("item", {}).get("artists", [])
+            if "name" in artist
+        ]
 
         try:
             result = "🎧 <b>My vibe: </b>"
@@ -590,18 +629,46 @@ class SpotifyMod(loader.Module):
                 f"\n<code>{create_bar(current_playback)}</code> {create_vol(volume)} 🔊"
             )
 
-            with contextlib.suppress(Exception):
-                await self._client.send_file(
-                    message.peer_id,
-                    caption=result,
-                    **create_file(current_playback["item"]),
-                )
-                await message.delete()
-                return
+            name = current_playback.get("item", {}).get("name", None)
+            full_song_name = f"{name} - {', '.join(artists)}"
+
+            form = await self.inline.form(
+                result,
+                message=message,
+                reply_markup={
+                    "text": "🎧 Looking for full track...",
+                    "data": "empty",
+                },
+                audio=(
+                    {
+                        "url": current_playback.get("item", {})["preview_url"],
+                        "title": name,
+                        "performer": ", ".join(artists),
+                        "duration": 30,
+                    }
+                    if current_playback.get("item", {})["preview_url"]
+                    else {
+                        "url": "https://siasky.net/RAALHGo4TQq8kJidWt5RXGsYs8_0r2tLREY_wvnAllGHSA",
+                        "title": "Preview not available",
+                        "performer": "",
+                        "duration": 6,
+                    }
+                ),
+            )
+            try:
+                with tempfile.TemporaryDirectory() as path:
+                    track = await self._download_audio(full_song_name, path)
+
+                    if await form.delete():
+                        await self._client.send_file(
+                            utils.get_chat_id(message),
+                            track,
+                            caption=result,
+                        )
+            except Exception:
+                await form.edit(result, None)
         except Exception:
             result = self.strings("no_music")
-
-        await utils.answer(message, result)
 
     async def watcher(self, message: Message):
         """Watcher is used to update token"""
@@ -627,3 +694,7 @@ class SpotifyMod(loader.Module):
             )
             self.set("NextRefresh", time.time() + 45 * 60)
             self.sp = spotipy.Spotify(auth=self.get("acs_tkn")["access_token"])
+
+    async def on_unload(self):
+        with contextlib.suppress(Exception):
+            self.autobio.stop()
