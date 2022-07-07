@@ -1,14 +1,11 @@
-__version__ = (12, 3, 0)
-# Now actually free
+__version__ = (12, 3, 1)
 
-# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
-#
+#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
+#             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
+#           https://t.me/hikariatama
 #
-#          https://t.me/hikariatama
-#
-# 🔒 Licensed under the GNU GPLv3
+# 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-flaticons-flat-flat-icons/344/external-exclusive-black-friday-flaticons-flat-flat-icons.png
@@ -4290,14 +4287,15 @@ class HikariChatMod(loader.Module):
             await self._client.get_permissions(int(chat_id), int(user_id))
         ).is_banned:
             unmute = True
-            await self.mute(chat, user, 5 * 60, "captcha_processing", silent=True)
+            await self.mute(chat, user, 15 * 60, "captcha_processing", silent=True)
 
         for _ in range(5):
             try:
                 m = await self.inline.form(
                     message=chat_id,
                     text=self.strings("complete_captcha").format(
-                        user.id, get_full_name(user)
+                        user.id,
+                        get_full_name(user),
                     ),
                     photo=f"https://hikarichat.hikariatama.ru/captcha/{valid}",
                     reply_markup=markup,
@@ -4914,7 +4912,7 @@ class HikariChatMod(loader.Module):
 
             for chat_id, info in self._captcha_db.copy().items():
                 for user_id, captcha in info.copy().items():
-                    if captcha["time"] + 5 * 60 < time.time():
+                    if captcha["time"] < time.time():
                         del self._captcha_db[chat_id][user_id]
                         await self.punish(
                             chat_id,
@@ -4925,6 +4923,8 @@ class HikariChatMod(loader.Module):
                             fulltime=True,
                             message=None,
                         )
+                        with contextlib.suppress(Exception):
+                            await self._captcha_messages[chat_id][user_id].delete()
 
             await asyncio.sleep(0.01)
 
