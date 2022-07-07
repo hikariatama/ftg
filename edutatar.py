@@ -73,7 +73,9 @@ class EduTatarMod(loader.Module):
                 "edu_tatar_login", doc=lambda: "Login from edu.tatar.ru"
             ),
             loader.ConfigValue(
-                "edu_tatar_pass", doc=lambda: "Password from edu.tatar.ru"
+                "edu_tatar_pass",
+                doc=lambda: "Password from edu.tatar.ru",
+                validator=loader.validators.Hidden(loader.validators.String()),
             ),
             loader.ConfigValue(
                 "marks_parse_delay",
@@ -84,13 +86,38 @@ class EduTatarMod(loader.Module):
             loader.ConfigValue("proxy", "", lambda: "Proxy for correct work of module"),
         )
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:edutatar")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(self, client, db):
         self._db = db
+        self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["edutatar"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
+
         self.sess = {"DNSID": db.get("eduTatar", "sess", None)}
         if self.sess["DNSID"] is None:
             await self.revoke_token()
 
-        self._client = client
         asyncio.ensure_future(self.parse_marks_async())
 
     async def parse_marks_async(self):

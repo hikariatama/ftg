@@ -13,6 +13,7 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.23
 
+import asyncio
 from telethon.tl.types import Message
 from yoomoney import Quickpay
 
@@ -40,6 +41,34 @@ class YooMoneyMod(loader.Module):
         ),
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:yoopay")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
+    async def client_ready(self, client, db):
+        self._db = db
+        self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["yoopay"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
@@ -52,7 +81,7 @@ class YooMoneyMod(loader.Module):
     @loader.unrestricted
     async def yoopaycmd(self, message: Message):
         """<sum> <title> ; <comment> - Send payment link
-E.g: .yoopay 100 For coffee ; Bro, buy me a coffe, here is the link"""
+        E.g: .yoopay 100 For coffee ; Bro, buy me a coffe, here is the link"""
         if not self.config["account"]:
             await utils.answer(message, self.strings("no_account"))
             return

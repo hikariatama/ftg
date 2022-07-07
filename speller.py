@@ -176,6 +176,34 @@ class SpellCheckMod(loader.Module):
         "_cls_doc": "Проверяет правописание",
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:speller")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
+    async def client_ready(self, client, db):
+        self._db = db
+        self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["speller"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
+
     async def spellcmd(self, message: Message):
         """Perform spell check on reply"""
         reply = await message.get_reply_message()

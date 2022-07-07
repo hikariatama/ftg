@@ -12,8 +12,10 @@
 # meta developer: @hikarimods
 # scope: hikka_only
 
+import asyncio
 import io
 import logging
+from os import stat
 
 import requests
 from telethon.tl.types import Message
@@ -42,8 +44,33 @@ class CarbonMod(loader.Module):
         "_cmd_doc_carbon": "<код> - Сделать красивую фотку кода",
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:carbon")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(self, client, db):
+        self._db = db
         self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["carbon"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
 
     async def carboncmd(self, message: Message):
         """<code> - Create beautiful code image"""

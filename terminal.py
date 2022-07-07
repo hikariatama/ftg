@@ -102,6 +102,34 @@ class TerminalMod(loader.Module):
         )
         self.activecmds = {}
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:terminal")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
+    async def client_ready(self, client, db):
+        self._db = db
+        self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["terminal"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
+
     @loader.owner
     async def terminalcmd(self, message):
         """.terminal <command>"""
@@ -442,7 +470,11 @@ class RawMessageEditor(SudoMessageEditor):
 
         logger.debug(text)
 
-        with contextlib.suppress(telethon.errors.rpcerrorlist.MessageNotModifiedError, telethon.errors.rpcerrorlist.MessageEmptyError, ValueError):
+        with contextlib.suppress(
+            telethon.errors.rpcerrorlist.MessageNotModifiedError,
+            telethon.errors.rpcerrorlist.MessageEmptyError,
+            ValueError,
+        ):
             try:
                 await utils.answer(self.message, text)
             except telethon.errors.rpcerrorlist.MessageTooLongError as e:

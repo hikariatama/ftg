@@ -11,6 +11,7 @@
 # meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/512/000000/external-status-agile-flaticons-lineal-color-flat-icons-2.png
 # meta developer: @hikarimods
 
+import asyncio
 from telethon.tl.types import Message
 
 from .. import loader, utils
@@ -79,6 +80,34 @@ class HttpErrorsMod(loader.Module):
         "_cmd_doc_httpscs": "Показать все доступные коды",
         "_cls_doc": "Словарь HTTP-кодов",
     }
+
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:httpsc")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
+    async def client_ready(self, client, db):
+        self._db = db
+        self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["httpsc"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
 
     @loader.unrestricted
     async def httpsccmd(self, message: Message):

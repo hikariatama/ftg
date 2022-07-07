@@ -14,6 +14,7 @@
 # scope: hikka_min 1.0.11
 # requires: requests
 
+import asyncio
 import functools
 import logging
 import random
@@ -124,6 +125,34 @@ class ScrolllerMod(loader.Module):
         "_cmd_doc_gallerycat": "<сабреддит> - Установить новый сабреддит по умолчанию",
         "_cls_doc": "Отправляет изображения с scrolller.com в виде инлайн галереи",
     }
+
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:scrolller")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
+    async def client_ready(self, client, db):
+        self._db = db
+        self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["scrolller"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
 
     async def gallerycmd(self, message: Message):
         """<subreddit | default> - Send inline gallery with photos from subreddit"""

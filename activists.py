@@ -12,6 +12,7 @@
 # meta developer: @hikarimods
 # scope: hikka_only
 
+import asyncio
 import logging
 import time
 
@@ -41,9 +42,33 @@ class ActivistsMod(loader.Module):
         "_cls_doc": "Ищет наиболее активных пользователей чата",
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:activists")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["activists"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
 
     async def check_admin(self, chat: int or Chat, user_id: int or User) -> bool:
         try:

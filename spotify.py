@@ -20,6 +20,7 @@ import asyncio
 import functools
 import io
 import logging
+from os import stat
 import re
 import tempfile
 import time
@@ -221,9 +222,33 @@ class SpotifyMod(loader.Module):
             await asyncio.sleep(max(e.seconds, 60))
             return
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:spotify")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["spotify"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
         self._premium = getattr(await client.get_me(), "premium", False)
         try:
             self.sp = spotipy.Spotify(auth=self.get("acs_tkn")["access_token"])

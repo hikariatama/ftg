@@ -3899,7 +3899,9 @@ class HikariChatMod(loader.Module):
             try:
                 await self._ban_ninja_forms[chat_id].edit(
                     self.strings("smart_anti_raid_active").format(
-                        self.strings("forbid_messages") if self.config["close_on_raid"] else "",
+                        self.strings("forbid_messages")
+                        if self.config["close_on_raid"]
+                        else "",
                         self._ban_ninja_progress[chat_id],
                     ),
                     {
@@ -4005,7 +4007,9 @@ class HikariChatMod(loader.Module):
             )
             form = await self.inline.form(
                 self.strings("smart_anti_raid_active").format(
-                    self.strings("forbid_messages") if self.config["close_on_raid"] else "",
+                    self.strings("forbid_messages")
+                    if self.config["close_on_raid"]
+                    else "",
                     self.config["join_ratelimit"],
                 ),
                 message=int(chat_id),
@@ -4974,7 +4978,7 @@ class HikariChatMod(loader.Module):
 
         if await self.p__banninja(chat_id, user_id, message):
             return
-        
+
         if await self.p__ndspam(chat_id, user_id, message):
             return
 
@@ -5072,7 +5076,9 @@ class HikariChatMod(loader.Module):
             cas_result = await self.p__cas(*args, chat)
 
         if cas_result:
-            await self.punish(chat_id, user, "cas", cas_result, user_name, message=message)
+            await self.punish(
+                chat_id, user, "cas", cas_result, user_name, message=message
+            )
             return
 
         r = await self.p__antiarab(*args)
@@ -5174,6 +5180,20 @@ class HikariChatMod(loader.Module):
     _flood_fw_protection = {}
     _ratelimit = {"notes": {}, "report": {}}
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:hikarichat")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(
         self,
         client: "TelegramClient",  # type: ignore
@@ -5184,6 +5204,16 @@ class HikariChatMod(loader.Module):
 
         self._db = db
         self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["hikarichat"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
 
         self._is_inline = self.inline.init_complete
 

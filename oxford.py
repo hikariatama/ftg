@@ -14,6 +14,7 @@
 # meta developer: @hikarimods
 # requires: bs4
 
+import asyncio
 from .. import loader, utils
 from telethon.tl.types import Message
 from ..inline.types import InlineCall
@@ -88,12 +89,33 @@ class OxfordMod(loader.Module):
         "match": '{} <b><a href="{}">{}</a></b> [{}] <i>({})</i>\n\n{}',
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:oxford")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
 
-    async def inline__close(self, call: InlineCall):
-        await call.delete()
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["oxford"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
 
     async def _search(self, call: InlineCall, term: str):
         result = await search(term)
@@ -101,7 +123,13 @@ class OxfordMod(loader.Module):
 
     def format_match(self, match: dict) -> str:
         return self.strings("match").format(
-            random.choice(list(grapheme.graphemes("👩‍🎓🧑‍🎓👨‍🎓👨‍🏫🧑‍🏫👩‍🏫🤵‍♀️🤵🤵‍♂️💁‍♀️💁‍♂️🙋‍♂️🙋‍♀️🙍‍♀️🙎‍♂️"))),
+            random.choice(
+                list(
+                    grapheme.graphemes(
+                        "👩‍🎓🧑‍🎓👨‍🎓👨‍🏫🧑‍🏫👩‍🏫🤵‍♀️🤵🤵‍♂️💁‍♀️💁‍♂️🙋‍♂️🙋‍♀️🙍‍♀️🙎‍♂️"
+                    )
+                )
+            ),
             f"https://www.oxfordlearnersdictionaries.com/search/english/direct/?q={match['term']}",
             utils.escape_html(match["term"]),
             utils.escape_html(match["pronunciation"]),

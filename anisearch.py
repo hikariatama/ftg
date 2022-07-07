@@ -11,6 +11,7 @@
 # meta pic: https://img.icons8.com/external-flatart-icons-flat-flatarticons/512/000000/external-frame-valentines-day-flatart-icons-flat-flatarticons-1.png
 # meta developer: @hikarimods
 
+import asyncio
 import logging
 
 import requests
@@ -42,9 +43,33 @@ class AniSearchMod(loader.Module):
         "_cls_doc": "Ищет конкретную серию и тайм-код аниме по скриншоту",
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:anisearch")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["anisearch"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
 
     async def anisearchcmd(self, message: Message):
         """Search anime by frame"""

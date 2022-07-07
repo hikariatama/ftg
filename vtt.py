@@ -16,6 +16,7 @@ __version__ = (2, 0, 0)
 # scope: hikka_only
 # requires: pydub speechrecognition python-ffmpeg
 
+import asyncio
 import tempfile
 import os
 
@@ -52,8 +53,38 @@ class VoicyMod(loader.Module):
         "_cfg_lang": "Язык для распознавания голосовых сообщений",
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:vtt")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
+    async def client_ready(self, client, db):
+        self._db = db
+        self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["vtt"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
+
     def __init__(self):
-        self.config = loader.ModuleConfig(loader.ConfigValue("language", "ru-RU", lambda: self.strings("_cfg_lang")))
+        self.config = loader.ModuleConfig(
+            loader.ConfigValue("language", "ru-RU", lambda: self.strings("_cfg_lang"))
+        )
 
     async def recognize(self, message: Message):
         with tempfile.TemporaryDirectory() as tmpdir:

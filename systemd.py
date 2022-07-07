@@ -15,10 +15,10 @@
 
 # ⚠️ Please, ensure that userbot has enough rights to control units
 # Put these lines in /etc/sudoers:
-# 
+#
 # user ALL=(ALL) NOPASSWD: /bin/systemctl
 # user ALL=(ALL) NOPASSWD: /bin/journalctl
-# 
+#
 # Where `user` is user on behalf of which the userbot is running
 
 from dataclasses import replace
@@ -71,12 +71,33 @@ class SystemdMod(loader.Module):
         "refresh_btn": "🔄 Refresh",
     }
 
-    async def client_ready(self, client, db) -> None:
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:systemd")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
+    async def client_ready(self, client, db):
         self._db = db
         self._client = client
 
-    async def inline__close(self, call: InlineCall):
-        await call.delete()
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["systemd"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
 
     def _get_unit_status_text(self, unit: str) -> str:
         return (
@@ -364,7 +385,7 @@ class SystemdMod(loader.Module):
                     "callback": self._control_services,
                     "args": (True,),
                 },
-                {"text": self.strings("close_btn"), "callback": self.inline__close},
+                {"text": self.strings("close_btn"), "action": "close"},
             ]
         ]
 

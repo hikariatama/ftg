@@ -14,6 +14,7 @@ __version__ = (2, 0, 1)
 # meta developer: @hikarimods
 # scope: hikka_only
 
+import asyncio
 import imghdr
 import io
 import logging
@@ -58,12 +59,33 @@ class FileUploaderMod(loader.Module):
         "_cls_doc": "Загружает файлы на различные хостинги",
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:uploader")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(self, client, db):
+        self._db = db
         self._client = client
-        if "OKTETO" not in os.environ:
-            # x0.at is temporarily disabled
-            # self.x0cmd = self.x0cm_
-            self.oxocmd = self.oxocm_
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["uploader"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
 
     async def get_media(self, message: Message):
         reply = await message.get_reply_message()
@@ -113,26 +135,6 @@ class FileUploaderMod(loader.Module):
             return False
 
         return file
-
-    async def x0cm_(self, message: Message):
-        """Upload to x0.at"""
-        message = await utils.answer(message, self.strings("uploading"))
-        file = await self.get_media(message)
-        if not file:
-            return
-
-        try:
-            x0at = await utils.run_sync(
-                requests.post,
-                "https://x0.at",
-                files={"file": file},
-            )
-        except ConnectionError:
-            await utils.answer(message, self.strings("err"))
-            return
-
-        url = x0at.text
-        await utils.answer(message, self.strings("uploaded").format(url))
 
     async def skynetcmd(self, message: Message):
         """Upload to decentralized SkyNet"""
@@ -192,7 +194,7 @@ class FileUploaderMod(loader.Module):
 
             await utils.answer(message, self.strings("uploaded").format(url))
 
-    async def oxocm_(self, message: Message):
+    async def oxocmd(self, message: Message):
         """Upload to 0x0.st"""
         message = await utils.answer(message, self.strings("uploading"))
         file = await self.get_media(message)

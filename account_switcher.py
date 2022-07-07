@@ -15,6 +15,7 @@ __version__ = (2, 0, 1)
 # scope: hikka_only
 # scope: hikka_min 1.1.15
 
+import asyncio
 import io
 import logging
 import re
@@ -71,9 +72,34 @@ class AccountSwitcherMod(loader.Module):
         "_cls_doc": "Позволяет быстро переключаться между разными аккаунтами",
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:account_switcher")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["account_switcher"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
+
         self._accs_db, is_new = await utils.asset_channel(
             self._client,
             "hikka-acc-switcher",
@@ -171,9 +197,7 @@ class AccountSwitcherMod(loader.Module):
             else None,
             getattr(acc, "first_name", "None"),
             getattr(acc, "last_name", "None"),
-            (
-                getattr(full.full_user, "about", "None")
-            ),
+            (getattr(full.full_user, "about", "None")),
         )
 
         await utils.answer(
@@ -221,11 +245,7 @@ class AccountSwitcherMod(loader.Module):
                 else self.strings("last_name_unsaved")
             )
 
-            log += (
-                self.strings("bio_restored")
-                if bio
-                else self.strings("bio_unsaved")
-            )
+            log += self.strings("bio_restored") if bio else self.strings("bio_unsaved")
         except Exception:
             logger.exception("Can't restore account due to")
             log += self.strings("data_not_restored")

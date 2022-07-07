@@ -16,6 +16,7 @@ __version__ = (1, 0, 2)
 # scope: hikka_only
 # scope: hikka_min 1.1.6
 
+import asyncio
 import logging
 
 from .. import loader, utils
@@ -41,6 +42,34 @@ class LongReadMod(loader.Module):
         "_cmd_doc_lr": "<text> - Создать лонгрид",
         "_cls_doc": "Пакует лонгриды под спойлеры",
     }
+
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:longread")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
+    async def client_ready(self, client, db):
+        self._db = db
+        self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["longread"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
 
     async def lrcmd(self, message: Message):
         """<text> - Create new hidden message"""

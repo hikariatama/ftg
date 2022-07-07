@@ -36,6 +36,8 @@ class HikkaMigratorMod(loader.Module):
     }
 
     async def client_ready(self, client, db):
+        raise loader.SelfUnload("No need to load this...")
+
         self._db = db
         self._client = client
         self._fuck = False

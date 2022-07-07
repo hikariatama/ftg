@@ -15,6 +15,7 @@ __version__ = (2, 0, 0)
 # scope: hikka_only
 # meta developer: @hikarimods
 
+import asyncio
 import logging
 import time
 from urllib.parse import quote_plus
@@ -79,9 +80,33 @@ class ShikimoriMod(loader.Module):
         "success": "✅ Успешно",
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:shikimori")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["shikimori"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
         self._shiki_me = None  # will be set later
         self._rates_cache = {}
 

@@ -12,6 +12,7 @@
 # meta developer: @hikarimods
 # scope: hikka_only
 
+import asyncio
 import logging
 import re
 import contextlib
@@ -59,8 +60,33 @@ class KeywordMod(loader.Module):
         "_cls_doc": "Создавай кастомные кейворды с регулярными выражениями и командами",
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:keyword")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(self, client, db):
+        self._db = db
         self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["keyword"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
         self.keywords = self.get("keywords", {})
         self.bl = self.get("bl", [])
 
@@ -261,4 +287,3 @@ class KeywordMod(loader.Module):
                             await self.allmodules.commands[cmd](ms)
                     else:
                         await ms.respond(self.strings("no_command"))
-

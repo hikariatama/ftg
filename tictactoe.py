@@ -16,6 +16,7 @@ __version__ = (2, 0, 0)
 # scope: hikka_only
 # scope: hikka_min 1.0.25
 
+import asyncio
 import copy
 import enum
 from random import choice
@@ -243,14 +244,35 @@ class TicTacToeMod(loader.Module):
         "_cls_doc": "Сыграй в крестики-нолики прямо в Телеграм",
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:tictactoe")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["tictactoe"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
         self._games = {}
         self._me = await client.get_me()
-
-    async def inline__close(self, call: InlineCall):
-        await call.delete()
 
     async def _process_click(
         self,

@@ -15,6 +15,7 @@
 # scope: hikka_min 1.1.15
 
 import abc
+import asyncio
 import logging
 import time
 
@@ -56,7 +57,34 @@ class FeedbackMod(loader.Module):
         "/nometa": "👨‍🎓 <b><u>Правила общения в Интернете:</u></b>\n\n <b>🚫 <u>Не пиши</u> просто 'Привет'</b>\n <b>🚫 <u>Не рекламируй </u> ничего</b>\n <b>🚫 <u>Не оскорбляй</u> никого</b>\n <b>🚫 <u>Не разбивай</u> сообщения на миллион кусочков</b>\n <b>✅ Пиши вопрос в одном сообщении</b>",
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:feedback")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(self, client, db):
+        self._db = db
+        self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["feedback"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
+
         self._name = utils.escape_html(get_display_name(await client.get_me()))
 
         self._ratelimit = {}

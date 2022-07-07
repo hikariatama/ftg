@@ -11,6 +11,7 @@
 # meta pic: https://img.icons8.com/tiny-color/256/000000/experimental-note-tiny-color.png
 # meta developer: @hikarimods
 
+import asyncio
 import logging
 
 from telethon.tl.types import Message  # noqa
@@ -50,9 +51,33 @@ class NotesMod(loader.Module):
         "_cls_doc": "Модуль заметок с расширенным функционалом. Папки и категории",
     }
 
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:notes")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["notes"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
         self._notes = self.get("notes", {})
 
     async def hsavecmd(self, message: Message):

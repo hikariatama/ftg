@@ -13,6 +13,7 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.15
 
+import asyncio
 import logging
 import random
 
@@ -51,6 +52,34 @@ class MindGameMod(loader.Module):
     strings_ru = {
         "header": "🎮 <b>Найди эмодзи, который отличается от других</b>\n<i>Ты прошел {} уровней!</i>"
     }
+
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:mindgame")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
+    async def client_ready(self, client, db):
+        self._db = db
+        self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["mindgame"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
 
     _ratelimit = []
 

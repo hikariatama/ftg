@@ -11,6 +11,7 @@
 # meta pic: https://img.icons8.com/fluency/240/000000/archive.png
 # meta developer: @hikarimods
 
+import asyncio
 import io
 
 import requests
@@ -36,6 +37,34 @@ class Web2fileMod(loader.Module):
         "loading": "🦊 <b>Загрузка...</b>",
         "_cls_doc": "Скачивает содержимое ссылки и отправляет в виде файла",
     }
+
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:web2file")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
+    async def client_ready(self, client, db):
+        self._db = db
+        self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["web2file"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
 
     async def web2filecmd(self, message: Message):
         """Send link content as file"""

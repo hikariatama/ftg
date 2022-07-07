@@ -13,6 +13,7 @@
 # scope: hikka_only
 # scope: hikka_min 1.1.14
 
+import asyncio
 import logging
 import random
 import time
@@ -102,6 +103,34 @@ class DeepLMod(loader.Module):
         "_cmd_doc_deepl": "<text or reply> - Перевести текст через DeepL",
         "_cls_doc": "Переводит текст через DeepL. Рекомендуется использовать прокси",
     }
+
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:deepl")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
+    async def client_ready(self, client, db):
+        self._db = db
+        self._client = client
+
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["deepl"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
 
     def __init__(self):
         self.config = loader.ModuleConfig(

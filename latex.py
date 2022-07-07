@@ -11,6 +11,7 @@
 # meta pic: https://img.icons8.com/fluency/452/texshop.png
 # meta developer: @hikarimods
 
+import asyncio
 import io
 import logging
 
@@ -37,11 +38,35 @@ class LaTeXMod(loader.Module):
         "cant_render": "🚫 <b>В формуле обнаружена ошибка</b>",
     }
 
-    async def client_ready(self, client, db) -> None:
+    async def on_unload(self):
+        asyncio.ensure_future(
+            self._client.inline_query("@hikkamods_bot", "#statunload:latex")
+        )
+
+    async def stats_task(self):
+        await asyncio.sleep(60)
+        await self._client.inline_query(
+            "@hikkamods_bot",
+            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
+        )
+        delattr(self.allmodules, "_hikari_stats")
+        delattr(self.allmodules, "_hikari_stats_task")
+
+    async def client_ready(self, client, db):
         self._db = db
         self._client = client
 
-    async def latexcmd(self, message: Message) -> None:
+        if not hasattr(self.allmodules, "_hikari_stats"):
+            self.allmodules._hikari_stats = []
+
+        self.allmodules._hikari_stats += ["latex"]
+
+        if not hasattr(self.allmodules, "_hikari_stats_task"):
+            self.allmodules._hikari_stats_task = asyncio.ensure_future(
+                self.stats_task()
+            )
+
+    async def latexcmd(self, message: Message):
         """<formula> - Create LaTeX render"""
         args = utils.get_args_raw(message)
         if not args:
