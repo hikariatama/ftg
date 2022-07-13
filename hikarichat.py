@@ -1,4 +1,4 @@
-__version__ = (12, 3, 1)
+__version__ = (12, 3, 2)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
@@ -4033,6 +4033,13 @@ class HikariChatMod(loader.Module):
             and str(chat_id) not in self._ban_ninja
             and getattr(message, "action_message", False)
         ):
+            if self.api.should_protect(chat_id, "captcha") and (
+                getattr(message, "user_joined", False)
+                or getattr(message, "user_added", False)
+            ):
+                self._delete_soon += [(message, time.time() + 5 * 60)]
+                return
+
             try:
                 await self.inline.bot.delete_message(
                     int(f"-100{chat_id}"),
@@ -4444,7 +4451,7 @@ class HikariChatMod(loader.Module):
         for _ in range(5):
             try:
                 m = await self.inline.form(
-                    message=chat_id,
+                    message=(await message.reply("🪄 <b>Loading captcha...</b>")),
                     text=self.strings("complete_captcha").format(
                         user.id,
                         get_full_name(user),
@@ -5078,6 +5085,14 @@ class HikariChatMod(loader.Module):
                         with contextlib.suppress(Exception):
                             await self._captcha_messages[chat_id][user_id].delete()
 
+            for message, deletion_ts in self._delete_soon.copy():
+                if deletion_ts < time.time():
+                    with contextlib.suppress(Exception):
+                        await message.delete()
+
+                    with contextlib.suppress(Exception):
+                        self._delete_soon.remove((message, deletion_ts))
+
             await asyncio.sleep(0.01)
 
     @error_handler
@@ -5236,7 +5251,12 @@ class HikariChatMod(loader.Module):
         r = await self.p__antiarab(*args)
         if r:
             await self.punish(
-                chat_id, user, "arabic_nickname", r, user_name, message=message
+                chat_id,
+                user,
+                "arabic_nickname",
+                r,
+                user_name,
+                message=message,
             )
             return
 
@@ -5298,7 +5318,12 @@ class HikariChatMod(loader.Module):
         r = await self.p__antinsfw(*args)
         if r:
             await self.punish(
-                chat_id, user, "nsfw_content", r, user_name, message=message
+                chat_id,
+                user,
+                "nsfw_content",
+                r,
+                user_name,
+                message=message,
             )
             return
 
@@ -5331,20 +5356,7 @@ class HikariChatMod(loader.Module):
     _sticks_ratelimit = {}
     _flood_fw_protection = {}
     _ratelimit = {"notes": {}, "report": {}}
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:hikarichat")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
+    _delete_soon = []
 
     async def client_ready(
         self,
@@ -5353,19 +5365,6 @@ class HikariChatMod(loader.Module):
     ):
         """Entry point"""
         global api
-
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["hikarichat"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
         self._is_inline = self.inline.init_complete
 

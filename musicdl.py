@@ -27,7 +27,10 @@ class MusicDLMod(loader.Module):
     }
 
     async def client_ready(self, client, db):
-        await utils.dnd(client, "@hikka_musicdl_bot", archive=True)
+        self.musicdl = await self.import_lib(
+            "https://libs.hikariatama.ru/musicdl.py",
+            suspend_on_error=True,
+        )
 
     async def mdlcmd(self, message: Message):
         """<name> - Download track"""
@@ -37,31 +40,16 @@ class MusicDLMod(loader.Module):
             return
 
         message = await utils.answer(message, self.strings("loading"))
+        result = await self.musicdl.dl(args, only_document=True)
 
-        async with self._client.conversation("@hikka_musicdl_bot") as conv:
-            try:
-                m = await conv.send_message(args)
-                r = await conv.get_response()
-                await m.delete()
-
-                assert "Не получилось ничего найти" not in r.raw_text
-
-                await r.click(0)
-                await r.delete()
-                r = await conv.get_response()
-
-                assert r.document
-
-                await self._client.send_file(
-                    message.peer_id,
-                    r.document,
-                    caption=f"🎧 {utils.ascii_face()}",
-                    reply_to=getattr(message, "reply_to_msg_id", None),
-                )
-                await r.delete()
+        if result:
+            await self._client.send_file(
+                message.peer_id,
+                result,
+                caption=f"🎧 {utils.ascii_face()}",
+                reply_to=getattr(message, "reply_to_msg_id", None),
+            )
+            if message.out:
                 await message.delete()
-            except Exception:
-                await utils.answer(message, self.strings("404").format(args))
-                return
-
-        await self._client.delete_dialog("@hikka_musicdl_bot")
+        else:
+            await utils.answer(message, self.strings("404").format(args))

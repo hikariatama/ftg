@@ -16,7 +16,7 @@ __version__ = (2, 0, 3)
 import asyncio
 import time
 
-from telethon.tl.types import Message
+from telethon.tl.types import Message, Channel
 from telethon.tl.functions.channels import InviteToChannelRequest
 from telethon.tl.functions.contacts import GetBlockedRequest
 
@@ -293,7 +293,8 @@ class SilentTagsMod(loader.Module):
                 or not self.config["whitelist"]
                 and utils.get_chat_id(message) in (self.config["silent_chats"] or [])
             )
-            or self.config["silent_bots"]
+            or not (isinstance(user, Channel))
+            and self.config["silent_bots"]
             and message.sender.bot
         ):
             return
