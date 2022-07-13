@@ -6,11 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/fluency/240/000000/python.png
 # meta developer: @hikarimods
 # requires: black
 
-import asyncio
 import io
 import logging
 import re
@@ -24,8 +25,6 @@ from .. import loader, utils
 logging.getLogger("blib2to3.pgen2.driver").setLevel(logging.ERROR)
 
 import black  # noqa: E402
-
-logger = logging.getLogger(__name__)
 
 URL = r"(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+"
 
@@ -55,34 +54,6 @@ class PyLinterMod(loader.Module):
     """`Black` plugin wrapper for telegram"""
 
     strings = {"name": "PyLinter", "no_code": "🚫 <b>Please, specify code to lint</b>"}
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:linter")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["linter"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     async def lintcmd(self, message: Message):
         """[code|reply] - Perform automatic lint to python code"""

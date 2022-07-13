@@ -6,20 +6,18 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/fluency/48/000000/macbook-chat.png
 # meta developer: @hikarimods
 # scope: hikka_only
 
-import asyncio
-import logging
 import re
 import contextlib
 
 from telethon.tl.types import Message
 
 from .. import loader, utils
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -37,7 +35,9 @@ class KeywordMod(loader.Module):
         "bl_removed": "✅ <b>This chat is now whitelisted for Keywords</b>",
         "sent": "🦊 <b>[Keywords]: Sent message to {}, triggered by {}:\n{}</b>",
         "kwords": "🦊 <b>Current keywords:\n</b>{}",
-        "no_command": "🚫 <b>Execution of command forbidden, because message contains reply</b>",
+        "no_command": (
+            "🚫 <b>Execution of command forbidden, because message contains reply</b>"
+        ),
     }
 
     strings_ru = {
@@ -50,41 +50,22 @@ class KeywordMod(loader.Module):
         "bl_removed": "✅ <b>Этот чат больше не в черном списке Кейвордов</b>",
         "sent": "🦊 <b>[Кейворды]: Отправлено сообщение в {}, активировано {}:\n{}</b>",
         "kwords": "🦊 <b>Текущие кейворды:\n</b>{}",
-        "no_command": "🚫 <b>Команда не была выполнена, так как сообщение содержит реплай</b>",
-        "_cmd_doc_kword": "<кейворд | можно в кавычках | & для нескольких слов, которые должны быть в сообщении в любом порядке> <сообщение | оставь пустым для удаления кейворда> [-r для полного совпадения] [-m для автопрочтения сообщения] [-l для включения логирования] [-e для включения регулярных выражений]",
+        "no_command": (
+            "🚫 <b>Команда не была выполнена, так как сообщение содержит реплай</b>"
+        ),
+        "_cmd_doc_kword": (
+            "<кейворд | можно в кавычках | & для нескольких слов, которые должны быть в"
+            " сообщении в любом порядке> <сообщение | оставь пустым для удаления"
+            " кейворда> [-r для полного совпадения] [-m для автопрочтения сообщения]"
+            " [-l для включения логирования] [-e для включения регулярных выражений]"
+        ),
         "_cmd_doc_kwords": "Показать активные кейворды",
         "_cmd_doc_kwbl": "Добавить чат в черный список кейвордов",
         "_cmd_doc_kwbllist": "Показать чаты в черном списке",
         "_cls_doc": "Создавай кастомные кейворды с регулярными выражениями и командами",
     }
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:keyword")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["keyword"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self.keywords = self.get("keywords", {})
         self.bl = self.get("bl", [])
 
@@ -202,7 +183,10 @@ class KeywordMod(loader.Module):
             tit = (
                 u.first_name if getattr(u, "first_name", None) is not None else u.title
             )
-            res += f"  👺 <a href=\"tg://user?id={u.id}\">{tit}{(' ' + u.last_name) if getattr(u, 'last_name', None) is not None else ''}</a>\n"
+            res += (
+                "  👺 <a"
+                f" href=\"tg://user?id={u.id}\">{tit}{(' ' + u.last_name) if getattr(u, 'last_name', None) is not None else ''}</a>\n"
+            )
 
         if not res:
             res = "<i>No</i>"

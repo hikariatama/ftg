@@ -6,10 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/color/480/000000/comedy.png
 # meta developer: @hikarimods
 
-import asyncio
 import io
 import json
 
@@ -31,7 +32,9 @@ class RPMod(loader.Module):
         "rp_on": "✅ <b>RPM on</b>",
         "rp_off": "✅ <b>RPM off</b>",
         "rplist": "🦊 <b>Current RP commands</b>\n\n{}",
-        "backup_caption": "🦊 <b>My RP commands. Restore with </b><code>.rprestore</code>",
+        "backup_caption": (
+            "🦊 <b>My RP commands. Restore with </b><code>.rprestore</code>"
+        ),
         "no_file": "🚫 <b>Reply to file</b>",
         "restored": "✅ <b>RP Commands restored. See them with </b><code>.rplist</code>",
     }
@@ -42,10 +45,19 @@ class RPMod(loader.Module):
         "rp_on": "✅ <b>RPM включен</b>",
         "rp_off": "✅ <b>RPM выключен</b>",
         "rplist": "🦊 <b>Текущие RP команды</b>\n\n{}",
-        "backup_caption": "🦊 <b>Мои RP команды. Ты можешь восстановить их используя </b><code>.rprestore</code>",
+        "backup_caption": (
+            "🦊 <b>Мои RP команды. Ты можешь восстановить их используя"
+            " </b><code>.rprestore</code>"
+        ),
         "no_file": "🚫 <b>Ответь на файл</b>",
-        "restored": "✅ <b>RP команды восстановлены. Их можно посмотреть используя </b><code>.rplist</code>",
-        "_cmd_doc_rp": "<command> <message> - Добавить RP команду. Если не указано сообщение, команда будет удалена",
+        "restored": (
+            "✅ <b>RP команды восстановлены. Их можно посмотреть используя"
+            " </b><code>.rplist</code>"
+        ),
+        "_cmd_doc_rp": (
+            "<command> <message> - Добавить RP команду. Если не указано сообщение,"
+            " команда будет удалена"
+        ),
         "_cmd_doc_rptoggle": "Включить\\выключить RP режим в текущем чате",
         "_cmd_doc_rplist": "Показать RP команды",
         "_cmd_doc_rpbackup": "Сохранить RP команды в файл",
@@ -54,33 +66,7 @@ class RPMod(loader.Module):
         "_cls_doc": "RPMod от HikariMods",
     }
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:rpmod")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["rpmod"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self.rp = self.get(
             "rp",
             {
@@ -176,7 +162,8 @@ class RPMod(loader.Module):
             f"🦊 <b>RPM is active in {len(self.chats)} chats:</b>\n\n"
             + "\n".join(
                 [
-                    f"    🇯🇵 {utils.escape_html(get_display_name(await self._client.get_entity(int(chat))))}"
+                    "    🇯🇵"
+                    f" {utils.escape_html(get_display_name(await self._client.get_entity(int(chat))))}"
                     for chat in self.chats
                 ]
             ),
@@ -235,5 +222,8 @@ class RPMod(loader.Module):
 
         await utils.answer(
             message,
-            f'{emoji} <a href="tg://user?id={sender.id}">{utils.escape_html(sender.first_name)}</a> <b>{utils.escape_html(msg)}</b> <a href="tg://user?id={reply.id}">{utils.escape_html(reply.first_name)}</a>',
+            f"{emoji} <a"
+            f' href="tg://user?id={sender.id}">{utils.escape_html(sender.first_name)}</a>'
+            f" <b>{utils.escape_html(msg)}</b> <a"
+            f' href="tg://user?id={reply.id}">{utils.escape_html(reply.first_name)}</a>',
         )

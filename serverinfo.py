@@ -6,12 +6,13 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/stickers/500/000000/server-shutdown.png
 # meta developer: @hikarimods
 # scope: hikka_only
 # requires: psutil
 
-import asyncio
 import os
 import platform
 import sys
@@ -33,43 +34,23 @@ class serverInfoMod(loader.Module):
     strings = {
         "name": "ServerInfo",
         "loading": "<b>👾 Loading server info...</b>",
-        "servinfo": "<b><u>👾 Server Info:</u>\n\n<u>🗄 Used resources:</u>\n    CPU: {} Cores {}%\n    RAM: {} / {}MB ({}%)\n\n<u>🧾 Dist info</u>\n    Kernel: {}\n    Arch: {}\n    OS: {}</b>",
+        "servinfo": (
+            "<b><u>👾 Server Info:</u>\n\n<u>🗄 Used resources:</u>\n    CPU: {} Cores"
+            " {}%\n    RAM: {} / {}MB ({}%)\n\n<u>🧾 Dist info</u>\n    Kernel: {}\n   "
+            " Arch: {}\n    OS: {}</b>"
+        ),
     }
 
     strings_ru = {
         "loading": "<b>👾 Загрузка информации о сервере...</b>",
-        "servinfo": "<b><u>👾 Информация о сервере:</u>\n\n<u>🗄 Задействованные ресурсы:</u>\n    CPU: {} ядер {}%\n    RAM: {} / {}MB ({}%)\n\n<u>🧾 Информация о ядре</u>\n    Kernel: {}\n    Arch: {}\n    OS: {}</b>",
+        "servinfo": (
+            "<b><u>👾 Информация о сервере:</u>\n\n<u>🗄 Задействованные ресурсы:</u>\n  "
+            "  CPU: {} ядер {}%\n    RAM: {} / {}MB ({}%)\n\n<u>🧾 Информация о"
+            " ядре</u>\n    Kernel: {}\n    Arch: {}\n    OS: {}</b>"
+        ),
         "_cmd_doc_serverinfo": "Показать информацию о сервере",
         "_cls_doc": "Показывает информацию о сервере",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:serverinfo")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["serverinfo"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     async def serverinfocmd(self, message: Message):
         """Show server info"""

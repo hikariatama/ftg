@@ -1,3 +1,4 @@
+# scope: hikka_min 1.2.10
 __version__ = (2, 0, 0)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -12,9 +13,7 @@ __version__ = (2, 0, 0)
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.0.25
 
-import asyncio
 import copy
 import enum
 from random import choice
@@ -130,7 +129,7 @@ class Board:
             line = [
                 MARKER_TO_CHAR[self.grid[row][col]] for col in range(self.dimension)
             ]
-            print("%s" % ("".join(line)))
+            print("%s" % "".join(line))
 
     def has_winner(self):
         # need at least 5 moves before x hits three in a row
@@ -212,63 +211,64 @@ class TicTacToeMod(loader.Module):
 
     strings = {
         "name": "TicTacToe",
-        "gamestart": "🧠 <b>You want to play, let's play!</b>\n<i>Waiting for second player...</i>",
+        "gamestart": (
+            "🧠 <b>You want to play, let's play!</b>\n<i>Waiting for second"
+            " player...</i>"
+        ),
         "gamestart_ai": "🐻 <b>Bear is ready to compete! Are you?</b>",
         "game_discarded": "Game is discarded",
         "wait_for_your_turn": "Wait for your turn",
         "no_move": "This cell is not empty",
         "not_your_game": "It is not your game, don't interrupt it",
-        "draw": "🧠 <b>The game is over! What a pity...</b>\n<i>🐉 The game ended with <b>draw</b>. No winner, no argument...</i>",
-        "normal_game": "🧠 <b>{}</b>\n<i>Playing with <b>{}</b></i>\n\n<i>Now is the turn of <b>{}</b></i>",
-        "win": "🧠 <b>The game is over! What a pity...</b>\n\n<i>🏆 Winner: <b>{} ({})</b></i>\n<code>{}</code>",
-        "ai_game": "🧠 <b>{}</b>\n<i><b>{}</b> is playing with <b>🐻 Bear</b></i>\n\n<i>You are {}</i>",
+        "draw": (
+            "🧠 <b>The game is over! What a pity...</b>\n<i>🐉 The game ended with"
+            " <b>draw</b>. No winner, no argument...</i>"
+        ),
+        "normal_game": (
+            "🧠 <b>{}</b>\n<i>Playing with <b>{}</b></i>\n\n<i>Now is the turn of"
+            " <b>{}</b></i>"
+        ),
+        "win": (
+            "🧠 <b>The game is over! What a pity...</b>\n\n<i>🏆 Winner: <b>{}"
+            " ({})</b></i>\n<code>{}</code>"
+        ),
+        "ai_game": (
+            "🧠 <b>{}</b>\n<i><b>{}</b> is playing with <b>🐻 Bear</b></i>\n\n<i>You are"
+            " {}</i>"
+        ),
         "not_with_yourself": "You can't play with yourself!",
     }
 
     strings_ru = {
-        "gamestart": "🧠 <b>Поиграть захотелось? Поиграем!</b>\n<i>Ожидание второго игрока...</i>",
+        "gamestart": (
+            "🧠 <b>Поиграть захотелось? Поиграем!</b>\n<i>Ожидание второго игрока...</i>"
+        ),
         "gamestart_ai": "🐻 <b>Мишка готов сражаться! А что насчет тебя?</b>",
         "game_discarded": "Игра отменена",
         "wait_for_your_turn": "Ожидание хода",
         "no_move": "Эта клетка уже заполнена",
         "not_your_game": "Это не твоя игра, не мешай",
-        "draw": "🧠 <b>Игра окончена! Какая жалость...</b>\n<i>🐉 Игра закончилась <b>ничьей</b>. Нет победителя, нет спора...</i>",
-        "normal_game": "🧠 <b>{}</b>\n<i>Игра с <b>{}</b></i>\n\n<i>Сейчас ходит <b>{}</b></i>",
-        "win": "🧠 <b>Игра окончена! Какая жалость...</b>\n\n<i>🏆 Победитель: <b>{} ({})</b></i>\n<code>{}</code>",
-        "ai_game": "🧠 <b>{}</b>\n<i><b>{}</b> играет с <b>🐻 Мишкой</b></i>\n\n<i>Ты {}</i>",
+        "draw": (
+            "🧠 <b>Игра окончена! Какая жалость...</b>\n<i>🐉 Игра закончилась"
+            " <b>ничьей</b>. Нет победителя, нет спора...</i>"
+        ),
+        "normal_game": (
+            "🧠 <b>{}</b>\n<i>Игра с <b>{}</b></i>\n\n<i>Сейчас ходит <b>{}</b></i>"
+        ),
+        "win": (
+            "🧠 <b>Игра окончена! Какая жалость...</b>\n\n<i>🏆 Победитель: <b>{}"
+            " ({})</b></i>\n<code>{}</code>"
+        ),
+        "ai_game": (
+            "🧠 <b>{}</b>\n<i><b>{}</b> играет с <b>🐻 Мишкой</b></i>\n\n<i>Ты {}</i>"
+        ),
         "not_with_yourself": "Ты не можешь играть сам с собой!",
         "_cmd_doc_tictactoe": "Начать новую игру в крестики-нолики",
         "_cmd_doc_tictacai": "Сыграть с 🐻 Мишкой (У тебя нет шансов)",
         "_cls_doc": "Сыграй в крестики-нолики прямо в Телеграм",
     }
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:tictactoe")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["tictactoe"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self._games = {}
         self._me = await client.get_me()
 

@@ -6,12 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/external-xnimrodx-lineal-color-xnimrodx/512/000000/external-short-shopping-mall-xnimrodx-lineal-color-xnimrodx.png
 # meta developer: @hikarimods
 # scope: hikka_only
-# scope: hikka_min 1.1.14
 
-import asyncio
 import logging
 
 import requests
@@ -37,7 +37,10 @@ class AutoShortenerMod(loader.Module):
         "no_args": "🔗 <b>Не указана ссылка для сокращения</b>",
         "_cmd_doc_autosurl": "Включить\\выключить автоматическое сокращение ссылок",
         "_cmd_doc_surl": "[ссылка] [движок]- Сократить ссылку",
-        "_cls_doc": "Автоматически сокращает ссылки в твоих сообщениях, если они длиннее значения в конфиге",
+        "_cls_doc": (
+            "Автоматически сокращает ссылки в твоих сообщениях, если они длиннее"
+            " значения в конфиге"
+        ),
     }
 
     def __init__(self):
@@ -55,34 +58,6 @@ class AutoShortenerMod(loader.Module):
                 validator=loader.validators.Choice(["owo", "gg", "gay"]),
             ),
         )
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:surl")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["surl"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     async def autosurlcmd(self, message: Message):
         """Toggle automatic url shortener"""

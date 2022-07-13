@@ -6,15 +6,14 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/color/480/000000/gallery.png
 # meta developer: @hikarimods
 # scope: hikka_only
-# scope: hikka_min 1.0.11
 # requires: requests
 
-import asyncio
 import functools
-import logging
 import random
 from typing import List, Union
 
@@ -25,8 +24,6 @@ from telethon.utils import get_display_name
 from .. import loader, utils
 from ..inline.types import InlineQuery
 
-logger = logging.getLogger(__name__)
-
 
 async def photos(subreddit: str, quantity: int) -> List[str]:
     """Loads `quantity` photos from `subreddit` on scrolller.com"""
@@ -35,8 +32,13 @@ async def photos(subreddit: str, quantity: int) -> List[str]:
             requests.get,
             "https://api.scrolller.com/api/v2/graphql",
             json={
-                "query": f" query SubredditQuery( $url: String! $filter: SubredditPostFilter $iterator: String ) {{ getSubreddit(url: $url) {{ children( limit: {quantity}"
-                " iterator: $iterator filter: $filter disabledHosts: null ) { iterator items {url subredditTitle isNsfw mediaSources { url } } } } } ",
+                "query": (
+                    " query SubredditQuery( $url: String! $filter: SubredditPostFilter"
+                    " $iterator: String ) { getSubreddit(url: $url) { children("
+                    f" limit: {quantity} iterator: $iterator filter: $filter"
+                    " disabledHosts: null ) { iterator items {url subredditTitle"
+                    " isNsfw mediaSources { url } } } } } "
+                ),
                 "variables": {"url": subreddit, "filter": None, "hostsDown": None},
                 "authorization": None,
             },
@@ -48,7 +50,10 @@ async def photos(subreddit: str, quantity: int) -> List[str]:
 
 
 def caption(subreddit: dict) -> str:
-    return f"{'🔞' if subreddit['isNsfw'] else '👨‍👩‍👧'} <b>{utils.escape_html(subreddit['secondaryTitle'])} ({utils.escape_html(subreddit['url'])})</b>\n\n<i>{utils.escape_html(subreddit['description'])}</i>\n\n<i>Enjoy! {utils.ascii_face()}</i>"
+    return (
+        f"{'🔞' if subreddit['isNsfw'] else '👨‍👩‍👧'} <b>{utils.escape_html(subreddit['secondaryTitle'])} ({utils.escape_html(subreddit['url'])})</b>\n\n<i>{utils.escape_html(subreddit['description'])}</i>\n\n<i>Enjoy!"
+        f" {utils.ascii_face()}</i>"
+    )
 
 
 async def search_subreddit(query: str) -> List[dict]:
@@ -58,7 +63,13 @@ async def search_subreddit(query: str) -> List[dict]:
             requests.get,
             "https://api.scrolller.com/api/v2/graphql",
             json={
-                "query": " query SearchQuery($query: String!, $isNsfw: Boolean) { searchSubreddits( query: $query isNsfw: $isNsfw limit: 500 ) { __typename url title secondaryTitle description createdAt isNsfw subscribers isComplete itemCount videoCount pictureCount albumCount isFollowing } } ",
+                "query": (
+                    " query SearchQuery($query: String!, $isNsfw: Boolean) {"
+                    " searchSubreddits( query: $query isNsfw: $isNsfw limit: 500 ) {"
+                    " __typename url title secondaryTitle description createdAt isNsfw"
+                    " subscribers isComplete itemCount videoCount pictureCount"
+                    " albumCount isFollowing } } "
+                ),
                 "variables": {"query": query, "isNsfw": None},
                 "authorization": None,
             },
@@ -118,39 +129,16 @@ class ScrolllerMod(loader.Module):
 
     strings_ru = {
         "sreddit404": "🚫 <b>Сабреддит не найден</b>",
-        "default_subreddit": "🙂 <b>Установил новый сабреддит по умолчанию: </b><code>{}</code>",
-        "_cmd_doc_gallery": "<сабреддит> [-n <количество | 1 по умолчанию>] - Отправляет случайную 18+ картинку",
+        "default_subreddit": (
+            "🙂 <b>Установил новый сабреддит по умолчанию: </b><code>{}</code>"
+        ),
+        "_cmd_doc_gallery": (
+            "<сабреддит> [-n <количество | 1 по умолчанию>] - Отправляет случайную 18+"
+            " картинку"
+        ),
         "_cmd_doc_gallerycat": "<сабреддит> - Установить новый сабреддит по умолчанию",
         "_cls_doc": "Отправляет изображения с scrolller.com в виде инлайн галереи",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:scrolller")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["scrolller"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     async def gallerycmd(self, message: Message):
         """<subreddit | default> - Send inline gallery with photos from subreddit"""
@@ -158,7 +146,10 @@ class ScrolllerMod(loader.Module):
         reply = await message.get_reply_message()
 
         if reply:
-            for_ = f"<b>❤️ Special for {utils.escape_html(get_display_name(reply.sender))}</b>"
+            for_ = (
+                "<b>❤️ Special for"
+                f" {utils.escape_html(get_display_name(reply.sender))}</b>"
+            )
         else:
             for_ = ""
 
@@ -215,7 +206,9 @@ class ScrolllerMod(loader.Module):
             query,
             [
                 {
-                    "title": f"{'🔞' if subreddit['isNsfw'] else '👨‍👩‍👧'} {subreddit['secondaryTitle']} ({subreddit['url']})",
+                    "title": (
+                        f"{'🔞' if subreddit['isNsfw'] else '👨‍👩‍👧'} {subreddit['secondaryTitle']} ({subreddit['url']})"
+                    ),
                     "description": subreddit["description"],
                     "next_handler": functools.partial(
                         photos,

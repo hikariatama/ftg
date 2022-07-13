@@ -1,3 +1,4 @@
+# scope: hikka_min 1.2.10
 __version__ = (2, 0, 3)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -11,10 +12,8 @@ __version__ = (2, 0, 3)
 # meta pic: https://img.icons8.com/color/480/000000/silenced.png
 # meta developer: @hikarimods
 # scope: hikka_only
-# scope: hikka_min 1.0.23
 
 import asyncio
-import logging
 import time
 
 from telethon.tl.types import Message
@@ -22,8 +21,6 @@ from telethon.tl.functions.channels import InviteToChannelRequest
 from telethon.tl.functions.contacts import GetBlockedRequest
 
 from .. import loader, utils
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -33,17 +30,22 @@ class SilentTagsMod(loader.Module):
     strings = {
         "name": "SilentTags",
         "tagged": (
-            '<b>🤫 You were tagged in <a href="{}">{}</a> by <a href="tg://openmessage?user_id={}">{}</a></b>\n'
-            "<code>Message:</code>\n"
-            "<code>{}</code>\n"
-            '<b>Link: <a href="https://t.me/c/{}/{}">click</a></b>'
+            '<b>🤫 You were tagged in <a href="{}">{}</a> by <a'
+            ' href="tg://openmessage?user_id={}">{}</a></b>\n<code>Message:</code>\n<code>{}</code>\n<b>Link:'
+            ' <a href="https://t.me/c/{}/{}">click</a></b>'
         ),
         "tag_mentioned": "<b>🤫 Silent Tags are active</b>",
         "stags_status": "<b>🤫 Silent Tags are {}</b>",
-        "_cfg_doc_silent_users": "Do not send notifications about tags from users with ids listed",
-        "_cfg_doc_silent_chats": "Do not send notifications about tags from chats with ids listed",
+        "_cfg_doc_silent_users": (
+            "Do not send notifications about tags from users with ids listed"
+        ),
+        "_cfg_doc_silent_chats": (
+            "Do not send notifications about tags from chats with ids listed"
+        ),
         "_cfg_doc_silent_bots": "Do not send notifications about tags from bots",
-        "_cfg_doc_silent_blocked": "Do not send notifications about tags from blocked users",
+        "_cfg_doc_silent_blocked": (
+            "Do not send notifications about tags from blocked users"
+        ),
         "_cfg_doc_ignore_users": "Disable SilentTags for users with ids listed",
         "_cfg_doc_ignore_chats": "Disable SilentTags for chats with ids listed",
         "_cfg_doc_ignore_bots": "Disable SilentTags for bots",
@@ -57,16 +59,28 @@ class SilentTagsMod(loader.Module):
         "stags_status": "<b>🤫 Silent Tags {}</b>",
         "_cmd_doc_stags": "<on\\off> - Включить\\выключить уведомления о тегах",
         "_cls_doc": "Отключает уведомления о тегах",
-        "_cfg_doc_ignore_users": "Отключить SilentTags для пользователей с перечисленными ID",
+        "_cfg_doc_ignore_users": (
+            "Отключить SilentTags для пользователей с перечисленными ID"
+        ),
         "_cfg_doc_ignore_chats": "Отключить SilentTags в чатах с перечисленными ID",
         "_cfg_doc_ignore_bots": "Отключить SilentTags для ботов",
-        "_cfg_doc_ignore_blocked": "Отключить SilentTags для заблокированных пользователей",
-        "_cfg_doc_silent_users": "Не отправлять сообщения о тегах от пользователей с перечисленными ID",
-        "_cfg_doc_silent_chats": "Не отправлять сообщения о тегах в чатах с перечисленными ID",
+        "_cfg_doc_ignore_blocked": (
+            "Отключить SilentTags для заблокированных пользователей"
+        ),
+        "_cfg_doc_silent_users": (
+            "Не отправлять сообщения о тегах от пользователей с перечисленными ID"
+        ),
+        "_cfg_doc_silent_chats": (
+            "Не отправлять сообщения о тегах в чатах с перечисленными ID"
+        ),
         "_cfg_doc_silent_bots": "Не отправлять сообщения о тегах от ботов",
-        "_cfg_doc_silent_blocked": "Не отправлять сообщения о тегах от заблокированных пользователей",
+        "_cfg_doc_silent_blocked": (
+            "Не отправлять сообщения о тегах от заблокированных пользователей"
+        ),
         "_cfg_doc_silent": "Не отправлять сообщение о том, что активны Silent Tags",
-        "_cfg_doc_use_whitelist": "Преобразовать все списковые настройки в белый список",
+        "_cfg_doc_use_whitelist": (
+            "Преобразовать все списковые настройки в белый список"
+        ),
     }
 
     def __init__(self):
@@ -146,33 +160,7 @@ class SilentTagsMod(loader.Module):
             ).users
         ]
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:silent_tags")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["silent_tags"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self._ratelimit = []
         self._fw_protect = {}
         self._blocked = []

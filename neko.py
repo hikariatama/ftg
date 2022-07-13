@@ -6,6 +6,8 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/color/480/000000/sarada-uchiha.png
 # scope: hikka_only
 # meta developer: @hikarimods
@@ -47,33 +49,7 @@ class NekosLifeMod(loader.Module):
         "_cls_doc": "Обертка NekosLife API",
     }
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:neko")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["neko"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         ans = (
             await utils.run_sync(requests.get, "https://nekos.life/api/v2/endpoints")
         ).json()
@@ -145,7 +121,8 @@ class NekosLifeMod(loader.Module):
         """Why?"""
         await utils.answer(
             message,
-            f"<code>👾 {(await utils.run_sync(requests.get, self.endpoints['why'])).json()['why']}</code>",
+            "<code>👾"
+            f" {(await utils.run_sync(requests.get, self.endpoints['why'])).json()['why']}</code>",
         )
 
     @loader.unrestricted
@@ -153,7 +130,8 @@ class NekosLifeMod(loader.Module):
         """Did you know?"""
         await utils.answer(
             message,
-            f"<b>🧐 Did you know, that </b><code>{(await utils.run_sync(requests.get, self.endpoints['fact'])).json()['fact']}</code>",
+            "<b>🧐 Did you know, that"
+            f" </b><code>{(await utils.run_sync(requests.get, self.endpoints['fact'])).json()['fact']}</code>",
         )
 
     @loader.unrestricted

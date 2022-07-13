@@ -6,18 +6,15 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/external-flatart-icons-flat-flatarticons/512/000000/external-frame-valentines-day-flatart-icons-flat-flatarticons-1.png
 # meta developer: @hikarimods
-
-import asyncio
-import logging
 
 import requests
 from telethon.tl.types import Message
 
 from .. import loader, utils
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -28,46 +25,24 @@ class AniSearchMod(loader.Module):
         "name": "AniSearch",
         "404": "😶‍🌫️ <b>I don't know which anime it is...</b>",
         "searching": "🐵 <b>Let me take a look...</b>",
-        "result": "😎 <b>I think, it is... </b><code>{}</code><b> episode </b><code>{}</code><b> at</b> <code>{}</code>\n<b>I'm sure at {}%</b>",
+        "result": (
+            "😎 <b>I think, it is... </b><code>{}</code><b> episode"
+            " </b><code>{}</code><b> at</b> <code>{}</code>\n<b>I'm sure at {}%</b>"
+        ),
         "media_not_found": "🚫 <b>Media not found</b>",
     }
 
     strings_ru = {
         "404": "😶‍🌫️ <b>Я не знаю, что это за аниме...</b>",
         "searching": "🐵 <b>Дай глянуть...</b>",
-        "result": "😎 <b>Я думаю, что это... </b><code>{}</code><b> эпизод </b><code>{}</code><b> на</b> <code>{}</code>\n<b>Я уверен на {}%</b>",
+        "result": (
+            "😎 <b>Я думаю, что это... </b><code>{}</code><b> эпизод"
+            " </b><code>{}</code><b> на</b> <code>{}</code>\n<b>Я уверен на {}%</b>"
+        ),
         "media_not_found": "🚫 <b>Медиа не найдено</b>",
         "_cmd_doc_anisearch": "Поиск аниме по скриншоту",
         "_cls_doc": "Ищет конкретную серию и тайм-код аниме по скриншоту",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:anisearch")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["anisearch"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     async def anisearchcmd(self, message: Message):
         """Search anime by frame"""
@@ -94,7 +69,10 @@ class AniSearchMod(loader.Module):
         anilist = requests.post(
             "https://graphql.anilist.co",
             json={
-                "query": "query($id: Int) {Media(id: $id, type: ANIME) {id idMal title {native romaji english } synonyms isAdult } }",
+                "query": (
+                    "query($id: Int) {Media(id: $id, type: ANIME) {id idMal title"
+                    " {native romaji english } synonyms isAdult } }"
+                ),
                 "variables": {"id": search_result["result"][0]["anilist"]},
             },
         ).json()

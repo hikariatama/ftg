@@ -1,3 +1,4 @@
+# scope: hikka_min 1.2.10
 #    Friendly Telegram (telegram userbot)
 #    Copyright (C) 2018-2019 The Authors
 
@@ -25,7 +26,6 @@
 # meta pic: https://img.icons8.com/external-flat-lima-studio/512/000000/external-terminal-coding-flat-lima-studio.png
 # meta developer: @bsolute
 # scope: hikka_only
-# scope: hikka_min 1.1.23
 
 import asyncio
 import logging
@@ -57,7 +57,9 @@ class TerminalMod(loader.Module):
         "stderr": "</code>\n\n<b>🚫 Stderr:</b>\n<code>",
         "end": "</code>",
         "auth_fail": "🚫 <b>Authentication failed, please try again</b>",
-        "auth_needed": '<a href="tg://user?id={}">🔐 Interactive authentication required</a>',
+        "auth_needed": (
+            '<a href="tg://user?id={}">🔐 Interactive authentication required</a>'
+        ),
         "auth_msg": (
             "🔐 <b>Please edit this message to the password for</b> "
             "<code>{}</code> <b>to run</b> <code>{}</code>"
@@ -99,34 +101,6 @@ class TerminalMod(loader.Module):
             ),
         )
         self.activecmds = {}
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:terminal")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["terminal"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     @loader.owner
     async def terminalcmd(self, message):

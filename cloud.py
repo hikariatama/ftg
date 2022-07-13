@@ -6,6 +6,8 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/stickers/500/000000/cloud.png
 # meta developer: @hikarimods
 # requires: hashlib base64
@@ -16,7 +18,6 @@ import difflib
 import hashlib
 import inspect
 import io
-import logging
 import re
 import time
 import contextlib
@@ -26,8 +27,6 @@ import telethon
 from telethon.tl.types import Message
 
 from .. import loader, utils
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -41,9 +40,16 @@ class ModuleCloudMod(loader.Module):
         "cannot_join": "🚫 <b>Am I banned in hikari. chat?</b>",
         "args": "🚫 <b>Args not specified</b>",
         "mod404": "🚫 <b>Module {} not found</b>",
-        "ilink": '💻 <b><u>{name}</u> - <a href="https://mods.hikariatama.ru/view/{file}.py">source</a></b>\nℹ️ <i>{desc}</i>\n\n<i>By @hikarimods with 💗</i>\n\n🌘 <code>.dlmod {file}</code>',
+        "ilink": (
+            "💻 <b><u>{name}</u> - <a"
+            ' href="https://mods.hikariatama.ru/view/{file}.py">source</a></b>\nℹ️'
+            " <i>{desc}</i>\n\n<i>By @hikarimods with 💗</i>\n\n🌘 <code>.dlmod"
+            " {file}</code>"
+        ),
         "404": "😔 <b>Module not found</b>",
-        "not_exact": "⚠️ <b>No exact match occured, so the closest result is shown instead</b>",
+        "not_exact": (
+            "⚠️ <b>No exact match occured, so the closest result is shown instead</b>"
+        ),
     }
 
     strings_ru = {
@@ -51,42 +57,22 @@ class ModuleCloudMod(loader.Module):
         "cannot_join": "🚫 <b>Может я забанен в чате Хикари?</b>",
         "args": "🚫 <b>Нет аргументов</b>",
         "mod404": "🚫 <b>Модуль {} не найден</b>",
-        "_cmd_doc_addmod": "<файл> - Отправить модуль в @hikka_talks для добавления в базу",
+        "_cmd_doc_addmod": (
+            "<файл> - Отправить модуль в @hikka_talks для добавления в базу"
+        ),
         "_cmd_doc_cloud": "<command \\ mod_name> - Поиск модуля в @hikarimods_database",
         "_cmd_doc_imod": "<command \\ mod_name> - Поиск модуля в @hikarimods",
         "_cmd_doc_ilink": "<modname> - Получить баннер модуля Хикари",
-        "_cmd_doc_verifmod": "<filename>;<title>;<description>;<tags> - Верифицировать модуль [только для админов @hikarimods]",
+        "_cmd_doc_verifmod": (
+            "<filename>;<title>;<description>;<tags> - Верифицировать модуль [только"
+            " для админов @hikarimods]"
+        ),
         "_cls_doc": "Поиск и предложение модулей в HikariMods Database",
-        "not_exact": "⚠️ <b>Точного совпадения не нашлось, поэтому был выбран наиболее подходящее</b>",
+        "not_exact": (
+            "⚠️ <b>Точного совпадения не нашлось, поэтому был выбран наиболее"
+            " подходящее</b>"
+        ),
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:cloud")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["cloud"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     async def search(self, entity, message: Message) -> None:
         args = utils.get_args_raw(message)
@@ -214,7 +200,8 @@ class ModuleCloudMod(loader.Module):
         )
         await self._client.send_message(
             "t.me/hikarimods_database",
-            f"🦊 <b><u>{title}</u></b>\n<i>{description}</i>\n\n📋 <b><u>Команды:</u></b>\n{commands}\n🚀 <code>.dlmod {url}</code>\n\n#"
+            f"🦊 <b><u>{title}</u></b>\n<i>{description}</i>\n\n📋"
+            f" <b><u>Команды:</u></b>\n{commands}\n🚀 <code>.dlmod {url}</code>\n\n#"
             + " #".join(tags.split(",")),
         )
 
@@ -269,7 +256,11 @@ class ModuleCloudMod(loader.Module):
             text = (
                 f"<b>🧳 {utils.escape_html(class_name)}</b>"
                 if not utils.check_url(link)
-                else f'📼 <b><a href="{link}">Link</a> for {utils.escape_html(class_name)}:</b> <code>{link}</code>\n\n{self.strings("not_exact") if not exact else ""}'
+                else (
+                    f'📼 <b><a href="{link}">Link</a> for'
+                    f" {utils.escape_html(class_name)}:</b>"
+                    f' <code>{link}</code>\n\n{self.strings("not_exact") if not exact else ""}'
+                )
             )
 
             file = io.BytesIO(sys_module.__loader__.data)

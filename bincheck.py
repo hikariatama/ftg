@@ -6,10 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/fluency/240/000000/sim-card-chip.png
 # meta developer: @hikarimods
 
-import asyncio
 import json
 
 import requests
@@ -24,7 +25,9 @@ class BinCheckerMod(loader.Module):
 
     strings = {
         "name": "BinCheck",
-        "args": "💳 <b>To get bin info, you need to specify Bin of card (first 6 digits)</b>",
+        "args": (
+            "💳 <b>To get bin info, you need to specify Bin of card (first 6 digits)</b>"
+        ),
     }
 
     strings_ru = {
@@ -32,34 +35,6 @@ class BinCheckerMod(loader.Module):
         "_cmd_doc_bincheck": "[bin] - Получить информацию БИН",
         "_cls_doc": "Показать информацию БИН о банковской карте",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:bincheck")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["bincheck"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     @loader.unrestricted
     async def bincheckcmd(self, message: Message):
@@ -84,7 +59,8 @@ class BinCheckerMod(loader.Module):
                 )
 
                 return (
-                    "<b><u>Bin: %s</u></b>\n<code>\n🏦 Bank: %s\n🌐 Payment system: %s [%s]\n✳️ Level: %s\n⚛️ Country: %s </code>"
+                    "<b><u>Bin: %s</u></b>\n<code>\n🏦 Bank: %s\n🌐 Payment system: %s"
+                    " [%s]\n✳️ Level: %s\n⚛️ Country: %s </code>"
                     % (
                         cc,
                         ans["bank"]["name"],

@@ -1,3 +1,4 @@
+# scope: hikka_min 1.2.10
 __version__ = (2, 0, 0)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -13,7 +14,6 @@ __version__ = (2, 0, 0)
 # scope: hikka_only
 # meta developer: @hikarimods
 
-import asyncio
 import logging
 import time
 from urllib.parse import quote_plus
@@ -36,8 +36,14 @@ class ShikimoriMod(loader.Module):
         "authorize": "🔓 Authorize",
         "code": "✍️ Code",
         "code_input": "✍️ Redirect url after auth",
-        "auth": '🔓 <b>Shikimori authorization:</b>\n\n1. Click "🔓 Authorize"\n2. Click "Allow"\n3. Copy redirect url, and enter it in "✍️ Code"',
-        "my_animes": '🐙 <b>My humble anime <a href="https://shikimori.one/{}/list/anime/order-by/name">list</a>:</b>\n\n{}',
+        "auth": (
+            '🔓 <b>Shikimori authorization:</b>\n\n1. Click "🔓 Authorize"\n2. Click'
+            ' "Allow"\n3. Copy redirect url, and enter it in "✍️ Code"'
+        ),
+        "my_animes": (
+            "🐙 <b>My humble anime <a"
+            ' href="https://shikimori.one/{}/list/anime/order-by/name">list</a>:</b>\n\n{}'
+        ),
         "no_args": "🚫 <b>No arguments specified</b>",
         "added": "❤️ <b>Anime {} added to planned</b>",
         "auth_successful": "👍 <b>Authorized! Check module help for new commands</b>",
@@ -47,7 +53,9 @@ class ShikimoriMod(loader.Module):
         "completed": "✅ Completed",
         "on_hold": "🗓 Holded",
         "dropped": "🚫 Dropped",
-        "interact": '📼 <b>Interacting with <a href="https://shikimori.one{}">{}</a></b>',
+        "interact": (
+            '📼 <b>Interacting with <a href="https://shikimori.one{}">{}</a></b>'
+        ),
         "state_changed": "Anime state changed to {}",
         "delete": "🗑 Delete",
         "no_status": "🔘 Change status",
@@ -59,18 +67,30 @@ class ShikimoriMod(loader.Module):
         "authorize": "🔓 Авторизоваться",
         "code": "✍️ Код",
         "code_input": "✍️ Ссылка, на которую тебя перебросило после авторизации",
-        "auth": '🔓 <b>Авторизация на Shikimori:</b>\n\n1. Нажми "🔓 Авторизоваться"\n2. Нажми "Разрешить"\n3. Скопируй ссылку, на которую тебя перекинет, и введи ее в "✍️ Код"',
-        "my_animes": '🐙 <b>Мой скромный <a href="https://shikimori.one/{}/list/anime/order-by/name">список</a> аниме:</b>\n\n{}',
+        "auth": (
+            '🔓 <b>Авторизация на Shikimori:</b>\n\n1. Нажми "🔓 Авторизоваться"\n2.'
+            ' Нажми "Разрешить"\n3. Скопируй ссылку, на которую тебя перекинет, и введи'
+            ' ее в "✍️ Код"'
+        ),
+        "my_animes": (
+            "🐙 <b>Мой скромный <a"
+            ' href="https://shikimori.one/{}/list/anime/order-by/name">список</a>'
+            " аниме:</b>\n\n{}"
+        ),
         "no_args": "🚫 <b>Аргументы не указаны</b>",
         "added": "❤️ <b>Аниме {} добавлено в отложенные</b>",
-        "auth_successful": "👍 <b>Авторизован! Смотри помощь модуля, там новые команды</b>",
+        "auth_successful": (
+            "👍 <b>Авторизован! Смотри помощь модуля, там новые команды</b>"
+        ),
         "planned": "🕐 Запланировано",
         "watching": "🎬 Смотрю",
         "rewatching": "🔄 Пересматриваю",
         "completed": "✅ Просмотрено",
         "on_hold": "🗓 Отложено",
         "dropped": "🚫 Заброшено",
-        "interact": '📼 <b>Взаимодействие с <a href="https://shikimori.one{}">{}</a></b>',
+        "interact": (
+            '📼 <b>Взаимодействие с <a href="https://shikimori.one{}">{}</a></b>'
+        ),
         "state_changed": "Состояние аниме изменено на {}",
         "delete": "🗑 Удалить",
         "no_status": "🔘 Изменить статус",
@@ -78,33 +98,7 @@ class ShikimoriMod(loader.Module):
         "success": "✅ Успешно",
     }
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:shikimori")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["shikimori"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self._shiki_me = None  # will be set later
         self._rates_cache = {}
 
@@ -519,7 +513,8 @@ class ShikimoriMod(loader.Module):
                 self._shiki_me["nickname"],
                 "\n".join(
                     [
-                        f"<a href=\"https://shikimori.one{rate['anime']['url']}\">▫️</a> <i>{utils.escape_html(rate['anime'].get('russian', rate['anime']['name']))}</i>"
+                        f"<a href=\"https://shikimori.one{rate['anime']['url']}\">▫️</a>"
+                        f" <i>{utils.escape_html(rate['anime'].get('russian', rate['anime']['name']))}</i>"
                         for rate in rates
                         if rate["status"] == "completed"
                     ]

@@ -1,3 +1,4 @@
+# scope: hikka_min 1.2.10
 __version__ = (2, 0, 0)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -12,7 +13,6 @@ __version__ = (2, 0, 0)
 # meta pic: https://img.icons8.com/external-dreamcreateicons-flat-dreamcreateicons/512/000000/external-death-halloween-dreamcreateicons-flat-dreamcreateicons.png
 # meta developer: @hikarimods
 # scope: hikka_only
-# scope: hikka_min 1.1.14
 
 import asyncio
 import logging
@@ -43,32 +43,75 @@ class PMBLMod(loader.Module):
 
     strings = {
         "name": "PMBL",
-        "state": "⚔️ <b>PM->BL is now {}</b>\n<i>Report spam? - {}\nDelete dialog? - {}</i>",
+        "state": (
+            "⚔️ <b>PM->BL is now {}</b>\n<i>Report spam? - {}\nDelete dialog? - {}</i>"
+        ),
         "args": "ℹ️ <b>Example usage: </b><code>.pmblsett 0 0</code>",
         "args_pmban": "ℹ️ <b>Example usage: </b><code>.pmbanlast 5</code>",
-        "config": "😶‍🌫️ <b>Config saved</b>\n<i>Report spam? - {}\nDelete dialog? - {}</i>",
-        "banned": "😊 <b>Hey there •ᴗ•</b>\n<b>Unit «SIGMA»<b>, the <b>guardian</b> of this account. You are <b>not approved</b>! You can contact my owner <b>in chat</b>, if you need help.\n<b>I need to ban you in terms of security</b>",
+        "config": (
+            "😶‍🌫️ <b>Config saved</b>\n<i>Report spam? - {}\nDelete dialog? - {}</i>"
+        ),
+        "banned": (
+            "😊 <b>Hey there •ᴗ•</b>\n<b>Unit «SIGMA»<b>, the <b>guardian</b> of this"
+            " account. You are <b>not approved</b>! You can contact my owner <b>in"
+            " chat</b>, if you need help.\n<b>I need to ban you in terms of"
+            " security</b>"
+        ),
         "removing": "😶‍🌫️ <b>Removing {} last dialogs...</b>",
         "removed": "😶‍🌫️ <b>Removed {} last dialogs!</b>",
         "user_not_specified": "🚫 <b>You haven't specified user</b>",
         "approved": '😶‍🌫️ <b><a href="tg://user?id={}">{}</a> approved in pm</b>',
-        "banned_log": '👮 <b>I banned <a href="tg://user?id={}">{}</a>.</b>\n\n<b>{} Contact</b>\n<b>{} Started by you</b>\n<b>{} Active conversation</b>\n\n<b>✊ Actions</b>\n\n<b>{} Reported spam</b>\n<b>{} Deleted dialog</b>\n<b>{} Banned</b>\n\n<b>ℹ️ Message</b>\n<code>{}</code>',
-        "hello": "🔏 <b>Unit «SIGMA»</b> protects your personal messages from intrusions. It will block everyone, who's trying to invade you.\n\nUse <code>.pmbl</code> to enable protection, <code>.pmblsett</code> to configure it and <code>.pmbanlast</code> if you've already been pm-raided.",
+        "banned_log": (
+            '👮 <b>I banned <a href="tg://user?id={}">{}</a>.</b>\n\n<b>{}'
+            " Contact</b>\n<b>{} Started by you</b>\n<b>{} Active"
+            " conversation</b>\n\n<b>✊ Actions</b>\n\n<b>{} Reported spam</b>\n<b>{}"
+            " Deleted dialog</b>\n<b>{} Banned</b>\n\n<b>ℹ️"
+            " Message</b>\n<code>{}</code>"
+        ),
+        "hello": (
+            "🔏 <b>Unit «SIGMA»</b> protects your personal messages from intrusions. It"
+            " will block everyone, who's trying to invade you.\n\nUse"
+            " <code>.pmbl</code> to enable protection, <code>.pmblsett</code> to"
+            " configure it and <code>.pmbanlast</code> if you've already been"
+            " pm-raided."
+        ),
     }
 
     strings_ru = {
-        "state": "⚔️ <b>Текущее состояние PM->BL: {}</b>\n<i>Сообщать о спаме? - {}\nУдалять диалог? - {}</i>",
+        "state": (
+            "⚔️ <b>Текущее состояние PM->BL: {}</b>\n<i>Сообщать о спаме? - {}\nУдалять"
+            " диалог? - {}</i>"
+        ),
         "args": "ℹ️ <b>Пример: </b><code>.pmblsett 0 0</code>",
         "args_pmban": "ℹ️ <b>Пример: </b><code>.pmbanlast 5</code>",
-        "config": "😶‍🌫️ <b>Конфиг сохранен</b>\n<i>Сообщать о спаме? - {}\nУдалять диалог? - {}</i>",
-        "banned": "😊 <b>Добрый день •ᴗ•</b>\n<b>Юнит «SIGMA»<b>, <b>защитник</b> этого аккаунта. Вы <b>не потверждены</b>! Вы можете связаться с моим владельцем <b>в чате</b>, если нужна помощь.\n<b>Я вынужден заблокировать вас из соображений безопасности</b>",
-        "hello": "🔏 <b>Юнит «SIGMA»</b> защищает твои личные сообщенния от неизвестных пользователей. Он будет блокировать всех, кто не соответствует настройкам.\n\nВведи <code>.pmbl</code> для активации защиты, <code>.pmblsett</code> для ее настройки и <code>.pmbanlast</code> если нужно очистить уже прошедший рейд на личные сообщения.",
+        "config": (
+            "😶‍🌫️ <b>Конфиг сохранен</b>\n<i>Сообщать о спаме? - {}\nУдалять диалог? -"
+            " {}</i>"
+        ),
+        "banned": (
+            "😊 <b>Добрый день •ᴗ•</b>\n<b>Юнит «SIGMA»<b>, <b>защитник</b> этого"
+            " аккаунта. Вы <b>не потверждены</b>! Вы можете связаться с моим владельцем"
+            " <b>в чате</b>, если нужна помощь.\n<b>Я вынужден заблокировать вас из"
+            " соображений безопасности</b>"
+        ),
+        "hello": (
+            "🔏 <b>Юнит «SIGMA»</b> защищает твои личные сообщенния от неизвестных"
+            " пользователей. Он будет блокировать всех, кто не соответствует"
+            " настройкам.\n\nВведи <code>.pmbl</code> для активации защиты,"
+            " <code>.pmblsett</code> для ее настройки и <code>.pmbanlast</code> если"
+            " нужно очистить уже прошедший рейд на личные сообщения."
+        ),
         "removing": "😶‍🌫️ <b>Удаляю {} последних диалогов...</b>",
         "removed": "😶‍🌫️ <b>Удалил {} последних диалогов!</b>",
         "user_not_specified": "🚫 <b>Укажи пользователя</b>",
         "_cmd_doc_pmbl": "Выключить\\Включить защиту",
-        "_cmd_doc_pmblsett": "<сообщать о спаме?> <удалять диалог?> - Настроить защиту - все параметры в формате 1/0",
-        "_cmd_doc_pmbanlast": "<количество> - Забанить и удалить n последних диалогов с пользователями",
+        "_cmd_doc_pmblsett": (
+            "<сообщать о спаме?> <удалять диалог?> - Настроить защиту - все параметры в"
+            " формате 1/0"
+        ),
+        "_cmd_doc_pmbanlast": (
+            "<количество> - Забанить и удалить n последних диалогов с пользователями"
+        ),
         "_cmd_doc_allowpm": "<пользователь> - Разрешить пользователю писать тебе в ЛС",
         "_cls_doc": "Блокирует и репортит входящие сообщения от незнакомцев",
     }
@@ -105,33 +148,7 @@ class PMBLMod(loader.Module):
             ),
         )
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:pmbl")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["pmbl"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self._whitelist = self.get("whitelist", [])
         self._ratelimit = []
         self._ratelimit_timeout = 5 * 60
@@ -139,7 +156,9 @@ class PMBLMod(loader.Module):
         if not self.get("ignore_hello", False):
             await self.inline.bot.send_photo(
                 self._tg_id,
-                photo=r"https://github.com/hikariatama/assets/raw/master/unit_sigma.png",
+                photo=(
+                    r"https://github.com/hikariatama/assets/raw/master/unit_sigma.png"
+                ),
                 caption=self.strings("hello"),
                 parse_mode="HTML",
             )

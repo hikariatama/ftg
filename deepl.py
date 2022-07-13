@@ -6,12 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/external-xnimrodx-lineal-color-xnimrodx/512/000000/external-translate-discussion-xnimrodx-lineal-color-xnimrodx.png
 # meta developer: @hikarimods
 # scope: hikka_only
-# scope: hikka_min 1.1.14
 
-import asyncio
 import logging
 import random
 import time
@@ -28,7 +28,10 @@ def translate(text, target="en", proxy=None):
     a = requests.post(
         "https://www2.deepl.com/jsonrpc?method=LMT_handle_jobs",
         headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,"
+                " like Gecko) Chrome/92.0.4515.131 Safari/537.36"
+            ),
             "Content-type": "application/json",
             "Accept": "*/*",
             "Sec-GPC": "1",
@@ -101,34 +104,6 @@ class DeepLMod(loader.Module):
         "_cmd_doc_deepl": "<text or reply> - Перевести текст через DeepL",
         "_cls_doc": "Переводит текст через DeepL. Рекомендуется использовать прокси",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:deepl")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["deepl"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     def __init__(self):
         self.config = loader.ModuleConfig(

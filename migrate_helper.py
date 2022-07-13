@@ -6,6 +6,8 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta developer: @hikarimods
 
 import asyncio
@@ -36,8 +38,6 @@ class HikkaMigratorMod(loader.Module):
     async def client_ready(self, client, db):
         raise loader.SelfUnload("No need to load this...")
 
-        self._db = db
-        self._client = client
         self._fuck = False
         if self.get("hash") == "ad3e522b2173c85c344a07259500a687":
             raise loader.SelfUnload

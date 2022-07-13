@@ -6,13 +6,14 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/plasticine/400/000000/youtube-play--v2.png
 # meta developer: @hikarimods
 # scope: hikka_only
 # scope: ffmpeg
 # requires: pytube python-ffmpeg
 
-import asyncio
 import os
 import subprocess
 
@@ -40,34 +41,6 @@ class YouTubeMod(loader.Module):
         "_cmd_doc_yt": "[mp3] <ссылка> - Скачать видео YouTube",
         "_cls_doc": "Скачать YouTube видео",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:youtube")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["youtube"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     @loader.unrestricted
     async def ytcmd(self, message: Message):

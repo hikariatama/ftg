@@ -6,10 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/tiny-color/256/000000/experimental-note-tiny-color.png
 # meta developer: @hikarimods
 
-import asyncio
 import logging
 
 from telethon.tl.types import Message  # noqa
@@ -25,7 +26,10 @@ class NotesMod(loader.Module):
 
     strings = {
         "name": "Notes",
-        "saved": "💾 <b>Saved note with name </b><code>{}</code>.\nFolder: </b><code>{}</code>.</b>",
+        "saved": (
+            "💾 <b>Saved note with name </b><code>{}</code>.\nFolder:"
+            " </b><code>{}</code>.</b>"
+        ),
         "no_reply": "🚫 <b>Reply and note name are required.</b>",
         "no_name": "🚫 <b>Specify note name.</b>",
         "no_note": "🚫 <b>Note not found.</b>",
@@ -35,7 +39,10 @@ class NotesMod(loader.Module):
     }
 
     strings_ru = {
-        "saved": "💾 <b>Заметка с именем </b><code>{}</code><b> сохранена</b>.\nПапка: </b><code>{}</code>.</b>",
+        "saved": (
+            "💾 <b>Заметка с именем </b><code>{}</code><b> сохранена</b>.\nПапка:"
+            " </b><code>{}</code>.</b>"
+        ),
         "no_reply": "🚫 <b>Требуется реплай на контент заметки.</b>",
         "no_name": "🚫 <b>Укажи имя заметки.</b>",
         "no_note": "🚫 <b>Заметка не найдена.</b>",
@@ -49,33 +56,7 @@ class NotesMod(loader.Module):
         "_cls_doc": "Модуль заметок с расширенным функционалом. Папки и категории",
     }
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:notes")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["notes"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self._notes = self.get("notes", {})
 
     async def hsavecmd(self, message: Message):

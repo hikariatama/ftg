@@ -6,15 +6,14 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/external-flaticons-flat-flat-icons/512/000000/external-game-seo-flaticons-flat-flat-icons.png
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.0.25
 # meta developer: @hikarimods
 
-import asyncio
 import json
-import logging
 import random
 
 import requests
@@ -22,8 +21,6 @@ from telethon.tl.types import Message
 
 from .. import loader, utils
 from ..inline.types import InlineCall
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -56,33 +53,7 @@ class TruthOrDareMod(loader.Module):
         "args": "▫️ <code>.todlang en/ru</code>",
     }
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:truth_or_dare")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["truth_or_dare"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         if self.get("lang") in {"ru", "en"}:
             self._update_lang()
 

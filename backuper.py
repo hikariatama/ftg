@@ -6,12 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/stickers/500/000000/data-backup.png
 # meta developer: @hikarimods
 # scope: hikka_only
-# scope: hikka_min 1.1.15
 
-import asyncio
 import datetime
 import io
 import json
@@ -40,7 +40,10 @@ class BackuperMod(loader.Module):
 
     strings = {
         "name": "Backuper",
-        "backup_caption": "☝️ <b>This is your database backup. Do not give it to anyone, it contains personal info.</b>",
+        "backup_caption": (
+            "☝️ <b>This is your database backup. Do not give it to anyone, it contains"
+            " personal info.</b>"
+        ),
         "reply_to_file": "🚫 <b>Reply to .json or .zip file</b>",
         "db_restored": "🔄 <b>Database updated, restarting...</b>",
         "modules_backup": "🗃 <b>Backup mods ({})</b>",
@@ -48,7 +51,10 @@ class BackuperMod(loader.Module):
     }
 
     strings_ru = {
-        "backup_caption": "☝️ <b>Это - бекап базы данных. Никому его не передавай, он содержит личную информацию.</b>",
+        "backup_caption": (
+            "☝️ <b>Это - бекап базы данных. Никому его не передавай, он содержит личную"
+            " информацию.</b>"
+        ),
         "reply_to_file": "🚫 <b>Ответь на .json или .zip файл</b>",
         "db_restored": "🔄 <b>База обновлена, перезагружаюсь...</b>",
         "modules_backup": "🗃 <b>Бекап модулей ({})</b>",
@@ -60,38 +66,12 @@ class BackuperMod(loader.Module):
         "_cls_doc": "Создает резервные копии",
     }
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:backuper")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["backuper"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
-
     async def backupdbcmd(self, message: Message):
         """Create database backup [will be sent in pm]"""
         txt = io.BytesIO(json.dumps(self._db).encode("utf-8"))
-        txt.name = f"db-backup-{getattr(datetime, 'datetime', datetime).now().strftime('%d-%m-%Y-%H-%M')}.json"
+        txt.name = (
+            f"db-backup-{getattr(datetime, 'datetime', datetime).now().strftime('%d-%m-%Y-%H-%M')}.json"
+        )
         await self._client.send_file("me", txt, caption=self.strings("backup_caption"))
         await message.delete()
 
@@ -139,7 +119,9 @@ class BackuperMod(loader.Module):
             zipf.writestr("db_mods.json", db_mods)
 
         archive = io.BytesIO(result.getvalue())
-        archive.name = f"mods-{getattr(datetime, 'datetime', datetime).now().strftime('%d-%m-%Y-%H-%M')}.zip"
+        archive.name = (
+            f"mods-{getattr(datetime, 'datetime', datetime).now().strftime('%d-%m-%Y-%H-%M')}.zip"
+        )
 
         await self._client.send_file(
             utils.get_chat_id(message),

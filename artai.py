@@ -1,3 +1,4 @@
+# scope: hikka_min 1.2.10
 __version__ = (1, 0, 2)
 
 # █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
@@ -14,10 +15,8 @@ __version__ = (1, 0, 2)
 # meta developer: @hikarimods
 # scope: hikka_only
 
-import asyncio
 import base64
 import io
-import logging
 import random
 from typing import Union
 
@@ -26,8 +25,6 @@ from telethon.tl.types import Message
 
 from .. import loader, utils
 from ..inline.types import InlineCall
-
-logger = logging.getLogger(__name__)
 
 
 def base(bytes_: bytes) -> str:
@@ -52,7 +49,10 @@ async def animefy(image: bytes, engine: str) -> Union[bytes, bool]:
             "sec-fetch-mode": "cors",
             "sec-fetch-site": "same-origin",
             "sec-gpc": "1",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
+            "user-agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,"
+                " like Gecko) Chrome/92.0.4515.131 Safari/537.36"
+            ),
         },
         json={
             "data": [base(image), engine],
@@ -89,34 +89,6 @@ class ArtAIMod(loader.Module):
             "🎨 <b>Do not blame me, I'm the artist</b>"
         ),
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:artai")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["artai"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     async def artaicmd(self, message: Message):
         """<photo> - Create anime art from photo"""

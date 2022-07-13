@@ -128,7 +128,9 @@ def gen_table(t: List[List[str]]) -> bytes:
     table += f"┏{('┯'.join(rows_lines))}┓\n"
 
     for line in t:
-        table += f"┃⁣⁣ {' ┃⁣⁣ '.join([fit(row, rows_sizes[k]) for k, row in enumerate(line)])} ┃⁣⁣\n"
+        table += (
+            f"┃⁣⁣ {' ┃⁣⁣ '.join([fit(row, rows_sizes[k]) for k, row in enumerate(line)])} ┃⁣⁣\n"
+        )
         table += "┠"
 
         for row in rows_sizes:
@@ -667,8 +669,12 @@ class HikariChatMod(loader.Module):
         "antitagall_off": "🐵 <b>AntiTagAll is now off in this chat</b>",
         "antiarab_on": "🐻 <b>AntiArab is now on in this chat\nAction: {}</b>",
         "antiarab_off": "🐻 <b>AntiArab is now off in this chat</b>",
-        "antilagsticks_on": "🚫 <b>Destructive stickers protection is now on in this chat</b>",
-        "antilagsticks_off": "🚫 <b>Destructive stickers protection is now off in this chat</b>",
+        "antilagsticks_on": (
+            "🚫 <b>Destructive stickers protection is now on in this chat</b>"
+        ),
+        "antilagsticks_off": (
+            "🚫 <b>Destructive stickers protection is now off in this chat</b>"
+        ),
         "antizalgo_on": "🌀 <b>AntiZALGO is now on in this chat\nAction: {}</b>",
         "antizalgo_off": "🌀 <b>AntiZALGO is now off in this chat</b>",
         "antistick_on": "🎨 <b>AntiStick is now on in this chat\nAction: {}</b>",
@@ -704,66 +710,105 @@ class HikariChatMod(loader.Module):
         "cas_off": "🛡 <b>CAS is now off in this chat</b>",
         "antinsfw_on": "🔞 <b>AntiNSFW is now on in this chat\nAction: {}</b>",
         "antinsfw_off": "🔞 <b>AntiNSFW is now off in this chat</b>",
-        "arabic_nickname": '🐻 <b><a href="{}">{}</a> has hieroglyphics in his nickname.\n👊 Action: I {}</b>',
-        "zalgo": '🌀 <b><a href="{}">{}</a> has ZALGO in his nickname.\n👊 Action: I {}</b>',
-        "bnd": '💬 <b><a href="{}">{}</a> sent a message to channel comments without being chat member.\n👊 Action: I {}</b>',
-        "cas": '🛡 <b><a href="{}">{}</a> appears to be in Combat Anti Spam database.\n👊 Action: I {}</b>',
+        "arabic_nickname": (
+            '🐻 <b><a href="{}">{}</a> has hieroglyphics in his nickname.\n👊 Action: I'
+            " {}</b>"
+        ),
+        "zalgo": (
+            '🌀 <b><a href="{}">{}</a> has ZALGO in his nickname.\n👊 Action: I {}</b>'
+        ),
+        "bnd": (
+            '💬 <b><a href="{}">{}</a> sent a message to channel comments without being'
+            " chat member.\n👊 Action: I {}</b>"
+        ),
+        "cas": (
+            '🛡 <b><a href="{}">{}</a> appears to be in Combat Anti Spam database.\n👊'
+            " Action: I {}</b>"
+        ),
         "stick": '🎨 <b><a href="{}">{}</a> is flooding stickers.\n👊 Action: I {}</b>',
-        "explicit": '😒 <b><a href="{}">{}</a> sent explicit content.\n👊 Action: I {}</b>',
-        "destructive_stick": '🚫 <b><a href="{}">{}</a> sent destructive sticker.\n👊 Action: I {}</b>',
-        "nsfw_content": '🔞 <b><a href="{}">{}</a> sent NSFW content.\n👊 Action: I {}</b>',
+        "explicit": (
+            '😒 <b><a href="{}">{}</a> sent explicit content.\n👊 Action: I {}</b>'
+        ),
+        "destructive_stick": (
+            '🚫 <b><a href="{}">{}</a> sent destructive sticker.\n👊 Action: I {}</b>'
+        ),
+        "nsfw_content": (
+            '🔞 <b><a href="{}">{}</a> sent NSFW content.\n👊 Action: I {}</b>'
+        ),
         "flood": '⏱ <b><a href="{}">{}</a> is flooding.\n👊 Action: I {}</b>',
         "tagall": '🐵 <b><a href="{}">{}</a> used TagAll.\n👊 Action: I {}</b>',
         "sex_datings": '🔞 <b><a href="{}">{}</a> is suspicious 🧐\n👊 Action: I {}</b>',
-        "fwarn": '👮‍♂️💼 <b><a href="{}">{}</a></b> got {}/{} federative warn\nReason: <b>{}</b>\n\n{}',
+        "fwarn": (
+            '👮‍♂️💼 <b><a href="{}">{}</a></b> got {}/{} federative warn\nReason:'
+            " <b>{}</b>\n\n{}"
+        ),
         "no_fed_warns": "👮‍♂️ <b>This federation has no warns yet</b>",
         "no_warns": '👮‍♂️ <b><a href="{}">{}</a> has no warns yet</b>',
         "warns": '👮‍♂️ <b><a href="{}">{}</a> has {}/{} warns</b>\n<i>{}</i>',
         "warns_adm_fed": "👮‍♂️ <b>Warns in this federation</b>:\n",
-        "dwarn_fed": '👮‍♂️ <b>Forgave last federative warn of <a href="tg://user?id={}">{}</a></b>',
-        "clrwarns_fed": '👮‍♂️ <b>Forgave all federative warns of <a href="tg://user?id={}">{}</a></b>',
-        "warns_limit": '👮‍♂️ <b><a href="{}">{}</a> reached warns limit.\nAction: I {}</b>',
+        "dwarn_fed": (
+            "👮‍♂️ <b>Forgave last federative warn of <a"
+            ' href="tg://user?id={}">{}</a></b>'
+        ),
+        "clrwarns_fed": (
+            "👮‍♂️ <b>Forgave all federative warns of <a"
+            ' href="tg://user?id={}">{}</a></b>'
+        ),
+        "warns_limit": (
+            '👮‍♂️ <b><a href="{}">{}</a> reached warns limit.\nAction: I {}</b>'
+        ),
         "welcome": "👋 <b>Now I will greet people in this chat</b>\n{}",
         "unwelcome": "👋 <b>Now I will not greet people in this chat</b>",
         "chat404": "🔓 <b>I am not protecting this chat yet.</b>\n",
         "protections": (
-            "<b>🐻 <code>.AntiArab</code> - Bans spammy arabs\n"
-            "<b>🐺 <code>.AntiHelp</code> - Removes frequent userbot commands\n"
-            "<b>🐵 <code>.AntiTagAll</code> - Restricts tagging all members\n"
-            "<b>👋 <code>.Welcome</code> - Greets new members\n"
-            "<b>🐶 <code>.AntiRaid</code> - Bans all new members\n"
-            "<b>📯 <code>.AntiChannel</code> - Restricts writing on behalf of channels\n"
-            "<b>🪙 <code>.AntiSpoiler</code> - Restricts spoilers\n"
-            "<b>🎑 <code>.AntiGIF</code> - Restricts GIFs\n"
-            "<b>🍓 <code>.AntiNSFW</code> - Restricts NSFW photos and stickers\n"
-            "<b>⏱ <code>.AntiFlood</code> - Prevents flooding\n"
-            "<b>😒 <code>.AntiExplicit</code> - Restricts explicit content\n"
-            "<b>⚙️ <code>.AntiService</code> - Removes service messages\n"
-            "<b>🌀 <code>.AntiZALGO</code> - Penalty for users with ZALGO in nickname\n"
-            "<b>🎨 <code>.AntiStick</code> - Prevents stickers flood\n"
-            "<b>🚥 <code>.Captcha</code> - Requires every new participant to complete captcha\n"
-            "<b>🛡 <code>.CAS</code> - Check every new participant through Combat Anti Spam\n"
-            "<b>💬 <code>.BND</code> - Restricts messages from users, which are not a participants of chat (comments)\n"
-            "<b>🐳 <code>.NDSpam</code> - Automatic channel comments raid protection\n"
-            "<b>🥷 <code>.BanNinja</code> - Automatic version of AntiRaid\n"
-            "<b>⚰️ <code>.AntiLagSticks</code> - Bans laggy stickers\n"
-            "<b>👾 Admin: </b><code>.ban</code> <code>.kick</code> <code>.mute</code>\n"
-            "<code>.unban</code> <code>.unmute</code> <b>- Admin tools</b>\n"
-            "<b>👮‍♂️ Warns:</b> <code>.warn</code> <code>.warns</code>\n"
-            "<code>.dwarn</code> <code>.clrwarns</code> <b>- Warning system</b>\n"
-            "<b>💼 Federations:</b> <code>.fadd</code> <code>.frm</code> <code>.newfed</code>\n"
-            "<code>.namefed</code> <code>.fban</code> <code>.rmfed</code> <code>.feds</code>\n"
-            "<code>.fpromote</code> <code>.fdemote</code>\n"
-            "<code>.fdef</code> <code>.fdeflist</code> <b>- Controlling multiple chats</b>\n"
-            "<b>🗒 Notes:</b> <code>.fsave</code> <code>.fstop</code> <code>.fnotes</code> <b>- Federative notes</b>"
+            "<b>🐻 <code>.AntiArab</code> - Bans spammy arabs\n<b>🐺"
+            " <code>.AntiHelp</code> - Removes frequent userbot commands\n<b>🐵"
+            " <code>.AntiTagAll</code> - Restricts tagging all members\n<b>👋"
+            " <code>.Welcome</code> - Greets new members\n<b>🐶 <code>.AntiRaid</code> -"
+            " Bans all new members\n<b>📯 <code>.AntiChannel</code> - Restricts writing"
+            " on behalf of channels\n<b>🪙 <code>.AntiSpoiler</code> - Restricts"
+            " spoilers\n<b>🎑 <code>.AntiGIF</code> - Restricts GIFs\n<b>🍓"
+            " <code>.AntiNSFW</code> - Restricts NSFW photos and stickers\n<b>⏱"
+            " <code>.AntiFlood</code> - Prevents flooding\n<b>😒"
+            " <code>.AntiExplicit</code> - Restricts explicit content\n<b>⚙️"
+            " <code>.AntiService</code> - Removes service messages\n<b>🌀"
+            " <code>.AntiZALGO</code> - Penalty for users with ZALGO in nickname\n<b>🎨"
+            " <code>.AntiStick</code> - Prevents stickers flood\n<b>🚥"
+            " <code>.Captcha</code> - Requires every new participant to complete"
+            " captcha\n<b>🛡 <code>.CAS</code> - Check every new participant through"
+            " Combat Anti Spam\n<b>💬 <code>.BND</code> - Restricts messages from users,"
+            " which are not a participants of chat (comments)\n<b>🐳"
+            " <code>.NDSpam</code> - Automatic channel comments raid protection\n<b>🥷"
+            " <code>.BanNinja</code> - Automatic version of AntiRaid\n<b>⚰️"
+            " <code>.AntiLagSticks</code> - Bans laggy stickers\n<b>👾 Admin:"
+            " </b><code>.ban</code> <code>.kick</code>"
+            " <code>.mute</code>\n<code>.unban</code> <code>.unmute</code> <b>- Admin"
+            " tools</b>\n<b>👮‍♂️ Warns:</b> <code>.warn</code>"
+            " <code>.warns</code>\n<code>.dwarn</code> <code>.clrwarns</code> <b>-"
+            " Warning system</b>\n<b>💼 Federations:</b> <code>.fadd</code>"
+            " <code>.frm</code> <code>.newfed</code>\n<code>.namefed</code>"
+            " <code>.fban</code> <code>.rmfed</code>"
+            " <code>.feds</code>\n<code>.fpromote</code>"
+            " <code>.fdemote</code>\n<code>.fdef</code> <code>.fdeflist</code> <b>-"
+            " Controlling multiple chats</b>\n<b>🗒 Notes:</b> <code>.fsave</code>"
+            " <code>.fstop</code> <code>.fnotes</code> <b>- Federative notes</b>"
         ),
         "not_admin": "🤷‍♂️ <b>I'm not admin here, or don't have enough rights</b>",
         "mute": '🔇 <b><a href="{}">{}</a> muted {}. Reason: </b><i>{}</i>\n\n{}',
-        "mute_log": '🔇 <b><a href="{}">{}</a> muted {} in <a href="{}">{}</a>. Reason: </b><i>{}</i>\n\n{}',
+        "mute_log": (
+            '🔇 <b><a href="{}">{}</a> muted {} in <a href="{}">{}</a>. Reason:'
+            " </b><i>{}</i>\n\n{}"
+        ),
         "ban": '🔒 <b><a href="{}">{}</a> banned {}. Reason: </b><i>{}</i>\n\n{}',
-        "ban_log": '🔒 <b><a href="{}">{}</a> banned {} in <a href="{}">{}</a>. Reason: </b><i>{}</i>\n\n{}',
+        "ban_log": (
+            '🔒 <b><a href="{}">{}</a> banned {} in <a href="{}">{}</a>. Reason:'
+            " </b><i>{}</i>\n\n{}"
+        ),
         "kick": '🚪 <b><a href="{}">{}</a> kicked. Reason: </b><i>{}</i>\n\n{}',
-        "kick_log": '🚪 <b><a href="{}">{}</a> kicked in <a href="{}">{}</a>. Reason: </b><i>{}</i>\n\n{}',
+        "kick_log": (
+            '🚪 <b><a href="{}">{}</a> kicked in <a href="{}">{}</a>. Reason:'
+            " </b><i>{}</i>\n\n{}"
+        ),
         "unmuted": '🔊 <b><a href="{}">{}</a> unmuted</b>',
         "unmuted_log": '🔊 <b><a href="{}">{}</a> unmuted in <a href="{}">{}</a></b>',
         "unban": '🧙‍♂️ <b><a href="{}">{}</a> unbanned</b>',
@@ -782,8 +827,14 @@ class HikariChatMod(loader.Module):
         "joinfed": "💼 <b>Federation joined</b>",
         "namedfed": "💼 <b>Federation renamed to {}</b>",
         "nofed": "💼 <b>Current chat is not in any federation</b>",
-        "fban": '💼 <b><a href="{}">{}</a> banned in federation {} {}\nReason: </b><i>{}</i>\n{}',
-        "fmute": '💼 <b><a href="{}">{}</a> muted in federation {} {}\nReason: </b><i>{}</i>\n{}',
+        "fban": (
+            '💼 <b><a href="{}">{}</a> banned in federation {} {}\nReason:'
+            " </b><i>{}</i>\n{}"
+        ),
+        "fmute": (
+            '💼 <b><a href="{}">{}</a> muted in federation {} {}\nReason:'
+            " </b><i>{}</i>\n{}"
+        ),
         "funban": '💼 <b><a href="{}">{}</a> unbanned in federation </b><i>{}</i>\n',
         "funmute": '💼 <b><a href="{}">{}</a> unmuted in federation </b><i>{}</i>\n',
         "feds_header": "💼 <b>Federations:</b>\n\n",
@@ -815,7 +866,10 @@ class HikariChatMod(loader.Module):
             "<b>{}</b>"
         ),
         "error": "😵 <b>HikariChat Issued error</b>",
-        "reported": '💼 <b><a href="{}">{}</a> reported this message to admins\nReason: </b><i>{}</i>',
+        "reported": (
+            '💼 <b><a href="{}">{}</a> reported this message to admins\nReason:'
+            " </b><i>{}</i>"
+        ),
         "no_federations": "💼 <b>You have no active federations</b>",
         "clrallwarns_fed": "👮‍♂️ <b>Forgave all federative warns of federation</b>",
         "cleaning": "🧹 <b>Looking for Deleted accounts...</b>",
@@ -824,18 +878,28 @@ class HikariChatMod(loader.Module):
         "btn_unban": "🔓 Unban (ADM)",
         "btn_unmute": "🔈 Unmute (ADM)",
         "btn_unwarn": "♻️ De-Warn (ADM)",
-        "inline_unbanned": '🔓 <b><a href="{}">{}</a> unbanned by <a href="{}">{}</a></b>',
+        "inline_unbanned": (
+            '🔓 <b><a href="{}">{}</a> unbanned by <a href="{}">{}</a></b>'
+        ),
         "inline_unmuted": '🔈 <b><a href="{}">{}</a> unmuted by <a href="{}">{}</a></b>',
-        "inline_unwarned": '♻️ <b>Forgave last warn of <a href="{}">{}</a> by <a href="{}">{}</a></b>',
-        "inline_funbanned": '🔓 <b><a href="{}">{}</a> unbanned in federation by <a href="{}">{}</a></b>',
-        "inline_funmuted": '🔈 <b><a href="{}">{}</a> unmuted in federation by <a href="{}">{}</a></b>',
+        "inline_unwarned": (
+            '♻️ <b>Forgave last warn of <a href="{}">{}</a> by <a href="{}">{}</a></b>'
+        ),
+        "inline_funbanned": (
+            '🔓 <b><a href="{}">{}</a> unbanned in federation by <a href="{}">{}</a></b>'
+        ),
+        "inline_funmuted": (
+            '🔈 <b><a href="{}">{}</a> unmuted in federation by <a href="{}">{}</a></b>'
+        ),
         "btn_funmute": "🔈 Fed Unmute (ADM)",
         "btn_funban": "🔓 Fed Unban (ADM)",
         "btn_mute": "🙊 Mute",
         "btn_ban": "🔒 Ban",
         "btn_fban": "💼 Fed Ban",
         "btn_del": "🗑 Delete",
-        "inline_fbanned": '💼 <b><a href="{}">{}</a> banned in federation by <a href="{}">{}</a></b>',
+        "inline_fbanned": (
+            '💼 <b><a href="{}">{}</a> banned in federation by <a href="{}">{}</a></b>'
+        ),
         "inline_muted": '🙊 <b><a href="{}">{}</a> muted by <a href="{}">{}</a></b>',
         "inline_banned": '🔒 <b><a href="{}">{}</a> banned by <a href="{}">{}</a></b>',
         "inline_deleted": '🗑 <b>Deleted by <a href="{}">{}</a></b>',
@@ -850,9 +914,16 @@ class HikariChatMod(loader.Module):
         "logchat_invalid": "🚫 <b>Log chat invalid</b>",
         "logchat_set": "📲 <b>Log chat updated to </b><code>{}</code>",
         "clnraid_args": "🥷 <b>Example usage: </b><code>.clnraid 10</code>",
-        "clnraid_admin": "🥷 <b>Error occured while promoting cleaner. Please, ensure you have enough rights in chat</b>",
-        "clnraid_started": "🥷 <b>RaidCleaner is in progress... Found {} users to kick...</b>",
-        "clnraid_confirm": "🥷 <b>Please, confirm that you want to start RaidCleaner on {} users</b>",
+        "clnraid_admin": (
+            "🥷 <b>Error occured while promoting cleaner. Please, ensure you have enough"
+            " rights in chat</b>"
+        ),
+        "clnraid_started": (
+            "🥷 <b>RaidCleaner is in progress... Found {} users to kick...</b>"
+        ),
+        "clnraid_confirm": (
+            "🥷 <b>Please, confirm that you want to start RaidCleaner on {} users</b>"
+        ),
         "clnraid_yes": "🥷 Start",
         "clnraid_cancel": "🔻 Cancel",
         "clnraid_stop": "🚨 Stop",
@@ -866,22 +937,24 @@ class HikariChatMod(loader.Module):
         "smart_anti_raid_off": "🚨 Stop",
         "smart_anti_raid_stopped": "🥷 <b>BanNinja Stopped</b>",
         "banninja_report": (
-            "🥷 <b>BanNinja has done his job.</b>\n"
-            "<i>Deleted {} bot(-s)</i>\n\n"
-            "🏹 <i>«BanNinja can handle any size of attack»</i> © <code>@hikariatama</code>"
+            "🥷 <b>BanNinja has done his job.</b>\n<i>Deleted {} bot(-s)</i>\n\n🏹"
+            " <i>«BanNinja can handle any size of attack»</i> ©"
+            " <code>@hikariatama</code>"
         ),
         "ndspam_active": (
-            "🐳 <b>Non-Discussion-Whale is working hard to prevent intrusion to attached channel comments.</b>\n\n"
-            "{}"
-            "<i>Deleted {} bot(-s)</i>"
+            "🐳 <b>Non-Discussion-Whale is working hard to prevent intrusion to attached"
+            " channel comments.</b>\n\n{}<i>Deleted {} bot(-s)</i>"
         ),
-        "forbid_messages": "⚠️ <b>I've forbidden sending messages until attack is fully released</b>\n\n",
+        "forbid_messages": (
+            "⚠️ <b>I've forbidden sending messages until attack is fully"
+            " released</b>\n\n"
+        ),
         "ndspam_off": "🚨 Stop",
         "ndspam_stopped": "🥷 <b>BanNinja Stopped</b>",
         "ndspam_report": (
-            "🥷 <b>BanNinja has done his job.</b>\n"
-            "<i>Deleted {} bot(-s)</i>\n\n"
-            "🏹 <i>«BanNinja can handle any size of attack»</i> © <code>@hikariatama</code>"
+            "🥷 <b>BanNinja has done his job.</b>\n<i>Deleted {} bot(-s)</i>\n\n🏹"
+            " <i>«BanNinja can handle any size of attack»</i> ©"
+            " <code>@hikariatama</code>"
         ),
         "confirm_rmfed": (
             "⚠️ <b>Warning! This operation can't be reverted! Are you sure, "
@@ -896,25 +969,46 @@ class HikariChatMod(loader.Module):
         "no_protects": "🚫 <b>This chat has no active protections to show</b>",
         "from_where": "🚫 <b>Reply to a message to purge from</b>",
         "no_notes": "🚫 <b>No notes found</b>",
-        "complete_captcha": '🚥 <b><a href="tg://user?id={}">{}</a>, please, complete captcha within 5 minutes</b>',
-        "captcha_timeout": '🚥 <b><a href="{}">{}</a> have not completed captcha in time.\n👊 Action: I {}</b>',
-        "captcha_failed": '🚥 <b><a href="{}">{}</a> failed captcha.\n👊 Action: I {}</b>',
+        "complete_captcha": (
+            '🚥 <b><a href="tg://user?id={}">{}</a>, please, complete captcha within 5'
+            " minutes</b>"
+        ),
+        "captcha_timeout": (
+            '🚥 <b><a href="{}">{}</a> have not completed captcha in time.\n👊 Action: I'
+            " {}</b>"
+        ),
+        "captcha_failed": (
+            '🚥 <b><a href="{}">{}</a> failed captcha.\n👊 Action: I {}</b>'
+        ),
     }
 
     strings_ru = {
-        "complete_captcha": '🚥 <b><a href="tg://user?id={}">{}</a>, пожалуйста, пройди капчу в течение 5 минут</b>',
-        "captcha_timeout": '🚥 <b><a href="{}">{}</a> не прошел капчу вовремя.\n👊 Действие: {}</b>',
-        "captcha_failed": '🚥 <b><a href="{}">{}</a> не прошел капчу.\n👊 Действие: {}</b>',
+        "complete_captcha": (
+            '🚥 <b><a href="tg://user?id={}">{}</a>, пожалуйста, пройди капчу в течение'
+            " 5 минут</b>"
+        ),
+        "captcha_timeout": (
+            '🚥 <b><a href="{}">{}</a> не прошел капчу вовремя.\n👊 Действие: {}</b>'
+        ),
+        "captcha_failed": (
+            '🚥 <b><a href="{}">{}</a> не прошел капчу.\n👊 Действие: {}</b>'
+        ),
         "cas_on": "🛡 <b>CAS теперь включен в этом чате\nДействие: {}</b>",
         "cas_off": "🛡 <b>CAS теперь выключен в этом чате</b>",
-        "cas": '🛡 <b><a href="{}">{}</a> appears to be in Combat Anti Spam database.\n👊 Action: I {}</b>',
+        "cas": (
+            '🛡 <b><a href="{}">{}</a> appears to be in Combat Anti Spam database.\n👊'
+            " Action: I {}</b>"
+        ),
         "from_where": "🚫 <b>Ответь на сообщение, начиная с которого надо удалить.</b>",
         "smart_anti_raid_active": (
             "🥷 <b>BanNinja работает в поте лица, отбивая атаку на этот чат.</b>\n\n"
             "{}"
             "<i>Удалено {} бот(-ов)</i>"
         ),
-        "forbid_messages": "⚠️ <b>Я запретил отправку сообщений, пока атака не будет полностью отражена</b>\n\n",
+        "forbid_messages": (
+            "⚠️ <b>Я запретил отправку сообщений, пока атака не будет полностью"
+            " отражена</b>\n\n"
+        ),
         "smart_anti_raid_off": "🚨 Остановить",
         "smart_anti_raid_stopped": "🥷 <b>BanNinja остановлен</b>",
         "error": "😵 <b>Произошла ошибка HikariChat</b>",
@@ -932,7 +1026,9 @@ class HikariChatMod(loader.Module):
         "antihelp_off": "🐺 <b>AntiHelp теперь выключен в этом чате</b>",
         "antiraid_on": "🐶 <b>AntiRaid теперь включен в этом чате\nДействие: {}</b>",
         "antiraid_off": "🐶 <b>AntiRaid теперь выключен в этом чате</b>",
-        "bnd_on": "💬 <b>Block-Non-Discussion теперь включен в этом чате\nДействие: {}</b>",
+        "bnd_on": (
+            "💬 <b>Block-Non-Discussion теперь включен в этом чате\nДействие: {}</b>"
+        ),
         "bnd_off": "💬 <b>Block-Non-Discussion теперь выключен в этом чате</b>",
         "ndspam_on": "🐳 <b>Non-Discussion-Whale теперь включен в этом чате",
         "ndspam_off": "🐳 <b>Non-Discussion-Whale теперь выключен в этом чате</b>",
@@ -950,7 +1046,9 @@ class HikariChatMod(loader.Module):
         "antiservice_off": "⚙️ <b>AntiService теперь выключен в этом чате</b>",
         "banninja_on": "🥷 <b>BanNinja теперь включен в этом чате</b>",
         "banninja_off": "🥷 <b>BanNinja теперь выключен в этом чате</b>",
-        "antiexplicit_on": "😒 <b>AntiExplicit теперь включен в этом чате\nДействие: {}</b>",
+        "antiexplicit_on": (
+            "😒 <b>AntiExplicit теперь включен в этом чате\nДействие: {}</b>"
+        ),
         "antiexplicit_off": "😒 <b>AntiExplicit теперь выключен в этом чате</b>",
         "antinsfw_on": "🔞 <b>AntiNSFW теперь включен в этом чате\nДействие: {}</b>",
         "antinsfw_off": "🔞 <b>AntiNSFW теперь выключен в этом чате</b>",
@@ -1003,18 +1101,26 @@ class HikariChatMod(loader.Module):
         "logchat_invalid": "🚫 <b>Неверный чат логирования</b>",
         "logchat_set": "📲 <b>Чат логирования установлен на </b><code>{}</code>",
         "clnraid_args": "🥷 <b>Пример: </b><code>.clnraid 10</code>",
-        "clnraid_admin": "🥷 <b>Ошибка выдачи прав боту. Убедись, что у тебя достаточно прав</b>",
-        "clnraid_started": "🥷 <b>RaidCleaner активен... Найдено {} пользователей для бана...</b>",
-        "clnraid_confirm": "🥷 <b>Подтвердите запуск RaidCleaner на {} пользователях</b>",
+        "clnraid_admin": (
+            "🥷 <b>Ошибка выдачи прав боту. Убедись, что у тебя достаточно прав</b>"
+        ),
+        "clnraid_started": (
+            "🥷 <b>RaidCleaner активен... Найдено {} пользователей для бана...</b>"
+        ),
+        "clnraid_confirm": (
+            "🥷 <b>Подтвердите запуск RaidCleaner на {} пользователях</b>"
+        ),
         "clnraid_yes": "🥷 Начать",
         "banninja_report": (
-            "🥷 <b>BanNinja закончил работу.</b>\n"
-            "<i>Удалено {} бот(-ов)</i>\n\n"
-            "🏹 <i>«BanNinja can handle any size of attack»</i> © <code>@hikariatama</code>"
+            "🥷 <b>BanNinja закончил работу.</b>\n<i>Удалено {} бот(-ов)</i>\n\n🏹"
+            " <i>«BanNinja can handle any size of attack»</i> ©"
+            " <code>@hikariatama</code>"
         ),
         "clnraid_cancel": "🔻 Отмена",
         "clnraid_stop": "🚨 Остановить",
-        "clnraid_complete": "🥷 <b>RaidCleaner закончил работу! Удалено: {} бот(-ов)</b>",
+        "clnraid_complete": (
+            "🥷 <b>RaidCleaner закончил работу! Удалено: {} бот(-ов)</b>"
+        ),
         "clnraid_cancelled": "🥷 <b>RaidCleaner остановлен. Удалено: {} бот(-ов)</b>",
         "confirm_rmfed_btn": "🗑 Удалить",
         "decline_rmfed_btn": "🔻 Отмена",
@@ -1025,15 +1131,23 @@ class HikariChatMod(loader.Module):
         "_cmd_doc_newfed": "<shortname> <имя> - Создать новую федерацию",
         "_cmd_doc_rmfed": "<shortname> - Удалить федерацию",
         "_cmd_doc_fpromote": "<пользователь> - Выдать пользователю права в федерации",
-        "_cmd_doc_fdemote": "<shortname> <пользователь> - Забрать у пользователя права в федерации",
+        "_cmd_doc_fdemote": (
+            "<shortname> <пользователь> - Забрать у пользователя права в федерации"
+        ),
         "_cmd_doc_fadd": "<федерация> - Добавить чат в федерацию",
         "_cmd_doc_frm": "Удалить чат из федерации",
         "_cmd_doc_fban": "<пользователь> [причина] - Забанить пользователя в федерации",
         "_cmd_doc_punishsuff": "Установить новый суффикс наказания",
         "_cmd_doc_sethclog": "Установить чат логирования",
-        "_cmd_doc_funban": "<пользователь> [причина] - Разбанить пользователя в федерации",
-        "_cmd_doc_fmute": "<пользователь> [причина] - Замутить пользователя в федерации",
-        "_cmd_doc_funmute": "<пользователь> [причина] - Разбанить пользователя в федерации",
+        "_cmd_doc_funban": (
+            "<пользователь> [причина] - Разбанить пользователя в федерации"
+        ),
+        "_cmd_doc_fmute": (
+            "<пользователь> [причина] - Замутить пользователя в федерации"
+        ),
+        "_cmd_doc_funmute": (
+            "<пользователь> [причина] - Разбанить пользователя в федерации"
+        ),
         "_cmd_doc_kick": "<пользователь> [причина] - Кикнуть пользователя",
         "_cmd_doc_ban": "<пользователь> [причина] - Забанить пользователя",
         "_cmd_doc_mute": "<пользователь> [время] [причина] - Замутить пользователя",
@@ -1044,12 +1158,18 @@ class HikariChatMod(loader.Module):
         "_cmd_doc_fed": "<shortname> - Информация о федерации",
         "_cmd_doc_pchat": "Показать защиты в чате",
         "_cmd_doc_warn": "<пользователь> - Предупредить пользователя",
-        "_cmd_doc_warns": "[пользователь] - Показать предупреждения в чате \\ у пользователя",
+        "_cmd_doc_warns": (
+            "[пользователь] - Показать предупреждения в чате \\ у пользователя"
+        ),
         "_cmd_doc_delwarn": "<пользователь> - Простить последнее предупреждение",
-        "_cmd_doc_clrwarns": "<пользователь> - Простить все предупреждения пользователя",
+        "_cmd_doc_clrwarns": (
+            "<пользователь> - Простить все предупреждения пользователя"
+        ),
         "_cmd_doc_clrallwarns": "Простить все предупреждения в федерации",
         "_cmd_doc_welcome": "<text> - Изменить текст приветствовия",
-        "_cmd_doc_fdef": "<пользователь> - Включить\\выключить федеративную защиту пользователя",
+        "_cmd_doc_fdef": (
+            "<пользователь> - Включить\\выключить федеративную защиту пользователя"
+        ),
         "_cmd_doc_fsave": "<note name> <reply> - Сохранить федеративную заметку",
         "_cmd_doc_fstop": "<note name> - Удалить федеративную заметку",
         "_cmd_doc_fnotes": "Показать федеративные заметки",
@@ -1063,9 +1183,19 @@ class HikariChatMod(loader.Module):
         "action": "<действие>",
         "configure": "Настроить",
         "toggle": "Включить\\выключить",
-        "fed": '💼 <b>Федерация "{}":</b>\n🔰 <b>Чаты:</b>\n<b>{}</b>\n🔰 <b>Каналы:</b>\n<b>{}</b>\n🔰 <b>Админы:</b>\n<b>{}</b>\n🔰 <b>Предупреждения: {}</b>\n',
-        "version": "<b>🪆 {}</b>\n\n<b>😌 Автор: t.me/hikariatama</b>\n<b>📥 Скачано из @hikarimods</b>\n<b>{}</b>",
-        "confirm_rmfed": "⚠️ <b>Внимание! Это действие нельзя отменить! Ты уверен, что хочешь удалить федерацию </b><code>{}</code><b>?</b>",
+        "fed": (
+            '💼 <b>Федерация "{}":</b>\n🔰 <b>Чаты:</b>\n<b>{}</b>\n🔰'
+            " <b>Каналы:</b>\n<b>{}</b>\n🔰 <b>Админы:</b>\n<b>{}</b>\n🔰"
+            " <b>Предупреждения: {}</b>\n"
+        ),
+        "version": (
+            "<b>🪆 {}</b>\n\n<b>😌 Автор: t.me/hikariatama</b>\n<b>📥 Скачано из"
+            " @hikarimods</b>\n<b>{}</b>"
+        ),
+        "confirm_rmfed": (
+            "⚠️ <b>Внимание! Это действие нельзя отменить! Ты уверен, что хочешь"
+            " удалить федерацию </b><code>{}</code><b>?</b>"
+        ),
         "_cls_doc": "Must-have модуль администратора чата",
         "no_notes": "🚫 <b>Нет заметок</b>",
     }
@@ -1334,7 +1464,8 @@ class HikariChatMod(loader.Module):
                     else self.api.chats[str(chat)][protection][0]
                 )
                 await call.edit(
-                    f"🌁 <b>{get_full_name(cinfo)}</b>: <code>{PROTECTS[protection]}</code> (now: {current_state})",
+                    f"🌁 <b>{get_full_name(cinfo)}</b>:"
+                    f" <code>{PROTECTS[protection]}</code> (now: {current_state})",
                     reply_markup=markup,
                 )
             else:
@@ -1530,7 +1661,9 @@ class HikariChatMod(loader.Module):
                     ),
                     reply_markup={
                         "text": self.strings("btn_unban"),
-                        "data": f"ub/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
+                        "data": (
+                            f"ub/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}"
+                        ),
                     },
                     silent=True,
                 )
@@ -1547,7 +1680,9 @@ class HikariChatMod(loader.Module):
                     text=msg,
                     reply_markup={
                         "text": self.strings("btn_unban"),
-                        "data": f"ub/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
+                        "data": (
+                            f"ub/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}"
+                        ),
                     },
                     silent=True,
                 )
@@ -1618,7 +1753,9 @@ class HikariChatMod(loader.Module):
                     ),
                     reply_markup={
                         "text": self.strings("btn_unmute"),
-                        "data": f"um/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
+                        "data": (
+                            f"um/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}"
+                        ),
                     },
                     silent=True,
                 )
@@ -1635,7 +1772,9 @@ class HikariChatMod(loader.Module):
                     text=msg,
                     reply_markup={
                         "text": self.strings("btn_unmute"),
-                        "data": f"um/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}",
+                        "data": (
+                            f"um/{chat.id if isinstance(chat, (Chat, Channel)) else chat}/{user.id}"
+                        ),
                     },
                     silent=True,
                 )
@@ -2205,7 +2344,9 @@ class HikariChatMod(loader.Module):
 
                 overall += kicked
                 cleaned_in += [
-                    f'👥 <a href="{utils.get_link(chat)}">{utils.escape_html(chat.title)}</a> - {kicked}'
+                    "👥 <a"
+                    f' href="{utils.get_link(chat)}">{utils.escape_html(chat.title)}</a>'
+                    f" - {kicked}"
                 ]
             except UserAdminInvalidError:
                 pass
@@ -2236,7 +2377,9 @@ class HikariChatMod(loader.Module):
 
                     overall += kicked
                     cleaned_in_c += [
-                        f'📣 <a href="{utils.get_link(channel)}">{utils.escape_html(channel.title)}</a> - {kicked}'
+                        "📣 <a"
+                        f' href="{utils.get_link(channel)}">{utils.escape_html(channel.title)}</a>'
+                        f" - {kicked}"
                     ]
                 except ChatAdminRequiredError:
                     pass
@@ -3061,7 +3204,10 @@ class HikariChatMod(loader.Module):
                 except Exception:
                     continue
 
-                res += f"\n        <b>- <a href=\"tg://resolve?domain={getattr(c, 'username', '')}\">{c.title}</a></b>"
+                res += (
+                    "\n        <b>- <a"
+                    f" href=\"tg://resolve?domain={getattr(c, 'username', '')}\">{c.title}</a></b>"
+                )
 
             res += f"\n        <b>👮‍♂️ {len(config.get('warns', []))} warns</b>\n\n"
 
@@ -3118,11 +3264,17 @@ class HikariChatMod(loader.Module):
                     channel = await self._client.get_entity(
                         self._linked_channels[str(chat)]
                     )
-                    channels += f' <b>📣 <a href="{utils.get_link(channel)}">{utils.escape_html(channel.title)}</a></b>\n'
+                    channels += (
+                        " <b>📣 <a"
+                        f' href="{utils.get_link(channel)}">{utils.escape_html(channel.title)}</a></b>\n'
+                    )
                 except Exception:
                     pass
 
-            chats += f' <b>🫂 <a href="{utils.get_link(c)}">{utils.escape_html(c.title)}</a></b>\n'
+            chats += (
+                " <b>🫂 <a"
+                f' href="{utils.get_link(c)}">{utils.escape_html(c.title)}</a></b>\n'
+            )
 
         await utils.answer(
             message,
@@ -5230,7 +5382,8 @@ class HikariChatMod(loader.Module):
 
         # We can override class docstings because of abc meta
         self.__doc__ = (
-            "Advanced chat admin toolkit\nNow became free...\n\n💻 Developer: t.me/hikariatama\n📣 Downloaded from: @hikarimods\n\n"
+            "Advanced chat admin toolkit\nNow became free...\n\n💻 Developer:"
+            " t.me/hikariatama\n📣 Downloaded from: @hikarimods\n\n"
             + f"📦Version: {version}\n"
             + ("🗃 Local" if not self.api._inited else "⭐️ Full")
         )

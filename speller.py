@@ -6,13 +6,14 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/fluency/240/000000/spell-check.png
 # meta developer: @hikarimods
 # scope: hikka_only
 # requires: requests cloudscraper requests_toolbelt aiohttp bs4 langid
 
 import asyncio
-import logging
 import random
 import re
 import string
@@ -27,8 +28,6 @@ from requests_toolbelt import MultipartEncoder
 from telethon.tl.types import Message
 
 from .. import loader, utils
-
-logger = logging.getLogger(__name__)
 
 URL = "https://services.gingersoftware.com/Ginger/correct/jsonSecured/GingerTheTextFull"  # noqa
 API_KEY = "6ae0c3a0-afdc-4532-a810-82ded0054236"
@@ -103,7 +102,10 @@ async def process(text: str) -> str:
             "Upgrade-Insecure-Requests": "1",
             "Origin": "https://www.russiancorrector.com",
             "Content-Type": m.content_type,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,"
+                " like Gecko) Chrome/92.0.4515.131 Safari/537.36"
+            ),
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
             "Sec-GPC": "1",
             "Sec-Fetch-Site": "same-origin",
@@ -152,7 +154,8 @@ def parse(text: str) -> Union[bool, str]:
         re.sub(r" {2,}", " ", soup.get_text().strip().replace("\n", " "))
         .replace("Types and number of errors found: ", "")
         .replace(
-            "Autocorrect: Check box to correct errors automatically, where possible.A list of all corrected errors will be shown on the results page. Submit",
+            "Autocorrect: Check box to correct errors automatically, where possible.A"
+            " list of all corrected errors will be shown on the results page. Submit",
             "",
         )
         .strip()
@@ -165,7 +168,9 @@ class SpellCheckMod(loader.Module):
 
     strings = {
         "name": "SpellCheck",
-        "processing": "👩‍🏫 <b>Let me take a look... Seems like this message is misspelled!</b>",
+        "processing": (
+            "👩‍🏫 <b>Let me take a look... Seems like this message is misspelled!</b>"
+        ),
     }
 
     strings_ru = {
@@ -173,34 +178,6 @@ class SpellCheckMod(loader.Module):
         "_cmd_doc_spell": "Проверить сообщение на грамотность",
         "_cls_doc": "Проверяет правописание",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:speller")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["speller"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     async def spellcmd(self, message: Message):
         """Perform spell check on reply"""

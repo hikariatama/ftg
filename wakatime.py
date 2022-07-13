@@ -1,3 +1,4 @@
+# scope: hikka_min 1.2.10
 __version__ = (2, 0, 0)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -13,7 +14,6 @@ __version__ = (2, 0, 0)
 # meta developer: @hikarimods, @vsecoder
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.1.14
 # requires: aiohttp
 
 import asyncio
@@ -37,17 +37,27 @@ class WakaTimeMod(loader.Module):
         "name": "WakaTime",
         "state": "🙂 <b>WakaTime widgets are now {}</b>\n{}",
         "error": "<b>WakaTime error</b>\n\n{}",
-        "tutorial": "ℹ️ <b>To enable widget, send a message to a preffered chat with text </b><code>{WAKATIME}</code>",
+        "tutorial": (
+            "ℹ️ <b>To enable widget, send a message to a preffered chat with text"
+            " </b><code>{WAKATIME}</code>"
+        ),
         "configuring": "🙂 <b>WakaTime widget is ready and will be updated soon</b>",
-        "set_username": "🙂 <b>You need to set your WakaTime username in </b><code>.config</code>",
+        "set_username": (
+            "🙂 <b>You need to set your WakaTime username in </b><code>.config</code>"
+        ),
     }
 
     strings_ru = {
         "state": "🙂 <b>Виджеты WakaTime теперь {}</b>\n{}",
         "error": "<b>WakaTime error</b>\n\n{}",
-        "tutorial": "ℹ️ <b>Для активации виджета, отправь </b><code>{WAKATIME}</code> <b>в нужный чат</b>",
+        "tutorial": (
+            "ℹ️ <b>Для активации виджета, отправь </b><code>{WAKATIME}</code> <b>в"
+            " нужный чат</b>"
+        ),
         "configuring": "🙂 <b>Виджет WakaTime готов и скоро будет обновлен</b>",
-        "set_username": "🙂 <b>Необходимо установить юзернейм на WakaTime в </b><code>.config</code>",
+        "set_username": (
+            "🙂 <b>Необходимо установить юзернейм на WakaTime в </b><code>.config</code>"
+        ),
         "_cmd_doc_wakaface": "Выбрать эмодзи, которое будет отображаться в виджетах",
         "_cmd_doc_wakatoggle": "Включить\\выключить виджеты",
         "_cls_doc": "Виджеты WakaTime для твоего канала @пользовательname_bio",
@@ -67,33 +77,7 @@ class WakaTimeMod(loader.Module):
             ),
         )
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:wakatime")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["wakatime"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self._endpoint = "https://wakatime.com/api/v1/users/{}/stats/last_7_days"
 
         self.set("widgets", list(map(tuple, self.get("widgets", []))))

@@ -6,6 +6,8 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/plasticine/344/apple-settings--v2.png
 # scope: inline
 # scope: hikka_only
@@ -23,13 +25,10 @@ from dataclasses import replace
 from .. import loader, utils
 from telethon.tl.types import Message
 from ..inline.types import InlineCall
-import logging
 import subprocess
 import asyncio
 import io
 from typing import Union
-
-logger = logging.getLogger(__name__)
 
 
 def human_readable_size(size, decimal_places=2):
@@ -47,18 +46,24 @@ class SystemdMod(loader.Module):
 
     strings = {
         "name": "Systemd",
-        "panel": ("🎛 <b>Here you can control your systemd units</b>\n\n{}"),
+        "panel": "🎛 <b>Here you can control your systemd units</b>\n\n{}",
         "unit_doesnt_exist": "🚫 <b>Unit</b> <code>{}</code> <b>doesn't exist!</b>",
         "args": "🚫 <b>No arguments specified</b>",
-        "unit_added": "✅ <b>Unit </b><code>{}</code><b> with name </b><code>{}</code><b> added",
+        "unit_added": (
+            "✅ <b>Unit </b><code>{}</code><b> with name </b><code>{}</code><b> added"
+        ),
         "unit_removed": "✅ <b>Unit </b><code>{}</code><b> removed</b>",
-        "unit_action_done": "✅ <b>Action </b><code>{}</code><b> performed on unit </b><code>{}</code>",
+        "unit_action_done": (
+            "✅ <b>Action </b><code>{}</code><b> performed on unit </b><code>{}</code>"
+        ),
         "unit_control": (
-            "🎛 <b>Interacting with unit </b><code>{}</code><b> (</b><code>{}</code><b>)</b>\n"
-            "{} <b>Unit status: </b><code>{}</code>"
+            "🎛 <b>Interacting with unit </b><code>{}</code><b>"
+            " (</b><code>{}</code><b>)</b>\n{} <b>Unit status: </b><code>{}</code>"
         ),
         "action_not_found": "🚫 <b>Action </b><code>{}</code><b> not found</b>",
-        "unit_renamed": "✅ <b>Unit </b><code>{}</code><b> renamed to </b><code>{}</code>",
+        "unit_renamed": (
+            "✅ <b>Unit </b><code>{}</code><b> renamed to </b><code>{}</code>"
+        ),
         "stop_btn": "🍎 Stop",
         "start_btn": "🍏 Start",
         "restart_btn": "🔄 Restart",
@@ -68,34 +73,6 @@ class SystemdMod(loader.Module):
         "close_btn": "✖️ Close",
         "refresh_btn": "🔄 Refresh",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:systemd")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["systemd"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     def _get_unit_status_text(self, unit: str) -> str:
         return (
@@ -335,7 +312,9 @@ class SystemdMod(loader.Module):
         return self.strings("panel").format(
             "\n".join(
                 [
-                    f"{self._get_unit_status_emoji(unit['formal'])} <b>{unit['name']}</b> (<code>{unit['formal']}</code>): {self._get_unit_status_text(unit['formal'])} {self._get_unit_resources_consumption(unit['formal'])}"
+                    f"{self._get_unit_status_emoji(unit['formal'])} <b>{unit['name']}</b>"
+                    f" (<code>{unit['formal']}</code>):"
+                    f" {self._get_unit_status_text(unit['formal'])} {self._get_unit_resources_consumption(unit['formal'])}"
                     for unit in self.get("services", [])
                 ]
             )

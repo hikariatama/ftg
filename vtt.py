@@ -1,3 +1,4 @@
+# scope: hikka_min 1.2.10
 __version__ = (2, 0, 0)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -14,7 +15,6 @@ __version__ = (2, 0, 0)
 # scope: hikka_only
 # requires: pydub speechrecognition python-ffmpeg
 
-import asyncio
 import tempfile
 import os
 
@@ -43,41 +43,17 @@ class VoicyMod(loader.Module):
         "converting": "<code>🗣 Распознаю...</code>",
         "converted": "<b>👆 Распознано:</b>\n<pre>{}</pre>",
         "voice_not_found": "🗣 <b>Нет ответа на войс</b>",
-        "autovoice_off": "<b>🗣 Я больше не буду распознавать голосовые сообщения в этом чате</b>",
+        "autovoice_off": (
+            "<b>🗣 Я больше не буду распознавать голосовые сообщения в этом чате</b>"
+        ),
         "autovoice_on": "<b>🗣 Я буду распознавать голосовые сообщения в этом чате</b>",
         "_cmd_doc_voicy": "Распознает голосовое сообщение",
-        "_cmd_doc_autovoice": "Включить\\выключить автораспознавание голосовых сообщений в чате",
+        "_cmd_doc_autovoice": (
+            "Включить\\выключить автораспознавание голосовых сообщений в чате"
+        ),
         "_cls_doc": "Распознает войсы",
         "_cfg_lang": "Язык для распознавания голосовых сообщений",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:vtt")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["vtt"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     def __init__(self):
         self.config = loader.ModuleConfig(

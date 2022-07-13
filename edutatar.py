@@ -6,10 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/512/000000/external-education-job-search-flaticons-lineal-color-flat-icons.png
 # meta developer: @hikarimods
 # scope: hikka_only
-# scope: hikka_min 1.1.14
 
 import asyncio
 import re
@@ -48,16 +49,26 @@ class EduTatarMod(loader.Module):
 
     strings = {
         "name": "eduTatar",
-        "login_pass_not_specified": "<b>🔑 Необходимо указать логин и пароль от edu.tatar.ru в конфиге</b>",
+        "login_pass_not_specified": (
+            "<b>🔑 Необходимо указать логин и пароль от edu.tatar.ru в конфиге</b>"
+        ),
         "loading_info": "<b>👩🏼‍🏫 Загружаю информацию с edu.tatar.ru...</b>",
-        "host_error": "🚫 Error occured while parsing. Maybe edutatar host is down or <b>you forgot to change proxy in script</b>?",
+        "host_error": (
+            "🚫 Error occured while parsing. Maybe edutatar host is down or <b>you"
+            " forgot to change proxy in script</b>?"
+        ),
         "no_hw": "📕 Нет д\\з",
     }
 
     strings_ru = {
-        "login_pass_not_specified": "<b>🔑 Необходимо указать логин и пароль от edu.tatar.ru в конфиге</b>",
+        "login_pass_not_specified": (
+            "<b>🔑 Необходимо указать логин и пароль от edu.tatar.ru в конфиге</b>"
+        ),
         "loading_info": "<b>👩🏼‍🏫 Загружаю информацию с edu.tatar.ru...</b>",
-        "host_error": "🚫 Произошла ошибка получения данных с edu.tatar.ru. <b>Может, ты забыл указать прокси</b>?",
+        "host_error": (
+            "🚫 Произошла ошибка получения данных с edu.tatar.ru. <b>Может, ты забыл"
+            " указать прокси</b>?"
+        ),
         "no_hw": "📕 Нет д\\з",
         "_cmd_doc_eduweek": "Показать расписание на неделю",
         "_cmd_doc_eduday": "<день:число{0,}> - Показать расписание конкретного дня",
@@ -84,34 +95,7 @@ class EduTatarMod(loader.Module):
             loader.ConfigValue("proxy", "", lambda: "Proxy for correct work of module"),
         )
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:edutatar")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["edutatar"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
-
         self.sess = {"DNSID": db.get("eduTatar", "sess", None)}
         if self.sess["DNSID"] is None:
             await self.revoke_token()
@@ -204,7 +188,10 @@ class EduTatarMod(loader.Module):
                     "Upgrade-Insecure-Requests": "1",
                     "Origin": "https://edu.tatar.ru",
                     "Content-Type": "application/x-www-form-urlencoded",
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
+                    "User-Agent": (
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                        " (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36"
+                    ),
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
                     "Sec-GPC": "1",
                     "Sec-Fetch-Site": "same-origin",
@@ -246,7 +233,8 @@ class EduTatarMod(loader.Module):
                     await self._client.send_message(
                         "@userbot_notifies_bot",
                         utils.escape_html(
-                            f'<b>{subject}: {current_marks_1[i]}->{current_marks_2[i]}\n</b><code>{" ".join(list(map(str, current_marks_2)))}</code>'
+                            f"<b>{subject}:"
+                            f' {current_marks_1[i]}->{current_marks_2[i]}\n</b><code>{" ".join(list(map(str, current_marks_2)))}</code>'
                         ),
                     )
                     await asyncio.sleep(0.5)
@@ -257,7 +245,8 @@ class EduTatarMod(loader.Module):
                 await self._client.send_message(
                     "@userbot_notifies_bot",
                     utils.escape_html(
-                        f'<b>{subject}: {current_marks_2[i ]}\n</b><code>{" ".join(list(map(str, current_marks_2)))}</code>'
+                        f"<b>{subject}:"
+                        f' {current_marks_2[i ]}\n</b><code>{" ".join(list(map(str, current_marks_2)))}</code>'
                     ),
                 )
                 await asyncio.sleep(0.5)
@@ -272,7 +261,10 @@ class EduTatarMod(loader.Module):
                     "Host": "edu.tatar.ru",
                     "Connection": "keep-alive",
                     "Upgrade-Insecure-Requests": "1",
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
+                    "User-Agent": (
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                        " (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36"
+                    ),
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
                     "Sec-GPC": "1",
                     "Sec-Fetch-Site": "same-origin",
@@ -289,7 +281,8 @@ class EduTatarMod(loader.Module):
             return self.strings("host_error")
 
         day = re.findall(
-            r"<td style=.vertical.*?>.*?<td style=.vertical.*?middle.*?>(.*?)</td>.*?<p>(.*?)</p>.*?</tr>",
+            r"<td style=.vertical.*?>.*?<td"
+            r" style=.vertical.*?middle.*?>(.*?)</td>.*?<p>(.*?)</p>.*?</tr>",
             answ.text.replace("\n", ""),
         )
         if len(day) < 5:
@@ -334,7 +327,10 @@ class EduTatarMod(loader.Module):
                     "Host": "edu.tatar.ru",
                     "Connection": "keep-alive",
                     "Upgrade-Insecure-Requests": "1",
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
+                    "User-Agent": (
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                        " (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36"
+                    ),
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
                     "Sec-GPC": "1",
                     "Sec-Fetch-Site": "same-origin",
@@ -422,6 +418,8 @@ class EduTatarMod(loader.Module):
         for sub, marks in cols.items():
             offset = " " * (maxelem - len(sub.split(" ")[1]))
             offset_val = " " * (maxelem_val - len(marks.split("<b>", 1)[0]))
-            term += f'<code>{sub}:{offset} {marks.split("<b>", 1)[0]}{offset_val}</code><b>{marks.split("<b>", 1)[1]}\n'
+            term += (
+                f'<code>{sub}:{offset} {marks.split("<b>", 1)[0]}{offset_val}</code><b>{marks.split("<b>", 1)[1]}\n'
+            )
 
         return term

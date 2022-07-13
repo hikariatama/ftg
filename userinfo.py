@@ -6,19 +6,16 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/stickers/500/000000/user.png
 # meta developer: @hikarimods
 # scope: hikka_only
-
-import asyncio
-import logging
 
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import Message
 
 from .. import loader, utils
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -30,34 +27,6 @@ class InfoMod(loader.Module):
         "loading": "🕐 <b>Processing entity...</b>",
         "not_chat": "🚫 <b>This is not a chat!</b>",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:userinfo")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["userinfo"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     async def userinfocmd(self, message: Message):
         """Get object infomation"""
@@ -88,7 +57,7 @@ class InfoMod(loader.Module):
         photo = await self._client.download_profile_photo(user_ent.id, bytes)
 
         user_info = (
-            f"<b>👤 User:</b>\n\n"
+            "<b>👤 User:</b>\n\n"
             f"<b>First name:</b> {user_ent.first_name or '🚫'}\n"
             f"<b>Last name:</b> {user_ent.last_name or '🚫'}\n"
             f"<b>Username:</b> @{user_ent.username or '🚫'}\n"

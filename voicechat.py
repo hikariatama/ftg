@@ -6,6 +6,8 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta title: VoiceChat Beta
 # meta pic: https://img.icons8.com/arcade/344/experimental-medium-volume-arcade.png
 # meta developer: @hikariatama
@@ -30,7 +32,6 @@ from ..inline.types import InlineCall
 
 from youtube_dl import YoutubeDL
 
-logger = logging.getLogger(__name__)
 logging.getLogger("pytgcalls").setLevel(logging.ERROR)
 
 
@@ -96,33 +97,7 @@ class VoiceChatMod(loader.Module):
             )
         )
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:voicechat")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["voicechat"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self._app = PyTgCalls(client)
         self._dir = tempfile.mkdtemp()
         await self._app.start()

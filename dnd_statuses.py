@@ -6,10 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/fluency/240/000000/envelope-number.png
 # meta developer: @hikarimods
 # scope: hikka_only
-# scope: hikka_min 1.1.12
 
 import asyncio
 import logging
@@ -48,40 +49,17 @@ class StatusesMod(loader.Module):
         "status_unset": "<b>✅ Статус удален</b>",
         "available_statuses": "<b>🦊 Доступные статусы:</b>\n\n",
         "_cmd_doc_status": "<short_name> - Установить статус",
-        "_cmd_doc_newstatus": "<short_name> <уведомлять|0/1> <текст> - Создать новый статус\nПример: .newstatus test 1 Hello!",
+        "_cmd_doc_newstatus": (
+            "<short_name> <уведомлять|0/1> <текст> - Создать новый статус\nПример:"
+            " .newstatus test 1 Hello!"
+        ),
         "_cmd_doc_delstatus": "<short_name> - Удалить статус",
         "_cmd_doc_unstatus": "Удалить статус",
         "_cmd_doc_statuses": "Показать доступные статусы",
         "_cls_doc": "AFK модуль с расширенным функционалом",
     }
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:dnd_statuses")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["dnd_statuses"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self._ratelimit = []
         self._sent_messages = []
 
@@ -212,6 +190,9 @@ class StatusesMod(loader.Module):
         """Show available statuses"""
         res = self.strings("available_statuses")
         for short_name, status in self.get("texts", {}).items():
-            res += f"<b><u>{short_name}</u></b> | Notify: <b>{self._db.get('Statuses', 'notif', {})[short_name]}</b>\n{status}\n➖➖➖➖➖➖➖➖➖\n"
+            res += (
+                f"<b><u>{short_name}</u></b> | Notify:"
+                f" <b>{self._db.get('Statuses', 'notif', {})[short_name]}</b>\n{status}\n➖➖➖➖➖➖➖➖➖\n"
+            )
 
         await utils.answer(message, res)

@@ -1,3 +1,4 @@
+# scope: hikka_min 1.2.10
 __version__ = (2, 0, 1)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -12,10 +13,8 @@ __version__ = (2, 0, 1)
 # meta developer: @hikarimods
 # scope: hikka_only
 
-import asyncio
 import imghdr
 import io
-import logging
 import random
 import re
 import os
@@ -25,8 +24,6 @@ from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.types import Message
 
 from .. import loader, utils, main
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -56,34 +53,6 @@ class FileUploaderMod(loader.Module):
         "_cmd_doc_skynet": "Загрузить на децентрализованную платформу SkyNet",
         "_cls_doc": "Загружает файлы на различные хостинги",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:uploader")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["uploader"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     async def get_media(self, message: Message):
         reply = await message.get_reply_message()
@@ -181,7 +150,8 @@ class FileUploaderMod(loader.Module):
             try:
                 url = (
                     re.search(
-                        r'<meta property="og:image" data-react-helmet="true" content="(.*?)"',
+                        r'<meta property="og:image" data-react-helmet="true"'
+                        r' content="(.*?)"',
                         (await utils.run_sync(requests.get, response.raw_text)).text,
                     )
                     .group(1)

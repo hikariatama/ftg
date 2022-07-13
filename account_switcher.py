@@ -1,3 +1,4 @@
+# scope: hikka_min 1.2.10
 __version__ = (2, 0, 1)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -11,9 +12,7 @@ __version__ = (2, 0, 1)
 # meta pic: https://img.icons8.com/fluency/240/000000/guest-male.png
 # meta developer: @hikarimods
 # scope: hikka_only
-# scope: hikka_min 1.1.15
 
-import asyncio
 import io
 import logging
 import re
@@ -48,13 +47,17 @@ class AccountSwitcherMod(loader.Module):
         "last_name_unsaved": "🔘 First name not saved\n",
         "bio_restored": "✅ Bio restored\n",
         "bio_unsaved": "🔘 Bio not saved\n",
-        "data_not_restored": "🚫 First name not restored\n🚫 Last name not restored\n🚫 Bio not restored\n",
+        "data_not_restored": (
+            "🚫 First name not restored\n🚫 Last name not restored\n🚫 Bio not restored\n"
+        ),
         "pfp_restored": "✅ Profile photo restored",
         "pfp_unsaved": "🔘 Profile photo not saved",
     }
 
     strings_ru = {
-        "account_saved": '📼 <b><a href="https://t.me/c/{}/{}">Аккаунт</a> сохранен!</b>',
+        "account_saved": (
+            '📼 <b><a href="https://t.me/c/{}/{}">Аккаунт</a> сохранен!</b>'
+        ),
         "restore_btn": "👆 Восстановить",
         "desc": "Тут будут появляться сохраненные профили",
         "first_name_restored": "✅ Имя восстановлено\n",
@@ -63,41 +66,17 @@ class AccountSwitcherMod(loader.Module):
         "last_name_unsaved": "🔘 Фамилия не сохранялась\n",
         "bio_restored": "✅ Био восстановлено\n",
         "bio_unsaved": "🔘 Био не сохранялось\n",
-        "data_not_restored": "🚫 Имя не восстановлено\n🚫 Фамилия не восстановлена\n🚫 Био не восстановлено\n",
+        "data_not_restored": (
+            "🚫 Имя не восстановлено\n🚫 Фамилия не восстановлена\n🚫 Био не"
+            " восстановлено\n"
+        ),
         "pfp_restored": "✅ Аватарка восстановлена",
         "pfp_unsaved": "🔘 Аватарка не сохранялась",
         "_cmd_doc_accsave": "Сохранить аккаунт для последующего использования",
         "_cls_doc": "Позволяет быстро переключаться между разными аккаунтами",
     }
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:account_switcher")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["account_switcher"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
-
         self._accs_db, is_new = await utils.asset_channel(
             self._client,
             "hikka-acc-switcher",

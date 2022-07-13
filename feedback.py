@@ -6,15 +6,14 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/stickers/500/000000/feedback.png
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.1.15
 
 import abc
-import asyncio
-import logging
 import time
 
 from aiogram.types import Message as AiogramMessage
@@ -22,8 +21,6 @@ from telethon.utils import get_display_name
 
 from .. import loader, utils
 from ..inline.types import InlineCall
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -34,7 +31,10 @@ class FeedbackMod(loader.Module):
 
     strings = {
         "name": "Feedback",
-        "/start": "🤵‍♀️ <b>Hello. I'm feedback bot of {}. Read /nometa before continuing</b>\n<b>You can send only one message per minute</b>",
+        "/start": (
+            "🤵‍♀️ <b>Hello. I'm feedback bot of {}. Read /nometa before"
+            " continuing</b>\n<b>You can send only one message per minute</b>"
+        ),
         "/nometa": (
             "👨‍🎓 <b><u>Internet-talk rules:</u></b>\n\n"
             "<b>🚫 Do <u>not</u> send just 'Hello'</b>\n"
@@ -48,45 +48,25 @@ class FeedbackMod(loader.Module):
     }
 
     strings_ru = {
-        "/start": "🤵‍♀️ <b>Привет. Я бот обратной связи {}. Прочитай /nometa перед продолжением</b>\n<b>Ты можешь отправлять только одно сообщение в минуту</b>",
+        "/start": (
+            "🤵‍♀️ <b>Привет. Я бот обратной связи {}. Прочитай /nometa перед"
+            " продолжением</b>\n<b>Ты можешь отправлять только одно сообщение в"
+            " минуту</b>"
+        ),
         "enter_message": "✍️ <b>Ввведи сообщение</b>",
         "sent": "✅ <b>Сообщение передано владельцу</b>",
         "_cls_doc": "Бот обратной связи для Hikka",
-        "/nometa": "👨‍🎓 <b><u>Правила общения в Интернете:</u></b>\n\n <b>🚫 <u>Не пиши</u> просто 'Привет'</b>\n <b>🚫 <u>Не рекламируй </u> ничего</b>\n <b>🚫 <u>Не оскорбляй</u> никого</b>\n <b>🚫 <u>Не разбивай</u> сообщения на миллион кусочков</b>\n <b>✅ Пиши вопрос в одном сообщении</b>",
+        "/nometa": (
+            "👨‍🎓 <b><u>Правила общения в Интернете:</u></b>\n\n <b>🚫 <u>Не пиши</u>"
+            " просто 'Привет'</b>\n <b>🚫 <u>Не рекламируй </u> ничего</b>\n <b>🚫 <u>Не"
+            " оскорбляй</u> никого</b>\n <b>🚫 <u>Не разбивай</u> сообщения на миллион"
+            " кусочков</b>\n <b>✅ Пиши вопрос в одном сообщении</b>"
+        ),
     }
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:feedback")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["feedback"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
-
         self._name = utils.escape_html(get_display_name(await client.get_me()))
-
         self._ratelimit = {}
-
         self._markup = self.inline.generate_markup(
             {"text": "✍️ Leave a message [1 per minute]", "data": "fb_leave_message"}
         )
@@ -137,7 +117,8 @@ class FeedbackMod(loader.Module):
             and self._ratelimit[call.from_user.id] > time.time()
         ):
             await call.answer(
-                f"You can send next message in {self._ratelimit[call.from_user.id] - time.time():.0f} second(-s)",
+                "You can send next message in"
+                f" {self._ratelimit[call.from_user.id] - time.time():.0f} second(-s)",
                 show_alert=True,
             )
             return

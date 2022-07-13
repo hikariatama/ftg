@@ -6,13 +6,14 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/external-smashingstocks-circular-smashing-stocks/452/external-mortarboard-education-smashingstocks-circular-smashing-stocks.png
 # scope: inline
 # scope: hikka_only
 # meta developer: @hikarimods
 # requires: bs4
 
-import asyncio
 from .. import loader, utils
 from telethon.tl.types import Message
 from ..inline.types import InlineCall
@@ -21,18 +22,18 @@ from urllib.parse import quote_plus
 import requests
 from bs4 import BeautifulSoup
 
-import logging
 import grapheme
 import random
-
-logger = logging.getLogger(__name__)
 
 DEFAULT_HEADERS = {
     "Connection": "keep-alive",
     "Pragma": "no-cache",
     "Cache-Control": "no-cache",
     "Upgrade-Insecure-Requests": "1",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like"
+        " Gecko) Chrome/92.0.4515.131 Safari/537.36"
+    ),
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
     "Referer": "https://www.oxfordlearnersdictionaries.com",
     "Accept-Encoding": "gzip, deflate, br",
@@ -86,34 +87,6 @@ class OxfordMod(loader.Module):
         "no_exact": "😔 <b>There is no definition for {}</b>\n<b>Maybe, you meant:</b>",
         "match": '{} <b><a href="{}">{}</a></b> [{}] <i>({})</i>\n\n{}',
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:oxford")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["oxford"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     async def _search(self, call: InlineCall, term: str):
         result = await search(term)

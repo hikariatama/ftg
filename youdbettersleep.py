@@ -6,11 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/512/000000/external-sleep-productivity-flaticons-lineal-color-flat-icons.png
 # meta developer: @hikarimods
 # scope: hikka_only
 
-import asyncio
 import re
 import time
 
@@ -49,45 +50,24 @@ class YouDBetterSleepMod(loader.Module):
         "no_time": "🚫 <b>You can't sleep forever, specify <time> argument</b>",
         "awake": "🥱 <b>Good morning</b>",
         "asleep": "😴 <b>Good night. Now I can't write messages for {}</b>",
-        "disabled": "😴 <b>I can't write messages, because my userbot wants me to sleep</b>",
+        "disabled": (
+            "😴 <b>I can't write messages, because my userbot wants me to sleep</b>"
+        ),
     }
 
     strings_ru = {
         "no_time": "👾 <b>Ты не можешь спать вечно, укажи аргумент <время></b>",
         "awake": "🥱 <b>Доброе утро</b>",
-        "asleep": "😴 <b>Спокойной ночи. Я не могу писать сообщения на протяжении {}</b>",
-        "disabled": "😴 <b>Я не могу писать сообщения, так как мой юзербот хочет, чтобы я поспал</b>",
+        "asleep": (
+            "😴 <b>Спокойной ночи. Я не могу писать сообщения на протяжении {}</b>"
+        ),
+        "disabled": (
+            "😴 <b>Я не могу писать сообщения, так как мой юзербот хочет, чтобы я"
+            " поспал</b>"
+        ),
         "_cmd_doc_sleep": "<время> - Время сна",
         "_cls_doc": "Запрещает писать во время сна",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:youdbettersleep")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["youdbettersleep"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     @loader.sudo
     async def sleepcmd(self, message: Message):

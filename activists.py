@@ -6,20 +6,18 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/external-flaticons-flat-flat-icons/512/000000/external-person-100-most-used-icons-flaticons-flat-flat-icons-2.png
 # meta developer: @hikarimods
 # scope: hikka_only
 
-import asyncio
-import logging
 import time
 
 from telethon.tl.types import Chat, Message, User
 from telethon.utils import get_display_name
 
 from .. import loader, utils
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -28,45 +26,31 @@ class ActivistsMod(loader.Module):
 
     strings = {
         "name": "Activists",
-        "searching": "🔎 <b>Looking for the most active users in chat...\nThis might take a while.</b>",
+        "searching": (
+            "🔎 <b>Looking for the most active users in chat...\nThis might take a"
+            " while.</b>"
+        ),
         "user": '👤 {}. <a href="{}">{}</a>: {} messages',
-        "active": "👾 <b>The most active users in this chat:</b>\n\n{}\n<i>Request took: {}s</i>",
+        "active": (
+            "👾 <b>The most active users in this chat:</b>\n\n{}\n<i>Request took:"
+            " {}s</i>"
+        ),
     }
 
     strings_ru = {
-        "searching": "🔎 <b>Поиск самых активных участников чата...\nЭто может занять некоторое время.</b>",
-        "active": "👾 <b>Самые активные пользователи в чате:</b>\n\n{}\n<i>Подсчет занял: {}s</i>",
-        "_cmd_doc_activists": "[количество] [-m <int>] - Найти наиболее активных пользователей чата",
+        "searching": (
+            "🔎 <b>Поиск самых активных участников чата...\nЭто может занять некоторое"
+            " время.</b>"
+        ),
+        "active": (
+            "👾 <b>Самые активные пользователи в чате:</b>\n\n{}\n<i>Подсчет занял:"
+            " {}s</i>"
+        ),
+        "_cmd_doc_activists": (
+            "[количество] [-m <int>] - Найти наиболее активных пользователей чата"
+        ),
         "_cls_doc": "Ищет наиболее активных пользователей чата",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:activists")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["activists"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     async def check_admin(self, chat: int or Chat, user_id: int or User) -> bool:
         try:

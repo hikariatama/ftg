@@ -6,6 +6,8 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # May be working a lil bit weird, because info was manually
 # parsed from telegram schema and official telethon search
 # mechanism was used as a base for this search
@@ -15,8 +17,6 @@
 # scope: inline
 # scope: hikka_only
 
-import asyncio
-import logging
 import re
 
 import requests as rqsts
@@ -24,8 +24,6 @@ from telethon.tl.types import Message
 
 from .. import loader, utils
 from ..inline.types import InlineCall
-
-logger = logging.getLogger(__name__)
 
 
 def get_message(i: dict) -> str:
@@ -149,33 +147,7 @@ class TeledocsMod(loader.Module):
             + self._build_list(found_constructors, False, True)
         )
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:teledocs")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["teledocs"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self._tl = (
             await utils.run_sync(
                 rqsts.get,

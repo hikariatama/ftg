@@ -6,17 +6,17 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/external-smashingstocks-thin-outline-color-smashing-stocks/270/000000/external-forex-finance-smashingstocks-thin-outline-color-smashing-stocks.png
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.1.15
 # requires: websockets requests
 
 import asyncio
 import datetime
 import json
-import logging
 import time
 from urllib.parse import quote_plus
 
@@ -28,8 +28,6 @@ from telethon.tl.types import Message
 from .. import loader, utils
 from ..inline.types import InlineCall
 
-logger = logging.getLogger(__name__)
-
 
 @loader.tds
 class RealTimeValutesMod(loader.Module):
@@ -39,15 +37,25 @@ class RealTimeValutesMod(loader.Module):
         "name": "RealTimeValutes",
         "loading": "😌 <b>Loading the most actual info from Forex...</b>",
         "wss_error": "🚫 <b>Socket connection error</b>",
-        "exchanges": "😌 <b>Exchange rates by Forex</b>\n\n<b>💵 1 USD = {:.2f} RUB\n💶 1 EUR = {:.2f} RUB</b>\n\n<i>This info is relevant to <u>{:%m/%d/%Y %H:%M:%S}</u></i>",
+        "exchanges": (
+            "😌 <b>Exchange rates by Forex</b>\n\n<b>💵 1 USD = {:.2f} RUB\n💶 1 EUR ="
+            " {:.2f} RUB</b>\n\n<i>This info is relevant to <u>{:%m/%d/%Y"
+            " %H:%M:%S}</u></i>"
+        ),
     }
 
     strings_ru = {
         "loading": "😌 <b>Загружаю информацию с Forex...</b>",
         "wss_error": "🚫 <b>Ошибка подеключения к сокету</b>",
-        "exchanges": "😌 <b>Курсы валют Forex</b>\n\n<b>💵 1 USD = {:.2f} RUB\n💶 1 EUR = {:.2f} RUB</b>\n\n<i>Информация актуальна на <u>{:%m/%d/%Y %H:%M:%S}</u></i>",
+        "exchanges": (
+            "😌 <b>Курсы валют Forex</b>\n\n<b>💵 1 USD = {:.2f} RUB\n💶 1 EUR = {:.2f}"
+            " RUB</b>\n\n<i>Информация актуальна на <u>{:%m/%d/%Y %H:%M:%S}</u></i>"
+        ),
         "_cmd_doc_val": "Показать курсы валют",
-        "_cls_doc": "Отслеживает курсы валют в режиме реального времени. Обновляется несколько раз в секунду",
+        "_cls_doc": (
+            "Отслеживает курсы валют в режиме реального времени. Обновляется несколько"
+            " раз в секунду"
+        ),
     }
 
     async def _connect(self):
@@ -84,33 +92,7 @@ class RealTimeValutesMod(loader.Module):
 
             return await self._connect()
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:forex_wss")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["forex_wss"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self._rates = {}
         self._upd_time = 0
 

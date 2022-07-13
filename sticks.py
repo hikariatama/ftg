@@ -1,3 +1,4 @@
+# scope: hikka_min 1.2.10
 __version__ = (2, 0, 0)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -58,19 +59,30 @@ class StickManagerMod(loader.Module):
         "name": "StickManager",
         "no_args": "🚫 <b>This command requires arguments</b>",
         "no_such_pack": "🚫 <b>Stickerset not found</b>",
-        "stickersets_added": "🌁 <code>{}</code><b> stickerset(-s) added, </b><code>{}</code><b> removed!</b>",
+        "stickersets_added": (
+            "🌁 <code>{}</code><b> stickerset(-s) added, </b><code>{}</code><b>"
+            " removed!</b>"
+        ),
         "no_stickersets_to_import": "🚫 <b>No stickersets to import</b>",
         "no_stickersets": "🚫 <b>You have no stickersets</b>",
         "alias_removed": "✅ <b>Alias </b><code>{}</code><b> removed</b>",
         "remove_alias_404": "🚫 <b>No pack has alias </b><code>{}</code>",
         "pack404": "🚫 <b>Pack </b><code>{}</code><b> not found</b>",
-        "created_alias": "{} <b>Created alias for {}. Access it with </b><code>{}</code>",
+        "created_alias": (
+            "{} <b>Created alias for {}. Access it with </b><code>{}</code>"
+        ),
         "packs_header": "👨‍🎤 <b>Active Stickerpacks:</b>\n\n",
         "default": "{} <b>Set pack {} as default</b>",
         "packremoved": "{} <b>Removed pack {}</b>",
         "error": "🚫 <b>{}</b>",
-        "kang": '{} <b>Sticker added to <a href="https://t.me/addstickers/{}">pack</a></b>\n<i>中国語で再び侮辱された 😥</i>',
-        "created": '{} <b>Created new pack {} <a href="https://t.me/addstickers/{}">add</a></b>',
+        "kang": (
+            "{} <b>Sticker added to <a"
+            ' href="https://t.me/addstickers/{}">pack</a></b>\n<i>中国語で再び侮辱された 😥</i>'
+        ),
+        "created": (
+            "{} <b>Created new pack {} <a"
+            ' href="https://t.me/addstickers/{}">add</a></b>'
+        ),
         "bot": "🤖 <b>Bot token saved</b>",
         "alias_exists": "🚫 <b>Alias </b><code>{}</code><b> exists</b>",
         "stickrm": "{} <b>Sticker removed from pack</b>\n<i>中国語で再び侮辱された 😥</i>",
@@ -82,7 +94,10 @@ class StickManagerMod(loader.Module):
     strings_ru = {
         "no_args": "🚫 <b>Эта команда требует аргументы</b>",
         "no_such_pack": "🚫 <b>Стикерпак не найден</b>",
-        "stickersets_added": "🌁 <code>{}</code><b> стикерпак(-ов) добавлено, </b><code>{}</code><b> удалено!</b>",
+        "stickersets_added": (
+            "🌁 <code>{}</code><b> стикерпак(-ов) добавлено, </b><code>{}</code><b>"
+            " удалено!</b>"
+        ),
         "no_stickersets_to_import": "🚫 <b>Нет стикерпаков для импорта</b>",
         "no_stickersets": "🚫 <b>У тебя нет стикерпаков</b>",
         "alias_removed": "✅ <b>Алиас </b><code>{}</code><b> удален</b>",
@@ -97,7 +112,9 @@ class StickManagerMod(loader.Module):
         "alias_exists": "🚫 <b>Алиас </b><code>{}</code><b> уже существует</b>",
         "stickrm": "{} <b>Стикер удален из пака</b>\n<i>中国語で再び侮辱された 😥</i>",
         "_cmd_doc_newpack": "<short_name> <имя> [-a <алиас>] - Создать новый стикерпак",
-        "_cmd_doc_newvidpack": "<short_name> <имя> [-a <алиас>] - Создать новый видео стикерпак",
+        "_cmd_doc_newvidpack": (
+            "<short_name> <имя> [-a <алиас>] - Создать новый видео стикерпак"
+        ),
         "_cmd_doc_syncpacks": "Синхронизировать стикерпаки с @stickers",
         "_cmd_doc_packs": "Показать доступные стикерпаки",
         "_cmd_doc_stickalias": "<алиас> [short_name] - Добавить или удалить алиас",
@@ -106,7 +123,9 @@ class StickManagerMod(loader.Module):
         "_cmd_doc_unstick": "<reply> - Удалить стикер из стикерпака",
         "_cmd_doc_stick": "[эмодзи] [short_name|алиас] - Добавить стикер в стикерпак",
         "_cmd_doc_rmrecent": "Очистить недавно использованные стикеры",
-        "_cls_doc": "Управление стикерпаками с поддержкой видеопаков и дружелюбным интерфейсом",
+        "_cls_doc": (
+            "Управление стикерпаками с поддержкой видеопаков и дружелюбным интерфейсом"
+        ),
     }
 
     def find(self, args: str) -> str or False:
@@ -174,33 +193,7 @@ class StickManagerMod(loader.Module):
 
         return "sticker.webm"
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:sticks")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["sticks"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self.stickersets = self.get("stickersets", {})
         self.default = self.get("default", None)
 
@@ -596,7 +589,10 @@ class StickManagerMod(loader.Module):
                 if info["alias"]
                 else f" (<code>{utils.escape_html(shortname)}</code>)"
             )
-            res += f"{info['emoji']} <b>{utils.escape_html(info['title'])}</b> <a href=\"https://t.me/addstickers/{shortname}\">add</a>{alias}\n"
+            res += (
+                f"{info['emoji']} <b>{utils.escape_html(info['title'])}</b> <a"
+                f' href="https://t.me/addstickers/{shortname}">add</a>{alias}\n'
+            )
 
         await utils.answer(message, res)
 

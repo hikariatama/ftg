@@ -6,13 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/color/480/000000/brain--v1.png
 # meta developer: @hikarimods
 # scope: hikka_only
-# scope: hikka_min 1.1.15
 
-import asyncio
-import logging
 import random
 
 import grapheme
@@ -21,7 +20,6 @@ from telethon.tl.types import Message
 from .. import loader, utils
 from ..inline.types import InlineCall
 
-logger = logging.getLogger(__name__)
 EMOJIES = utils.chunks(
     list(
         grapheme.graphemes(
@@ -44,40 +42,18 @@ class MindGameMod(loader.Module):
 
     strings = {
         "name": "MindGame",
-        "header": "🎮 <b>Find an emoji, that differs from others</b>\n<i>You've completed {} levels!</i>",
+        "header": (
+            "🎮 <b>Find an emoji, that differs from others</b>\n<i>You've completed {}"
+            " levels!</i>"
+        ),
     }
 
     strings_ru = {
-        "header": "🎮 <b>Найди эмодзи, который отличается от других</b>\n<i>Ты прошел {} уровней!</i>"
+        "header": (
+            "🎮 <b>Найди эмодзи, который отличается от других</b>\n<i>Ты прошел {}"
+            " уровней!</i>"
+        )
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:mindgame")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["mindgame"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     _ratelimit = []
 

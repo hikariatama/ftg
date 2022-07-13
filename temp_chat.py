@@ -1,3 +1,4 @@
+# scope: hikka_min 1.2.10
 __version__ = (2, 0, 0)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -11,7 +12,6 @@ __version__ = (2, 0, 0)
 # meta pic: https://img.icons8.com/fluency/344/demolition-excavator.png
 # meta developer: @hikarimods
 # scope: hikka_only
-# scope: hikka_min 1.1.12
 
 import asyncio
 import datetime
@@ -43,8 +43,14 @@ class TempChatsMod(loader.Module):
         "args": "🚫 <b>Check the args: </b><code>.help TempChats</code>",
         "chat_not_found": "🚫 <b>Chat not found</b>",
         "tmp_cancelled": "✅ <b>Chat </b><code>{}</code><b> will now live forever!</b>",
-        "delete_error": "🚫 <b>An error occured while deleting this temp chat. Remove it manually.</b>",
-        "temp_chat_header": "<b>⚠️ This chat</b> (<code>{}</code>)<b> is temporary and will be removed {}.</b>",
+        "delete_error": (
+            "🚫 <b>An error occured while deleting this temp chat. Remove it"
+            " manually.</b>"
+        ),
+        "temp_chat_header": (
+            "<b>⚠️ This chat</b> (<code>{}</code>)<b> is temporary and will be removed"
+            " {}.</b>"
+        ),
         "chat_created": '✅ <b><a href="{}">Chat</a> have been created</b>',
         "delete_error_me": "🚫 <b>Error occured while deleting chat {}</b>",
     }
@@ -55,7 +61,10 @@ class TempChatsMod(loader.Module):
         "chat_not_found": "🚫 <b>Чат не найден</b>",
         "tmp_cancelled": "🚫 <b>Чат </b><code>{}</code><b> будет жить вечно!</b>",
         "delete_error": "🚫 <b>Произошла ошибка удаления чата. Сделай это вручную.</b>",
-        "temp_chat_header": "<b>⚠️ Этот чат</b> (<code>{}</code>)<b> является временным и будет удален {}.</b>",
+        "temp_chat_header": (
+            "<b>⚠️ Этот чат</b> (<code>{}</code>)<b> является временным и будет удален"
+            " {}.</b>"
+        ),
         "chat_created": '✅ <b><a href="{}">Чат</a> создан</b>',
         "delete_error_me": "🚫 <b>Ошибка удаления чата {}</b>",
         "_cmd_doc_tmpchat": "<время> <название> - Создать новый временный чат",
@@ -118,34 +127,6 @@ class TempChatsMod(loader.Module):
             chats = self.get("chats")
             del chats[chat]
             self.set("chats", chats)
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:temp_chat")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["temp_chat"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     async def tmpchatcmd(self, message: Message):
         """<time> <title> - Create new temp chat"""
@@ -245,7 +226,10 @@ class TempChatsMod(loader.Module):
         """List temp chats"""
         res = "<b>⏱ Temporary Chats</b>\n"
         for chat, info in self.get("chats", {}).items():
-            res += f'<b>{info[1]}</b> (<code>{chat}</code>)<b>: {datetime.datetime.utcfromtimestamp(info[0] + 10800).strftime("%d.%m.%Y %H:%M:%S")}.</b>\n'
+            res += (
+                f"<b>{info[1]}</b> (<code>{chat}</code>)<b>:"
+                f' {datetime.datetime.utcfromtimestamp(info[0] + 10800).strftime("%d.%m.%Y %H:%M:%S")}.</b>\n'
+            )
 
         await utils.answer(message, res)
 

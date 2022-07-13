@@ -6,6 +6,8 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/external-phatplus-lineal-color-phatplus/512/000000/external-rate-email-phatplus-lineal-color-phatplus.png
 # meta developer: @hikarimods
 
@@ -25,46 +27,22 @@ class RateModuleMod(loader.Module):
 
     strings = {
         "name": "RateMod",
-        "template": "👮‍♂️ <b>Mode rating </b><code>{}</code><b>:</b>\n{} {} <b>[{}]</b>\n\n{}",
+        "template": (
+            "👮‍♂️ <b>Mode rating </b><code>{}</code><b>:</b>\n{} {} <b>[{}]</b>\n\n{}"
+        ),
         "no_file": "<b>What should I check?... 🗿</b>",
         "cannot_check_file": "<b>Check error</b>",
     }
 
     strings_ru = {
-        "template": "👮‍♂️ <b>Оценка модуля </b><code>{}</code><b>:</b>\n{} {} <b>[{}]</b>\n\n{}",
+        "template": (
+            "👮‍♂️ <b>Оценка модуля </b><code>{}</code><b>:</b>\n{} {} <b>[{}]</b>\n\n{}"
+        ),
         "no_file": "<b>А что проверять то?... 🗿</b>",
         "cannot_check_file": "<b>Ошибка проверки</b>",
         "_cmd_doc_ratemod": "<код> - Оценить модуль",
         "_cls_doc": "Оценивает модуль и дает рекомендации",
     }
-
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += [""]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
 
     @loader.unrestricted
     async def ratemodcmd(self, message: Message):
@@ -160,7 +138,10 @@ class RateModuleMod(loader.Module):
 
         score = 4.6
         if len(imports) > 10:
-            comments += f"🔻 <code>{{-0.1}}</code> <b>A lot of imports ({len(imports)}) </b><i>[memory]</i>\n"
+            comments += (
+                f"🔻 <code>{{-0.1}}</code> <b>A lot of imports ({len(imports)})"
+                " </b><i>[memory]</i>\n"
+            )
             score -= 0.1
         if "requests" in imports and "utils.run_sync" not in code:
             comments += (
@@ -173,38 +154,68 @@ class RateModuleMod(loader.Module):
             )
             score -= 0.1
         if ".edit(" in code:
-            comments += "🔻 <code>{-0.3}</code> <b>Classic message.edit</b> <i>[no twink support]</i>\n"
+            comments += (
+                "🔻 <code>{-0.3}</code> <b>Classic message.edit</b> <i>[no twink"
+                " support]</i>\n"
+            )
             score -= 0.3
         if re.search(r"@.*?[bB][oO][tT]", code) is not None:
             bots = " | ".join(re.findall(r"@.*?[bB][oO][tT]", code))
-            comments += f"🔻 <code>{{-0.2}}</code> <b>Bot-abuse (</b><code>{bots}</code><b>)</b> <i>[module will die some day]</i>\n"
+            comments += (
+                f"🔻 <code>{{-0.2}}</code> <b>Bot-abuse (</b><code>{bots}</code><b>)</b>"
+                " <i>[module will die some day]</i>\n"
+            )
             score -= 0.2
         if re.search(r'[ \t]+async def .*?cmd.*\n[ \t]+[^\'" \t]', code) is not None:
             undoc = " | ".join(
                 list(re.findall(r'[ \t]+async def (.*?)cmd.*\n[ \t]+[^" \t]', code))
             )
 
-            comments += f"🔻 <code>{{-0.4}}</code> <b>No docs (</b><code>{undoc}</code><b>)</b> <i>[all commands must be documented]</i>\n"
+            comments += (
+                f"🔻 <code>{{-0.4}}</code> <b>No docs (</b><code>{undoc}</code><b>)</b>"
+                " <i>[all commands must be documented]</i>\n"
+            )
             score -= 0.4
         if "time.sleep" in code or "from time import sleep" in code:
-            comments += "🔻 <code>{-2.0}</code> <b>Sync sleep (</b><code>time.sleep</code><b>) replace with (</b><code>await asyncio.sleep</code><b>)</b> <i>[blocks runtime]</i>\n"
+            comments += (
+                "🔻 <code>{-2.0}</code> <b>Sync sleep (</b><code>time.sleep</code><b>)"
+                " replace with (</b><code>await asyncio.sleep</code><b>)</b> <i>[blocks"
+                " runtime]</i>\n"
+            )
             score -= 2
         if [_ for _ in code.split("\n") if len(_) > 300]:
             ll = max(len(_) for _ in code.split("\n") if len(_) > 300)
-            comments += f"🔻 <code>{{-0.1}}</code> <b>Long lines ({ll})</b> <i>[PEP violation]</i>\n"
+            comments += (
+                f"🔻 <code>{{-0.1}}</code> <b>Long lines ({ll})</b> <i>[PEP"
+                " violation]</i>\n"
+            )
             score -= 0.1
         if re.search(r'[\'"] ?\+ ?.*? ?\+ ?[\'"]', code) is not None:
-            comments += "🔻 <code>{-0.1}</code> <b>Avoiding f-строк</b> <i>[causes problems]</i>\n"
+            comments += (
+                "🔻 <code>{-0.1}</code> <b>Avoiding f-строк</b> <i>[causes"
+                " problems]</i>\n"
+            )
             score -= 0.1
         if splitted:
-            comments += f"🔻 <code>{{-0.2}}</code> <b>Big 'if' trees (</b><code>{' | '.join([f'{chain} в {fun}' for chain, fun in splitted])}</code><b>)</b> <i>[readability]</i>\n"
+            comments += (
+                "🔻 <code>{-0.2}</code> <b>Big 'if' trees"
+                f" (</b><code>{' | '.join([f'{chain} в {fun}' for chain, fun in splitted])}</code><b>)</b>"
+                " <i>[readability]</i>\n"
+            )
             score -= 0.2
         if "== None" in code or "==None" in code:
-            comments += "🔻 <code>{-0.3}</code> <b>Type comparsation via ==</b> <i>[google it]</i>\n"
+            comments += (
+                "🔻 <code>{-0.3}</code> <b>Type comparsation via ==</b> <i>[google"
+                " it]</i>\n"
+            )
 
             score -= 0.3
         if "is not None else" in code:
-            comments += "🔻 <code>{-0.1}</code> <b>Unneccessary ternary operator usage (</b><code>if some_var is not None else another</code> <b>-></b> <code>some_var or another</code><b>)</b> <i>[readability]</i>\n"
+            comments += (
+                "🔻 <code>{-0.1}</code> <b>Unneccessary ternary operator usage"
+                " (</b><code>if some_var is not None else another</code> <b>-></b>"
+                " <code>some_var or another</code><b>)</b> <i>[readability]</i>\n"
+            )
 
             score -= 0.1
         if "utils.answer" in code and ".edit(" not in code:
@@ -213,10 +224,16 @@ class RateModuleMod(loader.Module):
             )
             score += 0.3
         if re.search(r'[ \t]+async def .*?cmd.*\n[ \t]+[^\'" \t]', code) is None:
-            comments += "🔸 <code>{+0.3}</code> <b>Docs</b> <i>[all commands are documented]</i>\n"
+            comments += (
+                "🔸 <code>{+0.3}</code> <b>Docs</b> <i>[all commands are"
+                " documented]</i>\n"
+            )
             score += 0.3
         if "requests" in imports and "utils.run_sync" in code or "aiohttp" in imports:
-            comments += "🔸 <code>{+0.3}</code> <b>Async requests</b> <i>[do not stop runtime]</i>\n"
+            comments += (
+                "🔸 <code>{+0.3}</code> <b>Async requests</b> <i>[do not stop"
+                " runtime]</i>\n"
+            )
             score += 0.3
 
         api_endpoint = "https://mods.hikariatama.ru/check?hash="

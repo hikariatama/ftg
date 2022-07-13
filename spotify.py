@@ -1,3 +1,4 @@
+# scope: hikka_min 1.2.10
 __version__ = (1, 0, 1)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -12,7 +13,6 @@ __version__ = (1, 0, 1)
 # meta developer: @hikarimods
 # requires: spotipy Pillow YouTubeMusicAPI youtube-dl
 # scope: hikka_only
-# scope: hikka_min 1.2.9
 
 import asyncio
 import functools
@@ -42,7 +42,6 @@ from ..inline.types import InlineCall
 logger = logging.getLogger(__name__)
 logging.getLogger("spotipy").setLevel(logging.CRITICAL)
 
-
 SIZE = (1200, 320)
 INNER_MARGIN = (16, 16)
 
@@ -70,8 +69,12 @@ def create_bar(current_playback):
         bar += "🞆"
         bar += "".join("─" for _ in range(bar_empty))
 
-        bar += f' {current_playback["progress_ms"] // 1000 // 60:02}:{current_playback["progress_ms"] // 1000 % 60:02} /'
-        bar += f' {current_playback["item"]["duration_ms"] // 1000 // 60:02}:{current_playback["item"]["duration_ms"] // 1000 % 60:02}'
+        bar += (
+            f' {current_playback["progress_ms"] // 1000 // 60:02}:{current_playback["progress_ms"] // 1000 % 60:02} /'
+        )
+        bar += (
+            f' {current_playback["item"]["duration_ms"] // 1000 // 60:02}:{current_playback["item"]["duration_ms"] // 1000 % 60:02}'
+        )
     except Exception:
         bar = "──────🞆─── 0:00 / 0:00"
 
@@ -134,11 +137,15 @@ class SpotifyMod(loader.Module):
 
     strings = {
         "name": "SpotifyNow",
-        "need_auth": "🚫 <b>Execute </b><code>.sauth</code><b> before using this action.</b>",
+        "need_auth": (
+            "🚫 <b>Execute </b><code>.sauth</code><b> before using this action.</b>"
+        ),
         "on-repeat": "🔂 <b>Set on-repeat.</b>",
         "off-repeat": "🔁 <b>Stopped track repeat.</b>",
         "skipped": "⏭ <b>Skipped track.</b>",
-        "err": "🚫 <b>Error occurred. Make sure the track is playing!</b>\n<code>{}</code>",
+        "err": (
+            "🚫 <b>Error occurred. Make sure the track is playing!</b>\n<code>{}</code>"
+        ),
         "already_authed": "🚫 <b>You are already authentificated</b>",
         "authed": "🎧 <b>Auth successful</b>",
         "playing": "🎧 <b>Playing...</b>",
@@ -146,7 +153,10 @@ class SpotifyMod(loader.Module):
         "paused": "⏸ <b>Pause</b>",
         "deauth": "🚪 <b>Unauthentificated</b>",
         "restarted": "🔙 <b>Playing track from the beginning</b>",
-        "auth": '🔐 <a href="{}">Proceed here</a>, approve request, then <code>.scode https://...</code> with redirected url',
+        "auth": (
+            '🔐 <a href="{}">Proceed here</a>, approve request, then <code>.scode'
+            " https://...</code> with redirected url"
+        ),
         "liked": "❤️ <b>Liked current playback</b>",
         "autobio": "🎧 <b>Spotify autobio {}</b>",
         "404": "🚫 <b>No results</b>",
@@ -155,11 +165,16 @@ class SpotifyMod(loader.Module):
     }
 
     strings_ru = {
-        "need_auth": "🚫 <b>Выполни </b><code>.sauth</code><b> перед выполнением этого действия.</b>",
+        "need_auth": (
+            "🚫 <b>Выполни </b><code>.sauth</code><b> перед выполнением этого"
+            " действия.</b>"
+        ),
         "on-repeat": "🔂 <b>Повторение включено.</b>",
         "off-repeat": "🔁 <b>Повторение выключено.</b>",
         "skipped": "⏭ <b>Трек переключен.</b>",
-        "err": "🚫 <b>Произошла ошибка. Убедитесь, что музыка играет!</b>\n<code>{}</code>",
+        "err": (
+            "🚫 <b>Произошла ошибка. Убедитесь, что музыка играет!</b>\n<code>{}</code>"
+        ),
         "already_authed": "🚫 <b>Уже авторизован</b>",
         "authed": "🎧 <b>Успешная аутентификация</b>",
         "playing": "🎧 <b>Играю...</b>",
@@ -179,13 +194,19 @@ class SpotifyMod(loader.Module):
         "_cmd_doc_sbio": "Включить автоматическое био",
         "_cmd_doc_stokrefresh": "Принудительное обновление токена",
         "_cmd_doc_snow": "Показать карточку текущего трека",
-        "_cls_doc": "Тулкит для Spotify. Автор идеи: @fuccsoc. Реализация: @hikariatama",
+        "_cls_doc": (
+            "Тулкит для Spotify. Автор идеи: @fuccsoc. Реализация: @hikariatama"
+        ),
     }
 
     def __init__(self):
         self._client_id = "e0708753ab60499c89ce263de9b4f57a"
         self._client_secret = "80c927166c664ee98a43a2c0e2981b4a"
-        self.scope = "user-read-playback-state playlist-read-private playlist-read-collaborative app-remote-control user-modify-playback-state user-library-modify user-library-read"
+        self.scope = (
+            "user-read-playback-state playlist-read-private playlist-read-collaborative"
+            " app-remote-control user-modify-playback-state user-library-modify"
+            " user-library-read"
+        )
         self.sp_auth = spotipy.oauth2.SpotifyOAuth(
             client_id=self._client_id,
             client_secret=self._client_secret,
@@ -220,33 +241,7 @@ class SpotifyMod(loader.Module):
             await asyncio.sleep(max(e.seconds, 60))
             return
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:spotify")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["spotify"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self._premium = getattr(await client.get_me(), "premium", False)
         try:
             self.sp = spotipy.Spotify(auth=self.get("acs_tkn")["access_token"])
@@ -424,11 +419,15 @@ class SpotifyMod(loader.Module):
             else ""
         )
         result += (
-            f'\n🔗 <b>Links</b>: <a href="{track_url}">Spotify</a> | <a href="https://song.link/s/{track_id}">Other</a>'
+            f'\n🔗 <b>Links</b>: <a href="{track_url}">Spotify</a> | <a'
+            f' href="https://song.link/s/{track_id}">Other</a>'
             if track_url and track_id
             else ""
         )
-        result += f"\n<code>🞆───────── 0:00 / {track['duration_ms'] // 1000 // 60:02}:{track['duration_ms'] // 1000 % 60:02}</code>"
+        result += (
+            "\n<code>🞆───────── 0:00 /"
+            f" {track['duration_ms'] // 1000 // 60:02}:{track['duration_ms'] // 1000 % 60:02}</code>"
+        )
 
         form = await self.inline.form(
             result,
@@ -602,7 +601,9 @@ class SpotifyMod(loader.Module):
             playlist_name = playlist.get("name", None)
 
             try:
-                playlist_owner = f'<a href="https://open.spotify.com/user/{playlist["owner"]["id"]}">{playlist["owner"]["display_name"]}</a>'
+                playlist_owner = (
+                    f'<a href="https://open.spotify.com/user/{playlist["owner"]["id"]}">{playlist["owner"]["display_name"]}</a>'
+                )
             except KeyError:
                 playlist_owner = None
         except Exception:
@@ -638,12 +639,14 @@ class SpotifyMod(loader.Module):
             icon = "🖥" if "computer" in str(device) else "🗣"
             result += f"\n{icon} <code>{device}</code>" if device else ""
             result += (
-                f'\n🔗 <b>Links</b>: <a href="{track_url}">Spotify</a> | <a href="https://song.link/s/{track_id}">Other</a>'
+                f'\n🔗 <b>Links</b>: <a href="{track_url}">Spotify</a> | <a'
+                f' href="https://song.link/s/{track_id}">Other</a>'
                 if track_url and track_id
                 else ""
             )
             result += (
-                f'\n🎑 <b>Playlist</b>: <a href="https://open.spotify.com/playlist/{playlist_id}">{playlist_name}</a>'
+                "\n🎑 <b>Playlist</b>: <a"
+                f' href="https://open.spotify.com/playlist/{playlist_id}">{playlist_name}</a>'
                 if playlist_name and playlist_id
                 else ""
             )

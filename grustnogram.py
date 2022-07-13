@@ -6,11 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://grustnogram.ru/favicon/ms-icon-144x144.png
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.1.12
 # requires: Pillow requests_toolbelt
 
 __version__ = (1, 0, 1)
@@ -111,45 +112,29 @@ class GrustnoGramMod(loader.Module):
 
     strings = {
         "name": "GrustnoGram",
-        "invalid_args": "🚫 <b>Invalid args. Pass email and password, separated by space</b>",
+        "invalid_args": (
+            "🚫 <b>Invalid args. Pass email and password, separated by space</b>"
+        ),
         "api_error": "🚫 <b>API error.</b>\n<pre>{}</pre>",
         "auth_successful": "🖤 <b>Auth successful as {}</b>",
         "no_photo": "🚫 <b>You need to reply to a photo</b>",
-        "published": '🖤 <b><a href="https://grustnogram.ru/p/{}">Post</a> successfully published</b>',
+        "published": (
+            '🖤 <b><a href="https://grustnogram.ru/p/{}">Post</a> successfully'
+            " published</b>"
+        ),
         "delete": "🗑 Delete",
         "deleted": "🖤 <b>Post deleted</b>",
-        "notif_follow": '🖤 <b><a href="https://grustnogram.ru/u/{0}">{0}</a> is now sad with you</b>',
-        "notif_like": '🖤 <b><a href="https://grustnogram.ru/u/{0}">{0}</a> have broken heart from your <a href="https://grustnogram.ru/p/{1}">post</a></b>',
+        "notif_follow": (
+            '🖤 <b><a href="https://grustnogram.ru/u/{0}">{0}</a> is now sad with'
+            " you</b>"
+        ),
+        "notif_like": (
+            '🖤 <b><a href="https://grustnogram.ru/u/{0}">{0}</a> have broken heart from'
+            ' your <a href="https://grustnogram.ru/p/{1}">post</a></b>'
+        ),
     }
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:grustnogram")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["grustnogram"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
-
         if not self.get("email") or not self.get("password"):
             self.sadauthcmd = self.sadauthcmd_
         else:
@@ -332,7 +317,8 @@ class GrustnoGramMod(loader.Module):
                     continue
 
                 logger.debug(
-                    f"Got {res['data']['notifications_count']} notification(-s) from GrustnoGram"
+                    f"Got {res['data']['notifications_count']} notification(-s) from"
+                    " GrustnoGram"
                 )
 
                 res = (
@@ -373,7 +359,8 @@ class GrustnoGramMod(loader.Module):
                             )
                         else:
                             logger.warning(
-                                f"Unknown notification type {json.dumps(notification, indent=4)}"
+                                "Unknown notification type"
+                                f" {json.dumps(notification, indent=4)}"
                             )
 
                 await asyncio.sleep(10)

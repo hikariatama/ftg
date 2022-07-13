@@ -6,6 +6,8 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: hikka_min 1.2.10
+
 # meta pic: https://img.icons8.com/stickers/500/000000/cards.png
 # meta developer: @hikarimods
 
@@ -196,7 +198,9 @@ class FlashCardsMod(loader.Module):
         "no_deck_name": "<b>You haven't provided deck name</b>",
         "deck_created": "#Deck <code>#{}</code> <b>{}</b> successfully created!",
         "deck_removed": "<b>🚫 Deck removed</b>",
-        "save_deck_no_reply": "<b>🚫 This command should be used in reply to message with deck items.</b>",
+        "save_deck_no_reply": (
+            "<b>🚫 This command should be used in reply to message with deck items.</b>"
+        ),
         "deck_saved": "✅ <b>Deck saved!</b>",
         "generating_page": "<b>⚙️ Generating page, please wait ...</b>",
         "offline_testing": "<b>📖 Offline testing, based on deck {}</b>",
@@ -207,7 +211,9 @@ class FlashCardsMod(loader.Module):
         "no_deck_name": "<b>Ты не указал имя деки</b>",
         "deck_created": "#Deck <code>#{}</code> <b>{}</b> успешно создана!",
         "deck_removed": "<b>🚫 Дека удалена</b>",
-        "save_deck_no_reply": "<b>🚫 Эта команда должна выполняться в ответ на измененную деку.</b>",
+        "save_deck_no_reply": (
+            "<b>🚫 Эта команда должна выполняться в ответ на измененную деку.</b>"
+        ),
         "deck_saved": "✅ <b>Дека сохранена!</b>",
         "generating_page": "<b>⚙️ Генерирую страницу, секунду...</b>",
         "offline_testing": "<b>📖 Оффлайн тестирование на основе деки {}</b>",
@@ -221,33 +227,7 @@ class FlashCardsMod(loader.Module):
         "_cls_doc": "Флеш-карты для обучения",
     }
 
-    async def on_unload(self):
-        asyncio.ensure_future(
-            self._client.inline_query("@hikkamods_bot", "#statunload:flash_cards")
-        )
-
-    async def stats_task(self):
-        await asyncio.sleep(60)
-        await self._client.inline_query(
-            "@hikkamods_bot",
-            f"#statload:{','.join(list(set(self.allmodules._hikari_stats)))}",
-        )
-        delattr(self.allmodules, "_hikari_stats")
-        delattr(self.allmodules, "_hikari_stats_task")
-
     async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
-        if not hasattr(self.allmodules, "_hikari_stats"):
-            self.allmodules._hikari_stats = []
-
-        self.allmodules._hikari_stats += ["flash_cards"]
-
-        if not hasattr(self.allmodules, "_hikari_stats_task"):
-            self.allmodules._hikari_stats_task = asyncio.ensure_future(
-                self.stats_task()
-            )
         self.decks = self.get("decks", {})
 
     def get_fucking_deck_from_fucking_reply(self, fucking_reply, fucking_limit=None):
@@ -345,7 +325,10 @@ class FlashCardsMod(loader.Module):
                 )
                 if len(item["cards"]) > 2:
                     items += "\n   <...>"
-            res += f"🔸<b>{counter}.</b> <code>{item_id}</code> | {item['name']}<code>{items}</code>\n\n"
+            res += (
+                f"🔸<b>{counter}.</b> <code>{item_id}</code> |"
+                f" {item['name']}<code>{items}</code>\n\n"
+            )
         await utils.answer(message, res)
 
     async def deletedeckcmd(self, message: Message):
@@ -387,7 +370,11 @@ class FlashCardsMod(loader.Module):
         for front, back in deck["cards"]:
             res += f"\n<b>{front} - {back}</b>"
 
-        res += "\n➖➖➖➖➖➖➖➖➖➖\nEdit and type <code>.savedeck</code> in reply to this message\n<i>Note: you can edit title and cards, but other message should stay untouched, otherwise it can be saved incorrectly!</i> #Editing"
+        res += (
+            "\n➖➖➖➖➖➖➖➖➖➖\nEdit and type <code>.savedeck</code> in reply to this"
+            " message\n<i>Note: you can edit title and cards, but other message should"
+            " stay untouched, otherwise it can be saved incorrectly!</i> #Editing"
+        )
 
         await utils.answer(message, res)
 
