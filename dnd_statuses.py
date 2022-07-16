@@ -192,7 +192,7 @@ class StatusesMod(loader.Module):
         for short_name, status in self.get("texts", {}).items():
             res += (
                 f"<b><u>{short_name}</u></b> | Notify:"
-                f" <b>{self._db.get('Statuses', 'notif', {})[short_name]}</b>\n{status}\n➖➖➖➖➖➖➖➖➖\n"
+                f" <b>{self.get('notif', {})[short_name]}</b>\n{status}\n➖➖➖➖➖➖➖➖➖\n"
             )
 
         await utils.answer(message, res)

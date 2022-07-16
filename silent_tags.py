@@ -174,7 +174,7 @@ class SilentTagsMod(loader.Module):
             _folder="hikka",
         )
 
-        if self.config["ignore_blocked"]:
+        if self.config["ignore_blocked"] or self.config["silent_blocked"]:
             self.get_blocked.start()
 
         self.chat_aio = f"-100{self.c.id}"

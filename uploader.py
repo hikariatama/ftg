@@ -69,14 +69,7 @@ class FileUploaderMod(loader.Module):
             file = io.BytesIO(bytes(reply.raw_text, "utf-8"))
             file.name = "file.txt"
         else:
-            file = io.BytesIO(
-                (
-                    await self.fast_download(
-                        m.document if main.__version__ < (1, 1, 28) else m,
-                        message_object=message,
-                    )
-                ).getvalue()
-            )
+            file = io.BytesIO(await self._client.download_file(m.document, bytes))
             file.name = (
                 m.file.name
                 or (

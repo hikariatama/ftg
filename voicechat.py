@@ -10,7 +10,7 @@
 
 # meta title: VoiceChat Beta
 # meta pic: https://img.icons8.com/arcade/344/experimental-medium-volume-arcade.png
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # requires: py-tgcalls youtube_dl
 
 import asyncio
@@ -102,6 +102,10 @@ class VoiceChatMod(loader.Module):
         self._dir = tempfile.mkdtemp()
         await self._app.start()
         self._app._on_event_update.add_handler("STREAM_END_HANDLER", self.stream_ended)
+        self.musicdl = await self.import_lib(
+            "https://libs.hikariatama.ru/musicdl.py",
+            suspend_on_error=True,
+        )
 
     async def stream_ended(self, client: PyTgCalls, update: types.Update):
         chat_id = update.chat_id
@@ -149,7 +153,9 @@ class VoiceChatMod(loader.Module):
     def _get_fn(self, message: Message) -> str:
         filename = None
         with contextlib.suppress(Exception):
-            attr = next(attr for attr in message.document.attributes)
+            attr = next(
+                attr for attr in getattr(message, "document", message).attributes
+            )
             filename = (
                 getattr(attr, "performer", "") + " - " + getattr(attr, "title", "")
             )
@@ -158,7 +164,7 @@ class VoiceChatMod(loader.Module):
             with contextlib.suppress(Exception):
                 filename = next(
                     attr
-                    for attr in message.document.attributes
+                    for attr in getattr(message, "document", message).attributes
                     if isinstance(attr, DocumentAttributeFilename)
                 ).file_name
 
@@ -184,8 +190,7 @@ class VoiceChatMod(loader.Module):
         if song:
             raw_data = song
         else:
-            raw_data = await self.fast_download(reply.document)
-            raw_data = raw_data.getvalue()
+            raw_data = await self._client.download_file(reply.document, bytes)
 
             filename = self._get_fn(reply)
 
@@ -217,8 +222,7 @@ class VoiceChatMod(loader.Module):
         filename = None
         message = await utils.answer(message, self.strings("downloading"))
         if reply and reply.media:
-            raw_data = await self.fast_download(reply.document)
-            raw_data = raw_data.getvalue()
+            raw_data = await self._client.download_file(reply.document, bytes)
 
             filename = self._get_fn(reply)
 
@@ -278,27 +282,11 @@ class VoiceChatMod(loader.Module):
         await message.delete()
 
     async def _download_audio(self, name: str, message: Message) -> bytes:
-        async with self._client.conversation("@hikka_musicdl_bot") as conv:
-            try:
-                m = await conv.send_message(name)
-                r = await conv.get_response()
-                await m.delete()
-
-                assert "Не получилось ничего найти" not in r.raw_text
-
-                await r.click(0)
-                await r.delete()
-                r = await conv.get_response()
-
-                assert r.document
-
-                await r.delete()
-
-                return (
-                    await self.fast_download(r.document, message_object=message)
-                ).getvalue(), self._get_fn(r)
-            except Exception:
-                return None, None
+        result = await self.musicdl.dl(name, only_document=True)
+        try:
+            return await self._client.download_file(result, bytes), self._get_fn(result)
+        except Exception:
+            return None, None
 
     async def vcqcmd(self, message: Message):
         """Get current chat's queue"""
