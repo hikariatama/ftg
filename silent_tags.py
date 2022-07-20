@@ -260,6 +260,7 @@ class SilentTagsMod(loader.Module):
             uname = user.first_name
         except Exception:
             uname = "Unknown user"
+            user = None
 
         async def send():
             await self.inline.bot.send_message(

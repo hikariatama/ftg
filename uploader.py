@@ -69,7 +69,7 @@ class FileUploaderMod(loader.Module):
             file = io.BytesIO(bytes(reply.raw_text, "utf-8"))
             file.name = "file.txt"
         else:
-            file = io.BytesIO(await self._client.download_file(m.document, bytes))
+            file = io.BytesIO(await self._client.download_media(m, bytes))
             file.name = (
                 m.file.name
                 or (
