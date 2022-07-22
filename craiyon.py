@@ -10,7 +10,7 @@
 
 # meta pic: https://img.icons8.com/external-kmg-design-flat-kmg-design/344/external-draw-graphic-design-kmg-design-flat-kmg-design.png
 # meta banner: https://mods.hikariatama.ru/badges/craiyon.jpg
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # scope: hikka_min 1.2.10
 
 import base64

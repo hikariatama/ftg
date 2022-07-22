@@ -8,7 +8,7 @@
 
 # scope: hikka_min 1.2.10
 
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 # requires: rsa base64
 
 from .. import loader

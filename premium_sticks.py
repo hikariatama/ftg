@@ -8,7 +8,7 @@
 
 # meta pic: https://0x0.st/ojP2.png
 # meta banner: https://mods.hikariatama.ru/badges/premium_sticks.jpg
-# meta developer: @hikariatama
+# meta developer: @hikarimods
 
 import random
 from .. import loader
