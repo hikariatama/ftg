@@ -12,6 +12,7 @@ __version__ = (1, 0, 2)
 # 🌐 https://creativecommons.org/licenses/by-nc-nd/4.0
 
 # meta pic: https://img.icons8.com/fluency/240/000000/class-dojo.png
+# meta banner: https://mods.hikariatama.ru/badges/artai.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 

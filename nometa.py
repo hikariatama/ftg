@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/emoji/256/000000/waving-hand-emoji.png
+# meta banner: https://mods.hikariatama.ru/badges/nometa.jpg
 # meta developer: @hikarimods
 
 from telethon.tl.types import Message

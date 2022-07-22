@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/fluency/452/texshop.png
+# meta banner: https://mods.hikariatama.ru/badges/latex.jpg
 # meta developer: @hikarimods
 
 import io

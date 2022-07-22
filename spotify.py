@@ -9,6 +9,7 @@ __version__ = (1, 0, 1)
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/plasticine/400/000000/spotify--v2.png
+# meta banner: https://mods.hikariatama.ru/badges/spotify.jpg
 # meta developer: @hikarimods
 # requires: spotipy Pillow
 # scope: hikka_only

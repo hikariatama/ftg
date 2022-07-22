@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/external-flat-satawat-anukul/512/000000/external-dictionary-education-flat-flat-satawat-anukul.png
+# meta banner: https://mods.hikariatama.ru/badges/dictionary.jpg
 # meta developer: @hikarimods
 # requires: aiohttp urllib bs4
 # scope: inline

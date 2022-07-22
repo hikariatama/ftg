@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/fluency/344/no-hidden-fee.png
+# meta banner: https://mods.hikariatama.ru/badges/forbid_joins.jpg
 # meta developer: @hikarimods
 
 from .. import loader

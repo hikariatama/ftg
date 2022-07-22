@@ -9,6 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-kmg-design-flat-kmg-design/344/external-draw-graphic-design-kmg-design-flat-kmg-design.png
+# meta banner: https://mods.hikariatama.ru/badges/craiyon.jpg
 # meta developer: @hikariatama
 # scope: hikka_min 1.2.10
 

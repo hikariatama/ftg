@@ -11,6 +11,7 @@ __version__ = (2, 0, 0)
 # Updated by a https://t.me/vsecoder
 
 # meta pic: https://img.icons8.com/color/480/000000/wakanim.png
+# meta banner: https://mods.hikariatama.ru/badges/wakatime.jpg
 # meta developer: @hikarimods, @vsecoder
 # scope: inline
 # scope: hikka_only

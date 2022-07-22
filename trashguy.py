@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://i.imgur.com/C5dbpMA.jpeg
+# meta banner: https://mods.hikariatama.ru/badges/trashguy.jpg
 # scope: inline
 # scope: hikka_only
 # requires: grapheme

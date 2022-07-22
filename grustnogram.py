@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://grustnogram.ru/favicon/ms-icon-144x144.png
+# meta banner: https://mods.hikariatama.ru/badges/grustnogram.jpg
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only

@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/external-smashingstocks-circular-smashing-stocks/452/external-mortarboard-education-smashingstocks-circular-smashing-stocks.png
+# meta banner: https://mods.hikariatama.ru/badges/oxford.jpg
 # scope: inline
 # scope: hikka_only
 # meta developer: @hikarimods

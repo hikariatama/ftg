@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/external-icongeek26-linear-colour-icongeek26/512/000000/external-plot-data-analytics-icongeek26-linear-colour-icongeek26.png
+# meta banner: https://mods.hikariatama.ru/badges/pollplot.jpg
 # meta developer: @hikarimods
 # requires: matplotlib
 

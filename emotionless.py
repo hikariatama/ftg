@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/external-vitaliy-gorbachev-flat-vitaly-gorbachev/464/000000/external-sad-social-media-vitaliy-gorbachev-flat-vitaly-gorbachev.png
+# meta banner: https://mods.hikariatama.ru/badges/emotionless.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 

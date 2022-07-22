@@ -9,6 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/ios-filled/344/tidal.png
+# meta banner: https://mods.hikariatama.ru/badges/tidal.jpg
 # meta developer: @hikarimods
 # requires: tidalapi
 # scope: hikka_min 1.2.10

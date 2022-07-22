@@ -10,6 +10,7 @@ __version__ = (2, 0, 0)
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/fluency/344/demolition-excavator.png
+# meta banner: https://mods.hikariatama.ru/badges/temp_chat.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 

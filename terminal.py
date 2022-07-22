@@ -24,6 +24,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-flat-lima-studio/512/000000/external-terminal-coding-flat-lima-studio.png
+# meta banner: https://mods.hikariatama.ru/badges/terminal.jpg
 # meta developer: @bsolute
 # scope: hikka_only
 

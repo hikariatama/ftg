@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/fluency/48/000000/macbook-chat.png
+# meta banner: https://mods.hikariatama.ru/badges/keyword.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 

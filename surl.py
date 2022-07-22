@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/external-xnimrodx-lineal-color-xnimrodx/512/000000/external-short-shopping-mall-xnimrodx-lineal-color-xnimrodx.png
+# meta banner: https://mods.hikariatama.ru/badges/surl.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 

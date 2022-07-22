@@ -10,6 +10,7 @@ __version__ = (1, 0, 4)
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-sketchy-juicy-fish/480/000000/external-anonymous-cryptography-sketchy-sketchy-juicy-fish.png
+# meta banner: https://mods.hikariatama.ru/badges/spoilers.jpg
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only

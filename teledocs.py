@@ -13,6 +13,7 @@
 # mechanism was used as a base for this search
 
 # meta pic: https://i.imgur.com/jH9i1SW.jpeg
+# meta banner: https://mods.hikariatama.ru/badges/teledocs.jpg
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only

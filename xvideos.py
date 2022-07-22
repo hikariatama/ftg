@@ -9,6 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-flat-vinzence-studio/344/external-erotic-erotic-stuff-flat-vinzence-studio-11.png
+# meta banner: https://mods.hikariatama.ru/badges/xvideos.jpg
 # meta developer: @hikarimods
 # scope: hikka_min 1.2.11
 

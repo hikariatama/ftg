@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/color/480/000000/gallery.png
+# meta banner: https://mods.hikariatama.ru/badges/scrolller.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 # requires: requests

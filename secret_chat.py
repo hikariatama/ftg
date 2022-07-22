@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/external-justicon-lineal-color-justicon/512/000000/external-unlock-marketing-and-growth-justicon-lineal-color-justicon.png
+# meta banner: https://mods.hikariatama.ru/badges/secret_chat.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 

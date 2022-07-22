@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/color/480/000000/filled-like.png
+# meta banner: https://mods.hikariatama.ru/badges/inline_lovemagic.jpg
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only

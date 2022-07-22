@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/cute-clipart/512/000000/pixel-cat.png
+# meta banner: https://mods.hikariatama.ru/badges/purr.jpg
 # meta developer: @hikarimods
 # scope: ffmpeg
 # requires: pydub python-ffmpeg

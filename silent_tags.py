@@ -10,6 +10,7 @@ __version__ = (2, 0, 3)
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/color/480/000000/silenced.png
+# meta banner: https://mods.hikariatama.ru/badges/silent_tags.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 

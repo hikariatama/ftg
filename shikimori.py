@@ -10,6 +10,7 @@ __version__ = (2, 0, 0)
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://i.imgur.com/MTkqvXX.jpeg
+# meta banner: https://mods.hikariatama.ru/badges/shikimori.jpg
 # scope: inline
 # scope: hikka_only
 # meta developer: @hikarimods

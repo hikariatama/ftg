@@ -11,6 +11,7 @@ __version__ = (2, 0, 0)
 
 # meta title: PM->BL
 # meta pic: https://img.icons8.com/external-dreamcreateicons-flat-dreamcreateicons/512/000000/external-death-halloween-dreamcreateicons-flat-dreamcreateicons.png
+# meta banner: https://mods.hikariatama.ru/badges/pmbl.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 

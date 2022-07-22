@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/external-flaticons-flat-flat-icons/512/000000/external-game-seo-flaticons-flat-flat-icons.png
+# meta banner: https://mods.hikariatama.ru/badges/truth_or_dare.jpg
 # scope: inline
 # scope: hikka_only
 # meta developer: @hikarimods

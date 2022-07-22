@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/external-wanicon-lineal-color-wanicon/344/external-font-graphic-design-wanicon-lineal-color-wanicon.png
+# meta banner: https://mods.hikariatama.ru/badges/fancyfonts.jpg
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only

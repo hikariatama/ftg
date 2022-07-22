@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/fluency/240/000000/archive.png
+# meta banner: https://mods.hikariatama.ru/badges/web2file.jpg
 # meta developer: @hikarimods
 
 import io

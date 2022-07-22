@@ -10,6 +10,7 @@ __version__ = (2, 0, 0)
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta pic: https://img.icons8.com/external-icongeek26-flat-icongeek26/512/000000/external-tic-tac-toe-playground-icongeek26-flat-icongeek26.png
+# meta banner: https://mods.hikariatama.ru/badges/tictactoe.jpg
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only

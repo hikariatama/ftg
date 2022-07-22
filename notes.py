@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/tiny-color/256/000000/experimental-note-tiny-color.png
+# meta banner: https://mods.hikariatama.ru/badges/notes.jpg
 # meta developer: @hikarimods
 
 import logging

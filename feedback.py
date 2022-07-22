@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/stickers/500/000000/feedback.png
+# meta banner: https://mods.hikariatama.ru/badges/feedback.jpg
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only

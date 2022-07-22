@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/color/480/000000/angry--v1.png
+# meta banner: https://mods.hikariatama.ru/badges/insult.jpg
 # meta developer: @hikarimods
 
 import random

@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/plasticine/400/000000/youtube-play--v2.png
+# meta banner: https://mods.hikariatama.ru/badges/youtube.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 # scope: ffmpeg

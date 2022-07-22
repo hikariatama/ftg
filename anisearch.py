@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/external-flatart-icons-flat-flatarticons/512/000000/external-frame-valentines-day-flatart-icons-flat-flatarticons-1.png
+# meta banner: https://mods.hikariatama.ru/badges/anisearch.jpg
 # meta developer: @hikarimods
 
 import requests

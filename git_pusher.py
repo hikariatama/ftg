@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/stickers/100/000000/commit-git.png
+# meta banner: https://mods.hikariatama.ru/badges/git_pusher.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 

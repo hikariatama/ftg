@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/external-photo3ideastudio-flat-photo3ideastudio/512/000000/external-payment-supermarket-photo3ideastudio-flat-photo3ideastudio.png
+# meta banner: https://mods.hikariatama.ru/badges/yoopay.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 

@@ -10,6 +10,7 @@
 
 # meta title: VoiceChat Beta
 # meta pic: https://img.icons8.com/arcade/344/experimental-medium-volume-arcade.png
+# meta banner: https://mods.hikariatama.ru/badges/voicechat.jpg
 # meta developer: @hikarimods
 # requires: py-tgcalls youtube_dl
 

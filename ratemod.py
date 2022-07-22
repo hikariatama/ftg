@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/external-phatplus-lineal-color-phatplus/512/000000/external-rate-email-phatplus-lineal-color-phatplus.png
+# meta banner: https://mods.hikariatama.ru/badges/ratemod.jpg
 # meta developer: @hikarimods
 
 import asyncio

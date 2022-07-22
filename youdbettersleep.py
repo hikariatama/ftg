@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/512/000000/external-sleep-productivity-flaticons-lineal-color-flat-icons.png
+# meta banner: https://mods.hikariatama.ru/badges/youdbettersleep.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 

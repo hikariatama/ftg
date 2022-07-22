@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/fluency/240/000000/last-48-hours.png
+# meta banner: https://mods.hikariatama.ru/badges/lastcommand.jpg
 # meta developer: @hikarimods
 
 from telethon.tl.types import Message

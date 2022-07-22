@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/external-flaticons-flat-flat-icons/512/000000/external-person-100-most-used-icons-flaticons-flat-flat-icons-2.png
+# meta banner: https://mods.hikariatama.ru/badges/activists.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
 

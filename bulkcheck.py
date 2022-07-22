@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/color-glass/344/phone.png
+# meta banner: https://mods.hikariatama.ru/badges/bulkcheck.jpg
 # requires: requests
 # scope: hikka_only
 # meta developer: @hikarimods

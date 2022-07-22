@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/plasticine/344/apple-settings--v2.png
+# meta banner: https://mods.hikariatama.ru/badges/systemd.jpg
 # scope: inline
 # scope: hikka_only
 # meta developer: @hikarimods

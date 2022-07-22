@@ -9,6 +9,7 @@
 # scope: hikka_min 1.2.10
 
 # meta pic: https://img.icons8.com/fluency/240/000000/python.png
+# meta banner: https://mods.hikariatama.ru/badges/linter.jpg
 # meta developer: @hikarimods
 # requires: black
 
