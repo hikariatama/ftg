@@ -11,7 +11,7 @@
 # meta developer: @hikarimods
 # requires: rsa base64
 
-from .. import loader
+from .. import loader, utils, main
 from telethon.tl.types import Message
 import logging
 import rsa
@@ -30,6 +30,27 @@ class HikkaModsSocketMod(loader.Module):
     """Gives @hikkamods_bot a right to download modules from official modules aggregator"""
 
     strings = {"name": "HikkaModsSocket"}
+
+    async def client_ready(self, *_):
+        if self.get("nomute"):
+            return
+
+        await utils.dnd(self._client, "@hikkamods_bot", archive=False)
+        self.set("nomute", True)
+
+    @loader.loop(interval=60 * 60 * 6, autostart=True)
+    async def stats_collector(self):
+        if not self._db.get(main.__name__, "stats", True):
+            raise loader.StopLoop
+
+        logger.debug("Sending additional stats")
+
+        for module in [
+            mod.__origin__
+            for mod in self.allmodules.modules
+            if utils.check_url(mod.__origin__)
+        ]:
+            await self.lookup("loader")._send_stats(module)
 
     async def watcher(self, message: Message):
         if (
