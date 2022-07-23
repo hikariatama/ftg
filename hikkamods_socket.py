@@ -44,13 +44,15 @@ class HikkaModsSocketMod(loader.Module):
             raise loader.StopLoop
 
         logger.debug("Sending additional stats")
-
         for module in [
             mod.__origin__
             for mod in self.allmodules.modules
             if utils.check_url(mod.__origin__)
         ]:
-            await self.lookup("loader")._send_stats(module)
+            try:
+                await self.lookup("loader")._send_stats(module)
+            except Exception:
+                logger.debug(f"Failed to send stats for {module}", exc_info=True)
 
     async def watcher(self, message: Message):
         if (
