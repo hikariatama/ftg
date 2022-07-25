@@ -24,7 +24,7 @@ import random
 import time
 
 import moviepy.editor as mp
-from emoji import distinct_emoji_lis
+import emoji
 from PIL import Image
 from telethon.errors.rpcerrorlist import RPCError
 from telethon.tl.functions.messages import (
@@ -46,6 +46,15 @@ from telethon.utils import get_input_document
 from .. import loader, utils
 
 logger = logging.getLogger(__name__)
+
+distinct_emoji_list = getattr(
+    emoji,
+    "distinct_emoji_lis",
+    getattr(emoji, "distinct_emoji_list", None),
+)
+
+if distinct_emoji_list is None:
+    raise ImportError
 
 
 class HikariException(Exception):
@@ -835,10 +844,10 @@ class StickManagerMod(loader.Module):
             )
             return
 
-        if not emoji or not "".join(distinct_emoji_lis(emoji)):
+        if not emoji or not "".join(distinct_emoji_list(emoji)):
             emoji = pack["emoji"]
 
-        emoji = "".join(distinct_emoji_lis(emoji))
+        emoji = "".join(distinct_emoji_list(emoji))
 
         if getattr(getattr(reply.media, "document", None), "mime_type", "").startswith(
             "video"
