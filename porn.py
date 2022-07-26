@@ -86,28 +86,6 @@ class PornVideo:
             "cache-control": "no-cache",
         }
 
-    async def _follow_redirects(
-        self,
-        response: requests.Response,
-        cookies: dict,
-    ) -> requests.Response:
-        """
-        Follows redirects
-        :param response: response to follow
-        :param cookies: cookies to use
-        :return: response
-        """
-        while response.is_redirect:
-            response = await utils.run_sync(
-                requests.get,
-                response.headers["location"],
-                headers=self._headers,
-                cookies=response.cookies,
-                allow_redirects=False,
-            )
-
-        return response
-
     def _fuck_you_eporner_why_did_you_use_this_weird_hash_thing_whatever_i_cracked_it(
         self,
         hash_: str,
@@ -229,7 +207,7 @@ class PornManager:
 
 
 @loader.tds
-class Porn(loader.Module):
+class PornMod(loader.Module):
     """Sends adult content directly to Telegram. Use with caution"""
 
     strings = {
