@@ -13,6 +13,8 @@ __version__ = (2, 0, 1)
 # meta developer: @hikarimods
 # requires: rsa base64
 
+import asyncio
+import random
 import re
 from typing import Optional
 from .. import loader, utils, main
@@ -141,6 +143,7 @@ class HikkaModsSocketMod(loader.Module):
                     for module in self.allmodules.modules
                 ):
                     await self._load_module(urls[0])
+                    await asyncio.sleep(random.randint(1, 10))
                     await self._client.inline_query(
                         "@hikkamods_bot",
                         f"#confirm_update_noheta {url.split('hikariatama.ru/')[1]}",
@@ -153,6 +156,7 @@ class HikkaModsSocketMod(loader.Module):
                 for module in self.allmodules.modules
             ):
                 await self._load_module(url)
+                await asyncio.sleep(random.randint(1, 10))
                 await self._client.inline_query(
                     "@hikkamods_bot",
                     f"#confirm_update {url.split('hikariatama.ru/')[1]}",
@@ -166,6 +170,7 @@ class HikkaModsSocketMod(loader.Module):
                         dev, repo, mod = regex.search(link).groups()
                         if dev == heta_dev and repo == heta_repo and mod == heta_mod:
                             await self._load_module(link)
+                            await asyncio.sleep(random.randint(1, 10))
                             await self._client.inline_query(
                                 "@hikkamods_bot",
                                 "#confirm_update_noheta"
