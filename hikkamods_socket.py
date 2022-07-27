@@ -135,12 +135,17 @@ class HikkaModsSocketMod(loader.Module):
             )
 
             if heta_dev == "hikariatama" and heta_repo == "ftg":
-                await self._load_module(f"https://mods.hikariatama.ru/{heta_mod}")
-                await self._client.inline_query(
-                    "@hikkamods_bot",
-                    f"#confirm_update_noheta {url.split('hikariatama.ru/')[1]}",
-                )
-                return
+                urls = [f"https://mods.hikariatama.ru/{heta_mod}", url]
+                if any(
+                    getattr(module, "__origin__", None).lower().strip("/") in urls
+                    for module in self.allmodules.modules
+                ):
+                    await self._load_module(urls[0])
+                    await self._client.inline_query(
+                        "@hikkamods_bot",
+                        f"#confirm_update_noheta {url.split('hikariatama.ru/')[1]}",
+                    )
+                    return
 
             if any(
                 getattr(module, "__origin__", "").lower().strip("/")
