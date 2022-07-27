@@ -251,15 +251,13 @@ class PornMod(loader.Module):
     async def _download_video(self, call: InlineCall, video: PornVideo):
         await call.edit(
             self.strings("downloading_porn"),
-            gif="https://c.tenor.com/LpNlJxRBFwMAAAAC/umibe-no-etranger-anime.gif"
-            if call.from_user.id == 1666024811  # Easter for my lovely boy
-            else "https://c.tenor.com/TAIxD-ulneYAAAAC/anime-anime-background.gif",
+            gif="https://c.tenor.com/TAIxD-ulneYAAAAC/anime-anime-background.gif",
         )
 
         vid = io.BytesIO(
             (await utils.run_sync(requests.get, await video._get_media_url())).content
         )
-        vid.name = "".join(reversed("ereh_neeb_tnevah_cosccuf")) + ".mp4"
+        vid.name = "video.mp4"
 
         await self._client.send_file(call.form["chat"], vid, caption=video.info)
         await call.delete()
