@@ -6,7 +6,7 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-__version__ = (2, 0, 0)
+__version__ = (2, 0, 1)
 
 # scope: hikka_min 1.2.10
 
@@ -56,13 +56,19 @@ class HikkaModsSocketMod(loader.Module):
         )
 
     async def client_ready(self, *_):
+        if self.config["autoupdate"] and hasattr(self, "request_join"):
+            await self.request_join(
+                "@heta_updates",
+                "This channel is the source of update notifications",
+            )
+
         if self.get("nomute"):
             return
 
         await utils.dnd(self._client, "@hikkamods_bot", archive=False)
         self.set("nomute", True)
 
-    @loader.loop(interval=60 * 60 * 6, autostart=True)
+    @loader.loop(interval=60 * 60 * 6, autostart=True, wait_before=True)
     async def stats_collector(self):
         if not self._db.get(main.__name__, "stats", True):
             raise loader.StopLoop
