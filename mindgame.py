@@ -6,12 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/color/480/000000/brain--v1.png
+# meta pic: https://static.hikari.gay/mindgame_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/mindgame.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import random
 

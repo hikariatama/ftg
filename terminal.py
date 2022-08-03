@@ -23,9 +23,10 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-flat-lima-studio/512/000000/external-terminal-coding-flat-lima-studio.png
+# meta pic: https://static.hikari.gay/terminal_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/terminal.jpg
 # meta developer: @bsolute
+# rework: @hikariatama
 # scope: hikka_only
 
 import asyncio

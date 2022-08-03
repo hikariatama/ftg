@@ -6,13 +6,14 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
 
-# meta pic: https://img.icons8.com/cute-clipart/512/000000/pixel-cat.png
+# meta pic: https://static.hikari.gay/purr_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/purr.jpg
+# requires: pydub python-ffmpeg
 # meta developer: @hikarimods
 # scope: ffmpeg
-# requires: pydub python-ffmpeg
+# scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import io
 import random

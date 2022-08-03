@@ -1,4 +1,3 @@
-# scope: hikka_min 1.2.10
 __version__ = (1, 0, 2)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -9,11 +8,12 @@ __version__ = (1, 0, 2)
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-wanicon-lineal-color-wanicon/512/000000/external-read-free-time-wanicon-lineal-color-wanicon.png
+# meta pic: https://static.hikari.gay/longread_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/longread.jpg
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 from .. import loader, utils
 from ..inline.types import InlineCall, InlineQuery

@@ -6,12 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/stickers/500/000000/data-backup.png
+# meta pic: https://static.hikari.gay/backuper_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/backuper.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import datetime
 import io

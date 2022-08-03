@@ -6,11 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/fluency/240/000000/last-48-hours.png
+# meta pic: https://static.hikari.gay/lastcommand_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/lastcommand.jpg
 # meta developer: @hikarimods
+# scope: hikka_only
+# scope: hikka_min 1.2.10
 
 from telethon.tl.types import Message
 
@@ -23,13 +23,15 @@ class LastCommandMod(loader.Module):
 
     strings = {"name": "LastCommand"}
 
-    async def client_ready(self, client, db):
+    async def client_ready(self):
         orig_dispatch = self.allmodules.dispatch
 
-        def _disp_wrap(command):
+        def _disp_wrap(command: callable) -> tuple:
             txt, func = orig_dispatch(command)
+
             if "lc" not in txt:
                 self.allmodules.last_command = func
+
             return txt, func
 
         self.allmodules.dispatch = _disp_wrap

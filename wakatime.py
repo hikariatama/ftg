@@ -1,4 +1,3 @@
-# scope: hikka_min 1.2.10
 __version__ = (2, 0, 0)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -10,12 +9,14 @@ __version__ = (2, 0, 0)
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # Updated by a https://t.me/vsecoder
 
-# meta pic: https://img.icons8.com/color/480/000000/wakanim.png
+# meta pic: https://static.hikari.gay/wakatime_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/wakatime.jpg
-# meta developer: @hikarimods, @vsecoder
+# meta developer: @hikarimods
+# inspiration: @vsecoder
+# requires: aiohttp
 # scope: inline
 # scope: hikka_only
-# requires: aiohttp
+# scope: hikka_min 1.2.10
 
 import asyncio
 import logging

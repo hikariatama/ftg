@@ -6,12 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/external-justicon-lineal-color-justicon/512/000000/external-unlock-marketing-and-growth-justicon-lineal-color-justicon.png
+# meta pic: https://static.hikari.gay/secret_chat_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/secret_chat.jpg
 # meta developer: @hikarimods
+# requires: telethon_secret_chat
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import io
 import logging
@@ -23,8 +23,6 @@ from telethon.utils import get_display_name
 from telethon_secret_chat import SecretChatManager
 
 from .. import loader, utils
-
-# requires: telethon_secret_chat
 
 logger = logging.getLogger(__name__)
 
@@ -62,15 +60,17 @@ class SecretChatMod(loader.Module):
             ).chats[0]
 
         @self._client.on(NewMessage(chats=[decrypted_chat.id]))
-        async def secret_chat_processer(event):
-            """secret_chat_processer"""
+        async def secret_chat_processor(event):
+            """secret_chat_processor"""
             await self._manager.send_secret_message(chat.id, event.text)
             await event.edit(f"<< {event.text}")
 
         self._chats[cid] = decrypted_chat
 
         self._manager = SecretChatManager(
-            client, auto_accept=True, new_chat_created=self._new_chat
+            self._client,
+            auto_accept=True,
+            new_chat_created=self._new_chat,
         )
         self._manager.add_secret_event_handler(func=self._replier)
         self._chats = {}
@@ -80,10 +80,9 @@ class SecretChatMod(loader.Module):
         if not self.get("state", False):
             return
 
-        # logger.info(event)
         e = event.decrypted_event
         user = self._secret_chats[event.message.chat_id]
-        # logger.info(e)
+
         if e.message:
             await self._client.send_message(self._chats[user], f">> {e.message}")
 
@@ -111,12 +110,7 @@ class SecretChatMod(loader.Module):
             except Exception:
                 await self._client.send_message(self._chats[user], ">>> [File]")
 
-            # send_secret_document
-            # send_secret_audio
-            # send_secret_video
-            # send_secret_photo
-
-    async def _new_chat(self, chat, created_by_me: bool):
+    async def _new_chat(self, chat, _: bool):
         if not self.get("state", False):
             return
 
@@ -134,7 +128,7 @@ class SecretChatMod(loader.Module):
         self._client.remove_event_handler(self._manager._secret_chat_event_loop)
         del self._manager
         for handler in self._client.list_event_handlers():
-            if handler[0].__doc__ == "secret_chat_processer":
+            if handler[0].__doc__ == "secret_chat_processor":
                 self._client.remove_event_handler(handler)
 
     async def desecretcmd(self, message: Message):

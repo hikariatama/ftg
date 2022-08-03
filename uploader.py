@@ -1,4 +1,3 @@
-# scope: hikka_min 1.2.10
 __version__ = (2, 0, 1)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -9,10 +8,11 @@ __version__ = (2, 0, 1)
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/stickers/500/000000/upload.png
+# meta pic: https://static.hikari.gay/uploader_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/uploader.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import imghdr
 import io
@@ -24,7 +24,7 @@ import requests
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.types import Message
 
-from .. import loader, utils, main
+from .. import loader, utils
 
 
 @loader.tds

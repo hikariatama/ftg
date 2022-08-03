@@ -6,15 +6,13 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/fluency/240/000000/khan-academy.png
+# meta pic: https://static.hikari.gay/hw_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/hw.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 from random import randint
-
 from telethon.tl.types import Message
 
 from .. import loader, utils

@@ -6,12 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/512/000000/external-education-job-search-flaticons-lineal-color-flat-icons.png
+# meta pic: https://static.hikari.gay/edutatar_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/edutatar.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import asyncio
 import re

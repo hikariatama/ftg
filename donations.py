@@ -6,10 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/stickers/344/money.png
+# meta pic: https://static.hikari.gay/donations_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/donations.jpg
 # meta desc: [RU] Create donate widgets through Hikari.Donations platform
 # meta developer: @hikarimods
+# scope: hikka_only
 # scope: hikka_min 1.2.10
 
 from .. import loader, utils

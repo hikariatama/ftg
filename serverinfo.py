@@ -6,13 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/stickers/500/000000/server-shutdown.png
+# meta pic: https://static.hikari.gay/serverinfo_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/serverinfo.jpg
 # meta developer: @hikarimods
-# scope: hikka_only
 # requires: psutil
+# scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import os
 import platform
@@ -24,7 +23,7 @@ from telethon.tl.types import Message
 from .. import loader, utils
 
 
-def b2mb(b):
+def bytes_to_megabytes(b: int) -> int:
     return round(b / 1024 / 1024, 1)
 
 
@@ -71,13 +70,13 @@ class serverInfoMod(loader.Module):
 
         try:
             inf.append(
-                b2mb(psutil.virtual_memory().total - psutil.virtual_memory().available)
+                bytes_to_megabytes(psutil.virtual_memory().total - psutil.virtual_memory().available)
             )
         except Exception:
             inf.append("n/a")
 
         try:
-            inf.append(b2mb(psutil.virtual_memory().total))
+            inf.append(bytes_to_megabytes(psutil.virtual_memory().total))
         except Exception:
             inf.append("n/a")
 

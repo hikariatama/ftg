@@ -6,26 +6,25 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/fluency/240/000000/python.png
+# meta pic: https://static.hikari.gay/linter_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/linter.jpg
 # meta developer: @hikarimods
 # requires: black
+# scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import io
 import logging
 import re
 from random import choice
 
+import black
 import requests
 from telethon.tl.types import Message
 
 from .. import loader, utils
 
 logging.getLogger("blib2to3.pgen2.driver").setLevel(logging.ERROR)
-
-import black  # noqa: E402
 
 URL = r"(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+"
 
@@ -35,18 +34,6 @@ captions = [
     "Here we go!",
     "Glad to be your virtual code-cleaning-maid!",
     "Take this, master!",
-]
-
-faces = [
-    "ʕ•ᴥ•ʔ",
-    "(ᵔᴥᵔ)",
-    "(◕‿◕✿)",
-    "(づ￣ ³￣)づ",
-    "♥‿♥",
-    "~(˘▾˘~)",
-    "(｡◕‿◕｡)",
-    "｡◕‿◕｡",
-    "ಠ‿↼",
 ]
 
 
@@ -92,7 +79,10 @@ class PyLinterMod(loader.Module):
         await self._client.send_file(
             message.peer_id,
             file,
-            caption=f"<i>{choice(captions)}</i> <b>{choice(faces)}</b>",
+            caption=(
+                f"<i>{choice(captions)}</i>"
+                f" <b>{utils.escape_html(utils.ascii_face())}</b>"
+            ),
         )
         if message.out:
             await message.delete()

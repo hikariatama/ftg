@@ -1,4 +1,3 @@
-# scope: hikka_min 1.2.10
 __version__ = (2, 0, 0)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
@@ -9,11 +8,12 @@ __version__ = (2, 0, 0)
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-icongeek26-flat-icongeek26/512/000000/external-tic-tac-toe-playground-icongeek26-flat-icongeek26.png
+# meta pic: https://static.hikari.gay/tictactoe_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/tictactoe.jpg
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import copy
 import enum

@@ -8,12 +8,12 @@ __version__ = (1, 0, 1)
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/plasticine/400/000000/spotify--v2.png
+# meta pic: https://static.hikari.gay/spotify_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/spotify.jpg
 # meta developer: @hikarimods
-# requires: spotipy Pillow
 # scope: hikka_only
 # scope: hikka_min 1.2.10
+# requires: spotipy Pillow
 
 import asyncio
 import functools
@@ -48,12 +48,12 @@ ARTIST_FS = 32
 
 @loader.tds
 class SpotifyMod(loader.Module):
-    """Display beautiful spotify now bar. Author: @fuccsoc. Rework: @hikariatama"""
+    """Display beautiful spotify now bar. Idea: t.me/fuccsoc. Implementation: t.me/hikariatama"""
 
     strings = {
         "name": "SpotifyNow",
         "need_auth": (
-            "🚫 <b>Execute </b><code>.sauth</code><b> before using this action.</b>"
+            "🚫 <b>Call </b><code>.sauth</code><b> before using this action.</b>"
         ),
         "on-repeat": "🔂 <b>Set on-repeat.</b>",
         "off-repeat": "🔁 <b>Stopped track repeat.</b>",

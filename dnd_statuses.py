@@ -6,17 +6,15 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/fluency/240/000000/envelope-number.png
+# meta pic: https://static.hikari.gay/dnd_statuses_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/dnd_statuses.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
+# scope: hikka_min 1.3.0
 
 import asyncio
 import logging
 
-from telethon import types
 from telethon.tl.types import Message
 
 from .. import loader, utils
@@ -60,18 +58,16 @@ class StatusesMod(loader.Module):
         "_cls_doc": "AFK модуль с расширенным функционалом",
     }
 
-    async def client_ready(self, client, db):
+    async def client_ready(self, *_):
         self._ratelimit = []
         self._sent_messages = []
 
+    @loader.tag("only_messages", "in")
     async def watcher(self, message: Message):
-        if not isinstance(message, types.Message):
-            return
-
         if not self.get("status", False):
             return
 
-        if getattr(message.to_id, "user_id", None) == self._tg_id:
+        if message.is_private:
             user = await message.get_sender()
             if user.id in self._ratelimit or user.is_self or user.bot or user.verified:
                 return

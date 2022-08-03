@@ -6,12 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/stickers/500/000000/start.png
+# meta pic: https://static.hikari.gay/onload_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/onload.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import logging
 
@@ -26,7 +25,7 @@ class OnloadExecutorMod(loader.Module):
 
     strings = {"name": "OnloadExecutor"}
 
-    async def client_ready(self, client, db):
+    async def client_ready(self, client, _):
         self.c, _ = await utils.asset_channel(
             client,
             "hikka-onload",
@@ -45,4 +44,6 @@ class OnloadExecutorMod(loader.Module):
                     logger.debug("Registered onload command")
                     await m.delete()
                 except Exception:
-                    logger.exception(f"Exception while executing command {message.raw_text[:15]}...")  # fmt: skip
+                    logger.exception(
+                        f"Exception while executing command {message.raw_text[:15]}..."
+                    )

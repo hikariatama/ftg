@@ -6,12 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/stickers/500/000000/user.png
+# meta pic: https://static.hikari.gay/userinfo_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/userinfo.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import Message
@@ -76,6 +75,8 @@ class InfoMod(loader.Module):
                 link_preview=False,
                 reply_to=reply.id if reply else None,
             )
+            if message.out:
+                await message.delete()
         else:
             await utils.answer(
                 message,

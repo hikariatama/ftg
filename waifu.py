@@ -6,13 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/color/480/000000/hinata.png
+# meta pic: https://static.hikari.gay/waifu_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/waifu.jpg
+# meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
-# meta developer: @hikarimods
+# scope: hikka_min 1.2.10
 
 import functools
 import logging
@@ -23,8 +22,32 @@ from telethon.tl.types import Message
 from .. import loader, utils
 
 logger = logging.getLogger(__name__)
-categories = ["waifu", "neko", "shinobu", "megumin", "cuddle", "cry", "hug", "awoo", "kiss", "lick", "pat", "smug", "bonk", "yeet", "blush", "smile", "wave", "highfive", "handhold", "nom", "bite", "glomp", "slap"]  # fmt: skip
-nsfw_categories = ["waifu", "neko", "trap", "blowjob"]  # fmt: skip
+categories = [
+    "waifu",
+    "neko",
+    "shinobu",
+    "megumin",
+    "cuddle",
+    "cry",
+    "hug",
+    "awoo",
+    "kiss",
+    "lick",
+    "pat",
+    "smug",
+    "bonk",
+    "yeet",
+    "blush",
+    "smile",
+    "wave",
+    "highfive",
+    "handhold",
+    "nom",
+    "bite",
+    "glomp",
+    "slap",
+]
+nsfw_categories = ["waifu", "neko", "trap", "blowjob"]
 
 
 async def photo(type_: str, category: str) -> list:

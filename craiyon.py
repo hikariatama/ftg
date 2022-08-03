@@ -1,16 +1,16 @@
-# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
-#
+#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
+#             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
 #
 #          https://t.me/hikariatama
 #
-# 🔒 Licensed under the GNU GPLv3
+# 🔒 Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/external-kmg-design-flat-kmg-design/344/external-draw-graphic-design-kmg-design-flat-kmg-design.png
+# meta pic: https://static.hikari.gay/craiyon_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/craiyon.jpg
 # meta developer: @hikarimods
+# scope: hikka_only
 # scope: hikka_min 1.2.10
 
 import base64

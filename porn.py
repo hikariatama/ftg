@@ -6,9 +6,11 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/stickers/344/18-plus.png
-# meta developer: @hikarimods
+# meta pic: https://static.hikari.gay/porn_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/porn.jpg
+# meta developer: @hikarimods
+# scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import io
 import random
@@ -86,19 +88,14 @@ class PornVideo:
             "cache-control": "no-cache",
         }
 
-    def _fuck_you_eporner_why_did_you_use_this_weird_hash_thing_whatever_i_cracked_it(
-        self,
-        hash_: str,
-    ) -> str:
+    def convert_hash(self, hash_: str) -> str:
         """
-        Fuck you, eporner!
+        Process hash
         :param hash_: hash to convert
         :return: converted hash
         """
 
-        def _why_do_i_do_this_shit_at_3_am_fuck_this_world_get_the_fuck_off(
-            dec: int,
-        ) -> str:
+        def dec_to_36(dec: int) -> str:
             """
             Dec to 36-numeric string
             :param dec: dec to convert
@@ -107,23 +104,9 @@ class PornVideo:
             digits = string.digits + string.ascii_lowercase
             x = dec % len(digits)
             rest = dec // len(digits)
-            return (
-                digits[x]
-                if rest == 0
-                else _why_do_i_do_this_shit_at_3_am_fuck_this_world_get_the_fuck_off(
-                    rest
-                )
-                + digits[x]
-            )
+            return digits[x] if rest == 0 else dec_to_36(rest) + digits[x]
 
-        return "".join(
-            [
-                _why_do_i_do_this_shit_at_3_am_fuck_this_world_get_the_fuck_off(
-                    int(x, 16)
-                )
-                for x in utils.chunks(hash_, 8)
-            ]
-        ).lower()
+        return "".join([dec_to_36(int(x, 16)) for x in utils.chunks(hash_, 8)]).lower()
 
     async def _get_media_url(self) -> str:
         """
@@ -142,7 +125,7 @@ class PornVideo:
                     + "&".join(
                         f"{k}={v}"
                         for k, v in {
-                            "hash": self._fuck_you_eporner_why_did_you_use_this_weird_hash_thing_whatever_i_cracked_it(
+                            "hash": self.convert_hash(
                                 next(
                                     line.split("'")[1]
                                     for line in init.text.splitlines()
@@ -231,8 +214,13 @@ class PornMod(loader.Module):
         "next": "👉 Далее",
         "download": "Скачать",
         "close": "🔻 Закрыть",
-        "_cls_doc": "Позволяет просматривать и скачивать контент для взрослых напрямую в Телеграм",
-        "_cmd_doc_porn": "<запрос> - Показать порнушку по запросу (будь осторожен в публичных чатах)",
+        "_cls_doc": (
+            "Позволяет просматривать и скачивать контент для взрослых напрямую в"
+            " Телеграм"
+        ),
+        "_cmd_doc_porn": (
+            "<запрос> - Показать порнушку по запросу (будь осторожен в публичных чатах)"
+        ),
     }
 
     def __init__(self):
@@ -296,7 +284,9 @@ class PornMod(loader.Module):
                     else []
                 ),
                 {
-                    "text": f"{'🏳️‍🌈' if self.config['gay'] else '🔞'} {self.strings('download')}",
+                    "text": (
+                        f"{'🏳️‍🌈' if self.config['gay'] else '🔞'} {self.strings('download')}"
+                    ),
                     "callback": self._download_video,
                     "args": (results[index],),
                 },
@@ -325,7 +315,7 @@ class PornMod(loader.Module):
         results = await self.porn.search(args, self.config["gay"])
 
         if not results:
-            await utils.answer(message, self.strings('404'))
+            await utils.answer(message, self.strings("404"))
             return
 
         await self.inline.form(

@@ -6,13 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/stickers/500/000000/feedback.png
+# meta pic: https://static.hikari.gay/feedback_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/feedback.jpg
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import abc
 import time
@@ -65,7 +64,7 @@ class FeedbackMod(loader.Module):
         ),
     }
 
-    async def client_ready(self, client, db):
+    async def client_ready(self, client, _):
         self._name = utils.escape_html(get_display_name(await client.get_me()))
         self._ratelimit = {}
         self._markup = self.inline.generate_markup(
@@ -100,7 +99,8 @@ class FeedbackMod(loader.Module):
             self.inline.ss(message.from_user.id, False)
 
     @loader.inline_everyone
-    async def feedback_callback_handler(self, call: InlineCall):
+    @loader.callback_handler()
+    async def feedback(self, call: InlineCall):
         """Handles button clicks"""
         if call.data == "fb_cancel":
             self.inline.ss(call.from_user.id, False)

@@ -6,13 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta title: VoiceChat Beta
-# meta pic: https://img.icons8.com/arcade/344/experimental-medium-volume-arcade.png
+# meta pic: https://static.hikari.gay/voicechat_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/voicechat.jpg
 # meta developer: @hikarimods
 # requires: py-tgcalls youtube_dl
+# scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import asyncio
 import contextlib

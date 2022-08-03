@@ -1,18 +1,18 @@
-# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
-#
+#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
+#             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
 #
 #          https://t.me/hikariatama
 #
-# 🔒 Licensed under the GNU GPLv3
+# 🔒 Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/ios-filled/344/tidal.png
+# meta pic: https://static.hikari.gay/tidal_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/tidal.jpg
 # meta developer: @hikarimods
-# requires: tidalapi
+# scope: hikka_only
 # scope: hikka_min 1.2.10
+# requires: tidalapi
 
 import asyncio
 from .. import loader, utils
@@ -44,7 +44,7 @@ class TidalMod(loader.Module):
         "auth_first": "🚫 <b>You need to login first</b>",
     }
 
-    async def client_ready(self, client, db):
+    async def client_ready(self, client, _):
         self._faved = []
 
         self.tidal = tidalapi.Session()

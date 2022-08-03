@@ -6,14 +6,13 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/external-smashingstocks-circular-smashing-stocks/452/external-mortarboard-education-smashingstocks-circular-smashing-stocks.png
+# meta pic: https://static.hikari.gay/oxford_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/oxford.jpg
-# scope: inline
-# scope: hikka_only
 # meta developer: @hikarimods
 # requires: bs4
+# scope: inline
+# scope: hikka_only
+# scope: hikka_min 1.2.10
 
 from .. import loader, utils
 from telethon.tl.types import Message

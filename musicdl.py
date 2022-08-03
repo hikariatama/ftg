@@ -6,11 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/color/344/earbud-headphones.png
+# meta pic: https://static.hikari.gay/musicdl_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/musicdl.jpg
 # meta developer: @hikarimods
+# scope: hikka_only
+# scope: hikka_min 1.3.0
 
 from .. import loader, utils
 from telethon.tl.types import Message
@@ -27,13 +27,20 @@ class MusicDLMod(loader.Module):
         "404": "🚫 <b>Music </b><code>{}</code><b> not found</b>",
     }
 
-    async def client_ready(self, client, db):
+    strings_ru = {
+        "args": "🚫 <b>Не указаны аргументы</b>",
+        "loading": "🔍 <b>Загрузка...</b>",
+        "404": "🚫 <b>Песня </b><code>{}</code><b> не найдена</b>",
+    }
+
+    async def client_ready(self, *_):
         self.musicdl = await self.import_lib(
             "https://libs.hikariatama.ru/musicdl.py",
             suspend_on_error=True,
         )
 
-    async def mdlcmd(self, message: Message):
+    @loader.command(ru_doc="<название> - Скачать песню")
+    async def mdl(self, message: Message):
         """<name> - Download track"""
         args = utils.get_args_raw(message)
         if not args:
@@ -43,14 +50,15 @@ class MusicDLMod(loader.Module):
         message = await utils.answer(message, self.strings("loading"))
         result = await self.musicdl.dl(args, only_document=True)
 
-        if result:
-            await self._client.send_file(
-                message.peer_id,
-                result,
-                caption=f"🎧 {utils.ascii_face()}",
-                reply_to=getattr(message, "reply_to_msg_id", None),
-            )
-            if message.out:
-                await message.delete()
-        else:
+        if not result:
             await utils.answer(message, self.strings("404").format(args))
+            return
+
+        await self._client.send_file(
+            message.peer_id,
+            result,
+            caption=f"🎧 {utils.ascii_face()}",
+            reply_to=getattr(message, "reply_to_msg_id", None),
+        )
+        if message.out:
+            await message.delete()

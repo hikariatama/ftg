@@ -6,12 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/external-flaticons-lineal-color-flat-icons/512/000000/external-sleep-productivity-flaticons-lineal-color-flat-icons.png
+# meta pic: https://static.hikari.gay/youdbettersleep_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/youdbettersleep.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
+# scope: hikka_min 1.3.0
 
 import re
 import time
@@ -66,11 +65,10 @@ class YouDBetterSleepMod(loader.Module):
             "😴 <b>Я не могу писать сообщения, так как мой юзербот хочет, чтобы я"
             " поспал</b>"
         ),
-        "_cmd_doc_sleep": "<время> - Время сна",
         "_cls_doc": "Запрещает писать во время сна",
     }
 
-    @loader.sudo
+    @loader.command(ru_doc="<время> - Поспать")
     async def sleepcmd(self, message: Message):
         """<time> - Sleep for time"""
         args = utils.get_args_raw(message)
@@ -86,14 +84,9 @@ class YouDBetterSleepMod(loader.Module):
             self.set("until", t + time.time())
             await utils.answer(message, self.strings("asleep").format(args))
 
+    @loader.tag("only_messages", "no_commands")
     async def watcher(self, message: Message):
-        if (
-            not isinstance(message, Message)
-            or not hasattr(message, "text")
-            or not self.get("asleep", False)
-            or not self.get("until", False)
-            or message.text == f"{self.get_prefix()}sleep"
-        ):
+        if not self.get("asleep", False) or not self.get("until", False):
             return
 
         if self.get("until", 0) <= time.time():
@@ -114,7 +107,5 @@ class YouDBetterSleepMod(loader.Module):
             )
             await utils.answer(message, self.strings("disabled"))
 
-        if not message.out:
-            return
-
-        await utils.answer(message, self.strings("disabled"))
+        if message.out:
+            await utils.answer(message, self.strings("disabled"))

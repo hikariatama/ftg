@@ -6,13 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/color-glass/344/phone.png
+# meta pic: https://static.hikari.gay/bulkcheck_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/bulkcheck.jpg
-# requires: requests
-# scope: hikka_only
 # meta developer: @hikarimods
+# scope: hikka_only
+# scope: hikka_min 1.2.10
+# requires: requests
 
 import requests
 from telethon.tl.types import Message

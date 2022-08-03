@@ -6,13 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/color/344/wolfram-alpha.png
+# meta pic: https://static.hikari.gay/wolfram_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/wolfram.jpg
 # meta developer: @hikarimods
+# requires: Pillow
 # scope: hikka_only
-# requires: aiohttp urllib Pillow
+# scope: hikka_min 1.2.10
 
 import contextlib
 import io

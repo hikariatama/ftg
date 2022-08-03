@@ -6,14 +6,13 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/external-smashingstocks-thin-outline-color-smashing-stocks/270/000000/external-forex-finance-smashingstocks-thin-outline-color-smashing-stocks.png
+# meta pic: https://static.hikari.gay/forex_wss.png
 # meta banner: https://mods.hikariatama.ru/badges/forex_wss.jpg
 # meta developer: @hikarimods
+# requires: websockets
 # scope: inline
 # scope: hikka_only
-# requires: websockets requests
+# scope: hikka_min 1.2.10
 
 import asyncio
 import datetime

@@ -6,14 +6,13 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://grustnogram.ru/favicon/ms-icon-144x144.png
+# meta pic: https://static.hikari.gay/grustnogram_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/grustnogram.jpg
 # meta developer: @hikarimods
+# requires: Pillow requests_toolbelt
 # scope: inline
 # scope: hikka_only
-# requires: Pillow requests_toolbelt
+# scope: hikka_min 1.2.10
 
 __version__ = (1, 0, 1)
 
@@ -39,7 +38,7 @@ fnt = requests.get(
     "https://github.com/hikariatama/assets/raw/master/EversonMono.ttf"
 ).content
 
-font = lambda size: ImageFont.truetype(  # noqa: E731
+font = lambda size: ImageFont.truetype(
     io.BytesIO(fnt),
     size,
     encoding="UTF-8",

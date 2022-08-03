@@ -6,13 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/color/480/000000/sarada-uchiha.png
+# meta pic: https://static.hikari.gay/neko_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/neko.jpg
-# scope: hikka_only
 # meta developer: @hikarimods
-# requires: urllib requests
+# scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import asyncio
 import functools

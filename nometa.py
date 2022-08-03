@@ -6,15 +6,15 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
 
-# meta pic: https://img.icons8.com/emoji/256/000000/waving-hand-emoji.png
+# meta pic: https://static.hikari.gay/nometa_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/nometa.jpg
 # meta developer: @hikarimods
+# scope: hikka_only
+# scope: hikka_min 1.3.0
 
+from .. import loader, utils
 from telethon.tl.types import Message
-
-from .. import loader
 
 
 @loader.tds
@@ -34,23 +34,20 @@ class NoMetaMod(loader.Module):
         ),
     }
 
+    @loader.command(ru_doc="Показать сообщение с предупреждением о мете")
     @loader.unrestricted
     async def nometacmd(self, message: Message):
-        """Если кто-то отправил мету по типу 'Привет', эта команда его вразумит"""
+        """Show message about NoMeta"""
         await self._client.send_message(
             message.peer_id,
             self.strings("no_meta"),
             reply_to=getattr(message, "reply_to_msg_id", None),
         )
-        await message.delete()
+        if message.out:
+            await message.delete()
 
+    @loader.tag("only_messages", "only_pm", "in")
     async def watcher(self, message: Message):
-        if not getattr(message, "raw_text", False):
-            return
-
-        if not message.is_private:
-            return
-
         meta = ["hi", "hello", "hey there", "konichiwa", "hey"]
 
         meta_ru = [
@@ -71,23 +68,19 @@ class NoMetaMod(loader.Module):
             "йо",
             "йоу",
             "прив",
-            "дан",
             "yo",
             "ку",
         ]
 
         if message.raw_text.lower() in meta:
-            await self._client.send_message(
-                message.peer_id, self.strings("no_meta"), reply_to=message.id
-            )
+            await utils.answer(message, self.strings("no_meta"))
             await self._client.send_read_acknowledge(
-                message.chat_id, clear_mentions=True
+                message.chat_id,
+                clear_mentions=True,
             )
 
         if message.raw_text.lower() in meta_ru:
-            await self._client.send_message(
-                message.peer_id, self.strings("no_meta_ru"), reply_to=message.id
-            )
+            await utils.answer(message, self.strings("no_meta_ru"))
             await self._client.send_read_acknowledge(
                 message.chat_id, clear_mentions=True
             )

@@ -6,13 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/color/480/000000/bt21-cooky.png
+# meta pic: https://static.hikari.gay/catgirl_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/catgirl.jpg
 # meta developer: @hikarimods
-# requires: requests
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import asyncio
 import functools

@@ -6,14 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://i.imgur.com/C5dbpMA.jpeg
+# meta pic: https://static.hikari.gay/trashguy_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/trashguy.jpg
+# meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
-# requires: grapheme
-# meta developer: @hikarimods
+# scope: hikka_min 1.2.10
 
 import grapheme
 from telethon.tl.types import Message
@@ -21,7 +19,7 @@ from telethon.tl.types import Message
 from .. import loader, utils
 
 
-def trashguy(text):
+def trashguy(text: str) -> list:
     DISTANCE = 5
     SPACER = "\u0020\u2800"
     text = list(grapheme.graphemes(text))
@@ -47,7 +45,7 @@ def trashguy(text):
 
 @loader.tds
 class TrashGuyMod(loader.Module):
-    """Sadly, not powered by libtguy (http://zac.cy/trashguy), google, facebook or anything else"""
+    """Animation of trashguy taking out the trash"""
 
     strings = {
         "name": "TrashGuy",

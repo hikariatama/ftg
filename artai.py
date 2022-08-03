@@ -1,20 +1,19 @@
-# scope: hikka_min 1.2.10
 __version__ = (1, 0, 2)
 
-# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
-#
+#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
+#             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
 #
 #          https://t.me/hikariatama
 #
-# 🔒 Licensed under the CC BY-NC-ND 4.0
-# 🌐 https://creativecommons.org/licenses/by-nc-nd/4.0
+# 🔒 Licensed under the GNU AGPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/240/000000/class-dojo.png
+# meta pic: https://static.hikari.gay/artai_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/artai.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import base64
 import io

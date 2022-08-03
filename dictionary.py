@@ -6,14 +6,13 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/external-flat-satawat-anukul/512/000000/external-dictionary-education-flat-flat-satawat-anukul.png
+# meta pic: https://static.hikari.gay/dictionary_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/dictionary.jpg
 # meta developer: @hikarimods
 # requires: aiohttp urllib bs4
 # scope: inline
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import logging
 import re

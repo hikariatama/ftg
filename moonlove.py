@@ -6,12 +6,11 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
-# meta pic: https://img.icons8.com/emoji/256/000000/waxing-crescent-moon.png
+# meta pic: https://static.hikari.gay/moonlove_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/moonlove.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 from telethon.tl.types import Message
 
@@ -36,9 +35,14 @@ FRAMES = [
 
 @loader.tds
 class MoonLoveMod(loader.Module):
-    """Interesting animation with hearts and moons"""
+    """Animation with moon and hearts for your beloved"""
 
     strings = {"name": "MoonLove"}
+    strings_ru = {
+        "_cls_doc": "Анимация с лунами и сердечками для любимой",
+        "_cmd_doc_moonlove": "[текст] - Люблю тебя невообразимо",
+        "_cmd_doc_moonlovei": "[текст] - Люблю тебя невообразимо (инлайн)",
+    }
 
     async def moonlovecmd(self, message: Message):
         """[text] - Love you to the moon"""
