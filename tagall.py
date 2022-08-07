@@ -119,7 +119,12 @@ class TagAllMod(loader.Module):
                 await utils.answer(message, self.strings("bot_error"))
                 return
 
-            Bot.set_instance(self.inline.bot)
+            with contextlib.suppress(Exception):
+                Bot.set_instance(self.inline.bot)
+            
+            chat_id = int(f"-100{utils.get_chat_id(message)}")
+        else:
+            chat_id = utils.get_chat_id(message)
 
         event = StopEvent()
 
@@ -146,8 +151,8 @@ class TagAllMod(loader.Module):
                 if self.config["use_bot"]
                 else self._client.send_message
             )(
-                message.peer_id,
-                (args or self.config["default_message"]) + "\xad".join(chunk),
+                chat_id,
+                utils.escape_html(args or self.config["default_message"]) + "\xad".join(chunk),
             )
 
             if self.config["delete"]:

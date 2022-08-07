@@ -23,6 +23,8 @@ import os
 import random
 import time
 
+import grapheme
+
 import moviepy.editor as mp
 import emoji
 from PIL import Image
@@ -210,7 +212,9 @@ class StickManagerMod(loader.Module):
         if not self.default and self.stickersets:
             self.default = list(self.stickersets.keys())[0]
 
-        self.emojies = list("🌌🌃🏙🌇🌆🌁🌉🎑🏞🎆🌅🌄🌠🎇🗾")
+        self.emojies = list(
+            grapheme.graphemes("🌌🌃🏙🌇🌆🌁🌉🎑🏞🎆🌅🌄🌠🎇🗾🐭🐱🐶🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐸🐵🙉🐥🦆🦄🐴🐗🐺🦇🦉🦅")
+        )
 
     async def newpackcmd(self, message: Message):
         """<short_name> <name> [-a <alias>] - Create new pack"""
