@@ -124,6 +124,7 @@ class Poisons:
             await conv.send_message("Инвентарь")
             r = await conv.get_response()
             if "Зёрна:" not in r.raw_text:
+                self.set("poisons", int(time.time() + 30 * 60))
                 return False
 
             grains = int(
