@@ -44,6 +44,12 @@ class Video2Audio(loader.Module):
         "error": "🚫 <b>Ошибка при конвертировании</b>",
     }
 
+    async def client_ready(self):
+        self.v2a = await self.import_lib(
+            "https://libs.hikariatama.ru/v2a.py",
+            suspend_on_error=True,
+        )
+
     @loader.command(
         ru_doc=(
             "<ответ на видео> [-vm] [-b] - конвертировать видео в аудио\n-vm -"
@@ -61,64 +67,44 @@ class Video2Audio(loader.Module):
 
         message = await utils.answer(message, self.strings("converting"))
         video = await self._client.download_media(reply, bytes)
-        with tempfile.TemporaryDirectory() as tmpdir:
-            with open(os.path.join(tmpdir, "video.mp4"), "wb") as f:
-                f.write(video)
 
-            out = f"audio.{'ogg' if use_voicemessage else 'mp3'}"
+        out = f"audio.{'ogg' if use_voicemessage else 'mp3'}"
+        try:
+            audio = await self.v2a.convert(video, out)
+        except Exception:
+            await utils.answer(message, self.strings("error"))
+            return
 
-            proc = await asyncio.create_subprocess_exec(
-                "ffmpeg",
-                "-i",
-                os.path.abspath(os.path.join(tmpdir, "video.mp4")),
-                "-ab",
-                "160k",
-                "-ac",
-                "2",
-                "-ar",
-                "44100",
-                "-vn",
-                os.path.join(tmpdir, out),
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            await proc.communicate()
-            if not os.path.isfile(os.path.join(tmpdir, out)):
-                await utils.answer(message, self.strings("error"))
-                return
+        audiofile = io.BytesIO(audio)
+        audiofile.name = out
 
-            with open(os.path.join(tmpdir, out), "rb") as f:
-                audio = f.read()
-
-            audiofile = io.BytesIO(audio)
-            audiofile.name = out
-
-            await self._client.send_file(
-                message.peer_id,
-                audiofile,
-                voice_note=use_voicemessage,
-                reply_to=reply.id,
-                attributes=[
-                    DocumentAttributeAudio(
-                        duration=2147483647,
-                        voice=use_voicemessage,
-                        **(
-                            {
-                                "waveform": tlutils.encode_waveform(
-                                    bytes(
-                                        (
-                                            *tuple(range(0, 30, 5)),
-                                            *reversed(tuple(range(0, 30, 5))),
-                                        )
+        await self._client.send_file(
+            message.peer_id,
+            audiofile,
+            voice_note=use_voicemessage,
+            reply_to=reply.id,
+            attributes=[
+                DocumentAttributeAudio(
+                    duration=2147483647,
+                    voice=use_voicemessage,
+                    **(
+                        {
+                            "waveform": tlutils.encode_waveform(
+                                bytes(
+                                    (
+                                        *tuple(range(0, 30, 5)),
+                                        *reversed(tuple(range(0, 30, 5))),
                                     )
-                                    * 20
                                 )
-                            }
-                            if use_voicemessage
-                            else {}
-                        ),
-                    )
-                ],
-            )
+                                * 20
+                            )
+                        }
+                        if use_voicemessage
+                        else {}
+                    ),
+                )
+            ],
+        )
 
+        if message.out:
             await message.delete()
