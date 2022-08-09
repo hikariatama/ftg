@@ -16,13 +16,14 @@ __version__ = (2, 0, 0)
 # scope: hikka_min 1.2.10
 # requires: pydub speechrecognition python-ffmpeg
 
+import asyncio
 import tempfile
 import os
 import logging
 
 import speech_recognition as sr
 from pydub import AudioSegment
-from telethon.tl.types import Message
+from telethon.tl.types import Message, DocumentAttributeVideo
 
 from .. import loader, utils
 
@@ -44,6 +45,7 @@ class VoicyMod(loader.Module):
         "_cfg_engine": "Recognition engine",
         "error": "🚫 <b>Recognition error!</b>",
         "_cfg_ignore_users": "Users to ignore",
+        "too_big": "🫥 <b>Voice message is too big, I can't recognise it...</b>",
     }
 
     strings_ru = {
@@ -63,6 +65,9 @@ class VoicyMod(loader.Module):
         "_cfg_engine": "Распознаватель",
         "_cfg_ignore_users": "Игнорировать пользователей",
         "error": "🚫 <b>Ошибка распознавания!</b>",
+        "too_big": (
+            "🫥 <b>Голосовое сообщение слишком большое, я не могу его распознать...</b>"
+        ),
     }
 
     def __init__(self):
@@ -77,8 +82,10 @@ class VoicyMod(loader.Module):
                 "ignore_users",
                 [],
                 lambda: self.strings("_cfg_ignore_users"),
-                validator=loader.validators.Series(validator=loader.validators.TelegramID()),
-            )
+                validator=loader.validators.Series(
+                    validator=loader.validators.TelegramID()
+                ),
+            ),
         )
 
     async def client_ready(self):
@@ -89,7 +96,7 @@ class VoicyMod(loader.Module):
 
     async def recognize(self, message: Message):
         try:
-            message = await utils.answer(message, self.strings("converting"))
+            m = await utils.answer(message, self.strings("converting"))
             with tempfile.TemporaryDirectory() as tmpdir:
                 file = os.path.join(
                     tmpdir,
@@ -104,7 +111,9 @@ class VoicyMod(loader.Module):
                 with open(file, "wb") as f:
                     f.write(data)
 
-                song = AudioSegment.from_file(file, format="mp3" if message.audio else "ogg")
+                song = AudioSegment.from_file(
+                    file, format="mp3" if message.audio else "ogg"
+                )
                 song.export(os.path.join(tmpdir, "audio.wav"), format="wav")
 
                 r = sr.Recognizer()
@@ -116,13 +125,16 @@ class VoicyMod(loader.Module):
                         audio_data,
                         language=self.config["language"],
                     )
-                    message = await utils.answer(
-                        message,
+                    m = await utils.answer(
+                        m,
                         self.strings("converted").format(text),
                     )
         except Exception:
             logger.exception("Can't recognize")
-            await utils.answer(message, self.strings("error"))
+            m = await utils.answer(m, self.strings("error"))
+            await asyncio.sleep(3)
+            if not message.out:
+                await m.delete()
 
     @loader.unrestricted
     async def voicycmd(self, message: Message):
@@ -155,12 +167,44 @@ class VoicyMod(loader.Module):
                 or not message.video
                 and not message.audio
                 and not message.media.document.attributes[0].voice
+                or message.gif
+                or message.sticker
             ):
                 return
         except Exception:
             return
-        
+
         if message.sender_id in self.config["ignore_users"]:
+            return
+
+        if (
+            (
+                message.video
+                and (
+                    next(
+                        attr
+                        for attr in message.video.attributes
+                        if isinstance(attr, DocumentAttributeVideo)
+                    ).duration
+                    > 120
+                )
+            )
+            or getattr(
+                (
+                    getattr(
+                        getattr(getattr(message, "media", None), "document", None),
+                        "attributes",
+                        False,
+                    )
+                    or [None]
+                )[0],
+                "duration",
+                0,
+            )
+            > 300
+            or message.document.size / 1024 / 1024 > 5
+        ):
+            await utils.answer(message, self.strings("too_big"))
             return
 
         await self.recognize(message)

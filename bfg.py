@@ -1,3 +1,5 @@
+__version__ = (2, 0, 0)
+
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
@@ -119,7 +121,7 @@ class Bonuses:
 
 
 class Poisons:
-    async def _create_poisons(self):
+    async def _create_poisons(self) -> bool:
         async with self._client.conversation(self._bot) as conv:
             await conv.send_message("Инвентарь")
             r = await conv.get_response()
@@ -151,7 +153,7 @@ class Poisons:
 
 
 @loader.tds
-class BFGMod(loader.Module, Mining, Bonuses, Poisons):
+class BFG2Mod(loader.Module, Mining, Bonuses, Poisons):
     """Tasks automation for @bforgame_bot"""
 
     strings = {"name": "BFG"}
@@ -249,10 +251,9 @@ class BFGMod(loader.Module, Mining, Bonuses, Poisons):
             await message.click(data=b"pourGarden")
             await asyncio.sleep(1)
             await message.click(data=b"collectIncomeGarden")
-            self.set("garden_time", int(time.time() + 60 * 60))
             return True
         except Exception:
-            self.set("garden_time", int(time.time() + 5 * 60))
+            logger.exception("Can't process BFG click")
             self.set("garden", f"exp/{time.time() + 5 * 60:.0f}")
             return False
 
@@ -263,10 +264,9 @@ class BFGMod(loader.Module, Mining, Bonuses, Poisons):
             await message.click(data=b"payTaxesGenerator")
             await asyncio.sleep(1)
             await message.click(data=b"collectIncomeGenerator")
-            self.set("generator_time", int(time.time() + 60 * 60))
             return True
         except Exception:
-            self.set("generator_time", int(time.time() + 5 * 60))
+            logger.exception("Can't process BFG click")
             self.set("generator", f"exp/{time.time() + 5 * 60:.0f}")
             return False
 
@@ -277,10 +277,9 @@ class BFGMod(loader.Module, Mining, Bonuses, Poisons):
             await message.click(data=b"payTaxes")
             await asyncio.sleep(1)
             await message.click(data=b"collectIncome")
-            self.set("business_time", int(time.time() + 60 * 60))
             return True
         except Exception:
-            self.set("business_time", int(time.time() + 5 * 60))
+            logger.exception("Can't process BFG click")
             self.set("business", f"exp/{time.time() + 5 * 60:.0f}")
             return False
 
@@ -291,17 +290,17 @@ class BFGMod(loader.Module, Mining, Bonuses, Poisons):
             await message.click(data=b"payTaxesFarm")
             await asyncio.sleep(1)
             await message.click(data=b"collectIncomeFarm")
-            self.set("farm_time", int(time.time() + 60 * 60))
             return True
         except Exception:
-            self.set("farm_time", int(time.time() + 5 * 60))
+            logger.exception("Can't process BFG click")
             self.set("farm", f"exp/{time.time() + 5 * 60:.0f}")
             return False
 
     async def _init(self, key: str, msg: str) -> bool:
         if self.get(key) and (
             not str(self.get(key)).startswith("exp/")
-            or int(self.get(key).split("/")[1]) < time.time()
+            or str(self.get(key)).count("/") == 2
+            and int(self.get(key).split("/")[2]) < time.time()
         ):
             return True
 
@@ -312,7 +311,7 @@ class BFGMod(loader.Module, Mining, Bonuses, Poisons):
                 self.config[f"auto{key}"] = False
                 return False
 
-            self.set(key, f"{utils.get_chat_id(r)}/{r.id}")
+            self.set(key, f"{utils.get_chat_id(r)}/{r.id}/{time.time() + 15 * 60:.0f}")
 
         return True
 
@@ -334,53 +333,38 @@ class BFGMod(loader.Module, Mining, Bonuses, Poisons):
     @loader.loop(interval=15, autostart=True)
     async def loop(self):
         any_ = False
-        if self.config["autopoisons"] and (
-            not self.get("poisons") or self.get("poisons") < time.time()
-        ):
-            await self._create_poisons()
-            any_ = True
-            await asyncio.sleep(5)
+        if not self.get("fee_time") or self.get("fee_time") < time.time():
+            if self.config["autopoisons"]:
+                await self._create_poisons()
+                any_ = True
+                await asyncio.sleep(5)
 
-        if (
-            self.config["autogarden"]
-            and (not self.get("garden_time") or self.get("garden_time") < time.time())
-            and await self._init("garden", "Мой сад")
-        ):
-            await self._garden()
-            any_ = True
-            await asyncio.sleep(5)
+            if self.config["autofarm"] and await self._init("farm", "Моя ферма"):
+                await self._farm()
+                any_ = True
+                await asyncio.sleep(5)
 
-        if (
-            self.config["autogenerator"]
-            and (
-                not self.get("generator_time")
-                or self.get("generator_time") < time.time()
-            )
-            and await self._init("generator", "Мой генератор")
-        ):
-            await self._generator()
-            any_ = True
-            await asyncio.sleep(5)
+            if self.config["autogarden"] and await self._init("garden", "Мой сад"):
+                await self._garden()
+                any_ = True
+                await asyncio.sleep(5)
 
-        if (
-            self.config["autobusiness"]
-            and (
-                not self.get("business_time") or self.get("business_time") < time.time()
-            )
-            and await self._init("business", "Мой бизнес")
-        ):
-            await self._business()
-            any_ = True
-            await asyncio.sleep(5)
+            if self.config["autogenerator"] and await self._init(
+                "generator", "Мой генератор"
+            ):
+                await self._generator()
+                any_ = True
+                await asyncio.sleep(5)
 
-        if (
-            self.config["autofarm"]
-            and (not self.get("farm_time") or self.get("farm_time") < time.time())
-            and await self._init("farm", "Моя ферма")
-        ):
-            await self._farm()
-            any_ = True
-            await asyncio.sleep(5)
+            if self.config["autobusiness"] and await self._init(
+                "business", "Мой бизнес"
+            ):
+                await self._business()
+                any_ = True
+                await asyncio.sleep(5)
+
+            if any_:
+                self.set("fee_time", int(time.time() + 60 * 60))
 
         if self.config["automining"]:
             if not self.get("automining") or self.get("automining") < time.time():

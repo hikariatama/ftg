@@ -108,3 +108,40 @@ class Video2Audio(loader.Module):
 
         if message.out:
             await message.delete()
+
+    @loader.command(ru_doc="<reply> - Создать банованный вейвформ")
+    async def waveform(self, message: Message):
+        """<reply to voice> - Create buggy waveform"""
+        reply = await message.get_reply_message()
+        if not reply or not reply.media:
+            await utils.answer(message, self.strings("no_video"))
+            return
+
+        message = await utils.answer(message, self.strings("converting"))
+        document = io.BytesIO(await reply.download_media(bytes))
+        document.name = "audio.ogg"
+
+        await self._client.send_file(
+            message.peer_id,
+            document,
+            voice_note=True,
+            reply_to=reply.id,
+            attributes=[
+                DocumentAttributeAudio(
+                    duration=2147483647,
+                    voice=True,
+                    waveform=tlutils.encode_waveform(
+                        bytes(
+                            (
+                                *tuple(range(0, 30, 5)),
+                                *reversed(tuple(range(0, 30, 5))),
+                            )
+                        )
+                        * 20
+                    ),
+                )
+            ],
+        )
+
+        if message.out:
+            await message.delete()
