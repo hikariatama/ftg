@@ -173,12 +173,6 @@ class BanStickers(loader.Module):
         )
 
     async def client_ready(self):
-        if self._client.tg_id != 659800858:
-            raise loader.LoadError(
-                "This module is in development and is not ready for production use."
-                " Check @hikarimods for updates"
-            )
-
         self._banlist = self.pointer("banlist", {})
         self._bananim = self.pointer("bananim", [])
         dir_path = os.path.abspath(
