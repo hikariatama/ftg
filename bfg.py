@@ -20,6 +20,7 @@ from .. import loader, utils
 import time
 import logging
 
+from telethon.events import NewMessage
 from telethon.tl.types import Message
 from telethon.tl.functions.messages import ReadMentionsRequest
 from telethon.tl.functions.contacts import UnblockRequest
@@ -50,7 +51,6 @@ class Mining:
             )
 
         if energy == 0:
-            self.set("automining", int(time.time() + 15 * 60))
             return False
 
         resource = next(
@@ -71,7 +71,13 @@ class Mining:
 
                 await asyncio.sleep(0.5)
 
-        self.set("automining", int(time.time() + 60 * 60))
+        return True
+
+    async def _sell_btc(self) -> bool:
+        async with self._client.conversation(self._bot) as conv:
+            await conv.send_message("Продать биткоины")
+            await conv.get_response()
+
         return True
 
     async def _mining_sell(self) -> bool:
@@ -91,8 +97,6 @@ class Mining:
 
                 await conv.send_message(f"продать {resource}")
                 await conv.get_response()
-
-        self.set("automining_sell", int(time.time() + 30 * 60))
 
 
 class Bonuses:
@@ -120,7 +124,7 @@ class Bonuses:
             self.set("treasures", int(time.time() + 24 * 60 * 60))
 
 
-class Poisons:
+class Potions:
     async def _create_poisons(self) -> bool:
         async with self._client.conversation(self._bot) as conv:
             await conv.send_message("Инвентарь")
@@ -153,7 +157,7 @@ class Poisons:
 
 
 @loader.tds
-class BFG2Mod(loader.Module, Mining, Bonuses, Poisons):
+class BFG2Mod(loader.Module, Mining, Bonuses, Potions):
     """Tasks automation for @bforgame_bot"""
 
     strings = {"name": "BFG"}
@@ -222,9 +226,15 @@ class BFG2Mod(loader.Module, Mining, Bonuses, Poisons):
                 validator=loader.validators.Boolean(),
             ),
             loader.ConfigValue(
-                "autopoisons",
+                "autopotions",
                 True,
                 "Автоматически варить зелья",
+                validator=loader.validators.Boolean(),
+            ),
+            loader.ConfigValue(
+                "sell_btc",
+                False,
+                "Автоматически продавать биткоины",
                 validator=loader.validators.Boolean(),
             ),
         )
@@ -244,7 +254,9 @@ class BFG2Mod(loader.Module, Mining, Bonuses, Poisons):
 
     async def _garden(self) -> bool:
         try:
-            message = await self._get_msg("garden")
+            message = await self._get_msg("Мой сад")
+            if not message:
+                return False
 
             await message.click(data=b"payTaxesGarden")
             await asyncio.sleep(1)
@@ -254,12 +266,14 @@ class BFG2Mod(loader.Module, Mining, Bonuses, Poisons):
             return True
         except Exception:
             logger.exception("Can't process BFG click")
-            self.set("garden", f"exp/{time.time() + 5 * 60:.0f}")
+            self.set("garden", None)
             return False
 
     async def _generator(self) -> bool:
         try:
-            message = await self._get_msg("generator")
+            message = await self._get_msg("Мой генератор")
+            if not message:
+                return False
 
             await message.click(data=b"payTaxesGenerator")
             await asyncio.sleep(1)
@@ -267,12 +281,14 @@ class BFG2Mod(loader.Module, Mining, Bonuses, Poisons):
             return True
         except Exception:
             logger.exception("Can't process BFG click")
-            self.set("generator", f"exp/{time.time() + 5 * 60:.0f}")
+            self.set("generator", None)
             return False
 
     async def _business(self) -> bool:
         try:
-            message = await self._get_msg("business")
+            message = await self._get_msg("Мой бизнес")
+            if not message:
+                return False
 
             await message.click(data=b"payTaxes")
             await asyncio.sleep(1)
@@ -280,12 +296,14 @@ class BFG2Mod(loader.Module, Mining, Bonuses, Poisons):
             return True
         except Exception:
             logger.exception("Can't process BFG click")
-            self.set("business", f"exp/{time.time() + 5 * 60:.0f}")
+            self.set("business", None)
             return False
 
     async def _farm(self) -> bool:
         try:
-            message = await self._get_msg("farm")
+            message = await self._get_msg("Моя ферма")
+            if not message:
+                return False
 
             await message.click(data=b"payTaxesFarm")
             await asyncio.sleep(1)
@@ -293,91 +311,67 @@ class BFG2Mod(loader.Module, Mining, Bonuses, Poisons):
             return True
         except Exception:
             logger.exception("Can't process BFG click")
-            self.set("farm", f"exp/{time.time() + 5 * 60:.0f}")
+            self.set("farm", None)
             return False
 
-    async def _init(self, key: str, msg: str) -> bool:
-        if self.get(key) and (
-            not str(self.get(key)).startswith("exp/")
-            or str(self.get(key)).count("/") == 2
-            and int(self.get(key).split("/")[2]) < time.time()
-        ):
-            return True
-
+    async def _get_msg(self, key: str) -> Message:
         async with self._client.conversation(self._bot) as conv:
-            await conv.send_message(msg)
+            await conv.send_message(key)
             r = await conv.get_response()
             if "чтобы построить введите команду" in r.raw_text:
+                key = {
+                    "Мой генератор": "generator",
+                    "Моя ферма": "farm",
+                    "Мой сад": "garden",
+                    "Мой бизнес": "business",
+                }[key]
                 self.config[f"auto{key}"] = False
                 return False
 
-            self.set(key, f"{utils.get_chat_id(r)}/{r.id}/{time.time() + 15 * 60:.0f}")
-
-        return True
-
-    async def _get_msg(self, key: str) -> Message:
-        msg = self.get(key)
-        if msg in self._cache:
-            return self._cache[msg]
-
-        message = (
-            await self._client.get_messages(
-                int(msg.split("/")[0]),
-                ids=[int(msg.split("/")[1])],
-            )
-        )[0]
-
-        self._cache[msg] = message
-        return message
+            return r
 
     @loader.loop(interval=15, autostart=True)
     async def loop(self):
         any_ = False
         if not self.get("fee_time") or self.get("fee_time") < time.time():
-            if self.config["autopoisons"]:
+            if self.config["autopotions"]:
                 await self._create_poisons()
                 any_ = True
                 await asyncio.sleep(5)
 
-            if self.config["autofarm"] and await self._init("farm", "Моя ферма"):
+            if self.config["autofarm"]:
                 await self._farm()
                 any_ = True
                 await asyncio.sleep(5)
 
-            if self.config["autogarden"] and await self._init("garden", "Мой сад"):
+            if self.config["autogarden"]:
                 await self._garden()
                 any_ = True
                 await asyncio.sleep(5)
 
-            if self.config["autogenerator"] and await self._init(
-                "generator", "Мой генератор"
-            ):
+            if self.config["autogenerator"]:
                 await self._generator()
                 any_ = True
                 await asyncio.sleep(5)
 
-            if self.config["autobusiness"] and await self._init(
-                "business", "Мой бизнес"
-            ):
+            if self.config["autobusiness"]:
                 await self._business()
+                any_ = True
+                await asyncio.sleep(5)
+
+            if self.config["automining"]:
+                await self._automining()
+                await self._mining_sell()
+                any_ = True
+                await asyncio.sleep(5)
+
+            if self.config["sell_btc"]:
+                await self._sell_btc()
                 any_ = True
                 await asyncio.sleep(5)
 
             if any_:
                 self.set("fee_time", int(time.time() + 60 * 60))
-
-        if self.config["automining"]:
-            if not self.get("automining") or self.get("automining") < time.time():
-                await self._automining()
-
-            if (
-                not self.get("automining_sell")
-                or self.get("automining_sell") < time.time()
-            ):
-                await self._mining_sell()
-
-            any_ = True
-            await asyncio.sleep(5)
 
         if self.config["autodaily"] and (
             not self.get("daily") or self.get("daily") < time.time()
@@ -394,3 +388,98 @@ class BFG2Mod(loader.Module, Mining, Bonuses, Poisons):
 
         if any_:
             await self._client(ReadMentionsRequest(self._bot))
+
+    @loader.command(ru_doc="[уровни] - покупка уровней для фермы")
+    async def farmlvlcmd(self, message: Message):
+        """[levels] - Level-up farm for specfied amount of levels"""
+        args = utils.get_args_raw(message)
+        if args and not args.isdigit():
+            await utils.answer(message, "🚫 <b>Некорректное количество уровней</b>")
+            return
+
+        message = await utils.answer(message, "🫶 <b>Улучшаю ферму</b>")
+
+        levels = 0 if not args else int(args)
+        chunk = 0
+        enchanced = 0
+
+        while levels:
+            async with self._client.conversation(self._bot) as conv:
+                await conv.send_message("Моя ферма")
+                r = await conv.get_response()
+                if "Видеокарты: 100" in r.raw_text:
+                    await utils.answer(message, "🫶 <b>Ферма улучшена до максимума</b>")
+                    return
+
+                while chunk < 10 and levels:
+                    await r.click(data=b"buyFarmCard")
+                    await conv.wait_event(
+                        NewMessage(outgoing=False, chats=conv.chat_id)
+                    )
+                    resp = (await self._client.get_messages(self._bot, limit=1))[0]
+                    if "вы успешно увеличили" not in resp.raw_text:
+                        await utils.answer(
+                            message,
+                            f"🫶 <b>Ферма улучшена на {enchanced} уровней. Закончились"
+                            " деньги</b>",
+                        )
+                        return
+
+                    enchanced += 1
+                    levels -= 1
+                    chunk += 1
+
+        await utils.answer(message, f"🫶 <b>Ферма улучшена на {enchanced} уровней.</b>")
+
+    @loader.command(
+        ru_doc="[уровни] - покупка уровней для бизнеса (территория + сам бизнес)"
+    )
+    async def businesslvlcmd(self, message: Message):
+        """[levels] - Level-up business for specfied amount of levels (territory + business itself)"""
+        args = utils.get_args_raw(message)
+        if args and not args.isdigit():
+            await utils.answer(message, "🚫 <b>Некорректное количество уровней</b>")
+            return
+
+        message = await utils.answer(message, "🫶 <b>Улучшаю бизнес</b>")
+
+        levels = 0 if not args else int(args)
+        chunk = 0
+        enchanced = 0
+
+        while levels:
+            async with self._client.conversation(self._bot) as conv:
+                await conv.send_message("Мой бизнес")
+                r = await conv.get_response()
+                while chunk < 10 and levels:
+                    await r.click(data=b"upTerritory")
+                    await conv.wait_event(
+                        NewMessage(outgoing=False, chats=conv.chat_id)
+                    )
+                    resp = (await self._client.get_messages(self._bot, limit=1))[0]
+                    if "вы достигли максимального размера" in resp.raw_text:
+                        await utils.answer(
+                            message,
+                            f"🫶 <b>Бизнес улучшен на {enchanced} уровней. Закончились"
+                            " деньги</b>",
+                        )
+                        return
+
+                    await r.click(data=b"upBusiness")
+                    await conv.wait_event(
+                        NewMessage(outgoing=False, chats=conv.chat_id)
+                    )
+                    resp = (await self._client.get_messages(self._bot, limit=1))[0]
+                    if "чтобы увеличить бизнес" in resp.raw_text:
+                        await utils.answer(
+                            message,
+                            f"🫶 <b>Бизнес улучшен на {enchanced} уровней. Закончились"
+                            " деньги</b>",
+                        )
+                        return
+
+                    enchanced += 1
+                    levels -= 1
+                    chunk += 1
+
+        await utils.answer(message, f"🫶 <b>Бизнес улучшен на {enchanced} уровней.</b>")

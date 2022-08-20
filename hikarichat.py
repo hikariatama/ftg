@@ -1,4 +1,4 @@
-__version__ = (12, 3, 2)
+__version__ = (12, 3, 3)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
@@ -1314,47 +1314,47 @@ class HikariChatMod(loader.Module):
                 or user_id in self._client.dispatcher.security._sudo
             )
 
-    def chat_command(func) -> FunctionType:
+    def chat_command(function) -> FunctionType:
         """
         Decorator to allow execution of certain commands in chat only
         """
 
-        @functools.wraps(func)
+        @functools.wraps(function)
         async def wrapped(*args, **kwargs):
             if len(args) < 2 or not isinstance(args[1], Message):
-                return await func(*args, **kwargs)
+                return await function(*args, **kwargs)
 
             if args[1].is_private:
                 await utils.answer(args[1], args[0].strings("chat_only"))
                 return
 
-            return await func(*args, **kwargs)
+            return await function(*args, **kwargs)
 
-        wrapped.__doc__ = func.__doc__
-        wrapped.__module__ = func.__module__
+        wrapped.__doc__ = function.__doc__
+        wrapped.__module__ = function.__module__
 
         return wrapped
 
-    def error_handler(func) -> FunctionType:
+    def error_handler(function) -> FunctionType:
         """
         Decorator to handle functions' errors
         """
 
-        @functools.wraps(func)
+        @functools.wraps(function)
         async def wrapped(*args, **kwargs):
             try:
-                return await func(*args, **kwargs)
+                return await function(*args, **kwargs)
             except Exception:
                 logger.exception("Exception caught in HikariChat")
 
-                if func.__name__.startswith("p__"):
+                if function.__name__.startswith("p__"):
                     return
 
-                if func.__name__ == "watcher":
+                if function.__name__ == "watcher":
                     return
 
-        wrapped.__doc__ = func.__doc__
-        wrapped.__module__ = func.__module__
+        wrapped.__doc__ = function.__doc__
+        wrapped.__module__ = function.__module__
 
         return wrapped
 
@@ -1555,10 +1555,10 @@ class HikariChatMod(loader.Module):
         """
         comments = self.api.variables["named_protects"]
         func_name = f"{protection}cmd"
-        func = functools.partial(self.protect, protection=protection)
-        func.__module__ = self.__module__
-        func.__name__ = func_name
-        func.__self__ = self
+        function = functools.partial(self.protect, protection=protection)
+        function.__module__ = self.__module__
+        function.__name__ = func_name
+        function.__self__ = self
 
         args = (
             self.strings("action")
@@ -1572,8 +1572,8 @@ class HikariChatMod(loader.Module):
             else self.strings("toggle")
         )
 
-        func.__doc__ = f"{args} - {action} {comments[protection]}"
-        return func
+        function.__doc__ = f"{args} - {action} {comments[protection]}"
+        return function
 
     @staticmethod
     def convert_time(t: str) -> int:
@@ -3915,10 +3915,7 @@ class HikariChatMod(loader.Module):
             await utils.answer(message, self.strings("clnraid_args"))
             return
 
-        args = min(
-            int(args),
-            (await self._client.get_participants(message.peer_id, limit=1)).total,
-        )
+        args = min(int(args), 10000)
 
         await self.inline.form(
             message=message,

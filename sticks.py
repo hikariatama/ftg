@@ -1,5 +1,4 @@
-# scope: hikka_min 1.2.10
-__version__ = (2, 0, 0)
+__version__ = (3, 0, 1)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
@@ -15,19 +14,20 @@ __version__ = (2, 0, 0)
 # scope: ffmpeg
 # scope: disable_onload_docs
 # requires: Pillow moviepy emoji
+# scope: hikka_min 1.3.3
 
 import asyncio
 import io
 import logging
+import math
 import os
 import random
 import time
-
+import requests
 import grapheme
-
 import moviepy.editor as mp
 import emoji
-from PIL import Image
+from PIL import Image, ImageChops, ImageFont, ImageDraw
 from telethon.errors.rpcerrorlist import RPCError
 from telethon.tl.functions.messages import (
     ClearRecentStickersRequest,
@@ -46,6 +46,145 @@ from telethon.tl.types import (
 from telethon.utils import get_input_document
 
 from .. import loader, utils
+from ..inline.types import InlineCall
+
+
+# https://gist.github.com/turicas/1455973
+
+
+class ImageText:
+    def __init__(
+        self,
+        size: tuple,
+        mode: str = "RGBA",
+        background: tuple = (0, 0, 0, 0),
+        encoding: str = "utf8",
+    ):
+        self.size = size
+        self.image = Image.new(mode, self.size, color=background)
+        self.draw = ImageDraw.Draw(self.image)
+        self.encoding = encoding
+
+    def get_font_size(
+        self,
+        text: str,
+        font: ImageFont,
+        max_width: int = None,
+        max_height: int = None,
+    ) -> int:
+        if max_width is None and max_height is None:
+            raise ValueError("You need to pass max_width or max_height")
+        font_size = 1
+        text_size = self.get_text_size(font, font_size, text)
+        if (max_width is not None and text_size[0] > max_width) or (
+            max_height is not None and text_size[1] > max_height
+        ):
+            raise ValueError("Text can't be filled in only (%dpx, %dpx)" % text_size)
+
+        while True:
+            if (max_width is not None and text_size[0] >= max_width) or (
+                max_height is not None and text_size[1] >= max_height
+            ):
+                return font_size - 1
+            font_size += 1
+            text_size = self.get_text_size(font, font_size, text)
+
+    def write_text(
+        self,
+        coordinates: tuple,
+        text: str,
+        font_stream: io.BytesIO,
+        font_size: int = 11,
+        color: tuple = (0, 0, 0),
+        max_width: int = None,
+        max_height: int = None,
+    ) -> int:
+        x, y = coordinates
+        # if isinstance(text, str):
+        #     text = text.decode(self.encoding)
+        if font_size == "fill" and (max_width is not None or max_height is not None):
+            font_size = self.get_font_size(text, font_stream, max_width, max_height)
+        text_size = self.get_text_size(font_stream, font_size, text)
+        font_stream.seek(0)
+        font = ImageFont.truetype(font_stream, font_size)
+        if x == "center":
+            x = (self.size[0] - text_size[0]) / 2
+        if y == "center":
+            y = (self.size[1] - text_size[1]) / 2
+        self.draw.text((x, y), text, font=font, fill=color)
+        return text_size
+
+    def get_text_size(self, font_stream: io.BytesIO, font_size: int, text: str) -> int:
+        font_stream.seek(0)
+        font = ImageFont.truetype(font_stream, font_size)
+        return font.getsize(text)
+
+    def write_text_box(
+        self,
+        coordinates: tuple,
+        text: str,
+        box_width: int,
+        font_stream: io.BytesIO,
+        font_size: int = 11,
+        color: tuple = (0, 0, 0),
+        place: str = "center",
+        justify_last_line: bool = False,
+    ):
+        x, y = coordinates
+        lines = []
+        line = []
+        words = text.split()
+        for word in words:
+            new_line = " ".join(line + [word])
+            size = self.get_text_size(font_stream, font_size, new_line)
+            text_height = size[1]
+            if size[0] <= box_width:
+                line.append(word)
+            else:
+                lines.append(line)
+                line = [word]
+        if line:
+            lines.append(line)
+        lines = [" ".join(line) for line in lines if line]
+        height = y
+        for index, line in enumerate(lines):
+            height += text_height
+            if place == "left":
+                self.write_text((x, height), line, font_stream, font_size, color)
+            elif place == "right":
+                total_size = self.get_text_size(font_stream, font_size, line)
+                x_left = x + box_width - total_size[0]
+                self.write_text((x_left, height), line, font_stream, font_size, color)
+            elif place == "center":
+                total_size = self.get_text_size(font_stream, font_size, line)
+                x_left = int(x + ((box_width - total_size[0]) / 2))
+                self.write_text((x_left, height), line, font_stream, font_size, color)
+            elif place == "justify":
+                words = line.split()
+                if (index == len(lines) - 1 and not justify_last_line) or len(
+                    words
+                ) == 1:
+                    self.write_text((x, height), line, font_stream, font_size, color)
+                    continue
+                line_without_spaces = "".join(words)
+                total_size = self.get_text_size(
+                    font_stream, font_size, line_without_spaces
+                )
+                space_width = (box_width - total_size[0]) / (len(words) - 1.0)
+                start_x = x
+                for word in words[:-1]:
+                    self.write_text(
+                        (start_x, height), word, font_stream, font_size, color
+                    )
+                    word_size = self.get_text_size(font_stream, font_size, word)
+                    start_x += word_size[0] + space_width
+                last_word_size = self.get_text_size(font_stream, font_size, words[-1])
+                last_word_x = x + box_width - last_word_size[0]
+                self.write_text(
+                    (last_word_x, height), words[-1], font_stream, font_size, color
+                )
+        return (box_width, height - y)
+
 
 logger = logging.getLogger(__name__)
 
@@ -88,19 +227,40 @@ class StickManagerMod(loader.Module):
         "packremoved": "{} <b>Removed pack {}</b>",
         "error": "🚫 <b>{}</b>",
         "kang": (
-            "{} <b>Sticker added to <a"
-            ' href="https://t.me/addstickers/{}">pack</a></b>\n<i>中国語で再び侮辱された 😥</i>'
+            "<emoji document_id='6334599075337340489'>🍵</emoji> <b>Sticker added to <a"
+            ' href="https://t.me/addstickers/{}">pack</a></b>'
         ),
         "created": (
-            "{} <b>Created new pack {} <a"
-            ' href="https://t.me/addstickers/{}">add</a></b>'
+            "<emoji document_id='5370900768796711127'>🍾</emoji> <b>Created new pack {}"
+            ' <a href="https://t.me/addstickers/{}">add</a></b>'
         ),
-        "bot": "🤖 <b>Bot token saved</b>",
         "alias_exists": "🚫 <b>Alias </b><code>{}</code><b> exists</b>",
-        "stickrm": "{} <b>Sticker removed from pack</b>\n<i>中国語で再び侮辱された 😥</i>",
-        "processing": "👩‍🎤 <b>私はアニメの猫の男の子が大好きです! 処理...</b>",
-        "processing_gif": "🧑🏻‍🎤 <b>処理中、お待ちください...</b>",
-        "cleaned": "⏳ <b>最近使用したステッカーのリストがクリアされました.</b>",
+        "stickrm": "{} <b>Sticker removed from pack</b>",
+        "need_reply": "🚫 <b>Reply to use this command</b>",
+        "cleaned": "⏳ <b>Recents cleared.</b>",
+        "processing": "👩‍🎤 <b>Processing media...</b>",
+        "processing_gif": "🧑🏻‍🎤 <b>Processing video...</b>",
+        "rmbg": (
+            "<emoji document_id='6048696253632482685'>✂️</emoji> <b>Removing"
+            " background...</b>"
+        ),
+        "trimming": (
+            "<emoji document_id='6037132221691727143'>✂️</emoji> <b>Trimming...</b>"
+        ),
+        "outline": (
+            "<emoji document_id='6048640560791555243'>🖌</emoji> <b>Adding"
+            " outline...</b>"
+        ),
+        "adding_text": (
+            "<emoji document_id='6048366494633430880'>🅰️</emoji> <b>Adding text...</b>"
+        ),
+        "exporting": (
+            "<emoji document_id='6048887676029898150'>📥</emoji> <b>Exporting...</b>"
+        ),
+        "confirm_remove": "🚫 <b>Are you sure you want to delete pack {}?</b>",
+        "remove": "🚫 Delete",
+        "cancel": "🔻 Cancel",
+        "deleting_pack": "😓 <b>Deleting pack...</b>",
     }
 
     strings_ru = {
@@ -120,27 +280,40 @@ class StickManagerMod(loader.Module):
         "default": "{} <b>Пак {} установлен в качестве основного</b>",
         "packremoved": "{} <b>Пак {} удален</b>",
         "error": "🚫 <b>{}</b>",
-        "bot": "🤖 <b>Токен бота сохранен</b>",
         "alias_exists": "🚫 <b>Алиас </b><code>{}</code><b> уже существует</b>",
-        "stickrm": "{} <b>Стикер удален из пака</b>\n<i>中国語で再び侮辱された 😥</i>",
-        "_cmd_doc_newpack": "<short_name> <имя> [-a <алиас>] - Создать новый стикерпак",
-        "_cmd_doc_newvidpack": (
-            "<short_name> <имя> [-a <алиас>] - Создать новый видео стикерпак"
-        ),
-        "_cmd_doc_syncpacks": "Синхронизировать стикерпаки с @stickers",
-        "_cmd_doc_packs": "Показать доступные стикерпаки",
-        "_cmd_doc_stickalias": "<алиас> [short_name] - Добавить или удалить алиас",
-        "_cmd_doc_stickdef": "<short_name|алиас> - Установить основной стикерпак",
-        "_cmd_doc_rmpack": "<short_name|алиас> - Удалить стикерпак",
-        "_cmd_doc_unstick": "<reply> - Удалить стикер из стикерпака",
-        "_cmd_doc_stick": "[эмодзи] [short_name|алиас] - Добавить стикер в стикерпак",
-        "_cmd_doc_rmrecent": "Очистить недавно использованные стикеры",
+        "stickrm": "{} <b>Стикер удален из пака</b>",
         "_cls_doc": (
             "Управление стикерпаками с поддержкой видеопаков и дружелюбным интерфейсом"
         ),
+        "need_reply": "🚫 <b>Необходим ответ на сообщение</b>",
+        "cleaned": "⏳ <b>Недавние очищены.</b>",
+        "processing": "👩‍🎤 <b>Обрабатываю медиа...</b>",
+        "processing_gif": "🧑🏻‍🎤 <b>Обрабатываю видео...</b>",
+        "rmbg": (
+            "<emoji document_id='6048696253632482685'>✂️</emoji> <b>Убираю фон...</b>"
+        ),
+        "trimming": (
+            "<emoji document_id='6037132221691727143'>✂️</emoji> <b>Подрезаю"
+            " края...</b>"
+        ),
+        "outline": (
+            "<emoji document_id='6048640560791555243'>🖌</emoji> <b>Добавлю"
+            " окантовку...</b>"
+        ),
+        "adding_text": (
+            "<emoji document_id='6048366494633430880'>🅰️</emoji> <b>Накладываю"
+            " текст...</b>"
+        ),
+        "exporting": (
+            "<emoji document_id='6048887676029898150'>📥</emoji> <b>Экспортирую...</b>"
+        ),
+        "confirm_remove": "🚫 <b>Вы уверены, что хотите удалить пак {}?</b>",
+        "remove": "🚫 Удалить",
+        "cancel": "🔻 Отмена",
+        "deleting_pack": "😓 <b>Удаляю пак...</b>",
     }
 
-    def find(self, args: str) -> str or False:
+    def find(self, args: str) -> str:
         if args in self.stickersets:
             p = self.stickersets[args].copy()
             p.update({"shortname": args})
@@ -153,10 +326,194 @@ class StickManagerMod(loader.Module):
 
         return False
 
-    async def prepare(self, message: Message) -> InputDocument:
+    @staticmethod
+    def trim(image: Image) -> Image:
+        bg = Image.new(image.mode, image.size, image.getpixel((0, 0)))
+        diff = ImageChops.difference(image, bg)
+        diff = ImageChops.add(diff, diff, 2.0, -100)
+        bbox = diff.getbbox()
+        if bbox:
+            bbox = (
+                bbox[0] - 5 if bbox[0] >= 5 else 0,
+                bbox[1] - 5 if bbox[1] >= 5 else 0,
+                bbox[2] + 5 if bbox[2] + 5 <= image.width else image.width,
+                bbox[3] + 5 if bbox[3] + 5 <= image.height else image.height,
+            )
+            return image.crop(bbox)
+
+        return image
+
+    @staticmethod
+    def stroke(
+        image: Image,
+        strokeSize: int = 5,
+        color: tuple = (255, 255, 255),
+    ) -> Image:
+        # Create a disc kernel
+        kernel = []
+        kernelSize = math.ceil(strokeSize) * 2 + 1  # Should always be odd
+        kernelRadius = strokeSize + 0.5
+        kernelCenter = kernelSize / 2 - 1
+        pixelRadius = 1 / math.sqrt(math.pi)
+        for x in range(kernelSize):
+            kernel.append([])
+            for y in range(kernelSize):
+                distanceToCenter = math.sqrt(
+                    (kernelCenter - x + 0.5) ** 2 + (kernelCenter - y + 0.5) ** 2
+                )
+                if distanceToCenter <= kernelRadius - pixelRadius:
+                    value = 1  # This pixel is fully inside the circle
+                elif distanceToCenter <= kernelRadius:
+                    value = min(
+                        1,
+                        (kernelRadius - distanceToCenter + pixelRadius)
+                        / (pixelRadius * 2),
+                    )  # Mostly inside
+                elif distanceToCenter <= kernelRadius + pixelRadius:
+                    value = min(
+                        1,
+                        (pixelRadius - (distanceToCenter - kernelRadius))
+                        / (pixelRadius * 2),
+                    )  # Mostly outside
+                else:
+                    value = 0  # This pixel is fully outside the circle
+                kernel[x].append(value)
+        kernelExtent = int(len(kernel) / 2)
+        imageWidth, imageHeight = image.size
+        outline = image.copy()
+        outline.paste((0, 0, 0, 0), [0, 0, imageWidth, imageHeight])
+        imagePixels = image.load()
+        outlinePixels = outline.load()
+        # Morphological grayscale dilation
+        for x in range(imageWidth):
+            for y in range(imageHeight):
+                highestValue = 0
+                for kx in range(-kernelExtent, kernelExtent + 1):
+                    for ky in range(-kernelExtent, kernelExtent + 1):
+                        kernelValue = kernel[kx + kernelExtent][ky + kernelExtent]
+                        if (
+                            x + kx >= 0
+                            and y + ky >= 0
+                            and x + kx < imageWidth
+                            and y + ky < imageHeight
+                            and kernelValue > 0
+                        ):
+                            highestValue = max(
+                                highestValue,
+                                min(
+                                    255,
+                                    int(
+                                        round(
+                                            imagePixels[x + kx, y + ky][3] * kernelValue
+                                        )
+                                    ),
+                                ),
+                            )
+                outlinePixels[x, y] = (color[0], color[1], color[2], highestValue)
+        outline.paste(image, (0, 0), image)
+        return outline
+
+    @loader.command(ru_doc="<реплай> - Убрать фон с картинки")
+    async def rmbg(self, message: Message):
+        """<reply> - Remove background from image"""
+        reply = await message.get_reply_message()
+        if not reply or not reply.photo and not reply.sticker:
+            await utils.answer(message, self.strings("need_reply"))
+            return
+
+        message = await utils.answer(message, self.strings("rmbg"))
+
+        photo = io.BytesIO()
+        photo.name = "photo.webp"
+        Image.open(
+            await self.remove_bg(
+                io.BytesIO(await self._client.download_media(reply, bytes))
+            )
+        ).save(photo, "WEBP")
+        photo.seek(0)
+        await self._client.send_file(
+            message.peer_id,
+            photo,
+            reply_to=reply.id,
+        )
+        if message.out:
+            await message.delete()
+
+    async def prepare(
+        self,
+        status: Message,
+        message: Message,
+        outline: bool = False,
+        remove_bg: bool = False,
+        text: str = None,
+        only_bytes: bool = False,
+    ) -> InputDocument:
         dl = io.BytesIO(await self._client.download_file(message.media, bytes))
         dl.seek(0)
-        img = Image.open(dl)
+
+        if remove_bg:
+            status = await utils.answer(status, self.strings("rmbg"))
+            dl = await self.remove_bg(dl)
+            dl.seek(0)
+
+        status = await utils.answer(status, self.strings("trimming"))
+        img = await utils.run_sync(self.trim, Image.open(dl))
+
+        if outline:
+            status = await utils.answer(status, self.strings("outline"))
+            img = await utils.run_sync(self.stroke, img, self.config["stroke_size"])
+
+        if text:
+            status = await utils.answer(status, self.strings("adding_text"))
+            await self._font_ready.wait()
+            new_img = Image.new("RGBA", (img.width, img.height), (255, 255, 255, 0))
+            proportions = img.width / img.height
+            image_text = ImageText(new_img.size)
+            self._raw_font.seek(0)
+            image_text.write_text_box(
+                (0, 0),
+                text,
+                new_img.width - 8,
+                self._raw_font,
+                max(
+                    self.config["font_size"],
+                    40
+                    if len(text) < 5
+                    else 35
+                    if len(text) < 10
+                    else 30
+                    if len(text) < 15
+                    else 25
+                    if len(text) < 20
+                    else self.config["font_size"],
+                ),
+                (255, 255, 255),
+                "center",
+            )
+            image_text.image = await utils.run_sync(self.trim, image_text.image)
+            img = img.resize(
+                (
+                    round((img.height - image_text.image.height) * proportions),
+                    round(img.height - image_text.image.height),
+                )
+            )
+            new_img.paste(
+                img,
+                ((new_img.width - img.width) // 2, image_text.image.height + 8),
+                mask=img,
+            )
+            new_img.paste(
+                image_text.image,
+                (
+                    (new_img.width - image_text.image.width) // 2,
+                    4,
+                    (new_img.width - image_text.image.width) // 2
+                    + image_text.image.width,
+                    image_text.image.height + 4,
+                ),
+                mask=image_text.image,
+            )
+            img = new_img
 
         w, h = img.size
         if w > h:
@@ -167,6 +524,11 @@ class StickManagerMod(loader.Module):
         dst = io.BytesIO()
         img.save(dst, "PNG")
         mime = "image/png"
+
+        status = await utils.answer(status, self.strings("exporting"))
+
+        if only_bytes:
+            return dst.getvalue()
 
         file = await self._client.upload_file(dst.getvalue())
         file = InputMediaUploadedDocument(file, mime, [])
@@ -205,8 +567,24 @@ class StickManagerMod(loader.Module):
 
         return "sticker.webm"
 
-    async def client_ready(self, client, db):
-        self.stickersets = self.get("stickersets", {})
+    def __init__(self):
+        self.config = loader.ModuleConfig(
+            loader.ConfigValue(
+                "font_size",
+                18,
+                "Font size of text to apply to image",
+                validator=loader.validators.Integer(minimum=0),
+            ),
+            loader.ConfigValue(
+                "stroke_size",
+                5,
+                "Stroke size to apply to image",
+                validator=loader.validators.Integer(minimum=5),
+            ),
+        )
+
+    async def client_ready(self):
+        self.stickersets = self.pointer("stickersets", {})
         self.default = self.get("default", None)
 
         if not self.default and self.stickersets:
@@ -216,7 +594,25 @@ class StickManagerMod(loader.Module):
             grapheme.graphemes("🌌🌃🏙🌇🌆🌁🌉🎑🏞🎆🌅🌄🌠🎇🗾🐭🐱🐶🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐸🐵🙉🐥🦆🦄🐴🐗🐺🦇🦉🦅")
         )
 
-    async def newpackcmd(self, message: Message):
+        self._font_ready = asyncio.Event()
+
+        asyncio.ensure_future(self._dl_font())
+
+    async def _dl_font(self):
+        self._raw_font = io.BytesIO(
+            (
+                await utils.run_sync(
+                    requests.get,
+                    "https://0x0.st/oLI7.ttf",
+                )
+            ).content
+        )
+        self._font_ready.set()
+
+    @loader.command(
+        ru_doc="<short_name> <название> [-a <алиас>] - Создать новый стикерпак"
+    )
+    async def newpack(self, message: Message):
         """<short_name> <name> [-a <alias>] - Create new pack"""
         args = utils.get_args_raw(message)
         if "-a" in args:
@@ -248,7 +644,7 @@ class StickManagerMod(loader.Module):
         shortname, name = args
         shortname, name = shortname.strip().lower(), name.strip()
 
-        stick = await self.prepare(reply)
+        stick = await self.prepare(message, reply)
         assert stick
 
         async with self._client.conversation("@stickers") as conv:
@@ -349,18 +745,18 @@ class StickManagerMod(loader.Module):
 
         self.stickersets[shortname] = {"title": name, "emoji": emoji, "alias": alias}
 
-        self.set("stickersets", self.stickersets)
-
         await utils.answer(
             message,
             self.strings("created").format(
-                emoji,
                 name,
                 shortname,
             ),
         )
 
-    async def newvidpackcmd(self, message: Message):
+    @loader.command(
+        ru_doc="<short_name> <имя> [-a <алиас>] - Создать новый видео стикерпак"
+    )
+    async def newvidpack(self, message: Message):
         """<short_name> <name> [-a <alias>] - Create new video stickers pack"""
         args = utils.get_args_raw(message)
         if "-a" in args:
@@ -517,13 +913,12 @@ class StickManagerMod(loader.Module):
             "video": True,
         }
 
-        self.set("stickersets", self.stickersets)
-
         await utils.answer(
-            message, self.strings("created").format(emoji, name, shortname)
+            message, self.strings("created").format(name, shortname)
         )
 
-    async def syncpackscmd(self, message: Message):
+    @loader.command(ru_doc="Синхронизировать стикерпаки с @stickers")
+    async def syncpacks(self, message: Message):
         """Sync existing stickersets with @stickers"""
         q = 0
 
@@ -581,16 +976,15 @@ class StickManagerMod(loader.Module):
             await r.delete()
 
         d = 0
-        for pack in list(self.stickersets.keys()).copy():
+        for pack in list(self.stickersets).copy():
             if pack not in packs:
-                del self.stickersets[pack]
+                self.stickersets.pop(pack)
                 d += 1
-
-        self.set("stickersets", self.stickersets)
 
         await utils.answer(message, self.strings("stickersets_added").format(q, d))
 
-    async def packscmd(self, message: Message):
+    @loader.command(ru_doc="Показать доступные стикерпаки")
+    async def packs(self, message: Message):
         """Short available stickersets"""
         if not self.stickersets:
             await utils.answer(message, self.strings("no_stickersets"))
@@ -610,7 +1004,8 @@ class StickManagerMod(loader.Module):
 
         await utils.answer(message, res)
 
-    async def stickaliascmd(self, message: Message):
+    @loader.command(ru_doc="<алиас> [short_name] - Добавить или удалить алиас")
+    async def stickalias(self, message: Message):
         """<alias> [short_name] - Add or remove alias"""
         args = utils.get_args_raw(message)
         if not args:
@@ -622,7 +1017,6 @@ class StickManagerMod(loader.Module):
             for shortname, info in self.stickersets.items():
                 if info["alias"] == args[0]:
                     self.stickersets[shortname]["alias"] = None
-                    self.set("stickersets", self.stickersets)
                     await utils.answer(
                         message, self.strings("alias_removed").format(args[0])
                     )
@@ -643,7 +1037,6 @@ class StickManagerMod(loader.Module):
                 return
 
             self.stickersets[pack]["alias"] = alias
-            self.set("stickersets", self.stickersets)
             await utils.answer(
                 message,
                 self.strings("created_alias").format(
@@ -653,7 +1046,8 @@ class StickManagerMod(loader.Module):
                 ),
             )
 
-    async def stickdefcmd(self, message: Message):
+    @loader.command(ru_doc="<short_name|алиас> - Установить стандартный стикерпак")
+    async def stickdef(self, message: Message):
         """<short_name|alias> - Set default stickerpack"""
         args = utils.get_args_raw(message)
         pack = self.find(args)
@@ -671,7 +1065,8 @@ class StickManagerMod(loader.Module):
             ),
         )
 
-    async def rmpackcmd(self, message: Message):
+    @loader.command(ru_doc="<short_name|алиас> - Удалить стикерпак")
+    async def rmpack(self, message: Message):
         """<short_name|alias> - Remove stickerpack"""
         args = utils.get_args_raw(message)
         pack = self.find(args)
@@ -691,7 +1086,21 @@ class StickManagerMod(loader.Module):
             )
             return
 
-        message = await utils.answer(message, self.strings("processing"))
+        await self.inline.form(
+            message=message,
+            text=self.strings("confirm_remove").format(pack["title"]),
+            reply_markup=[
+                {
+                    "text": self.strings("remove"),
+                    "callback": self._remove,
+                    "args": (pack,),
+                },
+                {"text": self.strings("cancel"), "action": "close"},
+            ],
+        )
+
+    async def _remove(self, call: InlineCall, pack: dict):
+        call = await utils.answer(call, self.strings("deleting_pack"))
 
         async with self._client.conversation("@stickers") as conv:
             try:
@@ -743,20 +1152,20 @@ class StickManagerMod(loader.Module):
                 await m.delete()
                 await r.delete()
             except HikariException as e:
-                await utils.answer(message, f"🚫 <code>{e}</code>")
+                await utils.answer(call, f"🚫 <code>{e}</code>")
                 return
 
-        del self.stickersets[pack["shortname"]]
-        self.set("stickersets", self.stickersets)
+        self.stickersets.pop(pack["shortname"])
         await utils.answer(
-            message,
+            call,
             self.strings("packremoved").format(
                 pack["emoji"],
                 utils.escape_html(pack["title"]),
             ),
         )
 
-    async def unstickcmd(self, message: Message):
+    @loader.command(ru_doc="<реплай> - Удалить стикер из пака")
+    async def unstick(self, message: Message):
         """<reply> - Remove sticker from pack"""
         reply = await message.get_reply_message()
         if not reply:
@@ -805,57 +1214,117 @@ class StickManagerMod(loader.Module):
         await utils.answer(
             message, self.strings("stickrm").format(random.choice(self.emojies))
         )
-        await asyncio.sleep(7)
-        await message.delete()
 
-    async def stickcmd(self, message: Message):
-        """[emoji] [short_name|alias] - Add sticker to pack. If not specified - default"""
+    async def remove_bg(self, image: io.BytesIO) -> io.BytesIO:
+        async with self._client.conversation("@removefundobot") as conv:
+            m = await conv.send_file(image)
+            r = await conv.get_response()
+            await m.delete()
+            im = io.BytesIO(await self._client.download_media(r, bytes))
+            await r.delete()
+            return im
+
+    @loader.command(
+        ru_doc=(
+            "[эмодзи] [short_name|алиам] [-b - добавить окантовку] [-r - убрать фон]"
+            " [-q - Не добавлять в пак, а просто отправить стикер] [-t <текст> -"
+            " наложить текст] - Добавить стикер \ картинку в пак. Если не указано в"
+            " какой, будет использован стандартный\nПример:\n.stick mypack -b -r -q -t"
+            " Привет, мир!"
+        )
+    )
+    async def stick(self, message: Message):
+        """[emoji] [short_name|alias] [-o - add outline] [-r - remove background] [-q - Do not add sticker to pack, just send it] [-t <text> - add text] - Add sticker to pack. If not specified - default
+        Example:
+        .stick mypack -b -r -q -t Hello world!"""
         if not self.stickersets:
             await utils.answer(message, self.strings("no_stickersets"))
             return
 
         args = utils.get_args_raw(message)
+    
+        args = f" {args} "
+
+        if " -o" in args:
+            args = args.replace(" -o", "")
+            outline = True
+        else:
+            outline = False
+
+        if " -r" in args:
+            args = args.replace(" -r", "")
+            remove_bg = True
+        else:
+            remove_bg = False
+
+        if " -q" in args:
+            args = args.replace(" -q", "")
+            quiet = True
+        else:
+            quiet = False
+
+        if " -t" in args:
+            text = args[args.index(" -t") + 3 :]
+            args = args[: args.index(" -t")]
+        else:
+            text = None
+        
+        args = args.strip()
+
         reply = await message.get_reply_message()
         if not reply or not reply.media:
             await utils.answer(
-                message, self.strings("error").format("Reply to sticker required")
+                message,
+                self.strings("error").format("Reply to sticker required"),
             )
             return
 
-        pack, emoji = None, None
-        if len(args.split()) > 1:
-            pack = self.find(args.split(maxsplit=1)[1])
-            if pack:
-                emoji = args.split(maxsplit=1)[0]
-            else:
+        if not quiet:
+            pack, emoji = None, None
+            if len(args.split()) > 1:
+                pack = self.find(args.split(maxsplit=1)[1])
+                if pack:
+                    emoji = args.split(maxsplit=1)[0]
+                else:
+                    pack = self.find(args)
+                    if not pack:
+                        await utils.answer(
+                            message, self.strings("pack404").format(args)
+                        )
+                        return
+
+            elif args:
                 pack = self.find(args)
                 if not pack:
-                    await utils.answer(message, self.strings("pack404").format(args))
-                    return
+                    pack = self.find(self.default)
+                    emoji = args
 
-        elif args:
-            pack = self.find(args)
             if not pack:
                 pack = self.find(self.default)
-                emoji = args
 
-        if not pack:
-            pack = self.find(self.default)
+            if not pack:
+                await utils.answer(
+                    message, self.strings("error").format("Default pack doesn't exist")
+                )
+                return
 
-        if not pack:
-            await utils.answer(
-                message, self.strings("error").format("Default pack doesn't exist")
-            )
-            return
+            if not emoji or not "".join(distinct_emoji_list(emoji)):
+                emoji = pack["emoji"]
 
-        if not emoji or not "".join(distinct_emoji_list(emoji)):
-            emoji = pack["emoji"]
-
-        emoji = "".join(distinct_emoji_list(emoji))
+            emoji = "".join(distinct_emoji_list(emoji))
 
         if getattr(getattr(reply.media, "document", None), "mime_type", "").startswith(
             "video"
         ):
+            if quiet or outline or remove_bg or text:
+                await utils.answer(
+                    message,
+                    self.strings("error").format(
+                        "Arguments for video stickers are not supported"
+                    ),
+                )
+                return
+
             if "video" not in pack:
                 pack = [
                     self.find(_) for _, p in self.stickersets.items() if "video" in p
@@ -875,7 +1344,22 @@ class StickManagerMod(loader.Module):
             stick = await self.prepare_vid(reply)
         else:
             message = await utils.answer(message, self.strings("processing"))
-            stick = await self.prepare(reply)
+            stick = await self.prepare(message, reply, outline, remove_bg, text, quiet)
+
+        if quiet:
+            file = io.BytesIO()
+            Image.open(io.BytesIO(stick)).save(file, "webp")
+            file.name = "sticker.webp"
+            file.seek(0)
+            await self._client.send_file(
+                message.peer_id,
+                file,
+                reply_to=message.reply_to_msg_id,
+            )
+            if message.out:
+                await message.delete()
+
+            return
 
         async with self._client.conversation("@stickers") as conv:
             try:
@@ -951,12 +1435,12 @@ class StickManagerMod(loader.Module):
                 return
 
         await utils.answer(
-            message, self.strings("kang").format(pack["emoji"], pack["shortname"])
+            message,
+            self.strings("kang").format(pack["shortname"]),
         )
-        await asyncio.sleep(7)
-        await message.delete()
 
-    async def rmrecentcmd(self, message: Message):
+    @loader.command(ru_doc="Очистить недавно использованные стикеры")
+    async def rmrecent(self, message: Message):
         """Clear recently used stickers"""
         await self._client(ClearRecentStickersRequest(attached=False))
         await utils.answer(message, self.strings("cleaned"))

@@ -85,20 +85,17 @@ class Video2Audio(loader.Module):
             reply_to=reply.id,
             attributes=[
                 DocumentAttributeAudio(
-                    duration=2147483647,
+                    duration=next(
+                        (
+                            attr.duration
+                            for attr in reply.document.attributes
+                            if hasattr(attr, "duration")
+                        ),
+                        0,
+                    ),
                     voice=use_voicemessage,
                     **(
-                        {
-                            "waveform": tlutils.encode_waveform(
-                                bytes(
-                                    (
-                                        *tuple(range(0, 30, 5)),
-                                        *reversed(tuple(range(0, 30, 5))),
-                                    )
-                                )
-                                * 20
-                            )
-                        }
+                        {"waveform": tlutils.encode_waveform(audio)}
                         if use_voicemessage
                         else {}
                     ),
