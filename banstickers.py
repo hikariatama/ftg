@@ -10,7 +10,7 @@
 # meta developer: @hikarimods
 # meta banner: https://mods.hikariatama.ru/badges/banstickers.jpg
 # scope: hikka_only
-# scope: hikka_min 1.3.0
+# scope: hikka_min 1.3.3
 # requires: aiofile Pillow
 
 import asyncio
