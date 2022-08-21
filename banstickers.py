@@ -1,3 +1,5 @@
+__version__ = (2, 0, 0)
+
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
@@ -235,7 +237,9 @@ class BanStickers(loader.Module):
         self._banlist.setdefault(chat_id, []).append(reply.sticker.id)
         self._banlist[chat_id] = list(set(self._banlist[chat_id]))
 
-        await self._add_cache(reply.sticker.id, await reply.download_media(bytes))
+        if reply.sticker.mime_type.startswith("image"):
+            await self._add_cache(reply.sticker.id, await reply.download_media(bytes))
+
         await utils.answer(message, self.strings("sticker_banned"))
 
     @loader.command(
@@ -265,11 +269,12 @@ class BanStickers(loader.Module):
 
         for sticker in stickers:
             self._banlist.setdefault(chat_id, []).append(sticker.id)
-            await self._add_cache(
-                sticker.id,
-                await self._client.download_file(sticker, bytes),
-            )
-            await asyncio.sleep(1)  # Light FW protection
+            if sticker.mime_type.startswith("image"):
+                await self._add_cache(
+                    sticker.id,
+                    await self._client.download_file(sticker, bytes),
+                )
+                await asyncio.sleep(1)  # Light FW protection
 
         self._banlist[chat_id] = list(set(self._banlist[chat_id]))
 
@@ -295,7 +300,8 @@ class BanStickers(loader.Module):
             return
 
         self._banlist[chat_id].remove(reply.sticker.id)
-        await self._remove_cache(reply.sticker.id)
+        if reply.sticker.mime_type.startswith("image"):
+            await self._remove_cache(reply.sticker.id)
 
         await utils.answer(message, self.strings("sticker_unbanned"))
 
@@ -329,7 +335,8 @@ class BanStickers(loader.Module):
         for sticker in stickers:
             if sticker.id in self._banlist.get(chat_id, []):
                 self._banlist[chat_id].remove(sticker.id)
-                await self._remove_cache(sticker.id)
+                if sticker.mime_type.startswith("image"):
+                    await self._remove_cache(sticker.id)
                 unbanned += 1
 
         if not unbanned:
@@ -397,13 +404,10 @@ class BanStickers(loader.Module):
             )
 
         if not message.sticker.mime_type.startswith("image"):
-            if chat_id in self._bananim:
+            if chat_id in self._bananim or message.sticker.id in self._banlist[chat_id]:
                 await _restrict()
 
             return
-
-        if message.sticker.id in self._banlist[chat_id]:
-            return await _restrict()
 
         if message.sticker.id in self._filecache:
             file = self._filecache[message.sticker.id]
