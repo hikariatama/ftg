@@ -1,4 +1,4 @@
-__version__ = (2, 0, 0)
+__version__ = (2, 0, 1)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
@@ -13,7 +13,7 @@ __version__ = (2, 0, 0)
 # meta developer: @hikarimods
 # scope: ffmpeg
 # scope: hikka_only
-# scope: hikka_min 1.2.10
+# scope: hikka_min 1.3.3
 # requires: pydub speechrecognition python-ffmpeg
 
 import asyncio
@@ -36,26 +36,54 @@ class VoicyMod(loader.Module):
 
     strings = {
         "name": "Voicy",
-        "converting": "<b>🫠 Recognizing voice message...</b>",
-        "converted": "<b>🫠 Recognized:</b>\n<i>{}</i>",
-        "voice_not_found": "🫠 <b>Voice not found</b>",
-        "autovoice_off": "<b>🫠 I will not recognize voice messages in this chat</b>",
-        "autovoice_on": "<b>🫠 I will recognize voice messages in this chat</b>",
+        "converting": (
+            "<b><emoji document_id='6041850934756119589'>🫠</emoji> Recognizing voice"
+            " message...</b>"
+        ),
+        "converted": (
+            "<b><emoji document_id='6041850934756119589'>🫠</emoji>"
+            " Recognized:</b>\n<i>{}</i>"
+        ),
+        "voice_not_found": (
+            "<emoji document_id='6041850934756119589'>🫠</emoji> <b>Voice not found</b>"
+        ),
+        "autovoice_off": (
+            "<b><emoji document_id='6041850934756119589'>🫠</emoji> I will not recognize"
+            " voice messages in this chat</b>"
+        ),
+        "autovoice_on": (
+            "<b><emoji document_id='6041850934756119589'>🫠</emoji> I will recognize"
+            " voice messages in this chat</b>"
+        ),
         "_cfg_lang": "Language of voices to recognize",
         "_cfg_engine": "Recognition engine",
         "error": "🚫 <b>Recognition error!</b>",
         "_cfg_ignore_users": "Users to ignore",
+        "_cfg_silent": "Silent mode - do not notify about errors",
         "too_big": "🫥 <b>Voice message is too big, I can't recognise it...</b>",
     }
 
     strings_ru = {
-        "converting": "<b>🫠 Распознаю голосовое сообщение...</b>",
-        "converted": "<b>🫠 Распознано:</b>\n<i>{}</i>",
-        "voice_not_found": "🫠 <b>Нет ответа на войс</b>",
-        "autovoice_off": (
-            "<b>🫠 Я больше не буду распознавать голосовые сообщения в этом чате</b>"
+        "converting": (
+            "<b><emoji document_id='6041850934756119589'>🫠</emoji> Распознаю голосовое"
+            " сообщение...</b>"
         ),
-        "autovoice_on": "<b>🫠 Я буду распознавать голосовые сообщения в этом чате</b>",
+        "converted": (
+            "<b><emoji document_id='6041850934756119589'>🫠</emoji>"
+            " Распознано:</b>\n<i>{}</i>"
+        ),
+        "voice_not_found": (
+            "<emoji document_id='6041850934756119589'>🫠</emoji> <b>Нет ответа на"
+            " войс</b>"
+        ),
+        "autovoice_off": (
+            "<b><emoji document_id='6041850934756119589'>🫠</emoji> Я больше не буду"
+            " распознавать голосовые сообщения в этом чате</b>"
+        ),
+        "autovoice_on": (
+            "<b><emoji document_id='6041850934756119589'>🫠</emoji> Я буду распознавать"
+            " голосовые сообщения в этом чате</b>"
+        ),
         "_cmd_doc_voicy": "Распознает голосовое сообщение",
         "_cmd_doc_autovoice": (
             "Включить\\выключить автораспознавание голосовых сообщений в чате"
@@ -64,6 +92,7 @@ class VoicyMod(loader.Module):
         "_cfg_lang": "Язык для распознавания голосовых сообщений",
         "_cfg_engine": "Распознаватель",
         "_cfg_ignore_users": "Игнорировать пользователей",
+        "_cfg_silent": "Тихий режим - не оповещать об ошибках",
         "error": "🚫 <b>Ошибка распознавания!</b>",
         "too_big": (
             "🫥 <b>Голосовое сообщение слишком большое, я не могу его распознать...</b>"
@@ -86,6 +115,12 @@ class VoicyMod(loader.Module):
                     validator=loader.validators.TelegramID()
                 ),
             ),
+            loader.ConfigValue(
+                "silent",
+                False,
+                lambda: self.strings("_cfg_silent"),
+                validator=loader.validators.Boolean(),
+            ),
         )
 
     async def client_ready(self):
@@ -93,6 +128,7 @@ class VoicyMod(loader.Module):
             "https://libs.hikariatama.ru/v2a.py",
             suspend_on_error=True,
         )
+        self.chats = self.pointer("chats", [])
 
     async def recognize(self, message: Message):
         try:
@@ -131,10 +167,11 @@ class VoicyMod(loader.Module):
                     )
         except Exception:
             logger.exception("Can't recognize")
-            m = await utils.answer(m, self.strings("error"))
-            await asyncio.sleep(3)
-            if not message.out:
-                await m.delete()
+            if not self.config["silent"]:
+                m = await utils.answer(m, self.strings("error"))
+                await asyncio.sleep(3)
+                if not message.out:
+                    await m.delete()
 
     @loader.unrestricted
     async def voicycmd(self, message: Message):
@@ -204,7 +241,8 @@ class VoicyMod(loader.Module):
             > 300
             or message.document.size / 1024 / 1024 > 5
         ):
-            await utils.answer(message, self.strings("too_big"))
+            if not self.config["silent"]:
+                await utils.answer(message, self.strings("too_big"))
             return
 
         await self.recognize(message)
@@ -214,8 +252,8 @@ class VoicyMod(loader.Module):
         chat_id = utils.get_chat_id(message)
 
         if chat_id in self.get("chats", []):
-            self.set("chats", list(set(self.get("chats", [])) - {chat_id}))
+            self.chats.remove(chat_id)
             await utils.answer(message, self.strings("autovoice_off"))
         else:
-            self.set("chats", self.get("chats", []) + [chat_id])
+            self.chats.append(chat_id)
             await utils.answer(message, self.strings("autovoice_on"))

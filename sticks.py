@@ -1,4 +1,4 @@
-__version__ = (3, 0, 1)
+__version__ = (3, 0, 2)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
@@ -13,21 +13,24 @@ __version__ = (3, 0, 1)
 # meta developer: @hikarimods
 # scope: ffmpeg
 # scope: disable_onload_docs
-# requires: Pillow moviepy emoji
+# requires: Pillow moviepy emoji requests_toolbelt
 # scope: hikka_min 1.3.3
 
 import asyncio
 import io
+import re
 import logging
 import math
 import os
 import random
 import time
 import requests
+from requests_toolbelt import MultipartEncoder
 import grapheme
 import moviepy.editor as mp
 import emoji
 from PIL import Image, ImageChops, ImageFont, ImageDraw
+
 from telethon.errors.rpcerrorlist import RPCError
 from telethon.tl.functions.messages import (
     ClearRecentStickersRequest,
@@ -426,7 +429,7 @@ class StickManagerMod(loader.Module):
         photo = io.BytesIO()
         photo.name = "photo.webp"
         Image.open(
-            await self.remove_bg(
+            await (self.remove_bg_api if self.config["use_api"] else self.remove_bg)(
                 io.BytesIO(await self._client.download_media(reply, bytes))
             )
         ).save(photo, "WEBP")
@@ -453,7 +456,9 @@ class StickManagerMod(loader.Module):
 
         if remove_bg:
             status = await utils.answer(status, self.strings("rmbg"))
-            dl = await self.remove_bg(dl)
+            dl = await (
+                self.remove_bg_api if self.config["use_api"] else self.remove_bg
+            )(dl)
             dl.seek(0)
 
         status = await utils.answer(status, self.strings("trimming"))
@@ -580,6 +585,12 @@ class StickManagerMod(loader.Module):
                 5,
                 "Stroke size to apply to image",
                 validator=loader.validators.Integer(minimum=5),
+            ),
+            loader.ConfigValue(
+                "use_api",
+                False,
+                "Use API to remove background, not bot",
+                validator=loader.validators.Boolean(),
             ),
         )
 
@@ -913,9 +924,7 @@ class StickManagerMod(loader.Module):
             "video": True,
         }
 
-        await utils.answer(
-            message, self.strings("created").format(name, shortname)
-        )
+        await utils.answer(message, self.strings("created").format(name, shortname))
 
     @loader.command(ru_doc="Синхронизировать стикерпаки с @stickers")
     async def syncpacks(self, message: Message):
@@ -1224,9 +1233,88 @@ class StickManagerMod(loader.Module):
             await r.delete()
             return im
 
+    @staticmethod
+    async def remove_bg_api(photo: bytes) -> str:
+        HEADERS = {
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "accept-encoding": "gzip, deflate, br",
+            "accept-language": "en-US,en;q=0.9",
+            "cache-control": "no-cache",
+            "user-agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                " (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36"
+            ),
+        }
+
+        response1 = await utils.run_sync(
+            requests.get,
+            "https://icons8.com/bgremover",
+            headers=HEADERS,
+        )
+        _jwt_token = response1.cookies.get("i8remover")
+        response2 = await utils.run_sync(
+            requests.post,
+            "https://api-bgremover-origin.icons8.com/api/frontend/v1/batches",
+            headers={"Authorization": f"Bearer {_jwt_token}"},
+            cookies=response1.cookies,
+        )
+        _id = response2.json()["id"]
+
+        fields = {
+            "image": ("hikka.jpg", photo, "image/jpeg"),
+        }
+
+        boundary = "----WebKitFormBoundary" + utils.rand(16)
+        m = MultipartEncoder(fields=fields, boundary=boundary)
+
+        await utils.run_sync(
+            requests.post,
+            f"https://api-bgremover-origin.icons8.com/api/frontend/v1/batches/{_id}",
+            headers={
+                "Authorization": f"Bearer {_jwt_token}",
+                "content-type": m.content_type,
+                "connection": "keep-alive",
+            },
+            data=m,
+            cookies=response1.cookies,
+        )
+
+        url = ".jpg"
+
+        for _ in range(3):
+            if not url.endswith(".jpg"):
+                break
+
+            await asyncio.sleep(2)
+
+            response4 = await utils.run_sync(
+                requests.get,
+                "https://icons8.com/bgremover",
+                headers=HEADERS,
+                cookies=response1.cookies,
+            )
+
+            url = re.search(
+                r'Processed transparent png file" src="(.*?)"',
+                response4.text,
+            ).group(1)
+
+        url = url.replace("&amp;", "&")
+
+        return io.BytesIO(
+            (
+                await utils.run_sync(
+                    requests.get,
+                    url,
+                    cookies=response1.cookies,
+                    headers=HEADERS,
+                )
+            ).content
+        )
+
     @loader.command(
         ru_doc=(
-            "[эмодзи] [short_name|алиам] [-b - добавить окантовку] [-r - убрать фон]"
+            "[эмодзи] [short_name|алиам] [-o - добавить окантовку] [-r - убрать фон]"
             " [-q - Не добавлять в пак, а просто отправить стикер] [-t <текст> -"
             " наложить текст] - Добавить стикер \ картинку в пак. Если не указано в"
             " какой, будет использован стандартный\nПример:\n.stick mypack -b -r -q -t"
@@ -1242,7 +1330,7 @@ class StickManagerMod(loader.Module):
             return
 
         args = utils.get_args_raw(message)
-    
+
         args = f" {args} "
 
         if " -o" in args:
@@ -1268,7 +1356,7 @@ class StickManagerMod(loader.Module):
             args = args[: args.index(" -t")]
         else:
             text = None
-        
+
         args = args.strip()
 
         reply = await message.get_reply_message()

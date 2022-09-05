@@ -159,7 +159,7 @@ from_ = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБ�
 
 @loader.tds
 class Alphabet(loader.Module):
-    """Replaces your text with custom emojis"""
+    """Replaces your text with custom emojis. Telegram Premium only"""
 
     strings = {"name": "Alphabet", "no_text": "🚫 <b>Specify text to replace</b>"}
 

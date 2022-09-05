@@ -1,3 +1,5 @@
+__version__ = (2, 0, 0)
+
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
@@ -14,6 +16,7 @@
 # scope: hikka_min 1.2.10
 
 import asyncio
+import atexit
 import contextlib
 import os
 import re
@@ -26,9 +29,19 @@ from telethon.tl.functions.phone import CreateGroupCallRequest
 
 from pytgcalls import PyTgCalls, types, StreamType
 from pytgcalls.exceptions import NoActiveGroupCall, AlreadyJoinedError
+from pytgcalls.binding import Binding
+from pytgcalls.environment import Environment
+from pytgcalls.handlers import HandlersHolder
+from pytgcalls.types import Cache
+from pytgcalls.types.call_holder import CallHolder
+from pytgcalls.types.update_solver import UpdateSolver
+from pytgcalls.methods import Methods
+from pytgcalls.scaffold import Scaffold
+from pytgcalls.mtproto import MtProtoClient
 
 from .. import loader, utils
 from ..inline.types import InlineCall
+from ..tl_cache import CustomTelegramClient
 
 from youtube_dl import YoutubeDL
 
@@ -98,7 +111,61 @@ class VoiceChatMod(loader.Module):
         )
 
     async def client_ready(self, client, db):
-        self._app = PyTgCalls(client)
+        
+        # Monkeypatch pytgcalls MtProtoClient to support hikka's custom one
+
+        class HikkaTLClient(MtProtoClient):
+            def __init__(
+                self,
+                cache_duration: int,
+                client: CustomTelegramClient,
+            ):
+                self._bind_client = None
+                from pytgcalls.mtproto.telethon_client import TelethonClient
+                self._bind_client = TelethonClient(
+                    cache_duration,
+                    client,
+                )
+
+        class CustomPyTgCalls(PyTgCalls):
+            def __init__(
+                self,
+                app: CustomTelegramClient,
+                cache_duration: int = 120,
+                overload_quiet_mode: bool = False,
+                # BETA SUPPORT, BY DEFAULT IS DISABLED
+                multi_thread: bool = False,
+            ):
+                Methods.__init__(self)
+                Scaffold.__init__(self)
+                self._app = HikkaTLClient(
+                    cache_duration,
+                    app,
+                )
+                self._is_running = False
+                self._env_checker = Environment(
+                    self._REQUIRED_NODEJS_VERSION,
+                    self._REQUIRED_PYROGRAM_VERSION,
+                    self._REQUIRED_TELETHON_VERSION,
+                    self._app.client,
+                )
+                self._call_holder = CallHolder()
+                self._cache_user_peer = Cache()
+                self._wait_result = UpdateSolver()
+                self._on_event_update = HandlersHolder()
+                self._binding = Binding(
+                    overload_quiet_mode,
+                    multi_thread,
+                )
+
+                def cleanup():
+                    if self._async_core is not None:
+                        self._async_core.cancel()
+                atexit.register(cleanup)
+
+        # //
+
+        self._app = CustomPyTgCalls(client)
         self._dir = tempfile.mkdtemp()
         await self._app.start()
         self._app._on_event_update.add_handler("STREAM_END_HANDLER", self.stream_ended)
