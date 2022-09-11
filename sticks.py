@@ -1225,12 +1225,26 @@ class StickManagerMod(loader.Module):
         )
 
     async def remove_bg(self, image: io.BytesIO) -> io.BytesIO:
+        todel = []
         async with self._client.conversation("@removefundobot") as conv:
             m = await conv.send_file(image)
             r = await conv.get_response()
-            await m.delete()
+
+            if not r.document:
+                todel += [r]
+                r = await conv.get_response()
+
+            todel += [m]
+            todel += [r]
+
+            if not r.document:
+                raise RuntimeError("Unable to remove background from image")
+
             im = io.BytesIO(await self._client.download_media(r, bytes))
-            await r.delete()
+
+            for i in todel:
+                await i.delete()
+
             return im
 
     @staticmethod
