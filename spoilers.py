@@ -56,8 +56,7 @@ class SpoilersMod(loader.Module):
             " открыть только один раз!</i>"
         ),
         "user_not_specified": (
-            "🫦 <b>Шепот для тебя!</b>\n<i>Сообщение можно открыть только один раз!"
-            "</i>"
+            "🫦 <b>Шепот для тебя!</b>\n<i>Сообщение можно открыть только один раз!</i>"
         ),
         "not4u": "🫦 Я не буду тебе шептать",
         "open": "👀 Открыть",
@@ -117,7 +116,9 @@ class SpoilersMod(loader.Module):
         """Process button presses"""
         if for_user is None:
             if id_ not in self._msg_cache:
-                message_id, peer, _, _ = resolve_inline_message_id(call.inline_message_id)
+                message_id, peer, _, _ = resolve_inline_message_id(
+                    call.inline_message_id
+                )
                 msg = (await self._client.get_messages(peer, ids=[message_id]))[0]
                 if msg is None:
                     await call.answer(self.strings("broken"))
@@ -134,7 +135,7 @@ class SpoilersMod(loader.Module):
                 if msg is None:
                     await call.answer(self.strings("broken"))
                     return
-            
+
             for_user = msg.sender_id
             self._msg_cache[id_] = msg
 

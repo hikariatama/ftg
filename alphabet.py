@@ -154,7 +154,9 @@ to_ = [
     '<emoji document_id="6032769737509833594">📛</emoji>',
 ]
 
-from_ = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().,!? "
+from_ = (
+    "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().,!? "
+)
 
 
 @loader.tds
@@ -170,7 +172,7 @@ class Alphabet(loader.Module):
             raise loader.LoadError(
                 "⭐️ This module is available only to Telegram Premium subscribers"
             )
-        
+
         self._from = from_
         self._to = to_
 
@@ -185,9 +187,7 @@ class Alphabet(loader.Module):
         await utils.answer(
             message,
             "".join(
-                to_[from_.index(char)]
-                if char in from_
-                else char
+                to_[from_.index(char)] if char in from_ else char
                 for char in args or reply.raw_text
             ),
         )

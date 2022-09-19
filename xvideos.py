@@ -112,7 +112,9 @@ class XVideosMod(loader.Module):
         "name": "XVideos",
         "xvid_no_query": "🚫 <b>No query specified</b>",
         "404": "🚫 <b>No results found</b>",
-        "18+": "🍓 <b>Please, confirm that you are over 18 years old. Simply standby.</b>",
+        "18+": (
+            "🍓 <b>Please, confirm that you are over 18 years old. Simply standby.</b>"
+        ),
         "18+_btn": "🔞 I am younger than 18 y.o",
     }
 

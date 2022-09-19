@@ -12,7 +12,7 @@
 # requires: bs4
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.2.10
+# scope: hikka_min 1.3.0
 
 from .. import loader, utils
 from telethon.tl.types import Message
@@ -82,10 +82,39 @@ async def search(term: str) -> str:
 class OxfordMod(loader.Module):
     """Quickly access word definitions in Oxford Learners dictionary"""
 
+    parts_of_speech = {
+        "noun": "существительное",
+        "pronoun": "местоимение",
+        "verb": "глагол",
+        "adjective": "прилагательное",
+        "adverb": "наречие",
+        "preposition": "предлог",
+        "conjunction": "союз",
+        "interjection": "междометие",
+        "determiner": "определитель",
+        "auxiliary verb": "вспомогательный глагол",
+        "modal verb": "модальный глагол",
+        "phrasal verb": "фразеологизм",
+        "idiom": "идиома",
+        "phrase": "фраза",
+        "abbreviation": "аббревиатура",
+        "article": "артикль",
+        "collocation": "коллокация",
+        "exclamation": "восклицание",
+        "expression": "выражение",
+    }
+
     strings = {
         "name": "Oxford",
-        "no_exact": "😔 <b>There is no definition for {}</b>\n<b>Maybe, you meant:</b>",
+        "no_exact": "😔 <b>There is no definition for </b><code>{}</code>\n<b>Maybe, you meant:</b>",
         "match": '{} <b><a href="{}">{}</a></b> [{}] <i>({})</i>\n\n{}',
+        **{key: key for key in parts_of_speech},
+    }
+
+    strings_ru = {
+        "_cls_doc": "Быстрый доступ к определениям слов в образовательном Оксфордском словаре",
+        "no_exact": "😔 <b>Нет определения для </b><code>{}</code>\n<b>Возможно, вы имели в виду:</b>",
+        **parts_of_speech,
     }
 
     async def _search(self, call: InlineCall, term: str):
@@ -95,26 +124,41 @@ class OxfordMod(loader.Module):
     def format_match(self, match: dict) -> str:
         return self.strings("match").format(
             random.choice(
-                list(
-                    grapheme.graphemes(
-                        "👩‍🎓🧑‍🎓👨‍🎓👨‍🏫🧑‍🏫👩‍🏫🤵‍♀️🤵🤵‍♂️💁‍♀️💁‍♂️🙋‍♂️🙋‍♀️🙍‍♀️🙎‍♂️"
+                [
+                    "<emoji document_id=5188448663982055338>{}</emoji>",
+                    "<emoji document_id=5472411062412254753>{}</emoji>",
+                    "<emoji document_id=5208541547489927655>{}</emoji>",
+                    "<emoji document_id=5206186681346039457>{}</emoji>",
+                    "<emoji document_id=5190925490017279861>{}</emoji>",
+                    "<emoji document_id=5211151105194467156>{}</emoji>",
+                    "<emoji document_id=5204128352629169390>{}</emoji>",
+                    "<emoji document_id=5211062143536864914>{}</emoji>",
+                ]
+            ).format(
+                random.choice(
+                    list(
+                        grapheme.graphemes(
+                            "👩‍🎓🧑‍🎓👨‍🎓👨‍🏫🧑‍🏫👩‍🏫🤵‍♀️🤵🤵‍♂️💁‍♀️💁‍♂️🙋‍♂️🙋‍♀️🙍‍♀️🙎‍♂️"
+                        )
                     )
                 )
             ),
             f"https://www.oxfordlearnersdictionaries.com/search/english/direct/?q={match['term']}",
             utils.escape_html(match["term"]),
             utils.escape_html(match["pronunciation"]),
-            utils.escape_html(match["part_of_speech"]),
+            utils.escape_html(self.strings(match["part_of_speech"])),
             "\n\n".join(
                 [
-                    f"<i>{i + 1}. {utils.escape_html(definition)}</i>"
-                    for i, definition in enumerate(match["definitions"])
+                    "<emoji document_id=4974629970623071075>▫️</emoji><i>"
+                    f" {utils.escape_html(definition)}</i>"
+                    for definition in match["definitions"]
                 ]
             ),
         )
 
-    async def oxfordcmd(self, message: Message):
-        """<mean> - Search word in Oxford Learner's dictionary"""
+    @loader.command(ru_doc="<слово> - Поиск слова в образовательном Оксфордском словаре")
+    async def oxford(self, message: Message):
+        """<term> - Search word in Oxford Learner's Dictionary"""
         args = utils.get_args_raw(message)
         if not args:
             args = "emptiness"

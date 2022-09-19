@@ -89,7 +89,8 @@ class RPMod(loader.Module):
         self.chats = self.get("active", [])
 
     async def rpcmd(self, message: Message):
-        """<command> <message> - Add RP Command. If message unspecified, remove command"""
+        """<command> <message> - Add RP Command. If message unspecified, remove command
+        """
         args = utils.get_args_raw(message)
         try:
             command = args.split(" ", 1)[0]

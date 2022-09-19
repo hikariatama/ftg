@@ -23,44 +23,93 @@ from .. import loader, utils
 class PoliteInsultMod(loader.Module):
     """If you need to insult but to be intelligent"""
 
-    strings = {"name": "PoliteInsult"}
+    strings = {
+        "name": "PoliteInsult",
+        "insult": (
+            "<emoji document_id=5373123633415723713>🤬</emoji> {} you are {} {}"
+            " {} {}"
+        ),
+        "adjectives_start": [
+            "temperamental",
+            "rude",
+            "silly to me",
+            "arrogant",
+            "non-individualistic",
+            "undisciplined",
+            "unprofessional",
+            "irresponsible",
+            "reckless",
+            "indifferent to me",
+        ],
+        "nouns": ["participant of this group chat", "this world citizen"],
+        "starts": [
+            (
+                "I don't want to jump to conclusions and I certainly can't claim, and"
+                " this is my subjective opinion, but"
+            ),
+            (
+                "Having analyzed the situation, I can express my subjective opinion. It"
+                " lies in the fact that"
+            ),
+            (
+                "Not trying to make anyone feel bad, but just expressing my humble"
+                " point of view, which does not affect other people's points of view, I"
+                " can say that"
+            ),
+            (
+                "Without intending to affect any social minorities, I would like to say"
+                " that"
+            ),
+        ],
+    }
 
-    async def insultocmd(self, message: Message):
-        """Use when angry"""
-        adjectives_start = [
+    strings_ru = {
+        "insult": (
+            "<emoji document_id=5373123633415723713>🤬</emoji> {} ты - {} {} {} {}"
+        ),
+        "adjectives_start": [
             "вспыльчивый(-ая)",
             "невоспитанный(-ая)",
             "осточертевший(-ая) мне",
             "глуповатый(-ая)",
             "надменный(-ая)",
             "неиндивидуалистичный(-ая)",
-            "неиндифферентный(-ая)",
+            "индифферентный(-ая)",
             "недисциплинированный(-ая)",
-        ]
-        nouns = ["человек", "участник(-ца) данного чата"]
-        starts = [
+            "непрофессиональный(-ая)",
+            "безответственный(-ая)",
+            "безрассудный(-ая)",
+            "безразличный(-ая) мне",
+        ],
+        "nouns": ["участник(-ца) данного чата", "житель(-ница) мира сего"],
+        "starts": [
             "Не хочу делать поспешных выводов, но",
             "Я, конечно, не могу утверждать, и это мое субъективное мнение, но",
-            "Проанализировав ситуацию, я могу высказать свое субъективное мнение. Оно"
-            " заключается в том, что",
-            "Не пытаясь никого осокорбить, а лишь высказывая свою скромную точку"
-            " зрения, которая не влияет на точку зрения других людей, могу"
-            " сказать, что",
-            "Не преследуя попытку затронуть какие-либо социальные меньшинства, хочу"
-            " сказать, что",
-        ]
-        ends = ["!!!!", "!", "."]
-        start = random.choice(starts)
-        adjective_start = random.choice(adjectives_start)
-        adjective_mid = random.choice(adjectives_start)
-        noun = random.choice(nouns)
-        end = random.choice(ends)
-        insult = (
             (
-                f"{start} ты - {adjective_start} {adjective_mid}"
-                + (" " if adjective_mid else "")
-            )
-            + noun
-        ) + end
+                "Проанализировав ситуацию, я могу высказать свое субъективное мнение."
+                " Оно заключается в том, что"
+            ),
+            (
+                "Не пытаясь никого оскорбить, а лишь высказывая свою скромную точку"
+                " зрения, которая не влияет на точку зрения других людей, могу"
+                " сказать, что"
+            ),
+            (
+                "Не преследуя попытку затронуть какие-либо социальные меньшинства, хочу"
+                " сказать, что"
+            ),
+        ],
+    }
 
-        await utils.answer(message, insult)
+    async def insultocmd(self, message: Message):
+        """Use when angry"""
+        await utils.answer(
+            message,
+            self.strings("insult").format(
+                random.choice(self.strings("starts")),
+                random.choice(self.strings("adjectives_start")),
+                random.choice(self.strings("adjectives_start")),
+                random.choice(self.strings("nouns")),
+                random.choice(["!!!!", "!", "."]),
+            ),
+        )

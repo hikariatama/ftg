@@ -57,7 +57,6 @@ class EmotionlessMod(loader.Module):
 
     async def _queue_handler(self):
         while True:
-
             for chat, schedule in self._queue.copy().items():
                 if schedule < time.time():
                     await self._client(ReadReactionsRequest(get_input_peer(chat)))

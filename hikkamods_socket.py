@@ -42,7 +42,8 @@ REGEXES = [
 
 @loader.tds
 class HikkaModsSocketMod(loader.Module):
-    """Gives @hikkamods_bot a right to download modules from official modules aggregator and autoupdate them"""
+    """Gives @hikkamods_bot a right to download modules from official modules aggregator and autoupdate them
+    """
 
     strings = {"name": "HikkaModsSocket"}
 

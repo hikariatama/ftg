@@ -70,7 +70,9 @@ class serverInfoMod(loader.Module):
 
         try:
             inf.append(
-                bytes_to_megabytes(psutil.virtual_memory().total - psutil.virtual_memory().available)
+                bytes_to_megabytes(
+                    psutil.virtual_memory().total - psutil.virtual_memory().available
+                )
             )
         except Exception:
             inf.append("n/a")

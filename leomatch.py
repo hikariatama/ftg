@@ -32,7 +32,8 @@ logger = logging.getLogger(__name__)
 
 @loader.tds
 class LeomatchMod(loader.Module):
-    """Simplifies the interaction with @leomatchbot - Rejects slag, allows you to create filters by age, cities, blacklisted words. Check .config for more info"""
+    """Simplifies the interaction with @leomatchbot - Rejects slag, allows you to create filters by age, cities, blacklisted words. Check .config for more info
+    """
 
     strings = {"name": "Leomatch"}
 

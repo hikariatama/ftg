@@ -48,7 +48,8 @@ ARTIST_FS = 32
 
 @loader.tds
 class SpotifyMod(loader.Module):
-    """Display beautiful spotify now bar. Idea: t.me/fuccsoc. Implementation: t.me/hikariatama"""
+    """Display beautiful spotify now bar. Idea: t.me/fuccsoc. Implementation: t.me/hikariatama
+    """
 
     strings = {
         "name": "SpotifyNow",

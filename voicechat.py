@@ -111,7 +111,6 @@ class VoiceChatMod(loader.Module):
         )
 
     async def client_ready(self, client, db):
-        
         # Monkeypatch pytgcalls MtProtoClient to support hikka's custom one
 
         class HikkaTLClient(MtProtoClient):
@@ -122,6 +121,7 @@ class VoiceChatMod(loader.Module):
             ):
                 self._bind_client = None
                 from pytgcalls.mtproto.telethon_client import TelethonClient
+
                 self._bind_client = TelethonClient(
                     cache_duration,
                     client,
@@ -161,6 +161,7 @@ class VoiceChatMod(loader.Module):
                 def cleanup():
                     if self._async_core is not None:
                         self._async_core.cancel()
+
                 atexit.register(cleanup)
 
         # //

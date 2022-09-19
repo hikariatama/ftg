@@ -121,7 +121,7 @@ class TagAllMod(loader.Module):
 
             with contextlib.suppress(Exception):
                 Bot.set_instance(self.inline.bot)
-            
+
             chat_id = int(f"-100{utils.get_chat_id(message)}")
         else:
             chat_id = utils.get_chat_id(message)
@@ -152,7 +152,8 @@ class TagAllMod(loader.Module):
                 else self._client.send_message
             )(
                 chat_id,
-                utils.escape_html(args or self.config["default_message"]) + "\xad".join(chunk),
+                utils.escape_html(args or self.config["default_message"])
+                + "\xad".join(chunk),
             )
 
             if self.config["delete"]:
@@ -168,13 +169,13 @@ class TagAllMod(loader.Module):
                     if not event.state:
                         await cancel.edit(self.strings("cancelled"))
                         return
-                    
-                    await asyncio.sleep(.1)
+
+                    await asyncio.sleep(0.1)
 
             task = asyncio.ensure_future(_task())
             await asyncio.sleep(self.config["timeout"])
             task.cancel()
             if not event.state:
                 break
-        
+
         await cancel.delete()

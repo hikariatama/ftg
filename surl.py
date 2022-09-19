@@ -25,7 +25,8 @@ logger = logging.getLogger(__name__)
 
 @loader.tds
 class AutoShortenerMod(loader.Module):
-    """Automatically shortens urls in your messages, which are larger than specified threshold"""
+    """Automatically shortens urls in your messages, which are larger than specified threshold
+    """
 
     strings = {
         "name": "AutoShortener",

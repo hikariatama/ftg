@@ -90,7 +90,9 @@ class ModuleCloudMod(loader.Module):
         """<modname> - Get hikari module banner"""
         args = utils.get_args_raw(message)
 
-        badge = await utils.run_sync(requests.get, f"https://mods.hikariatama.ru/badge/{args}")
+        badge = await utils.run_sync(
+            requests.get, f"https://mods.hikariatama.ru/badge/{args}"
+        )
 
         if badge.status_code == 404:
             await utils.answer(message, self.strings("mod404").format(args))

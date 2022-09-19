@@ -1,4 +1,4 @@
-__version__ = (12, 3, 3)
+__version__ = (13, 0, 0)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
@@ -85,14 +85,14 @@ FLOOD_TRESHOLD = 4
 
 PROTECTS = {
     "antinsfw": "🔞 AntiNSFW",
-    "antiarab": "🐻 AntiArab",
+    "antiarab": "🇵🇸 AntiArab",
     "antitagall": "🐵 AntiTagAll",
     "antihelp": "🐺 AntiHelp",
     "antiflood": "⏱ AntiFlood",
     "antichannel": "📯 AntiChannel",
-    "antispoiler": "🪙 AntiSpoiler",
+    "antispoiler": "👻 AntiSpoiler",
     "report": "📣 Report",
-    "antiexplicit": "😒 AntiExplicit",
+    "antiexplicit": "🤬 AntiExplicit",
     "antiservice": "⚙️ AntiService",
     "antigif": "🎑 AntiGIF",
     "antizalgo": "🌀 AntiZALGO",
@@ -101,7 +101,7 @@ PROTECTS = {
     "cas": "🛡 CAS",
     "bnd": "💬 BND",
     "ndspam": "🐳 NDSpam",
-    "antiraid": "🐶 AntiRaid",
+    "antiraid": "🚪 AntiRaid",
     "banninja": "🥷 BanNinja",
     "welcome": "👋 Welcome",
     "captcha": "🚥 Captcha",
@@ -359,7 +359,10 @@ class HikariChatAPI:
                 await asyncio.sleep(1)
                 continue
 
-            ERROR = "🚫 <b>API Error: </b><code>{}</code>"
+            ERROR = (
+                "<emoji document_id=5424728541650494040>🚫</emoji> <b>API Error:"
+                " </b><code>{}</code>"
+            )
 
             async def assert_arguments(args: set, item: dict) -> bool:
                 if any(i not in item.get("args", {}) for i in args):
@@ -367,7 +370,8 @@ class HikariChatAPI:
                         await self._client.edit_message(
                             item["chat_id"],
                             item["message_id"],
-                            "🚫 <b>Bad API arguments, PROKAZNIK!</b>",
+                            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Bad"
+                            " API arguments, PROKAZNIK!</b>",
                         )
                     return False
 
@@ -664,218 +668,503 @@ class HikariChatMod(loader.Module):
 
     strings = {
         "name": "HikariChat",
-        "args": "🚫 <b>Args are incorrect</b>",
+        "args": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Args are incorrect</b>"
+        ),
         "no_reason": "Not specified",
-        "antitagall_on": "🐵 <b>AntiTagAll is now on in this chat\nAction: {}</b>",
-        "antitagall_off": "🐵 <b>AntiTagAll is now off in this chat</b>",
-        "antiarab_on": "🐻 <b>AntiArab is now on in this chat\nAction: {}</b>",
-        "antiarab_off": "🐻 <b>AntiArab is now off in this chat</b>",
+        "antitagall_on": (
+            "<emoji document_id=5785175271011259591>🐵</emoji> <b>AntiTagAll is now on"
+            " in this chat\nAction: {}</b>"
+        ),
+        "antitagall_off": (
+            "<emoji document_id=5785175271011259591>🐵</emoji> <b>AntiTagAll is now off"
+            " in this chat</b>"
+        ),
+        "antiarab_on": (
+            "<emoji document_id=6323257144745395640>🇵🇸</emoji> <b>AntiArab is now on in"
+            " this chat\nAction: {}</b>"
+        ),
+        "antiarab_off": (
+            "<emoji document_id=6323257144745395640>🇵🇸</emoji> <b>AntiArab is now off"
+            " in this chat</b>"
+        ),
         "antilagsticks_on": (
-            "🚫 <b>Destructive stickers protection is now on in this chat</b>"
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>Destructive stickers"
+            " protection is now on in this chat</b>"
         ),
         "antilagsticks_off": (
-            "🚫 <b>Destructive stickers protection is now off in this chat</b>"
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>Destructive stickers"
+            " protection is now off in this chat</b>"
         ),
-        "antizalgo_on": "🌀 <b>AntiZALGO is now on in this chat\nAction: {}</b>",
-        "antizalgo_off": "🌀 <b>AntiZALGO is now off in this chat</b>",
-        "antistick_on": "🎨 <b>AntiStick is now on in this chat\nAction: {}</b>",
-        "antistick_off": "🎨 <b>AntiStick is now off in this chat</b>",
-        "antihelp_on": "🐺 <b>AntiHelp is now on in this chat</b>",
-        "antihelp_off": "🐺 <b>AntiHelp is now off in this chat</b>",
-        "antiraid_on": "🐶 <b>AntiRaid is now on in this chat\nAction: {}</b>",
-        "antiraid_off": "🐶 <b>AntiRaid is now off in this chat</b>",
-        "bnd_on": "💬 <b>Block-Non-Discussion is now on in this chat\nAction: {}</b>",
-        "bnd_off": "💬 <b>Block-Non-Discussion is now off in this chat</b>",
-        "ndspam_on": "🐳 <b>Non-Discussion-Whale is now on in this chat",
-        "ndspam_off": "🐳 <b>Non-Discussion-Whale is now off in this chat</b>",
-        "antiraid": '🐶 <b>AntiRaid is On. I {} <a href="{}">{}</a> in chat {}</b>',
-        "antichannel_on": "📯 <b>AntiChannel is now on in this chat</b>",
-        "antichannel_off": "📯 <b>AntiChannel is now off in this chat</b>",
-        "report_on": "📣 <b>Report is now on in this chat</b>",
-        "report_off": "📣 <b>Report is now off in this chat</b>",
-        "antiflood_on": "⏱ <b>AntiFlood is now on in this chat\nAction: {}</b>",
-        "antiflood_off": "⏱ <b>AntiFlood is now off in this chat</b>",
-        "antispoiler_on": "🪙 <b>AntiSpoiler is now on in this chat</b>",
-        "antispoiler_off": "🪙 <b>AntiSpoiler is now off in this chat</b>",
-        "antigif_on": "🎑 <b>AntiGIF is now on in this chat</b>",
-        "antigif_off": "🎑 <b>AntiGIF is now off in this chat</b>",
-        "antiservice_on": "⚙️ <b>AntiService is now on in this chat</b>",
-        "antiservice_off": "⚙️ <b>AntiService is now off in this chat</b>",
-        "banninja_on": "🥷 <b>BanNinja is now on in this chat</b>",
-        "banninja_off": "🥷 <b>BanNinja is now off in this chat</b>",
-        "antiexplicit_on": "😒 <b>AntiExplicit is now on in this chat\nAction: {}</b>",
-        "antiexplicit_off": "😒 <b>AntiExplicit is now off in this chat</b>",
-        "captcha_on": "🚥 <b>Captcha is now on in this chat\nAction: {}</b>",
-        "captcha_off": "🚥 <b>Captcha is now off in this chat</b>",
-        "cas_on": "🛡 <b>CAS is now on in this chat\nAction: {}</b>",
-        "cas_off": "🛡 <b>CAS is now off in this chat</b>",
-        "antinsfw_on": "🔞 <b>AntiNSFW is now on in this chat\nAction: {}</b>",
-        "antinsfw_off": "🔞 <b>AntiNSFW is now off in this chat</b>",
+        "antizalgo_on": (
+            "<emoji document_id=5213293263083018856>🌀</emoji> <b>AntiZALGO is now on in"
+            " this chat\nAction: {}</b>"
+        ),
+        "antizalgo_off": (
+            "<emoji document_id=5213293263083018856>🌀</emoji> <b>AntiZALGO is now off"
+            " in this chat</b>"
+        ),
+        "antistick_on": (
+            "<emoji document_id=5431456208487716895>🎨</emoji> <b>AntiStick is now on in"
+            " this chat\nAction: {}</b>"
+        ),
+        "antistick_off": (
+            "<emoji document_id=5431456208487716895>🎨</emoji> <b>AntiStick is now off"
+            " in this chat</b>"
+        ),
+        "antihelp_on": (
+            "<emoji document_id=5467759840463953770>🐺</emoji> <b>AntiHelp is now on in"
+            " this chat</b>"
+        ),
+        "antihelp_off": (
+            "<emoji document_id=5467759840463953770>🐺</emoji> <b>AntiHelp is now off in"
+            " this chat</b>"
+        ),
+        "antiraid_on": (
+            "<emoji document_id=6334359218593728345><emoji"
+            " document_id=6037460928423791421>🚪</emoji></emoji> <b>AntiRaid is now on"
+            " in this chat\nAction: {}</b>"
+        ),
+        "antiraid_off": (
+            "<emoji document_id=6334359218593728345><emoji"
+            " document_id=6037460928423791421>🚪</emoji></emoji> <b>AntiRaid is now off"
+            " in this chat</b>"
+        ),
+        "bnd_on": (
+            "<emoji document_id=5465300082628763143>💬</emoji> <b>Block-Non-Discussion"
+            " is now on in this chat\nAction: {}</b>"
+        ),
+        "bnd_off": (
+            "<emoji document_id=5465300082628763143>💬</emoji> <b>Block-Non-Discussion"
+            " is now off in this chat</b>"
+        ),
+        "ndspam_on": (
+            "<emoji document_id=5431815452437257407>🐳</emoji> <b>Non-Discussion-Whale"
+            " is now on in this chat"
+        ),
+        "ndspam_off": (
+            "<emoji document_id=5431815452437257407>🐳</emoji> <b>Non-Discussion-Whale"
+            " is now off in this chat</b>"
+        ),
+        "antiraid": (
+            "<emoji document_id=6334359218593728345><emoji"
+            " document_id=6037460928423791421>🚪</emoji></emoji> <b>AntiRaid is On. I {}"
+            ' <a href="{}">{}</a> in chat {}</b>'
+        ),
+        "antichannel_on": (
+            "<emoji document_id=5470094069289984325>📯</emoji> <b>AntiChannel is now on"
+            " in this chat</b>"
+        ),
+        "antichannel_off": (
+            "<emoji document_id=5470094069289984325>📯</emoji> <b>AntiChannel is now off"
+            " in this chat</b>"
+        ),
+        "report_on": (
+            "<emoji document_id=5213203794619277246>📣</emoji> <b>Report is now on in"
+            " this chat</b>"
+        ),
+        "report_off": (
+            "<emoji document_id=5213203794619277246>📣</emoji> <b>Report is now off in"
+            " this chat</b>"
+        ),
+        "antiflood_on": (
+            "<emoji document_id=5384611567125928766>⏱</emoji> <b>AntiFlood is now on in"
+            " this chat\nAction: {}</b>"
+        ),
+        "antiflood_off": (
+            "<emoji document_id=5384611567125928766>⏱</emoji> <b>AntiFlood is now off"
+            " in this chat</b>"
+        ),
+        "antispoiler_on": (
+            "<emoji document_id=5798648862591684122>👻</emoji> <b>AntiSpoiler is now on"
+            " in this chat</b>"
+        ),
+        "antispoiler_off": (
+            "<emoji document_id=5798648862591684122>👻</emoji> <b>AntiSpoiler is now off"
+            " in this chat</b>"
+        ),
+        "antigif_on": (
+            "<emoji document_id=6048825205730577727>🎑</emoji> <b>AntiGIF is now on in"
+            " this chat</b>"
+        ),
+        "antigif_off": (
+            "<emoji document_id=6048825205730577727>🎑</emoji> <b>AntiGIF is now off in"
+            " this chat</b>"
+        ),
+        "antiservice_on": (
+            "<emoji document_id=5787237370709413702>⚙️</emoji> <b>AntiService is now on"
+            " in this chat</b>"
+        ),
+        "antiservice_off": (
+            "<emoji document_id=5787237370709413702>⚙️</emoji> <b>AntiService is now"
+            " off in this chat</b>"
+        ),
+        "banninja_on": (
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja is now on in"
+            " this chat</b>"
+        ),
+        "banninja_off": (
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja is now off in"
+            " this chat</b>"
+        ),
+        "antiexplicit_on": (
+            "<emoji document_id=5373123633415723713>🤬</emoji> <b>AntiExplicit is now on"
+            " in this chat\nAction: {}</b>"
+        ),
+        "antiexplicit_off": (
+            "<emoji document_id=5373123633415723713>🤬</emoji> <b>AntiExplicit is now"
+            " off in this chat</b>"
+        ),
+        "captcha_on": (
+            "<emoji document_id=5213107179329953547>🚥</emoji> <b>Captcha is now on in"
+            " this chat\nAction: {}</b>"
+        ),
+        "captcha_off": (
+            "<emoji document_id=5213107179329953547>🚥</emoji> <b>Captcha is now off in"
+            " this chat</b>"
+        ),
+        "cas_on": (
+            "<emoji document_id=5215470334760721739>🛡</emoji> <b>CAS is now on in this"
+            " chat\nAction: {}</b>"
+        ),
+        "cas_off": (
+            "<emoji document_id=5215470334760721739>🛡</emoji> <b>CAS is now off in this"
+            " chat</b>"
+        ),
+        "antinsfw_on": (
+            "<emoji document_id=4976982981341086273>🔞</emoji> <b>AntiNSFW is now on in"
+            " this chat\nAction: {}</b>"
+        ),
+        "antinsfw_off": (
+            "<emoji document_id=4976982981341086273>🔞</emoji> <b>AntiNSFW is now off in"
+            " this chat</b>"
+        ),
         "arabic_nickname": (
-            '🐻 <b><a href="{}">{}</a> has hieroglyphics in his nickname.\n👊 Action: I'
-            " {}</b>"
+            '<emoji document_id=6323257144745395640>🇵🇸</emoji> <b><a href="{}">{}</a>'
+            " has hieroglyphics in his nickname.\n👊 Action: I {}</b>"
         ),
         "zalgo": (
-            '🌀 <b><a href="{}">{}</a> has ZALGO in his nickname.\n👊 Action: I {}</b>'
+            '<emoji document_id=5213293263083018856>🌀</emoji> <b><a href="{}">{}</a>'
+            " has ZALGO in his nickname.\n👊 Action: I {}</b>"
         ),
         "bnd": (
-            '💬 <b><a href="{}">{}</a> sent a message to channel comments without being'
-            " chat member.\n👊 Action: I {}</b>"
+            '<emoji document_id=5465300082628763143>💬</emoji> <b><a href="{}">{}</a>'
+            " sent a message to channel comments without being chat member.\n👊 Action:"
+            " I {}</b>"
         ),
         "cas": (
-            '🛡 <b><a href="{}">{}</a> appears to be in Combat Anti Spam database.\n👊'
-            " Action: I {}</b>"
+            '<emoji document_id=5215470334760721739>🛡</emoji> <b><a href="{}">{}</a>'
+            " appears to be in Combat Anti Spam database.\n👊 Action: I {}</b>"
         ),
-        "stick": '🎨 <b><a href="{}">{}</a> is flooding stickers.\n👊 Action: I {}</b>',
+        "stick": (
+            '<emoji document_id=5431456208487716895>🎨</emoji> <b><a href="{}">{}</a> is'
+            " flooding stickers.\n👊 Action: I {}</b>"
+        ),
         "explicit": (
-            '😒 <b><a href="{}">{}</a> sent explicit content.\n👊 Action: I {}</b>'
+            '<emoji document_id=5373123633415723713>🤬</emoji> <b><a href="{}">{}</a>'
+            " sent explicit content.\n👊 Action: I {}</b>"
         ),
         "destructive_stick": (
-            '🚫 <b><a href="{}">{}</a> sent destructive sticker.\n👊 Action: I {}</b>'
+            '<emoji document_id=5424728541650494040>🚫</emoji> <b><a href="{}">{}</a>'
+            " sent destructive sticker.\n👊 Action: I {}</b>"
         ),
         "nsfw_content": (
-            '🔞 <b><a href="{}">{}</a> sent NSFW content.\n👊 Action: I {}</b>'
+            '<emoji document_id=4976982981341086273>🔞</emoji> <b><a href="{}">{}</a>'
+            " sent NSFW content.\n👊 Action: I {}</b>"
         ),
-        "flood": '⏱ <b><a href="{}">{}</a> is flooding.\n👊 Action: I {}</b>',
-        "tagall": '🐵 <b><a href="{}">{}</a> used TagAll.\n👊 Action: I {}</b>',
-        "sex_datings": '🔞 <b><a href="{}">{}</a> is suspicious 🧐\n👊 Action: I {}</b>',
+        "flood": (
+            '<emoji document_id=5384611567125928766>⏱</emoji> <b><a href="{}">{}</a> is'
+            " flooding.\n👊 Action: I {}</b>"
+        ),
+        "tagall": (
+            '<emoji document_id=5785175271011259591>🐵</emoji> <b><a href="{}">{}</a>'
+            " used TagAll.\n👊 Action: I {}</b>"
+        ),
+        "sex_datings": (
+            '<emoji document_id=4976982981341086273>🔞</emoji> <b><a href="{}">{}</a> is'
+            " suspicious 🧐\n👊 Action: I {}</b>"
+        ),
         "fwarn": (
-            '👮‍♂️💼 <b><a href="{}">{}</a></b> got {}/{} federative warn\nReason:'
-            " <b>{}</b>\n\n{}"
+            "<emoji document_id=5193091781327068499>👮‍♀️</emoji><emoji"
+            ' document_id=5773781976905421370>💼</emoji> <b><a href="{}">{}</a></b> got'
+            " {}/{} federative warn\nReason: <b>{}</b>\n\n{}"
         ),
-        "no_fed_warns": "👮‍♂️ <b>This federation has no warns yet</b>",
-        "no_warns": '👮‍♂️ <b><a href="{}">{}</a> has no warns yet</b>',
-        "warns": '👮‍♂️ <b><a href="{}">{}</a> has {}/{} warns</b>\n<i>{}</i>',
-        "warns_adm_fed": "👮‍♂️ <b>Warns in this federation</b>:\n",
+        "no_fed_warns": (
+            "<emoji document_id=5193091781327068499>👮‍♀️</emoji> <b>This federation has"
+            " no warns yet</b>"
+        ),
+        "no_warns": (
+            '<emoji document_id=5193091781327068499>👮‍♀️</emoji> <b><a href="{}">{}</a>'
+            " has no warns yet</b>"
+        ),
+        "warns": (
+            '<emoji document_id=5193091781327068499>👮‍♀️</emoji> <b><a href="{}">{}</a>'
+            " has {}/{} warns</b>\n\n<i>{}</i>"
+        ),
+        "warns_adm_fed": (
+            "<emoji document_id=5193091781327068499>👮‍♀️</emoji> <b>Warns in this"
+            " federation</b>:\n"
+        ),
         "dwarn_fed": (
-            "👮‍♂️ <b>Forgave last federative warn of <a"
-            ' href="tg://user?id={}">{}</a></b>'
+            "<emoji document_id=5193091781327068499>👮‍♀️</emoji> <b>Forgave last"
+            ' federative warn of <a href="tg://user?id={}">{}</a></b>'
         ),
         "clrwarns_fed": (
-            "👮‍♂️ <b>Forgave all federative warns of <a"
-            ' href="tg://user?id={}">{}</a></b>'
+            "<emoji document_id=5193091781327068499>👮‍♀️</emoji> <b>Forgave all"
+            ' federative warns of <a href="tg://user?id={}">{}</a></b>'
         ),
         "warns_limit": (
-            '👮‍♂️ <b><a href="{}">{}</a> reached warns limit.\nAction: I {}</b>'
+            '<emoji document_id=5193091781327068499>👮‍♀️</emoji> <b><a href="{}">{}</a>'
+            " reached warns limit.\nAction: I {}</b>"
         ),
-        "welcome": "👋 <b>Now I will greet people in this chat</b>\n{}",
-        "unwelcome": "👋 <b>Now I will not greet people in this chat</b>",
+        "welcome": (
+            "<emoji document_id=5472055112702629499>👋</emoji> <b>Now I will greet"
+            " people in this chat</b>\n{}"
+        ),
+        "unwelcome": (
+            "<emoji document_id=5472055112702629499>👋</emoji> <b>Now I will not greet"
+            " people in this chat</b>"
+        ),
         "chat404": "🔓 <b>I am not protecting this chat yet.</b>\n",
         "protections": (
-            "<b>🐻 <code>.AntiArab</code> - Bans spammy arabs\n<b>🐺"
-            " <code>.AntiHelp</code> - Removes frequent userbot commands\n<b>🐵"
-            " <code>.AntiTagAll</code> - Restricts tagging all members\n<b>👋"
-            " <code>.Welcome</code> - Greets new members\n<b>🐶 <code>.AntiRaid</code> -"
-            " Bans all new members\n<b>📯 <code>.AntiChannel</code> - Restricts writing"
-            " on behalf of channels\n<b>🪙 <code>.AntiSpoiler</code> - Restricts"
-            " spoilers\n<b>🎑 <code>.AntiGIF</code> - Restricts GIFs\n<b>🍓"
-            " <code>.AntiNSFW</code> - Restricts NSFW photos and stickers\n<b>⏱"
-            " <code>.AntiFlood</code> - Prevents flooding\n<b>😒"
-            " <code>.AntiExplicit</code> - Restricts explicit content\n<b>⚙️"
-            " <code>.AntiService</code> - Removes service messages\n<b>🌀"
-            " <code>.AntiZALGO</code> - Penalty for users with ZALGO in nickname\n<b>🎨"
-            " <code>.AntiStick</code> - Prevents stickers flood\n<b>🚥"
-            " <code>.Captcha</code> - Requires every new participant to complete"
-            " captcha\n<b>🛡 <code>.CAS</code> - Check every new participant through"
-            " Combat Anti Spam\n<b>💬 <code>.BND</code> - Restricts messages from users,"
-            " which are not a participants of chat (comments)\n<b>🐳"
-            " <code>.NDSpam</code> - Automatic channel comments raid protection\n<b>🥷"
+            "<b><emoji document_id=6323257144745395640>🇵🇸</emoji>"
+            " <code>.AntiArab</code> - Bans spammy arabs\n<b><emoji"
+            " document_id=5467759840463953770>🐺</emoji> <code>.AntiHelp</code> -"
+            " Removes frequent userbot commands\n<b><emoji"
+            " document_id=5785175271011259591>🐵</emoji> <code>.AntiTagAll</code> -"
+            " Restricts tagging all members\n<b><emoji"
+            " document_id=5472055112702629499>👋</emoji> <code>.Welcome</code> - Greets"
+            " new members\n<b><emoji document_id=6334359218593728345><emoji"
+            " document_id=6037460928423791421>🚪</emoji></emoji> <code>.AntiRaid</code>"
+            " - Bans all new members\n<b><emoji"
+            " document_id=5470094069289984325>📯</emoji> <code>.AntiChannel</code> -"
+            " Restricts writing on behalf of channels\n<b><emoji"
+            " document_id=5798648862591684122>👻</emoji> <code>.AntiSpoiler</code> -"
+            " Restricts spoilers\n<b><emoji document_id=6048825205730577727>🎑</emoji>"
+            " <code>.AntiGIF</code> - Restricts GIFs\n<b>🍓 <code>.AntiNSFW</code> -"
+            " Restricts NSFW photos and stickers\n<b><emoji"
+            " document_id=5384611567125928766>⏱</emoji> <code>.AntiFlood</code> -"
+            " Prevents flooding\n<b><emoji document_id=5373123633415723713>🤬</emoji>"
+            " <code>.AntiExplicit</code> - Restricts explicit content\n<b><emoji"
+            " document_id=5787237370709413702>⚙️</emoji> <code>.AntiService</code> -"
+            " Removes service messages\n<b><emoji"
+            " document_id=5213293263083018856>🌀</emoji> <code>.AntiZALGO</code> -"
+            " Penalty for users with ZALGO in nickname\n<b><emoji"
+            " document_id=5431456208487716895>🎨</emoji> <code>.AntiStick</code> -"
+            " Prevents stickers flood\n<b><emoji"
+            " document_id=5213107179329953547>🚥</emoji> <code>.Captcha</code> -"
+            " Requires every new participant to complete captcha\n<b><emoji"
+            " document_id=5215470334760721739>🛡</emoji> <code>.CAS</code> - Check every"
+            " new participant through Combat Anti Spam\n<b><emoji"
+            " document_id=5465300082628763143>💬</emoji> <code>.BND</code> - Restricts"
+            " messages from users, which are not a participants of chat"
+            " (comments)\n<b><emoji document_id=6323575131239089635>🥷</emoji>"
             " <code>.BanNinja</code> - Automatic version of AntiRaid\n<b>⚰️"
             " <code>.AntiLagSticks</code> - Bans laggy stickers\n<b>👾 Admin:"
             " </b><code>.ban</code> <code>.kick</code>"
             " <code>.mute</code>\n<code>.unban</code> <code>.unmute</code> <b>- Admin"
-            " tools</b>\n<b>👮‍♂️ Warns:</b> <code>.warn</code>"
-            " <code>.warns</code>\n<code>.dwarn</code> <code>.clrwarns</code> <b>-"
-            " Warning system</b>\n<b>💼 Federations:</b> <code>.fadd</code>"
-            " <code>.frm</code> <code>.newfed</code>\n<code>.namefed</code>"
-            " <code>.fban</code> <code>.rmfed</code>"
-            " <code>.feds</code>\n<code>.fpromote</code>"
+            " tools</b>\n<b><emoji document_id=5193091781327068499>👮‍♀️</emoji>"
+            " Warns:</b> <code>.warn</code> <code>.warns</code>\n<code>.dwarn</code>"
+            " <code>.clrwarns</code> <b>- Warning system</b>\n<b><emoji"
+            " document_id=5773781976905421370>💼</emoji> Federations:</b>"
+            " <code>.fadd</code> <code>.frm</code>"
+            " <code>.newfed</code>\n<code>.namefed</code> <code>.fban</code>"
+            " <code>.rmfed</code> <code>.feds</code>\n<code>.fpromote</code>"
             " <code>.fdemote</code>\n<code>.fdef</code> <code>.fdeflist</code> <b>-"
             " Controlling multiple chats</b>\n<b>🗒 Notes:</b> <code>.fsave</code>"
             " <code>.fstop</code> <code>.fnotes</code> <b>- Federative notes</b>"
         ),
         "not_admin": "🤷‍♂️ <b>I'm not admin here, or don't have enough rights</b>",
-        "mute": '🔇 <b><a href="{}">{}</a> muted {}. Reason: </b><i>{}</i>\n\n{}',
+        "mute": (
+            '<emoji document_id=5372800046284674872>🤐</emoji> <b><a href="{}">{}</a>'
+            " was muted {}. Reason: </b><i>{}</i>\n\n{}"
+        ),
         "mute_log": (
-            '🔇 <b><a href="{}">{}</a> muted {} in <a href="{}">{}</a>. Reason:'
-            " </b><i>{}</i>\n\n{}"
+            '<emoji document_id=5372800046284674872>🤐</emoji> <b><a href="{}">{}</a>'
+            ' was muted {} in <a href="{}">{}</a>. Reason: </b><i>{}</i>\n\n{}'
         ),
-        "ban": '🔒 <b><a href="{}">{}</a> banned {}. Reason: </b><i>{}</i>\n\n{}',
+        "ban": (
+            '<emoji document_id=5247152118069992250>🔒</emoji> <b><a href="{}">{}</a>'
+            " was banned {}. Reason: </b><i>{}</i>\n\n{}"
+        ),
         "ban_log": (
-            '🔒 <b><a href="{}">{}</a> banned {} in <a href="{}">{}</a>. Reason:'
-            " </b><i>{}</i>\n\n{}"
+            '<emoji document_id=5247152118069992250>🔒</emoji> <b><a href="{}">{}</a>'
+            ' was banned {} in <a href="{}">{}</a>. Reason: </b><i>{}</i>\n\n{}'
         ),
-        "kick": '🚪 <b><a href="{}">{}</a> kicked. Reason: </b><i>{}</i>\n\n{}',
+        "kick": (
+            '<emoji document_id=6037460928423791421>🚪</emoji> <b><a href="{}">{}</a>'
+            " was kicked. Reason: </b><i>{}</i>\n\n{}"
+        ),
         "kick_log": (
-            '🚪 <b><a href="{}">{}</a> kicked in <a href="{}">{}</a>. Reason:'
-            " </b><i>{}</i>\n\n{}"
+            '<emoji document_id=6037460928423791421>🚪</emoji> <b><a href="{}">{}</a>'
+            ' was kicked in <a href="{}">{}</a>. Reason: </b><i>{}</i>\n\n{}'
         ),
-        "unmuted": '🔊 <b><a href="{}">{}</a> unmuted</b>',
-        "unmuted_log": '🔊 <b><a href="{}">{}</a> unmuted in <a href="{}">{}</a></b>',
-        "unban": '🧙‍♂️ <b><a href="{}">{}</a> unbanned</b>',
-        "unban_log": '🧙‍♂️ <b><a href="{}">{}</a> unbanned in <a href="{}">{}</a></b>',
-        "defense": '🛡 <b>Shield for <a href="{}">{}</a> is now {}</b>',
-        "no_defense": "🛡 <b>Federative defense list is empty</b>",
-        "defense_list": "🛡 <b>Federative defense list:</b>\n{}",
-        "fadded": '💼 <b>Current chat added to federation "{}"</b>',
-        "newfed": '💼 <b>Created federation "{}"</b>',
-        "rmfed": '💼 <b>Removed federation "{}"</b>',
-        "fed404": "💼 <b>Federation not found</b>",
-        "frem": '💼 <b>Current chat removed from federation "{}"</b>',
-        "f404": '💼 <b>Current chat is not in federation "{}"</b>',
-        "fexists": '💼 <b>Current chat is already in federation "{}"</b>',
-        "fedexists": "💼 <b>Federation exists</b>",
-        "joinfed": "💼 <b>Federation joined</b>",
-        "namedfed": "💼 <b>Federation renamed to {}</b>",
-        "nofed": "💼 <b>Current chat is not in any federation</b>",
+        "unmuted": (
+            '<emoji document_id=5436040291507247633>🎉</emoji> <b><a href="{}">{}</a>'
+            " was unmuted</b>"
+        ),
+        "unmuted_log": (
+            '<emoji document_id=5436040291507247633>🎉</emoji> <b><a href="{}">{}</a>'
+            ' was unmuted in <a href="{}">{}</a></b>'
+        ),
+        "unban": (
+            '<emoji document_id=5469791106591890404>🪄</emoji> <b><a href="{}">{}</a>'
+            " was unbanned</b>"
+        ),
+        "unban_log": (
+            '<emoji document_id=5469791106591890404>🪄</emoji> <b><a href="{}">{}</a>'
+            ' was unbanned in <a href="{}">{}</a></b>'
+        ),
+        "defense": (
+            "<emoji document_id=5215470334760721739>🛡</emoji> <b>Shield for <a"
+            ' href="{}">{}</a> is now {}</b>'
+        ),
+        "no_defense": (
+            "<emoji document_id=5215470334760721739>🛡</emoji> <b>Federative defense"
+            " list is empty</b>"
+        ),
+        "defense_list": (
+            "<emoji document_id=5215470334760721739>🛡</emoji> <b>Federative defense"
+            " list:</b>\n{}"
+        ),
+        "fadded": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Current chat added to"
+            ' federation "{}"</b>'
+        ),
+        "newfed": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Created federation"
+            ' "{}"</b>'
+        ),
+        "rmfed": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Removed federation"
+            ' "{}"</b>'
+        ),
+        "fed404": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Federation not"
+            " found</b>"
+        ),
+        "frem": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Current chat removed"
+            ' from federation "{}"</b>'
+        ),
+        "f404": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Current chat is not in"
+            ' federation "{}"</b>'
+        ),
+        "fexists": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Current chat is"
+            ' already in federation "{}"</b>'
+        ),
+        "fedexists": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Federation exists</b>"
+        ),
+        "joinfed": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Federation joined</b>"
+        ),
+        "namedfed": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Federation renamed to"
+            " {}</b>"
+        ),
+        "nofed": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Current chat is not in"
+            " any federation</b>"
+        ),
         "fban": (
-            '💼 <b><a href="{}">{}</a> banned in federation {} {}\nReason:'
-            " </b><i>{}</i>\n{}"
+            '<emoji document_id=5773781976905421370>💼</emoji> <b><a href="{}">{}</a>'
+            " banned in federation {} {}\nReason: </b><i>{}</i>\n{}"
         ),
         "fmute": (
-            '💼 <b><a href="{}">{}</a> muted in federation {} {}\nReason:'
-            " </b><i>{}</i>\n{}"
+            '<emoji document_id=5773781976905421370>💼</emoji> <b><a href="{}">{}</a>'
+            " muted in federation {} {}\nReason: </b><i>{}</i>\n{}"
         ),
-        "funban": '💼 <b><a href="{}">{}</a> unbanned in federation </b><i>{}</i>\n',
-        "funmute": '💼 <b><a href="{}">{}</a> unmuted in federation </b><i>{}</i>\n',
-        "feds_header": "💼 <b>Federations:</b>\n\n",
+        "funban": (
+            '<emoji document_id=5773781976905421370>💼</emoji> <b><a href="{}">{}</a>'
+            " unbanned in federation </b><i>{}</i>\n"
+        ),
+        "funmute": (
+            '<emoji document_id=5773781976905421370>💼</emoji> <b><a href="{}">{}</a>'
+            " unmuted in federation </b><i>{}</i>\n"
+        ),
+        "feds_header": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Federations:</b>\n\n"
+        ),
         "fed": (
-            '💼 <b>Federation "{}" info:</b>\n'
-            "🔰 <b>Chats:</b>\n"
-            "<b>{}</b>\n"
-            "🔰 <b>Channels:</b>\n"
-            "<b>{}</b>\n"
-            "🔰 <b>Admins:</b>\n"
-            "<b>{}</b>\n"
-            "🔰 <b>Warns: {}</b>\n"
+            '<emoji document_id=5773781976905421370>💼</emoji> <b>Federation "{}"'
+            " info:</b>\n🔰 <b>Chats:</b>\n<b>{}</b>\n🔰 <b>Channels:</b>\n<b>{}</b>\n🔰"
+            " <b>Admins:</b>\n<b>{}</b>\n🔰 <b>Warns: {}</b>\n"
         ),
-        "no_fed": "💼 <b>This chat is not in any federation</b>",
-        "fpromoted": '💼 <b><a href="{}">{}</a> promoted in federation {}</b>',
-        "fdemoted": '💼 <b><a href="{}">{}</a> demoted in federation {}</b>',
-        "api_error": "🚫 <b>api.hikariatama.ru Error!</b>\n<code>{}</code>",
-        "fsave_args": "💼 <b>Usage: .fsave shortname &lt;reply&gt;</b>",
-        "fstop_args": "💼 <b>Usage: .fstop shortname</b>",
-        "fsave": "💼 <b>Federative note </b><code>{}</code><b> saved!</b>",
-        "fstop": "💼 <b>Federative note </b><code>{}</code><b> removed!</b>",
-        "fnotes": "💼 <b>Federative notes:</b>\n{}",
+        "no_fed": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>This chat is not in"
+            " any federation</b>"
+        ),
+        "fpromoted": (
+            '<emoji document_id=5773781976905421370>💼</emoji> <b><a href="{}">{}</a>'
+            " promoted in federation {}</b>"
+        ),
+        "fdemoted": (
+            '<emoji document_id=5773781976905421370>💼</emoji> <b><a href="{}">{}</a>'
+            " demoted in federation {}</b>"
+        ),
+        "api_error": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>api.hikariatama.ru"
+            " Error!</b>\n<code>{}</code>"
+        ),
+        "fsave_args": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Usage: .fsave"
+            " shortname &lt;reply&gt;</b>"
+        ),
+        "fstop_args": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Usage: .fstop"
+            " shortname</b>"
+        ),
+        "fsave": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Federative note"
+            " </b><code>{}</code><b> saved!</b>"
+        ),
+        "fstop": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Federative note"
+            " </b><code>{}</code><b> removed!</b>"
+        ),
+        "fnotes": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Federative"
+            " notes:</b>\n{}"
+        ),
         "usage": "ℹ️ <b>Usage: .{} &lt;on/off&gt;</b>",
         "chat_only": "ℹ️ <b>This command is for chats only</b>",
         "version": (
-            "<b>🪆 {}</b>\n\n"
-            "<b>😌 Author: t.me/hikariatama</b>\n"
-            "<b>📥 Downloaded from @hikarimods</b>\n"
-            "<b>{}</b>"
+            "<emoji document_id=5440551785284510215>🎢</emoji> <b>{}</b>\n\n<emoji"
+            " document_id=5454182070156794055>🤘</emoji> <b>Author:"
+            " t.me/hikariatama</b>\n<emoji document_id=6325750691088303497>☺️</emoji>"
+            " <b>Downloaded from @hikarimods</b>\n<b>{}</b>"
         ),
-        "error": "😵 <b>HikariChat Issued error</b>",
+        "error": (
+            "<emoji document_id=6053166094816905153>💀</emoji> <b>HikariChat Issued"
+            " error</b>"
+        ),
         "reported": (
-            '💼 <b><a href="{}">{}</a> reported this message to admins\nReason:'
-            " </b><i>{}</i>"
+            '<emoji document_id=5773781976905421370>💼</emoji> <b><a href="{}">{}</a>'
+            " reported this message to admins\nReason: </b><i>{}</i>"
         ),
-        "no_federations": "💼 <b>You have no active federations</b>",
-        "clrallwarns_fed": "👮‍♂️ <b>Forgave all federative warns of federation</b>",
-        "cleaning": "🧹 <b>Looking for Deleted accounts...</b>",
-        "deleted": "🧹 <b>Removed {} Deleted accounts</b>",
-        "fcleaning": "🧹 <b>Looking for Deleted accounts in federation...</b>",
+        "no_federations": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>You have no active"
+            " federations</b>"
+        ),
+        "clrallwarns_fed": (
+            "<emoji document_id=5193091781327068499>👮‍♀️</emoji> <b>Forgave all"
+            " federative warns of federation</b>"
+        ),
+        "cleaning": (
+            "<emoji document_id=5771385342204580039>🫥</emoji> <b>Looking for Deleted"
+            " accounts...</b>"
+        ),
+        "deleted": (
+            "<emoji document_id=5771385342204580039>🫥</emoji> <b>Removed {} Deleted"
+            " accounts</b>"
+        ),
+        "fcleaning": (
+            "<emoji document_id=5771385342204580039>🫥</emoji> <b>Looking for Deleted"
+            " accounts in federation...</b>"
+        ),
         "btn_unban": "🔓 Unban (ADM)",
         "btn_unmute": "🔈 Unmute (ADM)",
         "btn_unwarn": "♻️ De-Warn (ADM)",
@@ -895,67 +1184,92 @@ class HikariChatMod(loader.Module):
         "btn_funmute": "🔈 Fed Unmute (ADM)",
         "btn_funban": "🔓 Fed Unban (ADM)",
         "btn_mute": "🙊 Mute",
-        "btn_ban": "🔒 Ban",
-        "btn_fban": "💼 Fed Ban",
+        "btn_ban": "<emoji document_id=5247152118069992250>🔒</emoji> Ban",
+        "btn_fban": "<emoji document_id=5773781976905421370>💼</emoji> Fed Ban",
         "btn_del": "🗑 Delete",
         "inline_fbanned": (
-            '💼 <b><a href="{}">{}</a> banned in federation by <a href="{}">{}</a></b>'
+            '<emoji document_id=5773781976905421370>💼</emoji> <b><a href="{}">{}</a>'
+            ' banned in federation by <a href="{}">{}</a></b>'
         ),
         "inline_muted": '🙊 <b><a href="{}">{}</a> muted by <a href="{}">{}</a></b>',
-        "inline_banned": '🔒 <b><a href="{}">{}</a> banned by <a href="{}">{}</a></b>',
+        "inline_banned": (
+            '<emoji document_id=5247152118069992250>🔒</emoji> <b><a href="{}">{}</a>'
+            ' banned by <a href="{}">{}</a></b>'
+        ),
         "inline_deleted": '🗑 <b>Deleted by <a href="{}">{}</a></b>',
         "sync": "🔄 <b>Syncing chats and feds with server in force mode...</b>",
         "sync_complete": "😌 <b>Successfully synced</b>",
-        "rename_noargs": "🚫 <b>Specify new federation name</b>",
+        "rename_noargs": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Specify new federation"
+            " name</b>"
+        ),
         "rename_success": '😇 <b>Federation renamed to "</b><code>{}</code><b>"</b>',
         "suffix_removed": "📼 <b>Punishment suffix removed</b>",
         "suffix_updated": "📼 <b>New punishment suffix saved</b>\n\n{}",
         "processing_myrights": "😌 <b>Processing chats</b>",
         "logchat_removed": "📲 <b>Log chat disabled</b>",
-        "logchat_invalid": "🚫 <b>Log chat invalid</b>",
+        "logchat_invalid": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Log chat invalid</b>"
+        ),
         "logchat_set": "📲 <b>Log chat updated to </b><code>{}</code>",
-        "clnraid_args": "🥷 <b>Example usage: </b><code>.clnraid 10</code>",
+        "clnraid_args": (
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>Example usage:"
+            " </b><code>.clnraid 10</code>"
+        ),
         "clnraid_admin": (
-            "🥷 <b>Error occured while promoting cleaner. Please, ensure you have enough"
-            " rights in chat</b>"
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>Error occured while"
+            " promoting cleaner. Please, ensure you have enough rights in chat</b>"
         ),
         "clnraid_started": (
-            "🥷 <b>RaidCleaner is in progress... Found {} users to kick...</b>"
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>RaidCleaner is in"
+            " progress... Found {} users to kick...</b>"
         ),
         "clnraid_confirm": (
-            "🥷 <b>Please, confirm that you want to start RaidCleaner on {} users</b>"
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>Please, confirm that"
+            " you want to start RaidCleaner on {} users</b>"
         ),
-        "clnraid_yes": "🥷 Start",
+        "clnraid_yes": "<emoji document_id=6323575131239089635>🥷</emoji> Start",
         "clnraid_cancel": "🔻 Cancel",
         "clnraid_stop": "🚨 Stop",
-        "clnraid_complete": "🥷 <b>RaidCleaner complete! Removed: {} user(-s)</b>",
-        "clnraid_cancelled": "🥷 <b>RaidCleaner cancelled. Removed: {} user(-s)</b>",
+        "clnraid_complete": (
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>RaidCleaner complete!"
+            " Removed: {} user(-s)</b>"
+        ),
+        "clnraid_cancelled": (
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>RaidCleaner cancelled."
+            " Removed: {} user(-s)</b>"
+        ),
         "smart_anti_raid_active": (
-            "🥷 <b>BanNinja is working hard to prevent intrusion to this chat.</b>\n\n"
-            "{}"
-            "<i>Deleted {} bot(-s)</i>"
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja is working"
+            " hard to prevent intrusion to this chat.</b>\n\n{}<i>Deleted {}"
+            " bot(-s)</i>"
         ),
         "smart_anti_raid_off": "🚨 Stop",
-        "smart_anti_raid_stopped": "🥷 <b>BanNinja Stopped</b>",
+        "smart_anti_raid_stopped": (
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja Stopped</b>"
+        ),
         "banninja_report": (
-            "🥷 <b>BanNinja has done his job.</b>\n<i>Deleted {} bot(-s)</i>\n\n🏹"
-            " <i>«BanNinja can handle any size of attack»</i> ©"
-            " <code>@hikariatama</code>"
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja has done his"
+            " job.</b>\n<i>Deleted {} bot(-s)</i>\n\n🏹 <i>«BanNinja can handle any size"
+            " of attack»</i> © <code>@hikariatama</code>"
         ),
         "ndspam_active": (
-            "🐳 <b>Non-Discussion-Whale is working hard to prevent intrusion to attached"
-            " channel comments.</b>\n\n{}<i>Deleted {} bot(-s)</i>"
+            "<emoji document_id=5431815452437257407>🐳</emoji> <b>Non-Discussion-Whale"
+            " is working hard to prevent intrusion to attached channel"
+            " comments.</b>\n\n{}<i>Deleted {} bot(-s)</i>"
         ),
         "forbid_messages": (
             "⚠️ <b>I've forbidden sending messages until attack is fully"
             " released</b>\n\n"
         ),
         "ndspam_off": "🚨 Stop",
-        "ndspam_stopped": "🥷 <b>BanNinja Stopped</b>",
+        "ndspam_stopped": (
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja Stopped</b>"
+        ),
         "ndspam_report": (
-            "🥷 <b>BanNinja has done his job.</b>\n<i>Deleted {} bot(-s)</i>\n\n🏹"
-            " <i>«BanNinja can handle any size of attack»</i> ©"
-            " <code>@hikariatama</code>"
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja has done his"
+            " job.</b>\n<i>Deleted {} bot(-s)</i>\n\n🏹 <i>«BanNinja can handle any size"
+            " of attack»</i> © <code>@hikariatama</code>"
         ),
         "confirm_rmfed": (
             "⚠️ <b>Warning! This operation can't be reverted! Are you sure, "
@@ -963,169 +1277,394 @@ class HikariChatMod(loader.Module):
         ),
         "confirm_rmfed_btn": "🗑 Delete",
         "decline_rmfed_btn": "🔻 Cancel",
-        "pil_unavailable": "🚫 <b>Pillow package unavailable</b>",
+        "pil_unavailable": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Pillow package"
+            " unavailable</b>"
+        ),
         "action": "<action>",
         "configure": "Configure",
         "toggle": "Toggle",
-        "no_protects": "🚫 <b>This chat has no active protections to show</b>",
-        "from_where": "🚫 <b>Reply to a message to purge from</b>",
-        "no_notes": "🚫 <b>No notes found</b>",
+        "no_protects": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>This chat has no"
+            " active protections to show</b>"
+        ),
+        "from_where": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Reply to a message to"
+            " purge from</b>"
+        ),
+        "no_notes": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>No notes found</b>"
+        ),
         "complete_captcha": (
-            '🚥 <b><a href="tg://user?id={}">{}</a>, please, complete captcha within 5'
+            "<emoji document_id=5213107179329953547>🚥</emoji> <b><a"
+            ' href="tg://user?id={}">{}</a>, please, complete captcha within 5'
             " minutes</b>"
         ),
         "captcha_timeout": (
-            '🚥 <b><a href="{}">{}</a> have not completed captcha in time.\n👊 Action: I'
-            " {}</b>"
+            '<emoji document_id=5213107179329953547>🚥</emoji> <b><a href="{}">{}</a>'
+            " have not completed captcha in time.\n👊 Action: I {}</b>"
         ),
         "captcha_failed": (
-            '🚥 <b><a href="{}">{}</a> failed captcha.\n👊 Action: I {}</b>'
+            '<emoji document_id=5213107179329953547>🚥</emoji> <b><a href="{}">{}</a>'
+            " failed captcha.\n👊 Action: I {}</b>"
         ),
     }
 
     strings_ru = {
         "complete_captcha": (
-            '🚥 <b><a href="tg://user?id={}">{}</a>, пожалуйста, пройди капчу в течение'
-            " 5 минут</b>"
+            "<emoji document_id=5213107179329953547>🚥</emoji> <b><a"
+            ' href="tg://user?id={}">{}</a>, пожалуйста, пройди капчу в течение 5'
+            " минут</b>"
         ),
         "captcha_timeout": (
-            '🚥 <b><a href="{}">{}</a> не прошел капчу вовремя.\n👊 Действие: {}</b>'
+            '<emoji document_id=5213107179329953547>🚥</emoji> <b><a href="{}">{}</a> не'
+            " прошел капчу вовремя.\n👊 Действие: {}</b>"
         ),
         "captcha_failed": (
-            '🚥 <b><a href="{}">{}</a> не прошел капчу.\n👊 Действие: {}</b>'
+            '<emoji document_id=5213107179329953547>🚥</emoji> <b><a href="{}">{}</a> не'
+            " прошел капчу.\n👊 Действие: {}</b>"
         ),
-        "cas_on": "🛡 <b>CAS теперь включен в этом чате\nДействие: {}</b>",
-        "cas_off": "🛡 <b>CAS теперь выключен в этом чате</b>",
+        "cas_on": (
+            "<emoji document_id=5215470334760721739>🛡</emoji> <b>CAS теперь включен в"
+            " этом чате\nДействие: {}</b>"
+        ),
+        "cas_off": (
+            "<emoji document_id=5215470334760721739>🛡</emoji> <b>CAS теперь выключен в"
+            " этом чате</b>"
+        ),
         "cas": (
-            '🛡 <b><a href="{}">{}</a> appears to be in Combat Anti Spam database.\n👊'
-            " Action: I {}</b>"
+            '<emoji document_id=5215470334760721739>🛡</emoji> <b><a href="{}">{}</a>'
+            " appears to be in Combat Anti Spam database.\n👊 Action: I {}</b>"
         ),
-        "from_where": "🚫 <b>Ответь на сообщение, начиная с которого надо удалить.</b>",
+        "from_where": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Ответь на сообщение,"
+            " начиная с которого надо удалить.</b>"
+        ),
         "smart_anti_raid_active": (
-            "🥷 <b>BanNinja работает в поте лица, отбивая атаку на этот чат.</b>\n\n"
-            "{}"
-            "<i>Удалено {} бот(-ов)</i>"
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja работает в"
+            " поте лица, отбивая атаку на этот чат.</b>\n\n{}<i>Удалено {} бот(-ов)</i>"
         ),
         "forbid_messages": (
             "⚠️ <b>Я запретил отправку сообщений, пока атака не будет полностью"
             " отражена</b>\n\n"
         ),
         "smart_anti_raid_off": "🚨 Остановить",
-        "smart_anti_raid_stopped": "🥷 <b>BanNinja остановлен</b>",
+        "smart_anti_raid_stopped": (
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja"
+            " остановлен</b>"
+        ),
         "error": "😵 <b>Произошла ошибка HikariChat</b>",
-        "args": "🚫 <b>Неверные аргументы</b>",
+        "args": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Неверные аргументы</b>"
+        ),
         "no_reason": "Не указана",
-        "antitagall_on": "🐵 <b>AntiTagAll теперь включен в этом чате\nДействие: {}</b>",
-        "antitagall_off": "🐵 <b>AntiTagAll теперь выключен в этом чате</b>",
-        "antiarab_on": "🐻 <b>AntiArab теперь включен в этом чате\nДействие: {}</b>",
-        "antiarab_off": "🐻 <b>AntiArab теперь выключен в этом чате</b>",
-        "antizalgo_on": "🌀 <b>AntiZALGO теперь включен в этом чате\nДействие: {}</b>",
-        "antizalgo_off": "🌀 <b>AntiZALGO теперь выключен в этом чате</b>",
-        "antistick_on": "🎨 <b>AntiStick теперь включен в этом чате\nДействие: {}</b>",
-        "antistick_off": "🎨 <b>AntiStick теперь выключен в этом чате</b>",
-        "antihelp_on": "🐺 <b>AntiHelp теперь включен в этом чате</b>",
-        "antihelp_off": "🐺 <b>AntiHelp теперь выключен в этом чате</b>",
-        "antiraid_on": "🐶 <b>AntiRaid теперь включен в этом чате\nДействие: {}</b>",
-        "antiraid_off": "🐶 <b>AntiRaid теперь выключен в этом чате</b>",
+        "antitagall_on": (
+            "<emoji document_id=5785175271011259591>🐵</emoji> <b>AntiTagAll теперь"
+            " включен в этом чате\nДействие: {}</b>"
+        ),
+        "antitagall_off": (
+            "<emoji document_id=5785175271011259591>🐵</emoji> <b>AntiTagAll теперь"
+            " выключен в этом чате</b>"
+        ),
+        "antiarab_on": (
+            "<emoji document_id=6323257144745395640>🇵🇸</emoji> <b>AntiArab теперь"
+            " включен в этом чате\nДействие: {}</b>"
+        ),
+        "antiarab_off": (
+            "<emoji document_id=6323257144745395640>🇵🇸</emoji> <b>AntiArab теперь"
+            " выключен в этом чате</b>"
+        ),
+        "antizalgo_on": (
+            "<emoji document_id=5213293263083018856>🌀</emoji> <b>AntiZALGO теперь"
+            " включен в этом чате\nДействие: {}</b>"
+        ),
+        "antizalgo_off": (
+            "<emoji document_id=5213293263083018856>🌀</emoji> <b>AntiZALGO теперь"
+            " выключен в этом чате</b>"
+        ),
+        "antistick_on": (
+            "<emoji document_id=5431456208487716895>🎨</emoji> <b>AntiStick теперь"
+            " включен в этом чате\nДействие: {}</b>"
+        ),
+        "antistick_off": (
+            "<emoji document_id=5431456208487716895>🎨</emoji> <b>AntiStick теперь"
+            " выключен в этом чате</b>"
+        ),
+        "antihelp_on": (
+            "<emoji document_id=5467759840463953770>🐺</emoji> <b>AntiHelp теперь"
+            " включен в этом чате</b>"
+        ),
+        "antihelp_off": (
+            "<emoji document_id=5467759840463953770>🐺</emoji> <b>AntiHelp теперь"
+            " выключен в этом чате</b>"
+        ),
+        "antiraid_on": (
+            "<emoji document_id=6334359218593728345><emoji"
+            " document_id=6037460928423791421>🚪</emoji></emoji> <b>AntiRaid теперь"
+            " включен в этом чате\nДействие: {}</b>"
+        ),
+        "antiraid_off": (
+            "<emoji document_id=6334359218593728345><emoji"
+            " document_id=6037460928423791421>🚪</emoji></emoji> <b>AntiRaid теперь"
+            " выключен в этом чате</b>"
+        ),
         "bnd_on": (
-            "💬 <b>Block-Non-Discussion теперь включен в этом чате\nДействие: {}</b>"
+            "<emoji document_id=5465300082628763143>💬</emoji> <b>Block-Non-Discussion"
+            " теперь включен в этом чате\nДействие: {}</b>"
         ),
-        "bnd_off": "💬 <b>Block-Non-Discussion теперь выключен в этом чате</b>",
-        "ndspam_on": "🐳 <b>Non-Discussion-Whale теперь включен в этом чате",
-        "ndspam_off": "🐳 <b>Non-Discussion-Whale теперь выключен в этом чате</b>",
-        "antichannel_on": "📯 <b>AntiChannel теперь включен в этом чате</b>",
-        "antichannel_off": "📯 <b>AntiChannel теперь выключен в этом чате</b>",
-        "report_on": "📣 <b>Report теперь включен в этом чате</b>",
-        "report_off": "📣 <b>Report теперь выключен в этом чате</b>",
-        "antiflood_on": "⏱ <b>AntiFlood теперь включен в этом чате\nДействие: {}</b>",
-        "antiflood_off": "⏱ <b>AntiFlood теперь выключен в этом чате</b>",
-        "antispoiler_on": "🪙 <b>AntiSpoiler теперь включен в этом чате</b>",
-        "antispoiler_off": "🪙 <b>AntiSpoiler теперь выключен в этом чате</b>",
-        "antigif_on": "🎑 <b>AntiGIF теперь включен в этом чате</b>",
-        "antigif_off": "🎑 <b>AntiGIF теперь выключен в этом чате</b>",
-        "antiservice_on": "⚙️ <b>AntiService теперь включен в этом чате</b>",
-        "antiservice_off": "⚙️ <b>AntiService теперь выключен в этом чате</b>",
-        "banninja_on": "🥷 <b>BanNinja теперь включен в этом чате</b>",
-        "banninja_off": "🥷 <b>BanNinja теперь выключен в этом чате</b>",
+        "bnd_off": (
+            "<emoji document_id=5465300082628763143>💬</emoji> <b>Block-Non-Discussion"
+            " теперь выключен в этом чате</b>"
+        ),
+        "ndspam_on": (
+            "<emoji document_id=5431815452437257407>🐳</emoji> <b>Non-Discussion-Whale"
+            " теперь включен в этом чате"
+        ),
+        "ndspam_off": (
+            "<emoji document_id=5431815452437257407>🐳</emoji> <b>Non-Discussion-Whale"
+            " теперь выключен в этом чате</b>"
+        ),
+        "antichannel_on": (
+            "<emoji document_id=5470094069289984325>📯</emoji> <b>AntiChannel теперь"
+            " включен в этом чате</b>"
+        ),
+        "antichannel_off": (
+            "<emoji document_id=5470094069289984325>📯</emoji> <b>AntiChannel теперь"
+            " выключен в этом чате</b>"
+        ),
+        "report_on": (
+            "<emoji document_id=5213203794619277246>📣</emoji> <b>Report теперь включен"
+            " в этом чате</b>"
+        ),
+        "report_off": (
+            "<emoji document_id=5213203794619277246>📣</emoji> <b>Report теперь выключен"
+            " в этом чате</b>"
+        ),
+        "antiflood_on": (
+            "<emoji document_id=5384611567125928766>⏱</emoji> <b>AntiFlood теперь"
+            " включен в этом чате\nДействие: {}</b>"
+        ),
+        "antiflood_off": (
+            "<emoji document_id=5384611567125928766>⏱</emoji> <b>AntiFlood теперь"
+            " выключен в этом чате</b>"
+        ),
+        "antispoiler_on": (
+            "<emoji document_id=5798648862591684122>👻</emoji> <b>AntiSpoiler теперь"
+            " включен в этом чате</b>"
+        ),
+        "antispoiler_off": (
+            "<emoji document_id=5798648862591684122>👻</emoji> <b>AntiSpoiler теперь"
+            " выключен в этом чате</b>"
+        ),
+        "antigif_on": (
+            "<emoji document_id=6048825205730577727>🎑</emoji> <b>AntiGIF теперь включен"
+            " в этом чате</b>"
+        ),
+        "antigif_off": (
+            "<emoji document_id=6048825205730577727>🎑</emoji> <b>AntiGIF теперь"
+            " выключен в этом чате</b>"
+        ),
+        "antiservice_on": (
+            "<emoji document_id=5787237370709413702>⚙️</emoji> <b>AntiService теперь"
+            " включен в этом чате</b>"
+        ),
+        "antiservice_off": (
+            "<emoji document_id=5787237370709413702>⚙️</emoji> <b>AntiService теперь"
+            " выключен в этом чате</b>"
+        ),
+        "banninja_on": (
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja теперь"
+            " включен в этом чате</b>"
+        ),
+        "banninja_off": (
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja теперь"
+            " выключен в этом чате</b>"
+        ),
         "antiexplicit_on": (
-            "😒 <b>AntiExplicit теперь включен в этом чате\nДействие: {}</b>"
+            "<emoji document_id=5373123633415723713>🤬</emoji> <b>AntiExplicit теперь"
+            " включен в этом чате\nДействие: {}</b>"
         ),
-        "antiexplicit_off": "😒 <b>AntiExplicit теперь выключен в этом чате</b>",
-        "antinsfw_on": "🔞 <b>AntiNSFW теперь включен в этом чате\nДействие: {}</b>",
-        "antinsfw_off": "🔞 <b>AntiNSFW теперь выключен в этом чате</b>",
-        "captcha_on": "🚥 <b>Captcha теперь включена в этом чате\nДействие: {}</b>",
-        "captcha_off": "🚥 <b>Captcha теперь выключена в этом чате</b>",
-        "no_fed_warns": "👮‍♂️ <b>This federation has no warns yet</b>",
-        "warns_adm_fed": "👮‍♂️ <b>Warns in this federation</b>:\n",
-        "welcome": "👋 <b>Теперь я буду приветствовать людей в этом чате</b>\n{}",
-        "unwelcome": "👋 <b>Я больше не буду приветствовать людей в этом чате</b>",
+        "antiexplicit_off": (
+            "<emoji document_id=5373123633415723713>🤬</emoji> <b>AntiExplicit теперь"
+            " выключен в этом чате</b>"
+        ),
+        "antinsfw_on": (
+            "<emoji document_id=4976982981341086273>🔞</emoji> <b>AntiNSFW теперь"
+            " включен в этом чате\nДействие: {}</b>"
+        ),
+        "antinsfw_off": (
+            "<emoji document_id=4976982981341086273>🔞</emoji> <b>AntiNSFW теперь"
+            " выключен в этом чате</b>"
+        ),
+        "captcha_on": (
+            "<emoji document_id=5213107179329953547>🚥</emoji> <b>Captcha теперь"
+            " включена в этом чате\nДействие: {}</b>"
+        ),
+        "captcha_off": (
+            "<emoji document_id=5213107179329953547>🚥</emoji> <b>Captcha теперь"
+            " выключена в этом чате</b>"
+        ),
+        "no_fed_warns": (
+            "<emoji document_id=5193091781327068499>👮‍♀️</emoji> <b>This federation has"
+            " no warns yet</b>"
+        ),
+        "warns_adm_fed": (
+            "<emoji document_id=5193091781327068499>👮‍♀️</emoji> <b>Warns in this"
+            " federation</b>:\n"
+        ),
+        "welcome": (
+            "<emoji document_id=5472055112702629499>👋</emoji> <b>Теперь я буду"
+            " приветствовать людей в этом чате</b>\n{}"
+        ),
+        "unwelcome": (
+            "<emoji document_id=5472055112702629499>👋</emoji> <b>Я больше не буду"
+            " приветствовать людей в этом чате</b>"
+        ),
         "chat404": "🔓 <b>Этот чат еще не защищен.</b>\n",
         "not_admin": "🤷‍♂️ <b>Я здесь не админ, или у меня недостаточно прав</b>",
-        "no_defense": "🛡 <b>Федеративный список защиты пуст</b>",
-        "defense_list": "🛡 <b>Федеративный список защиты:</b>\n{}",
-        "fed404": "💼 <b>Федерация не найдена</b>",
-        "fedexists": "💼 <b>Федерация существует</b>",
-        "joinfed": "💼 <b>Присоединился к федерации</b>",
-        "namedfed": "💼 <b>Федерация переименована в {}</b>",
-        "nofed": "💼 <b>Этот чат не находится ни в одной из федераций</b>",
-        "feds_header": "💼 <b>Федерации:</b>\n\n",
-        "no_fed": "💼 <b>Этот чат не находится ни в одной из федераций</b>",
-        "api_error": "🚫 <b>Ошибка api.hikariatama.ru!</b>\n<code>{}</code>",
-        "fsave_args": "💼 <b>Пример: .fsave shortname &lt;reply&gt;</b>",
-        "fstop_args": "💼 <b>Пример: .fstop shortname</b>",
-        "fsave": "💼 <b>Федеративная заметка </b><code>{}</code><b> сохранена!</b>",
-        "fstop": "💼 <b>Федеративная заметка </b><code>{}</code><b> удалена!</b>",
-        "fnotes": "💼 <b>Федеративные заметки:</b>\n{}",
+        "no_defense": (
+            "<emoji document_id=5215470334760721739>🛡</emoji> <b>Федеративный список"
+            " защиты пуст</b>"
+        ),
+        "defense_list": (
+            "<emoji document_id=5215470334760721739>🛡</emoji> <b>Федеративный список"
+            " защиты:</b>\n{}"
+        ),
+        "fed404": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Федерация не"
+            " найдена</b>"
+        ),
+        "fedexists": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Федерация"
+            " существует</b>"
+        ),
+        "joinfed": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Присоединился к"
+            " федерации</b>"
+        ),
+        "namedfed": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Федерация"
+            " переименована в {}</b>"
+        ),
+        "nofed": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Этот чат не находится"
+            " ни в одной из федераций</b>"
+        ),
+        "feds_header": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Федерации:</b>\n\n"
+        ),
+        "no_fed": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Этот чат не находится"
+            " ни в одной из федераций</b>"
+        ),
+        "api_error": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Ошибка"
+            " api.hikariatama.ru!</b>\n<code>{}</code>"
+        ),
+        "fsave_args": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Пример: .fsave"
+            " shortname &lt;reply&gt;</b>"
+        ),
+        "fstop_args": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Пример: .fstop"
+            " shortname</b>"
+        ),
+        "fsave": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Федеративная заметка"
+            " </b><code>{}</code><b> сохранена!</b>"
+        ),
+        "fstop": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Федеративная заметка"
+            " </b><code>{}</code><b> удалена!</b>"
+        ),
+        "fnotes": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Федеративные"
+            " заметки:</b>\n{}"
+        ),
         "usage": "ℹ️ <b>Пример: .{} &lt;on/off&gt;</b>",
         "chat_only": "ℹ️ <b>Эта команда предназначена для чатов</b>",
-        "no_federations": "💼 <b>Нет активных федераций</b>",
-        "clrallwarns_fed": "👮‍♂️ <b>Прощены все предупреждения в федерации</b>",
-        "cleaning": "🧹 <b>Поиск удаленных аккаунтов...</b>",
-        "deleted": "🧹 <b>Удалено {} удаленных аккаунтов</b>",
-        "fcleaning": "🧹 <b>Поиск удаленных аккаунтов в федерации...</b>",
+        "no_federations": (
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Нет активных"
+            " федераций</b>"
+        ),
+        "clrallwarns_fed": (
+            "<emoji document_id=5193091781327068499>👮‍♀️</emoji> <b>Прощены все"
+            " предупреждения в федерации</b>"
+        ),
+        "cleaning": (
+            "<emoji document_id=5771385342204580039>🫥</emoji> <b>Поиск удаленных"
+            " аккаунтов...</b>"
+        ),
+        "deleted": (
+            "<emoji document_id=5771385342204580039>🫥</emoji> <b>Удалено {} удаленных"
+            " аккаунтов</b>"
+        ),
+        "fcleaning": (
+            "<emoji document_id=5771385342204580039>🫥</emoji> <b>Поиск удаленных"
+            " аккаунтов в федерации...</b>"
+        ),
         "btn_unban": "🔓 Разбанить (админ)",
         "btn_unmute": "🔈 Размутить (админ)",
         "btn_unwarn": "♻️ Удалить предупреждение (админ)",
         "btn_funmute": "🔈 Размутить в федерации (админ)",
         "btn_funban": "🔓 Разбанить в федерации (админ)",
         "btn_mute": "🙊 Мут",
-        "btn_ban": "🔒 Бан",
-        "btn_fban": "💼 Фед. бан",
+        "btn_ban": "<emoji document_id=5247152118069992250>🔒</emoji> Бан",
+        "btn_fban": "<emoji document_id=5773781976905421370>💼</emoji> Фед. бан",
         "btn_del": "🗑 Удалить",
         "sync": "🔄 <b>Принудительная синхронизация федераций и чатов с сервером...</b>",
         "sync_complete": "😌 <b>Сихнронизирован</b>",
-        "rename_noargs": "🚫 <b>Укажи имя федерации</b>",
+        "rename_noargs": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Укажи имя"
+            " федерации</b>"
+        ),
         "suffix_removed": "📼 <b>Суффикс предупреждения удален</b>",
         "suffix_updated": "📼 <b>Установлен новый суффикс предупреждения</b>\n\n{}",
         "processing_myrights": "😌 <b>Обработка чатов</b>",
         "logchat_removed": "📲 <b>Логирование отключено</b>",
-        "logchat_invalid": "🚫 <b>Неверный чат логирования</b>",
+        "logchat_invalid": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Неверный чат"
+            " логирования</b>"
+        ),
         "logchat_set": "📲 <b>Чат логирования установлен на </b><code>{}</code>",
-        "clnraid_args": "🥷 <b>Пример: </b><code>.clnraid 10</code>",
+        "clnraid_args": (
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>Пример:"
+            " </b><code>.clnraid 10</code>"
+        ),
         "clnraid_admin": (
-            "🥷 <b>Ошибка выдачи прав боту. Убедись, что у тебя достаточно прав</b>"
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>Ошибка выдачи прав"
+            " боту. Убедись, что у тебя достаточно прав</b>"
         ),
         "clnraid_started": (
-            "🥷 <b>RaidCleaner активен... Найдено {} пользователей для бана...</b>"
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>RaidCleaner активен..."
+            " Найдено {} пользователей для бана...</b>"
         ),
         "clnraid_confirm": (
-            "🥷 <b>Подтвердите запуск RaidCleaner на {} пользователях</b>"
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>Подтвердите запуск"
+            " RaidCleaner на {} пользователях</b>"
         ),
-        "clnraid_yes": "🥷 Начать",
+        "clnraid_yes": "<emoji document_id=6323575131239089635>🥷</emoji> Начать",
         "banninja_report": (
-            "🥷 <b>BanNinja закончил работу.</b>\n<i>Удалено {} бот(-ов)</i>\n\n🏹"
-            " <i>«BanNinja can handle any size of attack»</i> ©"
-            " <code>@hikariatama</code>"
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja закончил"
+            " работу.</b>\n<i>Удалено {} бот(-ов)</i>\n\n🏹 <i>«BanNinja can handle any"
+            " size of attack»</i> © <code>@hikariatama</code>"
         ),
         "clnraid_cancel": "🔻 Отмена",
         "clnraid_stop": "🚨 Остановить",
         "clnraid_complete": (
-            "🥷 <b>RaidCleaner закончил работу! Удалено: {} бот(-ов)</b>"
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>RaidCleaner закончил"
+            " работу! Удалено: {} бот(-ов)</b>"
         ),
-        "clnraid_cancelled": "🥷 <b>RaidCleaner остановлен. Удалено: {} бот(-ов)</b>",
+        "clnraid_cancelled": (
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>RaidCleaner"
+            " остановлен. Удалено: {} бот(-ов)</b>"
+        ),
         "confirm_rmfed_btn": "🗑 Удалить",
         "decline_rmfed_btn": "🔻 Отмена",
-        "pil_unavailable": "🚫 <b>Библиотека Pillow недоступна</b>",
+        "pil_unavailable": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Библиотека Pillow"
+            " недоступна</b>"
+        ),
         "_cmd_doc_version": "Получить информацию о модуле",
         "_cmd_doc_deleted": "Очистка удалнных аккаунтов в чате",
         "_cmd_doc_fclean": "Очистка удаленных аккаунтов в федерации",
@@ -1185,20 +1724,18 @@ class HikariChatMod(loader.Module):
         "configure": "Настроить",
         "toggle": "Включить\\выключить",
         "fed": (
-            '💼 <b>Федерация "{}":</b>\n🔰 <b>Чаты:</b>\n<b>{}</b>\n🔰'
-            " <b>Каналы:</b>\n<b>{}</b>\n🔰 <b>Админы:</b>\n<b>{}</b>\n🔰"
-            " <b>Предупреждения: {}</b>\n"
-        ),
-        "version": (
-            "<b>🪆 {}</b>\n\n<b>😌 Автор: t.me/hikariatama</b>\n<b>📥 Скачано из"
-            " @hikarimods</b>\n<b>{}</b>"
+            '<emoji document_id=5773781976905421370>💼</emoji> <b>Федерация "{}":</b>\n🔰'
+            " <b>Чаты:</b>\n<b>{}</b>\n🔰 <b>Каналы:</b>\n<b>{}</b>\n🔰"
+            " <b>Админы:</b>\n<b>{}</b>\n🔰 <b>Предупреждения: {}</b>\n"
         ),
         "confirm_rmfed": (
             "⚠️ <b>Внимание! Это действие нельзя отменить! Ты уверен, что хочешь"
             " удалить федерацию </b><code>{}</code><b>?</b>"
         ),
         "_cls_doc": "Must-have модуль администратора чата",
-        "no_notes": "🚫 <b>Нет заметок</b>",
+        "no_notes": (
+            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Нет заметок</b>"
+        ),
     }
 
     def __init__(self):
@@ -1212,13 +1749,13 @@ class HikariChatMod(loader.Module):
             loader.ConfigValue(
                 "join_ratelimit",
                 10,
-                lambda: "How many users per minute need to join until ban starts",
+                lambda: "How many users per minute need to join until BanNinja activates",
                 validator=loader.validators.Integer(minimum=1),
             ),
             loader.ConfigValue(
                 "banninja_cooldown",
                 300,
-                lambda: "How long is banninja supposed to be active in seconds",
+                lambda: "How long is BanNinja supposed to be active in seconds",
                 validator=loader.validators.Integer(minimum=15),
             ),
             loader.ConfigValue(
@@ -1230,7 +1767,7 @@ class HikariChatMod(loader.Module):
             loader.ConfigValue(
                 "close_on_raid",
                 True,
-                lambda: "Close chat on raid",
+                lambda: "Close chat on raid with active BanNinja",
                 validator=loader.validators.Boolean(),
             ),
         )
@@ -1393,7 +1930,11 @@ class HikariChatMod(loader.Module):
             if str(chat) in info["chats"]:
                 fed = info
 
-        answer_message += f"\n💼 <b>{fed['name']}</b>" if fed else ""
+        answer_message += (
+            f"\n<emoji document_id=5773781976905421370>💼</emoji> <b>{fed['name']}</b>"
+            if fed
+            else ""
+        )
 
         btns = utils.chunks(btns, 3) + [[{"text": "❌ Close", "action": "close"}]]
 
@@ -1419,12 +1960,16 @@ class HikariChatMod(loader.Module):
                 markup = utils.chunks(
                     [
                         {
-                            "text": "🔒 Ban",
+                            "text": (
+                                "<emoji document_id=5247152118069992250>🔒</emoji> Ban"
+                            ),
                             "callback": self._change_protection_state,
                             "args": (chat, protection, "ban"),
                         },
                         {
-                            "text": "🔊 Mute",
+                            "text": (
+                                "<emoji document_id=5436040291507247633>🎉</emoji> Mute"
+                            ),
                             "callback": self._change_protection_state,
                             "args": (chat, protection, "mute"),
                         },
@@ -1434,7 +1979,9 @@ class HikariChatMod(loader.Module):
                             "args": (chat, protection, "warn"),
                         },
                         {
-                            "text": "🚪 Kick",
+                            "text": (
+                                "<emoji document_id=6037460928423791421>🚪</emoji> Kick"
+                            ),
                             "callback": self._change_protection_state,
                             "args": (chat, protection, "kick"),
                         },
@@ -1444,7 +1991,9 @@ class HikariChatMod(loader.Module):
                             "args": (chat, protection, "delmsg"),
                         },
                         {
-                            "text": "🚫 Off",
+                            "text": (
+                                "<emoji document_id=5424728541650494040>🚫</emoji> Off"
+                            ),
                             "callback": self._change_protection_state,
                             "args": (chat, protection, "off"),
                         },
@@ -1858,7 +2407,10 @@ class HikariChatMod(loader.Module):
                 return
 
             await self._client.edit_permissions(
-                chat, user, until_date=0, send_messages=True
+                chat,
+                user,
+                until_date=0,
+                send_messages=True,
             )
             msg = self.strings("inline_unmuted").format(
                 utils.get_link(user),
@@ -2359,7 +2911,6 @@ class HikariChatMod(loader.Module):
                     async for user in self._client.iter_participants(
                         self._linked_channels[str(c)]
                     ):
-
                         if user.deleted:
                             try:
                                 await self._client.kick_participant(
@@ -2378,7 +2929,7 @@ class HikariChatMod(loader.Module):
 
                     overall += kicked
                     cleaned_in_c += [
-                        "📣 <a"
+                        "<emoji document_id=5213203794619277246>📣</emoji> <a"
                         f' href="{utils.get_link(channel)}">{utils.escape_html(channel.title)}</a>'
                         f" - {kicked}"
                     ]
@@ -3210,7 +3761,10 @@ class HikariChatMod(loader.Module):
                     f" href=\"tg://resolve?domain={getattr(c, 'username', '')}\">{c.title}</a></b>"
                 )
 
-            res += f"\n        <b>👮‍♂️ {len(config.get('warns', []))} warns</b>\n\n"
+            res += (
+                "\n        <b><emoji document_id=5193091781327068499>👮‍♀️</emoji>"
+                f" {len(config.get('warns', []))} warns</b>\n\n"
+            )
 
         await utils.answer(message, res)
 
@@ -3266,7 +3820,7 @@ class HikariChatMod(loader.Module):
                         self._linked_channels[str(chat)]
                     )
                     channels += (
-                        " <b>📣 <a"
+                        " <b><emoji document_id=5213203794619277246>📣</emoji> <a"
                         f' href="{utils.get_link(channel)}">{utils.escape_html(channel.title)}</a></b>\n'
                     )
                 except Exception:
@@ -3485,7 +4039,7 @@ class HikariChatMod(loader.Module):
                         continue
                     processed += [warn]
                     _warns += (
-                        "<code>   </code>🏴󠁧󠁢󠁥󠁮󠁧󠁿 <i>"
+                        "<emoji document_id=4974362561664254705>🛑</emoji> <i>"
                         + warn
                         + (
                             f" </i><b>[x{warns[str(usid)].count(warn)}]</b><i>"
@@ -3527,7 +4081,8 @@ class HikariChatMod(loader.Module):
                         name = user_obj.title
 
                     res += (
-                        f'🐺 <b><a href="{utils.get_link(user_obj)}">'
+                        "<emoji document_id=5467759840463953770>🐺</emoji> <b><a"
+                        f' href="{utils.get_link(user_obj)}">'
                         + name
                         + "</a></b>\n"
                     )
@@ -5380,7 +5935,8 @@ class HikariChatMod(loader.Module):
         # We can override class docstings because of abc meta
         self.__doc__ = (
             "Advanced chat admin toolkit\nNow became free...\n\n💻 Developer:"
-            " t.me/hikariatama\n📣 Downloaded from: @hikarimods\n\n"
+            " t.me/hikariatama\n📣"
+            " Downloaded from: @hikarimods\n\n"
             + f"📦Version: {version}\n"
             + ("🗃 Local" if not self.api._inited else "⭐️ Full")
         )

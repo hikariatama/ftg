@@ -420,7 +420,8 @@ class SystemdMod(loader.Module):
         await utils.answer(message, self.strings("unit_removed").format(args))
 
     async def unitcmd(self, message: Message):
-        """<unit> <start|stop|restart|logs|tail> - Perform specific action on unit bypassing main menu"""
+        """<unit> <start|stop|restart|logs|tail> - Perform specific action on unit bypassing main menu
+        """
         args = utils.get_args_raw(message)
         if not args or len(args.split()) < 2:
             await utils.answer(message, self.strings("args"))

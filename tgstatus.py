@@ -101,7 +101,8 @@ class TgStatus(loader.Module):
         )
     )
     async def tgstatus(self, message: Message):
-        """<custom emojis for statuses> <time to rotate in minutes> - Start status rotation with interval in minutes"""
+        """<custom emojis for statuses> <time to rotate in minutes> - Start status rotation with interval in minutes
+        """
         args = utils.get_args_raw(message)
         args = "".join(s for s in args if s.isdigit())
         if not args or not any(
@@ -141,7 +142,8 @@ class TgStatus(loader.Module):
         )
     )
     async def tgstatuspack(self, message: Message):
-        """<custom emojis for pack search> <time to rotate in minutes> - Start status rotation with interval in minutes using full pack of specified emojis"""
+        """<custom emojis for pack search> <time to rotate in minutes> - Start status rotation with interval in minutes using full pack of specified emojis
+        """
         args = utils.get_args_raw(message)
         args = "".join(s for s in args if s.isdigit())
         if not args or not any(

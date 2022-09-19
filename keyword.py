@@ -23,7 +23,8 @@ from .. import loader, utils
 
 @loader.tds
 class KeywordMod(loader.Module):
-    """Allows you to create custom filters with regexes, commands and unlimited funcionality"""
+    """Allows you to create custom filters with regexes, commands and unlimited funcionality
+    """
 
     strings = {
         "name": "Keyword",
@@ -71,7 +72,8 @@ class KeywordMod(loader.Module):
         self.bl = self.get("bl", [])
 
     async def kwordcmd(self, message: Message):
-        """<keyword | could be in quotes | & for multiple words that should be in msg> <message | empty to remove keyword> [-r for full match] [-m for autoreading msg] [-l to log in pm] [-e for regular expressions]"""
+        """<keyword | could be in quotes | & for multiple words that should be in msg> <message | empty to remove keyword> [-r for full match] [-m for autoreading msg] [-l to log in pm] [-e for regular expressions]
+        """
         args = utils.get_args_raw(message)
         kw, ph, restrict, ar, l, e, c = "", "", False, False, False, False, False
         if "-r" in args:
