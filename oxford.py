@@ -106,14 +106,22 @@ class OxfordMod(loader.Module):
 
     strings = {
         "name": "Oxford",
-        "no_exact": "😔 <b>There is no definition for </b><code>{}</code>\n<b>Maybe, you meant:</b>",
+        "no_exact": (
+            "😔 <b>There is no definition for </b><code>{}</code>\n<b>Maybe, you"
+            " meant:</b>"
+        ),
         "match": '{} <b><a href="{}">{}</a></b> [{}] <i>({})</i>\n\n{}',
         **{key: key for key in parts_of_speech},
     }
 
     strings_ru = {
-        "_cls_doc": "Быстрый доступ к определениям слов в образовательном Оксфордском словаре",
-        "no_exact": "😔 <b>Нет определения для </b><code>{}</code>\n<b>Возможно, вы имели в виду:</b>",
+        "_cls_doc": (
+            "Быстрый доступ к определениям слов в образовательном Оксфордском словаре"
+        ),
+        "no_exact": (
+            "😔 <b>Нет определения для </b><code>{}</code>\n<b>Возможно, вы имели в"
+            " виду:</b>"
+        ),
         **parts_of_speech,
     }
 
@@ -156,7 +164,9 @@ class OxfordMod(loader.Module):
             ),
         )
 
-    @loader.command(ru_doc="<слово> - Поиск слова в образовательном Оксфордском словаре")
+    @loader.command(
+        ru_doc="<слово> - Поиск слова в образовательном Оксфордском словаре"
+    )
     async def oxford(self, message: Message):
         """<term> - Search word in Oxford Learner's Dictionary"""
         args = utils.get_args_raw(message)

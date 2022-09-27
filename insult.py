@@ -26,8 +26,7 @@ class PoliteInsultMod(loader.Module):
     strings = {
         "name": "PoliteInsult",
         "insult": (
-            "<emoji document_id=5373123633415723713>🤬</emoji> {} you are {} {}"
-            " {} {}"
+            "<emoji document_id=5373123633415723713>🤬</emoji> {} you are {} {} {} {}"
         ),
         "adjectives_start": [
             "temperamental",
@@ -39,7 +38,7 @@ class PoliteInsultMod(loader.Module):
             "unprofessional",
             "irresponsible",
             "reckless",
-            "indifferent to me",
+            "indifferent to meser",
         ],
         "nouns": ["participant of this group chat", "this world citizen"],
         "starts": [
