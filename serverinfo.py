@@ -1,3 +1,5 @@
+__version__ = (2, 0, 0)
+
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
@@ -13,6 +15,7 @@
 # scope: hikka_only
 # scope: hikka_min 1.2.10
 
+import contextlib
 import os
 import platform
 import sys
@@ -33,88 +36,95 @@ class serverInfoMod(loader.Module):
 
     strings = {
         "name": "ServerInfo",
-        "loading": "<b>👾 Loading server info...</b>",
+        "loading": (
+            "<emoji document_id=5271897426117009417>🚘</emoji> <b>Loading server"
+            " info...</b>"
+        ),
         "servinfo": (
-            "<b><u>👾 Server Info:</u>\n\n<u>🗄 Used resources:</u>\n    CPU: {} Cores"
-            " {}%\n    RAM: {} / {}MB ({}%)\n\n<u>🧾 Dist info</u>\n    Kernel: {}\n   "
-            " Arch: {}\n    OS: {}</b>"
+            "<emoji document_id=5271897426117009417>🚘</emoji> <b>Server"
+            " Info</b>:\n\n<emoji document_id=5172854840321114816>💻</emoji> <b>CPU:"
+            " {cpu} Cores {cpu_load}%</b>\n<emoji"
+            " document_id=5174693704799093859>💻</emoji> <b>RAM: {ram} / {ram_load_mb}MB"
+            " ({ram_load}%)</b>\n\n<emoji document_id=5172474181664637769>💻</emoji>"
+            " <b>Kernel: {kernel}</b>\n{arch_emoji} <b>Arch: {arch}</b>\n<emoji"
+            " document_id=5172622400986022463>💻</emoji> <b>OS: {os}</b>\n\n<emoji"
+            " document_id=5172839378438849164>💻</emoji> <b>Python: {python}</b>"
         ),
     }
 
     strings_ru = {
-        "loading": "<b>👾 Загрузка информации о сервере...</b>",
-        "servinfo": (
-            "<b><u>👾 Информация о сервере:</u>\n\n<u>🗄 Задействованные ресурсы:</u>\n  "
-            "  CPU: {} ядер {}%\n    RAM: {} / {}MB ({}%)\n\n<u>🧾 Информация о"
-            " ядре</u>\n    Kernel: {}\n    Arch: {}\n    OS: {}</b>"
+        "loading": (
+            "<emoji document_id=5271897426117009417>🚘</emoji> <b>Загрузка информации о"
+            " сервере...</b>"
         ),
-        "_cmd_doc_serverinfo": "Показать информацию о сервере",
+        "servinfo": (
+            "<emoji document_id=5271897426117009417>🚘</emoji> <b>Информация о сервере"
+            "</b>:\n\n<emoji document_id=5172854840321114816>💻</emoji> <b>CPU:"
+            " {cpu} ядер(-ро) {cpu_load}%</b>\n<emoji"
+            " document_id=5174693704799093859>💻</emoji> <b>RAM: {ram} / {ram_load_mb}MB"
+            " ({ram_load}%)</b>\n\n<emoji document_id=5172474181664637769>💻</emoji>"
+            " <b>Kernel: {kernel}</b>\n{arch_emoji} <b>Arch: {arch}</b>\n<emoji"
+            " document_id=5172622400986022463>💻</emoji> <b>OS: {os}</b>\n\n<emoji"
+            " document_id=5172839378438849164>💻</emoji> <b>Python: {python}</b>"
+        ),
         "_cls_doc": "Показывает информацию о сервере",
     }
 
-    async def serverinfocmd(self, message: Message):
+    @loader.command(ru_doc="Показать информацию о сервере")
+    async def serverinfo(self, message: Message):
         """Show server info"""
         message = await utils.answer(message, self.strings("loading"))
 
-        inf = []
+        inf = {
+            "cpu": "n/a",
+            "cpu_load": "n/a",
+            "ram": "n/a",
+            "ram_load_mb": "n/a",
+            "ram_load": "n/a",
+            "kernel": "n/a",
+            "arch_emoji": "n/a",
+            "arch": "n/a",
+            "os": "n/a",
+        }
 
-        try:
-            inf.append(psutil.cpu_count(logical=True))
-        except Exception:
-            inf.append("n/a")
+        with contextlib.suppress(Exception):
+            inf["cpu"] = psutil.cpu_count(logical=True)
 
-        try:
-            inf.append(psutil.cpu_percent())
-        except Exception:
-            inf.append("n/a")
+        with contextlib.suppress(Exception):
+            inf["cpu_load"] = psutil.cpu_percent()
 
-        try:
-            inf.append(
-                bytes_to_megabytes(
-                    psutil.virtual_memory().total - psutil.virtual_memory().available
-                )
+        with contextlib.suppress(Exception):
+            inf["ram"] = bytes_to_megabytes(
+                psutil.virtual_memory().total - psutil.virtual_memory().available
             )
-        except Exception:
-            inf.append("n/a")
 
-        try:
-            inf.append(bytes_to_megabytes(psutil.virtual_memory().total))
-        except Exception:
-            inf.append("n/a")
+        with contextlib.suppress(Exception):
+            inf["ram_load_mb"] = bytes_to_megabytes(psutil.virtual_memory().total)
 
-        try:
-            inf.append(psutil.virtual_memory().percent)
-        except Exception:
-            inf.append("n/a")
+        with contextlib.suppress(Exception):
+            inf["ram_load"] = psutil.virtual_memory().percent
 
-        try:
-            inf.append(utils.escape_html(platform.release()))
-        except Exception:
-            inf.append("n/a")
+        with contextlib.suppress(Exception):
+            inf["kernel"] = utils.escape_html(platform.release())
 
-        try:
-            inf.append(utils.escape_html(platform.architecture()[0]))
-        except Exception:
-            inf.append("n/a")
+        with contextlib.suppress(Exception):
+            inf["arch"] = utils.escape_html(platform.architecture()[0])
 
-        try:
+        inf["arch_emoji"] = (
+            "<emoji document_id=5172881503478088537>💻</emoji>"
+            if "64" in (inf.get("arch", "") or "")
+            else "<emoji document_id=5174703196676817427>💻</emoji>"
+        )
+
+        with contextlib.suppress(Exception):
             system = os.popen("cat /etc/*release").read()
             b = system.find('DISTRIB_DESCRIPTION="') + 21
             system = system[b : system.find('"', b)]
-            inf.append(utils.escape_html(system))
-        except Exception:
-            inf.append("n/a")
+            inf["os"] = utils.escape_html(system)
 
-        try:
-            inf.append(
-                f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-            )
-        except Exception:
-            inf.append("n/a")
+        with contextlib.suppress(Exception):
+            inf[
+                "python"
+            ] = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
 
-        try:
-            inf.append(os.popen("python3 -m pip --version").read().split()[1])
-        except Exception:
-            inf.append("n/a")
-
-        await utils.answer(message, self.strings("servinfo").format(*inf))
+        await utils.answer(message, self.strings("servinfo").format(**inf))

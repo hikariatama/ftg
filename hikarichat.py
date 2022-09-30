@@ -1,4 +1,4 @@
-__version__ = (13, 0, 0)
+__version__ = (13, 0, 1)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
@@ -31,7 +31,7 @@ import re
 import time
 from math import ceil
 from types import FunctionType
-from typing import List, Union, Optional
+import typing
 import contextlib
 
 import aiohttp
@@ -117,7 +117,7 @@ def fit(line: str, max_size: int) -> str:
     return f"{' ' * ceil(offsets_sum / 2 - 1)}{line}{' ' * int(offsets_sum / 2 - 1)}"
 
 
-def gen_table(t: List[List[str]]) -> bytes:
+def gen_table(t: typing.List[typing.List[str]]) -> bytes:
     table = ""
     header = t[0]
     rows_sizes = [len(i) + 2 for i in header]
@@ -142,14 +142,14 @@ def gen_table(t: List[List[str]]) -> bytes:
     return "\n".join(table.splitlines()[:-1]) + "\n" + f"┗{('┷'.join(rows_lines))}┛\n"
 
 
-def get_first_name(user: Union[User, Channel]) -> str:
+def get_first_name(user: typing.Union[User, Channel]) -> str:
     """Returns first name of user or channel title"""
     return utils.escape_html(
         user.first_name if isinstance(user, User) else user.title
     ).strip()
 
 
-def get_full_name(user: Union[User, Channel]) -> str:
+def get_full_name(user: typing.Union[User, Channel]) -> str:
     return utils.escape_html(
         user.title
         if isinstance(user, Channel)
@@ -190,7 +190,7 @@ class HikariChatAPI:
 
     async def init(
         self,
-        client: "TelegramClient",  # type: ignore
+        client: "CustomTelegramClient",  # type: ignore
         db: "Database",  # type: ignore
         module: loader.Module,
     ):
@@ -283,7 +283,7 @@ class HikariChatAPI:
 
             await asyncio.sleep(5)
 
-    def request(self, payload: dict, message: Optional[Message] = None):
+    def request(self, payload: dict, message: typing.Optional[Message] = None):
         if isinstance(message, Message):
             payload = {
                 **payload,
@@ -295,7 +295,7 @@ class HikariChatAPI:
 
         self._queue += [payload]
 
-    def should_protect(self, chat_id: Union[str, int], protection: str) -> bool:
+    def should_protect(self, chat_id: typing.Union[str, int], protection: str) -> bool:
         return (
             str(chat_id) in self.chats
             and protection in self.chats[str(chat_id)]
@@ -360,7 +360,7 @@ class HikariChatAPI:
                 continue
 
             ERROR = (
-                "<emoji document_id=5424728541650494040>🚫</emoji> <b>API Error:"
+                "<emoji document_id=5300759756669984376>🚫</emoji> <b>API Error:"
                 " </b><code>{}</code>"
             )
 
@@ -370,7 +370,7 @@ class HikariChatAPI:
                         await self._client.edit_message(
                             item["chat_id"],
                             item["message_id"],
-                            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Bad"
+                            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Bad"
                             " API arguments, PROKAZNIK!</b>",
                         )
                     return False
@@ -669,7 +669,7 @@ class HikariChatMod(loader.Module):
     strings = {
         "name": "HikariChat",
         "args": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Args are incorrect</b>"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Args are incorrect</b>"
         ),
         "no_reason": "Not specified",
         "antitagall_on": (
@@ -824,11 +824,11 @@ class HikariChatMod(loader.Module):
             " this chat</b>"
         ),
         "cas_on": (
-            "<emoji document_id=5215470334760721739>🛡</emoji> <b>CAS is now on in this"
+            "<emoji document_id=5300855732009180995>🛡</emoji> <b>CAS is now on in this"
             " chat\nAction: {}</b>"
         ),
         "cas_off": (
-            "<emoji document_id=5215470334760721739>🛡</emoji> <b>CAS is now off in this"
+            "<emoji document_id=5300855732009180995>🛡</emoji> <b>CAS is now off in this"
             " chat</b>"
         ),
         "antinsfw_on": (
@@ -853,7 +853,7 @@ class HikariChatMod(loader.Module):
             " I {}</b>"
         ),
         "cas": (
-            '<emoji document_id=5215470334760721739>🛡</emoji> <b><a href="{}">{}</a>'
+            '<emoji document_id=5300855732009180995>🛡</emoji> <b><a href="{}">{}</a>'
             " appears to be in Combat Anti Spam database.\n👊 Action: I {}</b>"
         ),
         "stick": (
@@ -865,7 +865,7 @@ class HikariChatMod(loader.Module):
             " sent explicit content.\n👊 Action: I {}</b>"
         ),
         "destructive_stick": (
-            '<emoji document_id=5424728541650494040>🚫</emoji> <b><a href="{}">{}</a>'
+            '<emoji document_id=5300759756669984376>🚫</emoji> <b><a href="{}">{}</a>'
             " sent destructive sticker.\n👊 Action: I {}</b>"
         ),
         "nsfw_content": (
@@ -1016,15 +1016,15 @@ class HikariChatMod(loader.Module):
             ' was unbanned in <a href="{}">{}</a></b>'
         ),
         "defense": (
-            "<emoji document_id=5215470334760721739>🛡</emoji> <b>Shield for <a"
+            "<emoji document_id=5300855732009180995>🛡</emoji> <b>Shield for <a"
             ' href="{}">{}</a> is now {}</b>'
         ),
         "no_defense": (
-            "<emoji document_id=5215470334760721739>🛡</emoji> <b>Federative defense"
+            "<emoji document_id=5300855732009180995>🛡</emoji> <b>Federative defense"
             " list is empty</b>"
         ),
         "defense_list": (
-            "<emoji document_id=5215470334760721739>🛡</emoji> <b>Federative defense"
+            "<emoji document_id=5300855732009180995>🛡</emoji> <b>Federative defense"
             " list:</b>\n{}"
         ),
         "fadded": (
@@ -1106,7 +1106,7 @@ class HikariChatMod(loader.Module):
             " demoted in federation {}</b>"
         ),
         "api_error": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>api.hikariatama.ru"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>api.hikariatama.ru"
             " Error!</b>\n<code>{}</code>"
         ),
         "fsave_args": (
@@ -1184,8 +1184,8 @@ class HikariChatMod(loader.Module):
         "btn_funmute": "🔈 Fed Unmute (ADM)",
         "btn_funban": "🔓 Fed Unban (ADM)",
         "btn_mute": "🙊 Mute",
-        "btn_ban": "<emoji document_id=5247152118069992250>🔒</emoji> Ban",
-        "btn_fban": "<emoji document_id=5773781976905421370>💼</emoji> Fed Ban",
+        "btn_ban": "🔒 Ban",
+        "btn_fban": "💼 Fed Ban",
         "btn_del": "🗑 Delete",
         "inline_fbanned": (
             '<emoji document_id=5773781976905421370>💼</emoji> <b><a href="{}">{}</a>'
@@ -1200,7 +1200,7 @@ class HikariChatMod(loader.Module):
         "sync": "🔄 <b>Syncing chats and feds with server in force mode...</b>",
         "sync_complete": "😌 <b>Successfully synced</b>",
         "rename_noargs": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Specify new federation"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Specify new federation"
             " name</b>"
         ),
         "rename_success": '😇 <b>Federation renamed to "</b><code>{}</code><b>"</b>',
@@ -1209,7 +1209,7 @@ class HikariChatMod(loader.Module):
         "processing_myrights": "😌 <b>Processing chats</b>",
         "logchat_removed": "📲 <b>Log chat disabled</b>",
         "logchat_invalid": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Log chat invalid</b>"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Log chat invalid</b>"
         ),
         "logchat_set": "📲 <b>Log chat updated to </b><code>{}</code>",
         "clnraid_args": (
@@ -1278,22 +1278,22 @@ class HikariChatMod(loader.Module):
         "confirm_rmfed_btn": "🗑 Delete",
         "decline_rmfed_btn": "🔻 Cancel",
         "pil_unavailable": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Pillow package"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Pillow package"
             " unavailable</b>"
         ),
         "action": "<action>",
         "configure": "Configure",
         "toggle": "Toggle",
         "no_protects": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>This chat has no"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>This chat has no"
             " active protections to show</b>"
         ),
         "from_where": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Reply to a message to"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Reply to a message to"
             " purge from</b>"
         ),
         "no_notes": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>No notes found</b>"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>No notes found</b>"
         ),
         "complete_captcha": (
             "<emoji document_id=5213107179329953547>🚥</emoji> <b><a"
@@ -1307,6 +1307,10 @@ class HikariChatMod(loader.Module):
         "captcha_failed": (
             '<emoji document_id=5213107179329953547>🚥</emoji> <b><a href="{}">{}</a>'
             " failed captcha.\n👊 Action: I {}</b>"
+        ),
+        "fdef403": (
+            "<emoji document_id=5300855732009180995>🛡</emoji> <b>You can't {} this"
+            " user, because he is under federative protection</b>"
         ),
     }
 
@@ -1325,19 +1329,19 @@ class HikariChatMod(loader.Module):
             " прошел капчу.\n👊 Действие: {}</b>"
         ),
         "cas_on": (
-            "<emoji document_id=5215470334760721739>🛡</emoji> <b>CAS теперь включен в"
+            "<emoji document_id=5300855732009180995>🛡</emoji> <b>CAS теперь включен в"
             " этом чате\nДействие: {}</b>"
         ),
         "cas_off": (
-            "<emoji document_id=5215470334760721739>🛡</emoji> <b>CAS теперь выключен в"
+            "<emoji document_id=5300855732009180995>🛡</emoji> <b>CAS теперь выключен в"
             " этом чате</b>"
         ),
         "cas": (
-            '<emoji document_id=5215470334760721739>🛡</emoji> <b><a href="{}">{}</a>'
+            '<emoji document_id=5300855732009180995>🛡</emoji> <b><a href="{}">{}</a>'
             " appears to be in Combat Anti Spam database.\n👊 Action: I {}</b>"
         ),
         "from_where": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Ответь на сообщение,"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Ответь на сообщение,"
             " начиная с которого надо удалить.</b>"
         ),
         "smart_anti_raid_active": (
@@ -1355,7 +1359,7 @@ class HikariChatMod(loader.Module):
         ),
         "error": "😵 <b>Произошла ошибка HikariChat</b>",
         "args": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Неверные аргументы</b>"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Неверные аргументы</b>"
         ),
         "no_reason": "Не указана",
         "antitagall_on": (
@@ -1523,11 +1527,11 @@ class HikariChatMod(loader.Module):
         "chat404": "🔓 <b>Этот чат еще не защищен.</b>\n",
         "not_admin": "🤷‍♂️ <b>Я здесь не админ, или у меня недостаточно прав</b>",
         "no_defense": (
-            "<emoji document_id=5215470334760721739>🛡</emoji> <b>Федеративный список"
+            "<emoji document_id=5300855732009180995>🛡</emoji> <b>Федеративный список"
             " защиты пуст</b>"
         ),
         "defense_list": (
-            "<emoji document_id=5215470334760721739>🛡</emoji> <b>Федеративный список"
+            "<emoji document_id=5300855732009180995>🛡</emoji> <b>Федеративный список"
             " защиты:</b>\n{}"
         ),
         "fed404": (
@@ -1558,7 +1562,7 @@ class HikariChatMod(loader.Module):
             " ни в одной из федераций</b>"
         ),
         "api_error": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Ошибка"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Ошибка"
             " api.hikariatama.ru!</b>\n<code>{}</code>"
         ),
         "fsave_args": (
@@ -1609,13 +1613,13 @@ class HikariChatMod(loader.Module):
         "btn_funmute": "🔈 Размутить в федерации (админ)",
         "btn_funban": "🔓 Разбанить в федерации (админ)",
         "btn_mute": "🙊 Мут",
-        "btn_ban": "<emoji document_id=5247152118069992250>🔒</emoji> Бан",
-        "btn_fban": "<emoji document_id=5773781976905421370>💼</emoji> Фед. бан",
+        "btn_ban": "🔒 Бан",
+        "btn_fban": "💼 Фед. бан",
         "btn_del": "🗑 Удалить",
         "sync": "🔄 <b>Принудительная синхронизация федераций и чатов с сервером...</b>",
         "sync_complete": "😌 <b>Сихнронизирован</b>",
         "rename_noargs": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Укажи имя"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Укажи имя"
             " федерации</b>"
         ),
         "suffix_removed": "📼 <b>Суффикс предупреждения удален</b>",
@@ -1623,7 +1627,7 @@ class HikariChatMod(loader.Module):
         "processing_myrights": "😌 <b>Обработка чатов</b>",
         "logchat_removed": "📲 <b>Логирование отключено</b>",
         "logchat_invalid": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Неверный чат"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Неверный чат"
             " логирования</b>"
         ),
         "logchat_set": "📲 <b>Чат логирования установлен на </b><code>{}</code>",
@@ -1662,7 +1666,7 @@ class HikariChatMod(loader.Module):
         "confirm_rmfed_btn": "🗑 Удалить",
         "decline_rmfed_btn": "🔻 Отмена",
         "pil_unavailable": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Библиотека Pillow"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Библиотека Pillow"
             " недоступна</b>"
         ),
         "_cmd_doc_version": "Получить информацию о модуле",
@@ -1734,7 +1738,7 @@ class HikariChatMod(loader.Module):
         ),
         "_cls_doc": "Must-have модуль администратора чата",
         "no_notes": (
-            "<emoji document_id=5424728541650494040>🚫</emoji> <b>Нет заметок</b>"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Нет заметок</b>"
         ),
     }
 
@@ -1772,7 +1776,7 @@ class HikariChatMod(loader.Module):
             ),
         )
 
-    def render_table(self, t: List[List[str]]) -> bytes:
+    def render_table(self, t: typing.List[typing.List[str]]) -> bytes:
         table = gen_table(t)
 
         fnt = ImageFont.truetype(io.BytesIO(self.font), 20, encoding="utf-8")
@@ -1833,8 +1837,8 @@ class HikariChatMod(loader.Module):
 
     async def check_admin(
         self,
-        chat_id: Union[Chat, Channel, int],
-        user_id: Union[User, int],
+        chat_id: typing.Union[Chat, Channel, int],
+        user_id: typing.Union[User, int],
     ) -> bool:
         """
         Checks if user is admin in target chat
@@ -1895,7 +1899,7 @@ class HikariChatMod(loader.Module):
 
         return wrapped
 
-    async def get_config(self, chat: Union[str, int]) -> tuple:
+    async def get_config(self, chat: typing.Union[str, int]) -> tuple:
         info = self.api.chats[str(chat)]
         cinfo = await self._client.get_entity(int(chat))
 
@@ -1926,7 +1930,7 @@ class HikariChatMod(loader.Module):
             ]
 
         fed = None
-        for federation, info in self.api.feds.items():
+        for info in self.api.feds.values():
             if str(chat) in info["chats"]:
                 fed = info
 
@@ -1940,15 +1944,15 @@ class HikariChatMod(loader.Module):
 
         return {"text": answer_message, "reply_markup": btns}
 
-    async def _inline_config(self, call: CallbackQuery, chat: Union[str, int]):
+    async def _inline_config(self, call: CallbackQuery, chat: typing.Union[str, int]):
         await call.edit(**(await self.get_config(chat)))
 
     async def _change_protection_state(
         self,
         call: CallbackQuery,
-        chat: Union[str, int],
+        chat: typing.Union[str, int],
         protection: str,
-        state: Optional[str] = None,
+        state: typing.Optional[str] = None,
     ):
         if protection == "welcome":
             await call.answer("Use .welcome to configure this option!", show_alert=True)
@@ -1960,16 +1964,12 @@ class HikariChatMod(loader.Module):
                 markup = utils.chunks(
                     [
                         {
-                            "text": (
-                                "<emoji document_id=5247152118069992250>🔒</emoji> Ban"
-                            ),
+                            "text": "🔒 Ban",
                             "callback": self._change_protection_state,
                             "args": (chat, protection, "ban"),
                         },
                         {
-                            "text": (
-                                "<emoji document_id=5436040291507247633>🎉</emoji> Mute"
-                            ),
+                            "text": "🙊 Mute",
                             "callback": self._change_protection_state,
                             "args": (chat, protection, "mute"),
                         },
@@ -1979,9 +1979,7 @@ class HikariChatMod(loader.Module):
                             "args": (chat, protection, "warn"),
                         },
                         {
-                            "text": (
-                                "<emoji document_id=6037460928423791421>🚪</emoji> Kick"
-                            ),
+                            "text": "🚪 Kick",
                             "callback": self._change_protection_state,
                             "args": (chat, protection, "kick"),
                         },
@@ -1991,9 +1989,7 @@ class HikariChatMod(loader.Module):
                             "args": (chat, protection, "delmsg"),
                         },
                         {
-                            "text": (
-                                "<emoji document_id=5424728541650494040>🚫</emoji> Off"
-                            ),
+                            "text": "🚫 Off",
                             "callback": self._change_protection_state,
                             "args": (chat, protection, "off"),
                         },
@@ -2153,11 +2149,11 @@ class HikariChatMod(loader.Module):
 
     async def ban(
         self,
-        chat: Union[Chat, int],
-        user: Union[User, Channel, int],
+        chat: typing.Union[Chat, int],
+        user: typing.Union[User, Channel, int],
         period: int = 0,
         reason: str = None,
-        message: Union[None, Message] = None,
+        message: typing.Optional[Message] = None,
         silent: bool = False,
     ):
         """Ban user in chat"""
@@ -2243,11 +2239,11 @@ class HikariChatMod(loader.Module):
 
     async def mute(
         self,
-        chat: Union[Chat, int],
-        user: Union[User, Channel, int],
+        chat: typing.Union[Chat, int],
+        user: typing.Union[User, Channel, int],
         period: int = 0,
         reason: str = None,
-        message: Union[None, Message] = None,
+        message: typing.Optional[Message] = None,
         silent: bool = False,
     ):
         """Mute user in chat"""
@@ -2333,10 +2329,10 @@ class HikariChatMod(loader.Module):
                 message or chat.id, msg
             )
 
+    @loader.inline_everyone
     async def actions_callback_handler(self, call: CallbackQuery):
         """
-        Handles unmute\\unban button clicks
-        @allow: all
+        Handles unmute, unban, unwarn etc. button clicks
         """
         if not re.match(r"[fbmudw]{1,3}\/[-0-9]+\/[-#0-9]+", call.data):
             return
@@ -2575,9 +2571,15 @@ class HikariChatMod(loader.Module):
         if msg_id is not None:
             await self._client.delete_messages(chat, message_ids=[msg_id])
 
-    async def args_parser(self, message: Message) -> tuple:
+    async def args_parser(self, message: Message, include_force: bool = False) -> tuple:
         """Get args from message"""
         args = utils.get_args_raw(message)
+        if " -f" in args:
+            force = True
+            args = args.replace(" -f", "")
+        else:
+            force = False
+
         reply = await message.get_reply_message()
 
         if reply and not args:
@@ -2585,6 +2587,7 @@ class HikariChatMod(loader.Module):
                 (await self._client.get_entity(reply.sender_id)),
                 0,
                 utils.escape_html(self.strings("no_reason")).strip(),
+                *((force,) if include_force else []),
             )
 
         try:
@@ -2612,9 +2615,14 @@ class HikariChatMod(loader.Module):
         if time.time() + t >= 2208978000:  # 01.01.2040 00:00:00
             t = 0
 
-        return user, t, utils.escape_html(args or self.strings("no_reason")).strip()
+        return (
+            user,
+            t,
+            utils.escape_html(args or self.strings("no_reason")).strip(),
+            *((force,) if include_force else [])
+        )
 
-    async def find_fed(self, message: Union[Message, int]) -> str:
+    async def find_fed(self, message: typing.Union[Message, int]) -> str:
         """Find if chat belongs to any federation"""
         return next(
             (
@@ -2634,7 +2642,7 @@ class HikariChatMod(loader.Module):
     async def punish(
         self,
         chat_id: int,
-        user: Union[int, Channel, User],
+        user: typing.Union[int, Channel, User],
         violation: str,
         action: str,
         user_name: str,
@@ -3176,13 +3184,17 @@ class HikariChatMod(loader.Module):
             await utils.answer(message, self.strings("no_fed"))
             return
 
-        a = await self.args_parser(message)
+        a = await self.args_parser(message, include_force=True)
 
         if not a:
             await utils.answer(message, self.strings("args"))
             return
 
-        user, t, reason = a
+        user, t, reason, force = a
+
+        if not force and user.id in list(map(int, self.api.feds[fed]["fdef"])):
+            await utils.answer(message, self.strings("fdef403").format("fban"))
+            return
 
         chats = self.api.feds[fed]["chats"]
 
@@ -3377,13 +3389,17 @@ class HikariChatMod(loader.Module):
             await utils.answer(message, self.strings("no_fed"))
             return
 
-        a = await self.args_parser(message)
+        a = await self.args_parser(message, include_force=True)
 
         if not a:
             await utils.answer(message, self.strings("args"))
             return
 
-        user, t, reason = a
+        user, t, reason, force = a
+
+        if not force and user.id in list(map(int, self.api.feds[fed]["fdef"])):
+            await utils.answer(message, self.strings("fdef403").format("fmute"))
+            return
 
         chats = self.api.feds[fed]["chats"]
 
@@ -3579,15 +3595,22 @@ class HikariChatMod(loader.Module):
         """<user> [reason] - Ban user"""
         chat = await message.get_chat()
 
-        a = await self.args_parser(message)
+        a = await self.args_parser(message, include_force=True)
         if not a:
             await utils.answer(message, self.strings("args"))
             return
 
-        user, t, reason = a
+        user, t, reason, force = a
 
         if not chat.admin_rights and not chat.creator:
             await utils.answer(message, self.strings("not_admin"))
+            return
+
+        fed = await self.find_fed(message)
+        if not force and fed in self.api.feds and user.id in list(
+            map(int, self.api.feds[fed]["fdef"])
+        ):
+            await utils.answer(message, self.strings("fdef403").format("ban"))
             return
 
         try:
@@ -3602,15 +3625,22 @@ class HikariChatMod(loader.Module):
         """<user> [time] [reason] - Mute user"""
         chat = await message.get_chat()
 
-        a = await self.args_parser(message)
+        a = await self.args_parser(message, include_force=True)
         if not a:
             await utils.answer(message, self.strings("args"))
             return
 
-        user, t, reason = a
+        user, t, reason, force = a
 
         if not chat.admin_rights and not chat.creator:
             await utils.answer(message, self.strings("not_admin"))
+            return
+
+        fed = await self.find_fed(message)
+        if not force and fed in self.api.feds and user.id in list(
+            map(int, self.api.feds[fed]["fdef"])
+        ):
+            await utils.answer(message, self.strings("fdef403").format("mute"))
             return
 
         try:
@@ -3723,7 +3753,7 @@ class HikariChatMod(loader.Module):
 
     @error_handler
     async def protectscmd(self, message: Message):
-        """List available filters"""
+        """typing.List available filters"""
         await utils.answer(
             message,
             self.strings("protections")
@@ -3739,7 +3769,7 @@ class HikariChatMod(loader.Module):
 
     @error_handler
     async def fedscmd(self, message: Message):
-        """List federations"""
+        """typing.List federations"""
         res = self.strings("feds_header")
 
         if not self.api.feds:
@@ -3845,7 +3875,7 @@ class HikariChatMod(loader.Module):
     @error_handler
     @chat_command
     async def pchatcmd(self, message: Message):
-        """List protection for current chat"""
+        """typing.List protection for current chat"""
         chat_id = utils.get_chat_id(message)
         try:
             await self.inline.form(
@@ -3868,6 +3898,13 @@ class HikariChatMod(loader.Module):
             return
 
         args = utils.get_args_raw(message)
+
+        if " -f" in args:
+            args = args.replace(" -f", "")
+            force = True
+        else:
+            force = False
+
         reply = await message.get_reply_message()
         user = None
         if reply:
@@ -3893,6 +3930,10 @@ class HikariChatMod(loader.Module):
 
         if not fed:
             await utils.answer(message, self.strings("no_fed"))
+            return
+
+        if not force and user.id in list(map(int, self.api.feds[fed]["fdef"])):
+            await utils.answer(message, self.strings("fdef403").format("warn"))
             return
 
         self.api.request(
@@ -4390,7 +4431,7 @@ class HikariChatMod(loader.Module):
         res = ""
         for user in self.api.feds[fed].get("fdef", []).copy():
             try:
-                u = await self._client.get_entity(int(user))
+                u = await self._client.get_entity(int(user), exp=0)
             except Exception:
                 self.api.request(
                     {
@@ -4491,7 +4532,7 @@ class HikariChatMod(loader.Module):
 
     async def _clnraid(
         self,
-        call: Union[InlineCall, InlineMessage],
+        call: typing.Union[InlineCall, InlineMessage],
         chat_id: int,
         quantity: int,
     ) -> InlineCall:
@@ -4523,7 +4564,7 @@ class HikariChatMod(loader.Module):
 
     @error_handler
     async def myrightscmd(self, message: Message):
-        """List your admin rights in all chats"""
+        """typing.List your admin rights in all chats"""
         if not PIL_AVAILABLE:
             await utils.answer(message, self.strings("pil_unavailable"))
             return
@@ -4580,7 +4621,7 @@ class HikariChatMod(loader.Module):
             await message.delete()
 
     @error_handler
-    async def p__antiservice(self, chat_id: Union[str, int], message: Message):
+    async def p__antiservice(self, chat_id: typing.Union[str, int], message: Message):
         if (
             self.api.should_protect(chat_id, "antiservice")
             and str(chat_id) not in self._ban_ninja
@@ -4632,8 +4673,8 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__ndspam(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
         message: Message,
     ) -> bool:
         if not (
@@ -4648,8 +4689,8 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__banninja(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
         message: Message,
     ) -> bool:
         if not (
@@ -4856,11 +4897,11 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__antiraid(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
-        chat: Union[Chat, Channel],
+        chat: typing.Union[Chat, Channel],
     ) -> bool:
         if self.api.should_protect(chat_id, "antiraid") and (
             getattr(message, "user_joined", False)
@@ -4960,9 +5001,9 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__captcha(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
         chat: Chat,
     ) -> bool:
@@ -5037,9 +5078,9 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__cas(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
         chat: Chat,
     ) -> bool:
@@ -5072,9 +5113,9 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__welcome(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
         chat: Chat,
     ) -> bool:
@@ -5107,9 +5148,9 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__report(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
     ):
         if not self.api.should_protect(chat_id, "report") or not getattr(
@@ -5130,6 +5171,13 @@ class HikariChatMod(loader.Module):
             )
             and reply
         ):
+            fed = await self.find_fed(message)
+            if fed in self.api.feds and reply.sender_id in list(
+                map(int, self.api.feds[fed]["fdef"])
+            ):
+                await utils.answer(message, self.strings("fdef403").format("report"))
+                return
+
             chat = await message.get_chat()
 
             reason = (
@@ -5244,11 +5292,11 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__antiflood(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
-    ) -> Union[bool, str]:
+    ) -> typing.Union[bool, str]:
         if self.api.should_protect(chat_id, "antiflood"):
             if str(chat_id) not in self._flood_cache:
                 self._flood_cache[str(chat_id)] = {}
@@ -5278,9 +5326,9 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__antichannel(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
     ) -> bool:
         if (
@@ -5300,9 +5348,9 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__antigif(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
     ) -> bool:
         if self.api.should_protect(chat_id, "antigif"):
@@ -5321,9 +5369,9 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__antispoiler(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
     ) -> bool:
         if self.api.should_protect(chat_id, "antispoiler"):
@@ -5339,11 +5387,11 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__antiexplicit(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
-    ) -> Union[bool, str]:
+    ) -> typing.Union[bool, str]:
         if self.api.should_protect(chat_id, "antiexplicit"):
             text = getattr(message, "raw_text", "")
             P = "пПnPp"
@@ -5392,11 +5440,11 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__antinsfw(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
-    ) -> Union[bool, str]:
+    ) -> typing.Union[bool, str]:
         if not self.api.should_protect(chat_id, "antinsfw"):
             return False
 
@@ -5442,11 +5490,11 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__antitagall(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
-    ) -> Union[bool, str]:
+    ) -> typing.Union[bool, str]:
         return (
             self.api.chats[str(chat_id)]["antitagall"][0]
             if self.api.should_protect(chat_id, "antitagall")
@@ -5458,9 +5506,9 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__antihelp(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
     ) -> bool:
         if not self.api.should_protect(chat_id, "antihelp") or not getattr(
@@ -5484,11 +5532,11 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__antiarab(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
-    ) -> Union[bool, str]:
+    ) -> typing.Union[bool, str]:
         return (
             self.api.chats[str(chat_id)]["antiarab"][0]
             if (
@@ -5508,11 +5556,11 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__antizalgo(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
-    ) -> Union[bool, str]:
+    ) -> typing.Union[bool, str]:
         return (
             self.api.chats[str(chat_id)]["antizalgo"][0]
             if (
@@ -5532,11 +5580,11 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__bnd(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
-    ) -> Union[bool, str]:
+    ) -> typing.Union[bool, str]:
         if not self.api.should_protect(chat_id, "bnd"):
             return False
 
@@ -5568,11 +5616,11 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__antistick(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
-    ) -> Union[bool, str]:
+    ) -> typing.Union[bool, str]:
         if not self.api.should_protect(chat_id, "antistick") or not (
             getattr(message, "sticker", False)
             or getattr(message, "media", False)
@@ -5596,11 +5644,11 @@ class HikariChatMod(loader.Module):
     @error_handler
     async def p__antilagsticks(
         self,
-        chat_id: Union[str, int],
-        user_id: Union[str, int],
-        user: Union[User, Channel],
+        chat_id: typing.Union[str, int],
+        user_id: typing.Union[str, int],
+        user: typing.Union[User, Channel],
         message: Message,
-    ) -> Union[bool, str]:
+    ) -> typing.Union[bool, str]:
         res = (
             self.api.should_protect(chat_id, "antilagsticks")
             and getattr(message, "sticker", False)
@@ -5774,19 +5822,21 @@ class HikariChatMod(loader.Module):
         if str(chat_id) not in self.api.chats or not self.api.chats[str(chat_id)]:
             return
 
-        try:
-            if (
-                await self._client.get_permissions(chat_id, message.sender_id)
-            ).is_admin:
-                return
-        except Exception:
-            pass
-
         user = await self._client.get_entity(user_id)
         chat = await message.get_chat()
         user_name = get_full_name(user)
 
         args = (chat_id, user_id, user, message)
+
+        await self.p__report(*args)
+
+        try:
+            if (
+                await self._client.get_perms_cached(chat_id, message.sender_id)
+            ).is_admin:
+                return
+        except Exception:
+            pass
 
         if await self.p__antiraid(*args, chat):
             return
@@ -5797,7 +5847,12 @@ class HikariChatMod(loader.Module):
 
         if cas_result:
             await self.punish(
-                chat_id, user, "cas", cas_result, user_name, message=message
+                chat_id,
+                user,
+                "cas",
+                cas_result,
+                user_name,
+                message=message,
             )
             return
 
@@ -5913,7 +5968,7 @@ class HikariChatMod(loader.Module):
 
     async def client_ready(
         self,
-        client: "TelegramClient",  # type: ignore
+        client: "CustomTelegramClient",  # type: ignore
         db: "hikka.database.Database",  # type: ignore
     ):
         """Entry point"""
