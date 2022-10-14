@@ -228,44 +228,128 @@ class FlashCardsMod(loader.Module):
         "_cls_doc": "Флеш-карты для обучения",
     }
 
-    async def client_ready(self, client, db):
+    strings_de = {
+        "deck_not_found": "<b>🚫 Deck nicht gefunden</b",
+        "no_deck_name": "<b>Du hast keinen Decknamen angegeben</b>",
+        "deck_created": "#Deck <code>#{}</code> <b>{}</b> erfolgreich erstellt!",
+        "deck_removed": "<b>🚫 Deck entfernt</b>",
+        "save_deck_no_reply": (
+            "<b>🚫 Dieser Befehl sollte in Antwort auf eine Nachricht mit Deck-Elementen verwendet werden.</b>"
+        ),
+        "deck_saved": "✅ <b>Deck gespeichert!</b>",
+        "generating_page": "<b>⚙️ Seite wird generiert, bitte warten ...</b>",
+        "offline_testing": "<b>📖 Offline-Testing basierend auf dem Deck {}</b>",
+        "_cmd_doc_newdeck": "<name> - Erstelle ein neues Deck",
+        "_cmd_doc_decks": "Zeige Decks",
+        "_cmd_doc_deletedeck": "<id> - Deck löschen",
+        "_cmd_doc_listdeck": "<id> - Deck anzeigen",
+        "_cmd_doc_editdeck": "<id> - Deck bearbeiten",
+        "_cmd_doc_savedeck": "<reply> - Deck speichern",
+        "_cmd_doc_htmldeck": "<id> - Offline-Testing basierend auf dem Deck",
+        "_cls_doc": "Flash-Karten für das Lernen",
+    }
+
+    strings_tr = {
+        "deck_not_found": "<b>🚫 Deck bulunamadı</b",
+        "no_deck_name": "<b>Deck adı belirtmedin</b>",
+        "deck_created": "#Deck <code>#{}</code> <b>{}</b> başarıyla oluşturuldu!",
+        "deck_removed": "<b>🚫 Deck kaldırıldı</b>",
+        "save_deck_no_reply": (
+            "<b>🚫 Bu komut, deck öğeleriyle yanıtlanmalıdır.</b>"
+        ),
+        "deck_saved": "✅ <b>Deck kaydedildi!</b>",
+        "generating_page": "<b>⚙️ Sayfa oluşturuluyor, lütfen bekleyin ...</b>",
+        "offline_testing": "<b>📖 {} deckine dayalı çevrimdışı test</b>",
+        "_cmd_doc_newdeck": "<isim> - Yeni bir deck oluştur",
+        "_cmd_doc_decks": "Deckleri göster",
+        "_cmd_doc_deletedeck": "<id> - Deck sil",
+        "_cmd_doc_listdeck": "<id> - Decki göster",
+        "_cmd_doc_editdeck": "<id> - Decki düzenle",
+        "_cmd_doc_savedeck": "<reply> - Decki kaydet",
+        "_cmd_doc_htmldeck": "<id> - Decke dayalı çevrimdışı test oluştur",
+        "_cls_doc": "Öğrenmek için flaş kartlar",
+    }
+
+    strings_hi = {
+        "deck_not_found": "<b>🚫 डेक नहीं मिला</b",
+        "no_deck_name": "<b>आपने डेक का नाम नहीं दिया</b>",
+        "deck_created": "#Deck <code>#{}</code> <b>{}</b> सफलतापूर्वक बनाया गया!",
+        "deck_removed": "<b>🚫 डेक हटा दिया गया</b>",
+        "save_deck_no_reply": (
+            "<b>🚫 यह कमांड डेक आइटम के साथ उत्तर देने के लिए उपयोग किया जाना चाहिए।</b>"
+        ),
+        "deck_saved": "✅ <b>डेक सहेज लिया गया!</b>",
+        "generating_page": "<b>⚙️ पेज उत्पन्न किया जा रहा है, कृपया प्रतीक्षा करें ...</b>",
+        "offline_testing": "<b>📖 {} डेक पर आधारित ऑफ़लाइन परीक्षण</b>",
+        "_cmd_doc_newdeck": "<नाम> - एक नया डेक बनाएं",
+        "_cmd_doc_decks": "डेक दिखाएं",
+        "_cmd_doc_deletedeck": "<आईडी> - डेक हटाएं",
+        "_cmd_doc_listdeck": "<आईडी> - डेक दिखाएं",
+        "_cmd_doc_editdeck": "<आईडी> - डेक संपादित करें",
+        "_cmd_doc_savedeck": "<उत्तर> - डेक सहेजें",
+        "_cmd_doc_htmldeck": "<आईडी> - डेक पर आधारित ऑफ़लाइन परीक्षण बनाएं",
+        "_cls_doc": "फ्लैश कार्ड अध्ययन के लिए",
+    }
+
+    strings_uz = {
+        "deck_not_found": "<b>🚫 Deck topilmadi</b",
+        "no_deck_name": "<b>Deck nomini kiritmadingiz</b>",
+        "deck_created": "#Deck <code>#{}</code> <b>{}</b> muvaffaqiyatli yaratildi!",
+        "deck_removed": "<b>🚫 Deck o'chirildi</b>",
+        "save_deck_no_reply": (
+            "<b>🚫 Bu buyruq deck elementlari bilan javob berilishi kerak.</b>"
+        ),
+        "deck_saved": "✅ <b>Deck saqlandi!</b>",
+        "generating_page": "<b>⚙️ Sahifa yaratilmoqda, iltimos kuting ...</b>",
+        "offline_testing": "<b>📖 {} deckiga asoslangan oflayn test</b>",
+        "_cmd_doc_newdeck": "<nom> - Yangi deck yaratish",
+        "_cmd_doc_decks": "Decklarni ko'rsatish",
+        "_cmd_doc_deletedeck": "<id> - Deckni o'chirish",
+        "_cmd_doc_listdeck": "<id> - Deckni ko'rsatish",
+        "_cmd_doc_editdeck": "<id> - Deckni tahrirlash",
+        "_cmd_doc_savedeck": "<javob> - Deckni saqlash",
+        "_cmd_doc_htmldeck": "<id> - Deckiga asoslangan oflayn test yaratish",
+        "_cls_doc": "O'rganish uchun flash kartalar",
+    }
+
+    async def client_ready(self):
         self.decks = self.get("decks", {})
 
-    def get_fucking_deck_from_fucking_reply(self, fucking_reply, fucking_limit=None):
-        if fucking_reply is None:
+    def get_deck_from_reply(self, reply, limit=None):
+        if reply is None:
             return False
 
-        if "#Deck" in fucking_reply.text:
-            bitches = 1
+        if "#Deck" in reply.text:
+            counter = 1
 
-            for asshole_fucking_line in fucking_reply.text.split("\n"):
-                asshole_fucking_line = asshole_fucking_line.split()
-                if len(asshole_fucking_line) > 1:
-                    what_the_fuck_am_i_doing_in_3_am_utc = (
-                        asshole_fucking_line[1]
+            for line in reply.text.split("\n"):
+                line = line.split()
+                if len(line) > 1:
+                    deck = (
+                        line[1]
                         .replace("<code>", "")
                         .replace("</code>", "")
                         .replace("#", "")
                     )
                     try:
-                        int(what_the_fuck_am_i_doing_in_3_am_utc)
+                        int(deck)
                     except Exception:
                         pass
 
-                    if what_the_fuck_am_i_doing_in_3_am_utc in self.decks:
+                    if deck in self.decks:
                         if (
-                            fucking_limit is None
-                            or not fucking_limit
-                            and "#Decks" not in fucking_reply.text
-                            or bitches == fucking_limit
+                            limit is None
+                            or not limit
+                            and "#Decks" not in reply.text
+                            or counter == limit
                         ):
-                            return what_the_fuck_am_i_doing_in_3_am_utc
+                            return deck
                         else:
-                            bitches += 1
+                            counter += 1
 
         return False
 
-    async def get_from_fucking_message(self, message: Message):
+    async def get_from_message(self, message: Message):
         args = utils.get_args_raw(message)
         try:
             args = args.split()[0]
@@ -282,7 +366,7 @@ class FlashCardsMod(loader.Module):
             int_args = False
 
         if int(int_args) < 1000:
-            args = self.get_fucking_deck_from_fucking_reply(
+            args = self.get_deck_from_reply(
                 await message.get_reply_message(), int_args
             )
 
@@ -334,7 +418,7 @@ class FlashCardsMod(loader.Module):
 
     async def deletedeckcmd(self, message: Message):
         """<id> - Delete deck"""
-        deck_id = await self.get_from_fucking_message(message)
+        deck_id = await self.get_from_message(message)
         if not deck_id:
             return
 
@@ -350,7 +434,7 @@ class FlashCardsMod(loader.Module):
 
     async def listdeckcmd(self, message: Message):
         """<id> - List deck items"""
-        deck_id = await self.get_from_fucking_message(message)
+        deck_id = await self.get_from_message(message)
         if not deck_id:
             return
 
@@ -362,7 +446,7 @@ class FlashCardsMod(loader.Module):
 
     async def editdeckcmd(self, message: Message):
         """<id> - Edit deck items"""
-        deck_id = await self.get_from_fucking_message(message)
+        deck_id = await self.get_from_message(message)
         if not deck_id:
             return
 
@@ -391,7 +475,7 @@ class FlashCardsMod(loader.Module):
             await message.delete()
             return False
 
-        deck_id = await self.get_from_fucking_message(message)
+        deck_id = await self.get_from_message(message)
         if not deck_id:
             return
 
@@ -425,7 +509,7 @@ class FlashCardsMod(loader.Module):
 
     async def htmldeckcmd(self, message: Message):
         """<id> - Generates the page with specified deck"""
-        deck_id = await self.get_from_fucking_message(message)
+        deck_id = await self.get_from_message(message)
         if not deck_id:
             return
 

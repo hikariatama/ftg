@@ -156,6 +156,245 @@ class BanStickers(loader.Module):
         ),
     }
 
+    strings_de = {
+        "args": (
+            "<emoji document_id='5436162517686557387'>😵</emoji> <b>Antwort auf einen"
+            " Sticker erforderlich</b>"
+        ),
+        "sticker_banned": (
+            "<emoji document_id='6037557968914877661'>🛡</emoji> <b>Dieser Sticker ist"
+            " nun im aktuellen Chat gesperrt</b>"
+        ),
+        "pack_banned": (
+            "<emoji document_id='6037557968914877661'>🛡</emoji> <b>{} Sticker aus dem"
+            " Pack {} sind nun im aktuellen Chat gesperrt</b>"
+        ),
+        "wait": (
+            "<emoji document_id='5451732530048802485'>⏳</emoji> <b>Sticker aus diesem"
+            " Pack werden im aktuellen Chat gesperrt...</b>"
+        ),
+        "sticker_not_banned": (
+            "<emoji document_id='5436162517686557387'>😵</emoji> <b>Dieser Sticker ist"
+            " nicht im aktuellen Chat gesperrt</b>"
+        ),
+        "sticker_unbanned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Dieser Sticker ist"
+            " nun wieder im aktuellen Chat erlaubt</b>"
+        ),
+        "pack_unbanned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>{} / {} Sticker aus"
+            " dem Pack {} sind nun wieder im aktuellen Chat erlaubt</b>"
+        ),
+        "pack_not_banned": (
+            "<emoji document_id='5436162517686557387'>😵</emoji> <b>Dieses Pack ist im"
+            " aktuellen Chat nicht gesperrt</b>"
+        ),
+        "no_restrictions": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>Im aktuellen Chat"
+            " gibt es keine Einschränkungen</b>"
+        ),
+        "all_unbanned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Alle Sticker sind im"
+            " aktuellen Chat wieder erlaubt</b>"
+        ),
+        "already_restricted": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>Animierte Sticker"
+            " sind bereits gesperrt</b>"
+        ),
+        "not_restricted": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>Animierte Sticker"
+            " sind nicht gesperrt</b>"
+        ),
+        "animations_restricted": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Animierte Sticker"
+            " sind nun im aktuellen Chat gesperrt</b>"
+        ),
+        "animations_unrestricted": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Animierte Sticker"
+            " sind nun wieder im aktuellen Chat erlaubt</b>"
+        ),
+    }
+
+    strings_hi = {
+        "args": (
+            "<emoji document_id='5436162517686557387'>😵</emoji> <b>एक स्टिकर पर उत्तर"
+            " आवश्यक है</b>"
+        ),
+        "sticker_banned": (
+            "<emoji document_id='6037557968914877661'>🛡</emoji> <b>इस स्टिकर को वर्तमान"
+            " चैट में प्रतिबंधित किया गया है</b>"
+        ),
+        "pack_banned": (
+            "<emoji document_id='6037557968914877661'>🛡</emoji> <b>{1} पैक से {0}"
+            " स्टिकर वर्तमान चैट में प्रतिबंधित किए गए हैं</b>"
+        ),
+        "wait": (
+            "<emoji document_id='5451732530048802485'>⏳</emoji> <b>वर्तमान चैट में {1}"
+            " पैक से स्टिकर प्रतिबंधित किए जा रहे हैं...</b>"
+        ),
+        "sticker_not_banned": (
+            "<emoji document_id='5436162517686557387'>😵</emoji> <b>वर्तमान चैट में इस"
+            " स्टिकर को प्रतिबंधित नहीं किया गया है</b>"
+        ),
+        "sticker_unbanned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>इस स्टिकर को वर्तमान"
+            " चैट में प्रतिबंधित नहीं किया गया है</b>"
+        ),
+        "pack_unbanned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>{1} पैक से {0}"
+            " स्टिकर वर्तमान चैट में प्रतिबंधित नहीं किए गए हैं</b>"
+        ),
+        "pack_not_banned": (
+            "<emoji document_id='5436162517686557387'>😵</emoji> <b>वर्तमान चैट में यह"
+            " पैक प्रतिबंधित नहीं किया गया है</b>"
+        ),
+        "no_restrictions": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>वर्तमान चैट में कोई"
+            " प्रतिबंध नहीं है</b>"
+        ),
+        "all_unbanned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>वर्तमान चैट में सभी"
+            " स्टिकर प्रतिबंधित नहीं किए गए हैं</b>"
+        ),
+        "already_restricted": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>आगे बढ़ने के लिए"
+            " पहले से ही प्रतिबंधित किए गए हैं</b>"
+        ),
+        "not_restricted": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>इस स्टिकर को पहले"
+            " से ही प्रतिबंधित नहीं किया गया है</b>"
+        ),
+        "already_unrestricted": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>इस स्टिकर को पहले"
+            " से ही प्रतिबंधित नहीं किया गया है</b>"
+        ),
+        "animations_restricted": (
+            "<emoji document_id='6037557968914877661'>🛡</emoji> <b>वर्तमान चैट में"
+            " एनीमेटेड स्टिकर अब प्रतिबंधित हैं</b>"
+        ),
+        "animations_unrestricted": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>वर्तमान चैट में"
+            " एनीमेटेड स्टिकर अब प्रतिबंधित नहीं हैं</b>"
+        ),
+    }
+
+    strings_uz = {
+        "pack_banned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>{1} pakidan {0}"
+            " stikerlar cheklangan</b>"
+        ),
+        "sticker_banned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Stiker"
+            " cheklangan</b>"
+        ),
+        "not_a_pack": (
+            "<emoji document_id='5436162517686557387'>😵</emoji> <b>Bu paket emas</b>"
+        ),
+        "pack_not_banned": (
+            "<emoji document_id='5436162517686557387'>😵</emoji> <b>Ushbu paket"
+            " cheklangan emas</b>"
+        ),
+        "sticker_not_banned": (
+            "<emoji document_id='5436162517686557387'>😵</emoji> <b>Ushbu stiker"
+            " cheklangan emas</b>"
+        ),
+        "sticker_unbanned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Stiker cheklangan"
+            " emas</b>"
+        ),
+        "pack_unbanned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>{1} pakidan {0}"
+            " stikerlar cheklangan emas</b>"
+        ),
+        "no_restrictions": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>Ushbu chatda"
+            " cheklangan stikerlar yo'q</b>"
+        ),
+        "all_unbanned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Ushbu chatda barcha"
+            " stikerlar cheklangan emas</b>"
+        ),
+        "already_restricted": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>Ushbu stiker oldin"
+            " cheklangan</b>"
+        ),
+        "not_restricted": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>Ushbu stiker"
+            " cheklangan emas</b>"
+        ),
+        "already_unrestricted": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>Ushbu stiker oldin"
+            " cheklangan emas</b>"
+        ),
+        "animations_restricted": (
+            "<emoji document_id='6037557968914877661'>🛡</emoji> <b>Ushbu chatda"
+            " animatsiya stikerlari cheklangan</b>"
+        ),
+        "animations_unrestricted": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Ushbu chatda"
+            " animatsiya stikerlari cheklangan emas</b>"
+        ),
+    }
+
+    strings_tr = {
+        "pack_banned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>{1} paketinden {0}"
+            " çıkartma yasaklandı</b>"
+        ),
+        "sticker_banned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Çıkartma"
+            " yasaklandı</b>"
+        ),
+        "not_a_pack": (
+            "<emoji document_id='5436162517686557387'>😵</emoji> <b>Bu bir paket"
+            " değil</b>"
+        ),
+        "pack_not_banned": (
+            "<emoji document_id='5436162517686557387'>😵</emoji> <b>Bu paket"
+            " yasaklanmamış</b>"
+        ),
+        "sticker_not_banned": (
+            "<emoji document_id='5436162517686557387'>😵</emoji> <b>Bu çıkartma"
+            " yasaklanmamış</b>"
+        ),
+        "sticker_unbanned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Çıkartma"
+            " yasaklanmamış</b>"
+        ),
+        "pack_unbanned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>{1} paketinden {0}"
+            " çıkartma yasaklanmamış</b>"
+        ),
+        "no_restrictions": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>Bu sohbette"
+            " yasaklanmış çıkartma yok</b>"
+        ),
+        "all_unbanned": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Bu sohbette tüm"
+            " çıkartmalar yasaklanmamış</b>"
+        ),
+        "already_restricted": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>Bu çıkartma zaten"
+            " yasaklanmış</b>"
+        ),
+        "not_restricted": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>Bu çıkartma"
+            " yasaklanmamış</b>"
+        ),
+        "already_unrestricted": (
+            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>Bu çıkartma zaten"
+            " yasaklanmamış</b>"
+        ),
+        "animations_restricted": (
+            "<emoji document_id='6037557968914877661'>🛡</emoji> <b>Bu sohbette"
+            " animasyonlu çıkartmalar yasaklanmış</b>"
+        ),
+        "animations_unrestricted": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Bu sohbette"
+            " animasyonlu çıkartmalar yasaklanmamış</b>"
+        ),
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
@@ -225,7 +464,13 @@ class BanStickers(loader.Module):
         if str(sticker_id) in self._cache:
             self._cache.pop(str(sticker_id))
 
-    @loader.command(ru_doc="<ответ на стикер> - Запретить стикер в текущем чате")
+    @loader.command(
+        ru_doc="<ответ на стикер> - Запретить стикер в текущем чате",
+        de_doc="<auf Antwort auf Sticker> - Verbotene Sticker in diesem Chat",
+        hi_doc="<उत्तर दिए गए स्टिकर पर> - इस चैट में अनुमति नहीं देने वाले स्टिकर",
+        uz_doc="<stickerga javob> - Joriy suhbatda stikerni taqiqlash",
+        tr_doc="<sticker'a yanıt> - Bu sohbette yasaklanmış çıkartma",
+    )
     async def banstick(self, message: Message):
         """<reply to sticker> - Ban sticker in current chat"""
         reply = await message.get_reply_message()
@@ -243,7 +488,11 @@ class BanStickers(loader.Module):
         await utils.answer(message, self.strings("sticker_banned"))
 
     @loader.command(
-        ru_doc="<ответ на стикер> - Запретить весь стикерпак в текущем чате"
+        ru_doc="<ответ на стикер> - Запретить весь стикерпак в текущем чате",
+        de_doc="<auf Antwort auf Sticker> - Verbotene Stickerpack in diesem Chat",
+        hi_doc="<उत्तर दिए गए स्टिकर पर> - इस चैट में अनुमति नहीं देने वाले स्टिकर पैक",
+        uz_doc="<stickerga javob> - Joriy suhbatda stikerni taqiqlash",
+        tr_doc="<sticker'a yanıt> - Bu sohbette yasaklanmış çıkartma paketi",
     )
     async def banpack(self, message: Message):
         """<reply to sticker> - Ban the whole stickerpack in current chat"""
@@ -286,7 +535,13 @@ class BanStickers(loader.Module):
             ),
         )
 
-    @loader.command(ru_doc="<ответ на стикер> - Разбанить стикер в текущем чате")
+    @loader.command(
+        ru_doc="<ответ на стикер> - Разбанить стикер в текущем чате",
+        de_doc="<auf Antwort auf Sticker> - Entbanne Sticker in diesem Chat",
+        hi_doc="<उत्तर दिए गए स्टिकर पर> - इस चैट में अनुमति देने वाले स्टिकर",
+        uz_doc="<stickerga javob> - Joriy suhbatda stikerni taqiqlash",
+        tr_doc="<sticker'a yanıt> - Bu sohbette yasaklanmış çıkartma",
+    )
     async def unbanstick(self, message: Message):
         """<reply to sticker> - Unban sticker in current chat"""
         reply = await message.get_reply_message()
@@ -352,7 +607,13 @@ class BanStickers(loader.Module):
             ),
         )
 
-    @loader.command(ru_doc="Убрать все ограничения в текущем чате")
+    @loader.command(
+        ru_doc="Убрать все ограничения в текущем чате",
+        de_doc="Entferne alle Einschränkungen in diesem Chat",
+        hi_doc="इस चैट में सभी सीमाएं निकालें",
+        uz_doc="Joriy suhbatda barcha cheklarni olib tashlang",
+        tr_doc="Bu sohbetteki tüm yasaklamaları kaldırın",
+    )
     async def unbanall(self, message: Message):
         """Remove all restrictions in current chat"""
         chat_id = str(utils.get_chat_id(message))
@@ -365,7 +626,13 @@ class BanStickers(loader.Module):
 
         await utils.answer(message, self.strings("all_unbanned"))
 
-    @loader.command(ru_doc="Запретить анимированные и видео стикеры в этом чате")
+    @loader.command(
+        ru_doc="Запретить анимированные и видео стикеры в этом чате",
+        de_doc="Verbiete animierte und Video-Sticker in diesem Chat",
+        hi_doc="इस चैट में एनीमेटेड और वीडियो स्टिकर्स को अस्वीकार करें",
+        uz_doc="Bu suhbatda animatsiya va video stikerni taqiqlang",
+        tr_doc="Bu sohbette animasyonlu ve video çıkartmaları yasaklayın",
+    )
     async def bananim(self, message: Message):
         """Restrict animated stickers in current chat"""
         chat_id = str(utils.get_chat_id(message))
@@ -376,7 +643,15 @@ class BanStickers(loader.Module):
         self._bananim.append(chat_id)
         await utils.answer(message, self.strings("animations_restricted"))
 
-    @loader.command(ru_doc="Разблокировать анимированные и видео стикеры в этом чате")
+    @loader.command(
+        ru_doc="Разблокировать анимированные и видео стикеры в этом чате",
+        de_doc=(
+            "Entferne die Einschränkung für animierte und Video-Sticker in diesem Chat"
+        ),
+        hi_doc="इस चैट में एनीमेटेड और वीडियो स्टिकर्स की प्रतिबंध निकालें",
+        uz_doc="Bu suhbatda animatsiya va video stikerni taqiqlashni olib tashlang",
+        tr_doc="Bu sohbette animasyonlu ve video çıkartmaları yasaklamasını kaldırın",
+    )
     async def unbananim(self, message: Message):
         """Unrestrict animated stickers in current chat"""
         chat_id = str(utils.get_chat_id(message))

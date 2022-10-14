@@ -44,23 +44,43 @@ class PMBLMod(loader.Module):
     strings = {
         "name": "PMBL",
         "state": (
-            "⚔️ <b>PM->BL is now {}</b>\n<i>Report spam? - {}\nDelete dialog? - {}</i>"
+            "<emoji document_id=5314803591058301611>🛡</emoji> <b>PM->BL is now"
+            " {}</b>\n<i>Report spam? - {}\nDelete dialog? - {}</i>"
         ),
-        "args": "ℹ️ <b>Example usage: </b><code>.pmblsett 0 0</code>",
-        "args_pmban": "ℹ️ <b>Example usage: </b><code>.pmbanlast 5</code>",
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Usage example:"
+            " </b><code>.pmblsett 0 0</code>"
+        ),
+        "args_pmban": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Usage example:"
+            " </b><code>.pmbanlast 5</code>"
+        ),
         "banned": (
-            "😊 <b>Hey there •ᴗ•</b>\n<b>Unit «SIGMA»<b>, the <b>guardian</b> of this"
-            " account. You are <b>not approved</b>! You can contact my owner <b>in"
-            " chat</b>, if you need help.\n<b>I need to ban you in terms of"
-            " security</b>"
+            "<emoji document_id=5375414397172717975>😃</emoji> <b>Hey there"
+            " •ᴗ•</b>\n<b>Unit «SIGMA»<b>, the <b>guardian</b> of this account. You are"
+            " <b>not approved</b>! You can contact my owner <b>in chat</b>, if you need"
+            " help.\n<b>I need to ban you in terms of security</b>"
         ),
-        "removing": "😶‍🌫️ <b>Removing {} last dialogs...</b>",
-        "removed": "😶‍🌫️ <b>Removed {} last dialogs!</b>",
-        "user_not_specified": "🚫 <b>You haven't specified user</b>",
-        "approved": '😶‍🌫️ <b><a href="tg://user?id={}">{}</a> approved in pm</b>',
+        "removing": (
+            "<emoji document_id=5456529570431770384>🚮</emoji> <b>Removing {} last"
+            " dialogs...</b>"
+        ),
+        "removed": (
+            "<emoji document_id=5456529570431770384>🚮</emoji> <b>Removed {} last"
+            " dialogs!</b>"
+        ),
+        "user_not_specified": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You haven't specified"
+            " user</b>"
+        ),
+        "approved": (
+            "<emoji document_id=5461129450341014019>✋</emoji> <b><a"
+            ' href="tg://user?id={}">{}</a> approved in pm</b>'
+        ),
         "banned_log": (
             '👮 <b>I banned <a href="tg://user?id={}">{}</a>.</b>\n\n<b>{} Reported'
-            " spam</b>\n<b>{} Deleted dialog</b>\n\n<b>ℹ️ Message</b>\n<code>{}</code>"
+            " spam</b>\n<b>{} Deleted dialog</b>\n\n<b><emoji"
+            " document_id=5312526098750252863>🚫</emoji> Message</b>\n<code>{}</code>"
         ),
         "hello": (
             "🔏 <b>Unit «SIGMA»</b> protects your personal messages from intrusions. It"
@@ -73,16 +93,23 @@ class PMBLMod(loader.Module):
 
     strings_ru = {
         "state": (
-            "⚔️ <b>Текущее состояние PM->BL: {}</b>\n<i>Сообщать о спаме? - {}\nУдалять"
-            " диалог? - {}</i>"
+            "<emoji document_id=5314803591058301611>🛡</emoji> <b>Текущее состояние"
+            " PM->BL: {}</b>\n<i>Сообщать о спаме? - {}\nУдалять диалог? - {}</i>"
         ),
-        "args": "ℹ️ <b>Пример: </b><code>.pmblsett 0 0</code>",
-        "args_pmban": "ℹ️ <b>Пример: </b><code>.pmbanlast 5</code>",
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Пример:"
+            " </b><code>.pmblsett 0 0</code>"
+        ),
+        "args_pmban": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Пример:"
+            " </b><code>.pmbanlast 5</code>"
+        ),
         "banned": (
-            "😊 <b>Добрый день •ᴗ•</b>\n<b>Юнит «SIGMA»<b>, <b>защитник</b> этого"
-            " аккаунта. Вы <b>не потверждены</b>! Вы можете связаться с моим владельцем"
-            " <b>в чате</b>, если нужна помощь.\n<b>Я вынужден заблокировать вас из"
-            " соображений безопасности</b>"
+            "<emoji document_id=5375414397172717975>😃</emoji> <b>Добрый день"
+            " •ᴗ•</b>\n<b>Юнит «SIGMA»<b>, <b>защитник</b> этого аккаунта. Вы <b>не"
+            " потверждены</b>! Вы можете связаться с моим владельцем <b>в чате</b>,"
+            " если нужна помощь.\n<b>Я вынужден заблокировать вас из соображений"
+            " безопасности</b>"
         ),
         "hello": (
             "🔏 <b>Юнит «SIGMA»</b> защищает твои личные сообщенния от неизвестных"
@@ -91,15 +118,263 @@ class PMBLMod(loader.Module):
             " <code>.pmblsett</code> для ее настройки и <code>.pmbanlast</code> если"
             " нужно очистить уже прошедший рейд на личные сообщения."
         ),
-        "removing": "😶‍🌫️ <b>Удаляю {} последних диалогов...</b>",
-        "removed": "😶‍🌫️ <b>Удалил {} последних диалогов!</b>",
-        "user_not_specified": "🚫 <b>Укажи пользователя</b>",
+        "removing": (
+            "<emoji document_id=5456529570431770384>🚮</emoji> <b>Удаляю {} последних"
+            " диалогов...</b>"
+        ),
+        "removed": (
+            "<emoji document_id=5456529570431770384>🚮</emoji> <b>Удалил {} последних"
+            " диалогов!</b>"
+        ),
+        "user_not_specified": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Укажи пользователя</b>"
+        ),
         "_cmd_doc_pmbl": "Включить или выключить защиту",
         "_cmd_doc_pmbanlast": (
             "<количество> - Забанить и удалить n последних диалогов с пользователями"
         ),
         "_cmd_doc_allowpm": "<пользователь> - Разрешить пользователю писать тебе в ЛС",
         "_cls_doc": "Блокирует и репортит входящие сообщения от незнакомцев",
+        "approved": (
+            "<emoji document_id=5461129450341014019>✋</emoji> <b><a"
+            ' href="tg://user?id={}">{}</a> одобрен в лс</b>'
+        ),
+        "banned_log": (
+            '👮 <b>Я заблокировал <a href="tg://user?id={}">{}</a>.</b>\n\n<b>{} Сообщил'
+            " о спаме</b>\n<b>{} Удалил диалог</b>\n\n<b><emoji"
+            " document_id=5312526098750252863>🚫</emoji> Сообщение</b>\n<code>{}</code>"
+        ),
+    }
+
+    strings_de = {
+        "state": (
+            "<emoji document_id=5314803591058301611>🛡</emoji> <b>Aktueller PM->BL"
+            " Status: {}</b>\n<i>Spam melden? - {}\nDialoge löschen? - {}</i>"
+        ),
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Beispiel:"
+            " </b><code>.pmblsett 0 0</code>"
+        ),
+        "args_pmban": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Beispiel:"
+            " </b><code>.pmbanlast 5</code>"
+        ),
+        "banned": (
+            "<emoji document_id=5375414397172717975>😃</emoji> <b>Hallo"
+            " •ᴗ•</b>\n<b>Einheit «SIGMA»<b>, <b>der Schutz dieses Accounts</b>. Sie"
+            " sind <b>nicht autorisiert</b>! Sie können sich an den Besitzer meines"
+            " Accounts wenden, wenn Sie Hilfe benötigen.\n<b>Ich bin gezwungen, Sie aus"
+            " Sicherheitsgründen zu sperren</b>"
+        ),
+        "hello": (
+            "🔏 <b>Einheit «SIGMA»</b> schützt Ihre persönlichen Nachrichten vor"
+            " unbekannten Benutzern. Es wird alle blockieren, die nicht den"
+            " Einstellungen entsprechen.\n\nGeben Sie <code>.pmbl</code> ein, um die"
+            " Schutzfunktion zu aktivieren, <code>.pmblsett</code> zum Konfigurieren"
+            " und <code>.pmbanlast</code>, wenn Sie bereits einen Raid auf Ihre"
+            " persönlichen Nachrichten durchgeführt haben."
+        ),
+        "removing": (
+            "<emoji document_id=5456529570431770384>🚮</emoji> <b>Entferne {} letzte"
+            " Dialoge...</b>"
+        ),
+        "removed": (
+            "<emoji document_id=5456529570431770384>🚮</emoji> <b>Entfernt {} letzte"
+            " Dialoge!</b>"
+        ),
+        "user_not_specified": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Du hast keinen"
+            " Benutzer angegeben</b>"
+        ),
+        "_cmd_doc_pmbl": "Aktiviert oder deaktiviert den Schutz",
+        "_cmd_doc_pmbanlast": (
+            "<Anzahl> - Bannt und löscht n letzte Dialoge mit Benutzern"
+        ),
+        "_cmd_doc_allowpm": (
+            "<Benutzer> - Erlaubt dem Benutzer, dir eine private Nachricht zu senden"
+        ),
+        "_cls_doc": "Blockiert und meldet eingehende Nachrichten von Unbekannten",
+        "approved": (
+            "<emoji document_id=5461129450341014019>✋</emoji> <b><a"
+            ' href="tg://user?id={}">{}</a> wurde in den Ls genehmigt</b>'
+        ),
+        "banned_log": (
+            '👮 <b>Ich habe <a href="tg://user?id={}">{}</a> geblockt.</b>\n\n<b>{} Hat'
+            " über Spam berichtet</b>\n<b>{} Hat den Dialog gelöscht</b>\n\n<b><emoji"
+            " document_id=5312526098750252863>🚫</emoji> Nachricht</b>\n<code>{}</code>"
+        ),
+    }
+
+    strings_tr = {
+        "state": (
+            "<emoji document_id=5314803591058301611>🛡</emoji> <b>Şu anki PM->BL durumu:"
+            " {}</b>\n<i>Spam rapor edilsin mi? - {}\nSohbetler silinsin mi? - {}</i>"
+        ),
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Örnek:"
+            " </b><code>.pmblsett 0 0</code>"
+        ),
+        "args_pmban": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Örnek:"
+            " </b><code>.pmbanlast 5</code>"
+        ),
+        "banned": (
+            "<emoji document_id=5375414397172717975>😃</emoji> <b>Merhaba"
+            " •ᴗ•</b>\n<b>«SIGMA» birimi</b>, <b>hesabınızın koruması</b>. <b>Yetkili"
+            " değilsiniz</b>! Yardım için hesabımın sahibi ile iletişime"
+            " geçebilirsiniz.\n<b>Güvenlik nedeniyle sizi zorunlu olarak"
+            " engelliyorum</b>"
+        ),
+        "hello": (
+            "🔏 <b>«SIGMA» birimi</b>, tanımadığınız kullanıcılarla kişisel"
+            " mesajlarınızı korur. Ayarlara uygun olmayanları tümünü engeller.\n\n"
+            "<code>.pmbl</code> yazarak koruma özelliğini etkinleştirebilir, "
+            "<code>.pmblsett</code> yazarak yapılandırabilir ve zaten kişisel"
+            " mesajlarınıza bir raid gerçekleştirdiyseniz <code>.pmbanlast</code>"
+            " yazarak bunu gerçekleştirebilirsiniz."
+        ),
+        "removing": (
+            "<emoji document_id=5456529570431770384>🚮</emoji> <b>Son {} sohbet"
+            " siliniyor...</b>"
+        ),
+        "removed": (
+            "<emoji document_id=5456529570431770384>🚮</emoji> <b>Son {} sohbet"
+            " silindi!</b>"
+        ),
+        "user_not_specified": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bir kullanıcı"
+            " belirtmediniz</b>"
+        ),
+        "_cmd_doc_pmbl": "Korumayı etkinleştirir veya devre dışı bırakır",
+        "_cmd_doc_pmbanlast": "<sayı> - Kullanıcılarla son n sohbeti yasaklar ve siler",
+        "_cmd_doc_allowpm": (
+            "<kullanıcı> - Kullanıcıya kişisel mesaj göndermeye izin verir"
+        ),
+        "_cls_doc": (
+            "Tanımadığınız kullanıcıların gelen mesajlarını engeller ve rapor eder"
+        ),
+        "approved": (
+            "<emoji document_id=5461129450341014019>✋</emoji> <b><a"
+            ' href="tg://user?id={}">{}</a> Ls listesine eklendi</b>'
+        ),
+        "banned_log": (
+            '👮 <b><a href="tg://user?id={}">{}</a> engellendi.</b>\n\n<b>{} Spam rapor'
+            " etti</b>\n<b>{} Sohbeti sildi</b>\n\n<b><emoji"
+            " document_id=5312526098750252863>🚫</emoji> Mesaj</b>\n<code>{}</code>"
+        ),
+    }
+
+    strings_uz = {
+        "state": (
+            "<emoji document_id=5314803591058301611>🛡</emoji> <b>Joriy PM->BL holati:"
+            " {}</b>\n<i>Spam haqida xabar berilsinmi? - {}\nSuhbatlar o'chirilsinmi? -"
+            " {}</i>"
+        ),
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Misol:"
+            " </b><code>.pmblsett 0 0</code>"
+        ),
+        "args_pmban": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Misol:"
+            " </b><code>.pmbanlast 5</code>"
+        ),
+        "banned": (
+            "<emoji document_id=5375414397172717975>😃</emoji> <b>Salom"
+            " •ᴗ•</b>\n<b>«SIGMA» birimi</b>, <b>hisobingizni himoya</b>. <b>Ruxsat"
+            " berilmaganingiz</b>! Yordam kerak bo'lsa hisobimning egasi bilan"
+            " bog'lanishingiz mumkin.\n<b>Xavfsizlik sababli sizni majbur qilishim"
+            " kerak</b>"
+        ),
+        "hello": (
+            "🔏 <b>«SIGMA» birimi</b>, tanimaydigan foydalanuvchilar bilan"
+            " shaxsiy xabarlarini himoya qiladi. Sozlamalarga mos bo'lmasa"
+            " barchasini bloklashadi.\n\n<code>.pmbl</code> yozib himoya"
+            " imkoniyatini yoqish, <code>.pmblsett</code> yozib konfiguratsiyani"
+            " o'zgartirish va agar sizda shaxsiy xabarlariga raid bormi bo'lsa"
+            " <code>.pmbanlast</code> yozib uni bajarishingiz mumkin."
+        ),
+        "removing": (
+            "<emoji document_id=5456529570431770384>🚮</emoji> <b>Son {} suhbat"
+            " o'chirilmoqda...</b>"
+        ),
+        "removed": (
+            "<emoji document_id=5456529570431770384>🚮</emoji> <b>Son {} suhbat"
+            " o'chirildi!</b>"
+        ),
+        "user_not_specified": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Siz foydalanuvchi"
+            " belgilamadingiz</b>"
+        ),
+        "_cmd_doc_pmbl": "Himoyani yoqadi yoki o'chiradi",
+        "_cmd_doc_pmbanlast": (
+            "<son> - Foydalanuvchilar bilan son n suhbatni yasaklaydi"
+        ),
+        "_cmd_doc_allowpm": (
+            "<foydalanuvchi> - Foydalanuvchiga shaxsiy xabar yuborishga ruxsat beradi"
+        ),
+        "_cls_doc": "Tanimaydigan foydalanuvchilar gelen xabarlarini bloklashadi",
+        "approved": (
+            "<emoji document_id=5461129450341014019>✋</emoji> <b><a"
+            " href=\"tg://user?id={}\">{}</a> Ls ro'yxatiga qo'shildi</b>"
+        ),
+        "banned_log": (
+            '👮 <b><a href="tg://user?id={}">{}</a> bloklandi.</b>\n\n<b>{} Spam xabar'
+            " berdi</b>\n<b>{} Suhbat o'chirildi</b>\n\n<b><emoji"
+            " document_id=5312526098750252863>🚫</emoji> Xabar</b>\n<code>{}</code>"
+        ),
+    }
+
+    strings_hi = {
+        "state": (
+            "<emoji document_id=5314803591058301611>🛡</emoji> <b>वर्तमान PM->BL स्थिति:"
+            " {}</b>\n<i>स्पैम रिपोर्ट करें? - {}\nडायलॉगहटाएं? - {}</i>"
+        ),
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>उदाहरण:"
+            " </b><code>.pmblsett 0 0</code>"
+        ),
+        "args_pmban": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>उदाहरण:"
+            " </b><code>.pmbanlast 5</code>"
+        ),
+        "banned": (
+            "<emoji document_id=5375414397172717975>😃</emoji> <b>नमस्ते"
+            " •ᴗ•</b>\n<b>यूनिट «SIGMA»<b>, <b>इस खाते की सुरक्षा</b>. आप"
+            " <b>अनधिकृत</b> हैं! आप मेरे खाते के मालिक को अपनी मदद के लिए या आपको"
+            " सहायता की आवश्यकता है तो उसे संपर्क कर सकते हैं।\n<b>मैं आपको सुरक्षा के"
+            " कारण बंद करने के लिए बाधित कर दूंगा</b>"
+        ),
+        "hello": (
+            "🔏 <b>यूनिट «SIGMA»</b> अपने निजी संदेशों को अज्ञात उपयोगकर्ताओं से"
+            " सुरक्षित करता है। इसे सेटिंग्स के अनुसार सभी ब्लॉक करेगा।\n\n<code>"
+            ".pmbl</code> दर्ज करें, ताकि सुरक्षा कार्यक्षमता सक्रिय हो, <code>"
+            ".pmblsett</code> कॉन्फ़िगर करने के लिए और <code>.pmbanlast</code>, जब आपने"
+            " अपने निजी संदेशों पर एक रैड किया है।"
+        ),
+        "removing": (
+            "<emoji document_id=5456529570431770384>🚮</emoji> <b>{} अंतिम डायलॉग हटा"
+            " रहा है...</b>"
+        ),
+        "removed": (
+            "<emoji document_id=5456529570431770384>🚮</emoji> <b>{} अंतिम डायलॉग हटा"
+            " दिया!</b>"
+        ),
+        "user_not_specified": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>आपने किसी उपयोगकर्ता"
+            " को नहीं निर्दिष्ट किया</b>"
+        ),
+        "_cmd_doc_pmbl": "सुरक्षा को सक्षम या अक्षम करता है",
+        "_cmd_doc_pmbanlast": (
+            "<अंक> - उपयोगकर्ताओं के साथ निजी संदेशों को ब्लॉक और हटाता है"
+        ),
+        "_cmd_doc_allowpm": (
+            "<उपयोगकर्ता> - उपयोगकर्ता को आपको एक निजी संदेश भेजने की अनुमति देता है"
+        ),
+        "_cmd_doc_pmblsett": (
+            "<ब्लॉक> <अनुमति> - ब्लॉक और अनुमति को सेट करता है, जब आपके पास एक निजी"
+            " संदेश आता है"
+        ),
+        "_cls_doc": "एक निजी संदेश भेजने की अनुमति देता है",
     }
 
     def __init__(self):

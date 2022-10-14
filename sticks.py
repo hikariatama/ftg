@@ -13,7 +13,7 @@ __version__ = (3, 0, 2)
 # meta developer: @hikarimods
 # scope: ffmpeg
 # scope: disable_onload_docs
-# requires: Pillow moviepy emoji requests_toolbelt
+# requires: Pillow moviepy emoji==2.1.0 requests_toolbelt
 # scope: hikka_min 1.3.3
 
 import asyncio
@@ -316,6 +316,164 @@ class StickManagerMod(loader.Module):
         "deleting_pack": "😓 <b>Удаляю пак...</b>",
     }
 
+    strings_de = {
+        "no_args": "🚫 <b>Diese Befehl benötigt Argumente</b>",
+        "no_such_pack": "🚫 <b>Stickerpack nicht gefunden</b>",
+        "stickersets_added": (
+            "🌁 <code>{}</code><b> Stickerpack(-s) hinzugefügt, </b><code>{}</code><b>"
+            " entfernt!</b>"
+        ),
+        "no_stickersets_to_import": "🚫 <b>Keine Stickerpacks zum Importieren</b>",
+        "no_stickersets": "🚫 <b>Du hast keine Stickerpacks</b>",
+        "alias_removed": "✅ <b>Alias </b><code>{}</code><b> entfernt</b>",
+        "remove_alias_404": "🚫 <b>Kein Stickerpack mit Alias </b><code>{}</code>",
+        "pack404": "🚫 <b>Stickerpack </b><code>{}</code><b> nicht gefunden</b>",
+        "created_alias": "{} <b>Alias für {} erstellt. Alias: </b><code>{}</code>",
+        "packs_header": "👨‍🎤 <b>Aktive Stickerpacks:</b>\n\n",
+        "default": "{} <b>Pack {} als Standard festgelegt</b>",
+        "packremoved": "{} <b>Pack {} entfernt</b>",
+        "error": "🚫 <b>{}</b>",
+        "alias_exists": "🚫 <b>Alias </b><code>{}</code><b> existiert bereits</b>",
+        "stickrm": "{} <b>Sticker aus Pack entfernt</b>",
+        "_cls_doc": (
+            "Verwalte Stickerpacks mit Unterstützung für Videopacks und freundliches"
+            " Interface"
+        ),
+        "need_reply": "🚫 <b>Antwort auf Nachricht erforderlich</b>",
+        "cleaned": "⏳ <b>Recent gelöscht.</b>",
+        "processing": "👩‍🎤 <b>Verarbeite Medien...</b>",
+        "processing_gif": "🧑🏻‍🎤 <b>Verarbeite Video...</b>",
+        "rmbg": (
+            "<emoji document_id='6048696253632482685'>✂️</emoji> <b>Hintergrund"
+            " entfernen...</b>"
+        ),
+        "trimming": (
+            "<emoji document_id='6037132221691727143'>✂️</emoji> <b>Ränder"
+            " zuschneiden...</b>"
+        ),
+        "outline": (
+            "<emoji document_id='6048640560791555243'>🖌</emoji> <b>Umrandung"
+            " hinzufügen...</b>"
+        ),
+        "adding_text": (
+            "<emoji document_id='6048366494633430880'>🅰️</emoji> <b>Text"
+            " hinzufügen...</b>"
+        ),
+        "exporting": (
+            "<emoji document_id='6048887676029898150'>📥</emoji> <b>Exportieren...</b>"
+        ),
+        "confirm_remove": (
+            "🚫 <b>Sind Sie sicher, dass Sie Pack {} entfernen möchten?</b>"
+        ),
+        "remove": "🚫 Entfernen",
+        "cancel": "🔻 Abbrechen",
+        "deleting_pack": "😓 <b>Pack entfernen...</b>",
+    }
+
+    strings_tr = {
+        "no_args": "🚫 <b>Bu komut için argüman gerekli.</b>",
+        "no_such_pack": "🚫 <b>Böyle bir paket bulunamadı.</b>",
+        "stickersets_added": (
+            "🌁 <code>{}</code><b> paket eklendi, </b><code>{}</code><b> kaldırıldı!</b>"
+        ),
+        "no_stickersets_to_import": "🚫 <b>İçe aktarılacak paket yok.</b>",
+        "no_stickersets": "🚫 <b>Paketiniz yok.</b>",
+        "alias_removed": (
+            "✅ <b> </b><code>{}</code><b> adlı paketin takma adı kaldırıldı.</b>"
+        ),
+        "remove_alias_404": "🚫 <b> </b><code>{}</code><b> adlı paket yok.</b>",
+        "pack404": "🚫 <b> </b><code>{}</code><b> adlı paket bulunamadı.</b>",
+        "created_alias": (
+            "{} <b> </b><code>{}</code><b> adlı paket için takma ad oluşturuldu. Takma"
+            " ad: </b><code>{}</code>"
+        ),
+        "packs_header": "👨‍🎤 <b>Aktif paketler:</b>\n\n",
+        "default": "{} <b> </b><code>{}</code><b> adlı paket varsayılan yapıldı.</b>",
+        "packremoved": "{} <b> </b><code>{}</code><b> adlı paket kaldırıldı.</b>",
+        "error": "🚫 <b>{}</b>",
+        "alias_exists": "🚫 <b> </b><code>{}</code><b> adlı takma ad zaten var.</b>",
+        "stickrm": "{} <b>Paketten çıkartıldı.</b>",
+        "_cls_doc": "Video paketleri ve kullanıcı dostu arayüz ile paketleri yönetin.",
+        "need_reply": "🚫 <b>Bir mesaja yanıt vermeniz gerekiyor.</b>",
+        "cleaned": "⏳ <b>Temizlendi.</b>",
+        "processing": "👩‍🎤 <b>Medya işleniyor...</b>",
+        "processing_gif": "🧑🏻‍🎤 <b>Video işleniyor...</b>",
+        "rmbg": (
+            "<emoji document_id='6048696253632482685'>✂️</emoji> <b>Arkaplan"
+            " kaldırılıyor...</b>"
+        ),
+        "trimming": (
+            "<emoji document_id='6037132221691727143'>✂️</emoji> <b>Kenarlar"
+            " kırpılıyor...</b>"
+        ),
+        "outline": (
+            "<emoji document_id='6048640560791555243'>🖌</emoji> <b>Anahat"
+            " ekleniyor...</b>"
+        ),
+        "adding_text": (
+            "<emoji document_id='6048366494633430880'>🅰️</emoji> <b>Metin"
+            " ekleniyor...</b>"
+        ),
+        "exporting": (
+            "<emoji document_id='6048887676029898150'>📥</emoji> <b>Dışa"
+            " aktarılıyor...</b>"
+        ),
+        "confirm_remove": (
+            "🚫 <b> </b><code>{}</code><b> adlı paketi kaldırmak istediğinizden emin"
+            " misiniz?</b>"
+        ),
+        "remove": "🚫 Kaldır",
+        "cancel": "🔻 İptal",
+        "deleting_pack": "😓 <b>Paket siliniyor...</b>",
+    }
+
+    strings_hi = {
+        "no_args": "🚫 <b>इस कमांड के लिए एर्गुमेंट आवश्यक है।</b>",
+        "no_such_pack": "🚫 <b>कोई ऐसा पैक नहीं मिला।</b>",
+        "stickersets_added": (
+            "🌁 <code>{}</code><b> पैक जोड़ा गया, </b><code>{}</code><b> हटा दिया"
+            " गया!</b>"
+        ),
+        "no_stickersets_to_import": "🚫 <b>इम्पोर्ट करने के लिए कोई पैक नहीं।</b>",
+        "no_stickersets": "🚫 <b>आपके पास कोई पैक नहीं है।</b>",
+        "alias_removed": (
+            "✅ <b> </b><code>{}</code><b> नाम के पैक का उपनाम हटा दिया गया।</b>"
+        ),
+        "remove_alias_404": "🚫 <b> </b><code>{}</code><b> नाम का कोई पैक नहीं।</b>",
+        "pack404": "🚫 <b> </b><code>{}</code><b> नाम का कोई पैक नहीं मिला।</b>",
+        "created_alias": (
+            "{} <b> </b><code>{}</code><b> नाम के पैक के लिए उपनाम बनाया गया। उपनाम:"
+            " </b><code>{}</code>"
+        ),
+        "packs_header": "👨‍🎤 <b>सक्रिय पैक:</b>\n\n",
+        "default": "{} <b> </b><code>{}</code><b> नाम के पैक को डिफ़ॉल्ट किया गया।</b>",
+        "packremoved": "{} <b> </b><code>{}</code><b> नाम के पैक को हटा दिया गया।</b>",
+        "error": "🚫 <b>{}</b>",
+        "alias_exists": "🚫 <b> </b><code>{}</code><b> नाम का उपनाम पहले से ही है।</b>",
+        "stickrm": "{} <b>स्टिकर को पैक से हटा दिया गया।</b>",
+        "_cls_doc": (
+            "वीडियो पैक और उपयोगकर्ता अनुकूल प्रणाली के साथ पैक का प्रबंधन करें।"
+        ),
+        "need_reply": "🚫 <b>आपको एक संदेश पर उत्तर देना चाहिए।</b>",
+        "cleaned": "⏳ <b>सफाई की गई।</b>",
+        "processing": "👩‍🎤 <b>मीडिया प्रोसेस हो रहा है...</b>",
+        "processing_gif": "🧑🏻‍🎤 <b>वीडियो प्रोसेस हो रहा है...</b>",
+        "rmbg": (
+            "<emoji document_id='6048696253632482685'>✂️</emoji> <b>बैकग्राउंड हटा रहा"
+            " हूँ...</b>"
+        ),
+        "exporting": (
+            "<emoji document_id='6048887676029898150'>📥</emoji> <b>निर्यात कर रहा"
+            " हूँ...</b>"
+        ),
+        "confirm_remove": (
+            "🚫 <b>क्या आप वाकई </b><code>{}</code><b> पैक को हटाना चाहते हैं?</b>"
+        ),
+        "remove": "🚫 हटाएं",
+        "cancel": "🔻 रद्द करें",
+        "deleting_pack": "😓 <b>पैक हटा रहा हूँ...</b>",
+    }
+
     def find(self, args: str) -> str:
         if args in self.stickersets:
             p = self.stickersets[args].copy()
@@ -416,7 +574,12 @@ class StickManagerMod(loader.Module):
         outline.paste(image, (0, 0), image)
         return outline
 
-    @loader.command(ru_doc="<реплай> - Убрать фон с картинки")
+    @loader.command(
+        ru_doc="<ответ> - Убрать фон с картинки",
+        de_doc="<antwort> - Hintergrund von Bild entfernen",
+        tr_doc="<yanıt> - Resimden arka planı kaldır",
+        hi_doc="<उत्तर> - छवि से पृष्ठभूमि निकालें",
+    )
     async def rmbg(self, message: Message):
         """<reply> - Remove background from image"""
         reply = await message.get_reply_message()
@@ -621,7 +784,10 @@ class StickManagerMod(loader.Module):
         self._font_ready.set()
 
     @loader.command(
-        ru_doc="<short_name> <название> [-a <алиас>] - Создать новый стикерпак"
+        ru_doc="<short_name> <название> [-a <алиас>] - Создать новый стикерпак",
+        de_doc="<short_name> <name> [-a <alias>] - Erstelle einen neuen Stickerpack",
+        tr_doc="<kısa_ad> <isim> [-a <takma_ad>] - Yeni bir sticker paketi oluştur",
+        hi_doc="<छोटा_नाम> <नाम> [-a <उपनाम>] - एक नया स्टिकर सेट बनाएं",
     )
     async def newpack(self, message: Message):
         """<short_name> <name> [-a <alias>] - Create new pack"""
@@ -765,7 +931,14 @@ class StickManagerMod(loader.Module):
         )
 
     @loader.command(
-        ru_doc="<short_name> <имя> [-a <алиас>] - Создать новый видео стикерпак"
+        ru_doc="<short_name> <имя> [-a <алиас>] - Создать новый видео стикерпак",
+        de_doc=(
+            "<short_name> <name> [-a <alias>] - Erstelle einen neuen Video Stickerpack"
+        ),
+        tr_doc=(
+            "<kısa_ad> <isim> [-a <takma_ad>] - Yeni bir video sticker paketi oluştur"
+        ),
+        hi_doc="<छोटा_नाम> <नाम> [-a <उपनाम>] - एक नया वीडियो स्टिकर सेट बनाएं",
     )
     async def newvidpack(self, message: Message):
         """<short_name> <name> [-a <alias>] - Create new video stickers pack"""
@@ -926,7 +1099,12 @@ class StickManagerMod(loader.Module):
 
         await utils.answer(message, self.strings("created").format(name, shortname))
 
-    @loader.command(ru_doc="Синхронизировать стикерпаки с @stickers")
+    @loader.command(
+        ru_doc="Синхронизировать стикерпаки с @stickers",
+        de_doc="Synchronisiere Stickerpacks mit @stickers",
+        tr_doc="Sticker paketlerini @stickers ile senkronize et",
+        hi_doc="स्टिकर सेट्स को @stickers से सिंक्रनाइज़ करें",
+    )
     async def syncpacks(self, message: Message):
         """Sync existing stickersets with @stickers"""
         q = 0
@@ -992,7 +1170,12 @@ class StickManagerMod(loader.Module):
 
         await utils.answer(message, self.strings("stickersets_added").format(q, d))
 
-    @loader.command(ru_doc="Показать доступные стикерпаки")
+    @loader.command(
+        ru_doc="Показать доступные стикерпаки",
+        de_doc="Zeige verfügbare Stickerpacks",
+        tr_doc="Mevcut sticker paketlerini göster",
+        hi_doc="उपलब्ध स्टिकर सेट्स दिखाएं",
+    )
     async def packs(self, message: Message):
         """Short available stickersets"""
         if not self.stickersets:
@@ -1013,7 +1196,12 @@ class StickManagerMod(loader.Module):
 
         await utils.answer(message, res)
 
-    @loader.command(ru_doc="<алиас> [short_name] - Добавить или удалить алиас")
+    @loader.command(
+        ru_doc="<алиас> [short_name] - Добавить или удалить алиас",
+        de_doc="<alias> [short_name] - Füge oder entferne einen Alias hinzu",
+        tr_doc="<alias> [short_name] - Alias ekle veya kaldır",
+        hi_doc="<alias> [short_name] - एलियास जोड़ें या हटाएं",
+    )
     async def stickalias(self, message: Message):
         """<alias> [short_name] - Add or remove alias"""
         args = utils.get_args_raw(message)
@@ -1055,7 +1243,12 @@ class StickManagerMod(loader.Module):
                 ),
             )
 
-    @loader.command(ru_doc="<short_name|алиас> - Установить стандартный стикерпак")
+    @loader.command(
+        ru_doc="<short_name|алиас> - Установить стандартный стикерпак",
+        de_doc="<short_name|alias> - Setze das Standard-Stickerpack",
+        tr_doc="<short_name|alias> - Standart sticker paketini ayarla",
+        hi_doc="<short_name|alias> - डिफ़ॉल्ट स्टिकर सेट को सेट करें",
+    )
     async def stickdef(self, message: Message):
         """<short_name|alias> - Set default stickerpack"""
         args = utils.get_args_raw(message)
@@ -1074,7 +1267,12 @@ class StickManagerMod(loader.Module):
             ),
         )
 
-    @loader.command(ru_doc="<short_name|алиас> - Удалить стикерпак")
+    @loader.command(
+        ru_doc="<short_name|алиас> - Удалить стикерпак",
+        de_doc="<short_name|alias> - Entferne das Stickerpack",
+        tr_doc="<short_name|alias> - Sticker paketini kaldır",
+        hi_doc="<short_name|alias> - स्टिकर सेट हटाएं",
+    )
     async def rmpack(self, message: Message):
         """<short_name|alias> - Remove stickerpack"""
         args = utils.get_args_raw(message)
@@ -1173,7 +1371,12 @@ class StickManagerMod(loader.Module):
             ),
         )
 
-    @loader.command(ru_doc="<реплай> - Удалить стикер из пака")
+    @loader.command(
+        ru_doc="<реплай> - Удалить стикер из пака",
+        de_doc="<reply> - Entferne den Sticker aus dem Pack",
+        tr_doc="<reply> - Sticker paketinden çıkar",
+        hi_doc="<reply> - स्टिकर को स्टिकर सेट से हटाएं",
+    )
     async def unstick(self, message: Message):
         """<reply> - Remove sticker from pack"""
         reply = await message.get_reply_message()
@@ -1331,14 +1534,35 @@ class StickManagerMod(loader.Module):
             "[эмодзи] [short_name|алиам] [-o - добавить окантовку] [-r - убрать фон]"
             " [-q - Не добавлять в пак, а просто отправить стикер] [-t <текст> -"
             " наложить текст] - Добавить стикер \ картинку в пак. Если не указано в"
-            " какой, будет использован стандартный\nПример:\n.stick mypack -b -r -q -t"
+            " какой, будет использован стандартный\nПример:\n.stick mypack -o -r -q -t"
             " Привет, мир!"
-        )
+        ),
+        de_doc=(
+            "[emoji] [short_name|alias] [-o - Rahmen hinzufügen] [-r - Hintergrund"
+            " entfernen] [-q - Fügen Sie kein Paket hinzu, sondern senden Sie nur"
+            " Sticker] [-t <text> - Text hinzufügen] - Fügen Sie einen Sticker oder"
+            " ein Bild zu einem Paket hinzu. Wenn nicht angegeben, wird der Standard"
+            " verwendet\nBeispiel:\n.stick mypack -o -r -q -t Hallo Welt!"
+        ),
+        tr_doc=(
+            "[emoji] [short_name|alias] [-o - çerçeve ekle] [-r - arka planı kaldır]"
+            " [-q - Paket eklemeyin, sadece çubuk gönderin] [-t <metin> - metin"
+            " ekle] - Bir pakete bir çubuk veya resim ekleyin. Belirtilmediyse"
+            " varsayılan olarak kullanılır\nÖrnek:\n.stick mypack -o -r -q -t Merhaba"
+            " dünya!"
+        ),
+        hi_doc=(
+            "[emoji] [short_name|alias] [-o - फ़्रेम जोड़ें] [-r - पृष्ठभूमि निकालें]"
+            " [-q - पैकेज न जोड़ें, केवल स्टिकर भेजें] [-t <पाठ> - पाठ जोड़ें] -"
+            " एक पैकेज में एक स्टिकर या छवि जोड़ें। निर्दिष्ट नहीं किया गया तो"
+            " डिफ़ॉल्ट उपयोग किया जाएगा\nउदाहरण:\n.stick mypack -o -r -q -t नमस्ते"
+            " दुनिया!"
+        ),
     )
     async def stick(self, message: Message):
         """[emoji] [short_name|alias] [-o - add outline] [-r - remove background] [-q - Do not add sticker to pack, just send it] [-t <text> - add text] - Add sticker to pack. If not specified - default
         Example:
-        .stick mypack -b -r -q -t Hello world!"""
+        .stick mypack -o -r -q -t Hello world!"""
         if not self.stickersets:
             await utils.answer(message, self.strings("no_stickersets"))
             return
@@ -1541,7 +1765,12 @@ class StickManagerMod(loader.Module):
             self.strings("kang").format(pack["shortname"]),
         )
 
-    @loader.command(ru_doc="Очистить недавно использованные стикеры")
+    @loader.command(
+        ru_doc="Очистить недавно использованные стикеры",
+        de_doc="Löscht kürzlich verwendete Sticker",
+        tr_doc="Son kullanılan stickerları temizler",
+        hi_doc="हाल ही में उपयोग किए गए स्टिकर्स को साफ़ करें",
+    )
     async def rmrecent(self, message: Message):
         """Clear recently used stickers"""
         await self._client(ClearRecentStickersRequest(attached=False))

@@ -6,11 +6,10 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
 # meta pic: https://img.icons8.com/color/480/000000/angry--v1.png
 # meta banner: https://mods.hikariatama.ru/badges/insult.jpg
 # meta developer: @hikarimods
+# scope: hikka_min 1.2.10
 
 import random
 
@@ -96,6 +95,82 @@ class PoliteInsultMod(loader.Module):
             (
                 "Не преследуя попытку затронуть какие-либо социальные меньшинства, хочу"
                 " сказать, что"
+            ),
+        ],
+    }
+
+    strings_de = {
+        "insult": (
+            "<emoji document_id=5373123633415723713>🤬</emoji> {} du bist {} {} {} {}"
+        ),
+        "adjectives_start": [
+            "launisch",
+            "hässlich",
+            "sinnlos",
+            "überheblich",
+            "nicht-individualistisch",
+            "unordentlich",
+            "unprofessionell",
+            "unverantwortlich",
+            "unvernünftig",
+            "uninteressiert",
+        ],
+        "nouns": ["Teilnehmer dieser Gruppe", "dieser Weltbürger"],
+        "starts": [
+            (
+                "Ich möchte nicht zu voreilig sein und kann nicht behaupten, und"
+                " dies ist meine subjektive Meinung, aber"
+            ),
+            (
+                "Nachdem ich die Situation analysiert habe, kann ich meine subjektive"
+                " Meinung ausdrücken. Es liegt darin, dass"
+            ),
+            (
+                "Ohne jemanden verletzen zu wollen, sondern nur meine bescheidene"
+                " Meinung auszudrücken, die die Meinungen anderer Menschen nicht"
+                " beeinflusst, kann ich sagen, dass"
+            ),
+            (
+                "Ohne die Absicht, irgendwelche sozialen Minderheiten zu beeinflussen,"
+                " möchte ich sagen, dass"
+            ),
+        ],
+    }
+
+    strings_tr = {
+        "insult": (
+            "<emoji document_id=5373123633415723713>🤬</emoji> {} sen {} {} {} {}"
+        ),
+        "adjectives_start": [
+            "öfkeli",
+            "kaba",
+            "gözümü korkutmuş",
+            "kibirli",
+            "bireysel olmayan",
+            "düzensiz",
+            "profesyonel olmayan",
+            "sorumluluk almamış",
+            "akılsız",
+            "ilgisiz",
+        ],
+        "nouns": ["bu sohbet grubunun katılımcısı", "bu dünya vatandaşı"],
+        "starts": [
+            (
+                "Çabucak sonuçlara atlamak istemiyorum ve kesinlikle iddia edemem,"
+                " ve bu benim kişisel görüşüm, ama"
+            ),
+            (
+                "Durumu analiz ettiğimde, kişisel görüşümü ifade edebilirim. Bunun"
+                " içinde şu var ki"
+            ),
+            (
+                "Herhangi biri duygulanmasını istememekle birlikte, sadece kibarca"
+                " bir görüş belirtmek, kişilerin görüşlerinin etkilenmediği, ki"
+                " söyleyebilirim ki"
+            ),
+            (
+                "Herhangi bir sosyal azınlığı etkilemek için bir girişimde bulunmadan,"
+                " söylemek istediğim şey budur"
             ),
         ],
     }

@@ -58,7 +58,87 @@ class StatusesMod(loader.Module):
         "_cls_doc": "AFK модуль с расширенным функционалом",
     }
 
-    async def client_ready(self, *_):
+    strings_de = {
+        "status_not_found": "<b>🚫 Status nicht gefunden</b>",
+        "status_set": "<b>✅ Status gesetzt\n</b><code>{}</code>\nBenachrichtigen: {}",
+        "pzd_with_args": "<b>🚫 Falsche Argumente</b>",
+        "status_created": "<b>✅ Status {} erstellt\n</b><code>{}</code>\nBenachrichtigen: {}",
+        "status_removed": "<b>✅ Status {} gelöscht</b>",
+        "no_status": "<b>🚫 Es ist kein Status aktiv</b>",
+        "status_unset": "<b>✅ Status gelöscht</b>",
+        "available_statuses": "<b>🦊 Verfügbarer Status:</b>\n\n",
+        "_cmd_doc_status": "<short_name> - Setze Status",
+        "_cmd_doc_newstatus": (
+            "<short_name> <benachrichtigen|0/1> <text> - Erstelle neuen Status\nBeispiel:"
+            " .newstatus test 1 Hallo!"
+        ),
+        "_cmd_doc_delstatus": "<short_name> - Lösche Status",
+        "_cmd_doc_unstatus": "Lösche Status",
+        "_cmd_doc_statuses": "Zeige verfügbare Status",
+        "_cls_doc": "AFK Modul mit erweitertem Funktionsumfang",
+    }
+
+    strings_uz = {
+        "status_not_found": "<b>🚫 Status topilmadi</b>",
+        "status_set": "<b>✅ Status o'rnatildi\n</b><code>{}</code>\nBildirish: {}",
+        "pzd_with_args": "<b>🚫 Argumetlarni xato kiritdingiz</b>",
+        "status_created": "<b>✅ Status {} yaratildi\n</b><code>{}</code>\nBildirish: {}",
+        "status_removed": "<b>✅ Status {} o'chirildi</b>",
+        "no_status": "<b>🚫 Hozircha aktiv status yo'q</b>",
+        "status_unset": "<b>✅ Status o'chirildi</b>",
+        "available_statuses": "<b>🦊 Mavjud statuslar:</b>\n\n",
+        "_cmd_doc_status": "<short_name> - Statusni o'rnatish",
+        "_cmd_doc_newstatus": (
+            "<short_name> <bildirish|0/1> <matn> - Yangi status yaratish\nMasalan:"
+            " .newstatus test 1 Salom!"
+        ),
+        "_cmd_doc_delstatus": "<short_name> - Statusni o'chirish",
+        "_cmd_doc_unstatus": "Statusni o'chirish",
+        "_cmd_doc_statuses": "Mavjud statuslarni ko'rsatish",
+        "_cls_doc": "AFK moduli kengaytirilgan funktsiyalari bilan",
+    }
+
+    strings_tr = {
+        "status_not_found": "<b>🚫 Durum bulunamadı</b>",
+        "status_set": "<b>✅ Durum ayarlandı\n</b><code>{}</code>\nBildirim: {}",
+        "pzd_with_args": "<b>🚫 Yanlış argümanlar</b>",
+        "status_created": "<b>✅ Durum {} oluşturuldu\n</b><code>{}</code>\nBildirim: {}",
+        "status_removed": "<b>✅ Durum {} kaldırıldı</b>",
+        "no_status": "<b>🚫 Şu anda aktif durum yok</b>",
+        "status_unset": "<b>✅ Durum kaldırıldı</b>",
+        "available_statuses": "<b>🦊 Mevcut durumlar:</b>\n\n",
+        "_cmd_doc_status": "<short_name> - Durum ayarla",
+        "_cmd_doc_newstatus": (
+            "<short_name> <bildirim|0/1> <metin> - Yeni durum oluştur\nÖrnek:"
+            " .newstatus test 1 Merhaba!"
+        ),
+        "_cmd_doc_delstatus": "<short_name> - Durum kaldır",
+        "_cmd_doc_unstatus": "Durum kaldır",
+        "_cmd_doc_statuses": "Mevcut durumları göster",
+        "_cls_doc": "AFK modülü genişletilmiş özelliklerle",
+    }
+
+    strings_hi = {
+        "status_not_found": "<b>🚫 स्थिति नहीं मिली</b>",
+        "status_set": "<b>✅ स्थिति सेट की गई\n</b><code>{}</code>\nसूचित करना: {}",
+        "pzd_with_args": "<b>🚫 गलत तर्क</b>",
+        "status_created": "<b>✅ स्थिति {} बनाया गया\n</b><code>{}</code>\nसूचित करना: {}",
+        "status_removed": "<b>✅ स्थिति {} हटाया गया</b>",
+        "no_status": "<b>🚫 अभी कोई सक्रिय स्थिति नहीं है</b>",
+        "status_unset": "<b>✅ स्थिति हटाया गया</b>",
+        "available_statuses": "<b>🦊 उपलब्ध स्थितियां:</b>\n\n",
+        "_cmd_doc_status": "<short_name> - स्थिति सेट करें",
+        "_cmd_doc_newstatus": (
+            "<short_name> <सूचित करना|0/1> <पाठ> - नया स्थिति बनाएं\nउदाहरण:"
+            " .newstatus test 1 हैलो!"
+        ),
+        "_cmd_doc_delstatus": "<short_name> - स्थिति हटाएं",
+        "_cmd_doc_unstatus": "स्थिति हटाएं",
+        "_cmd_doc_statuses": "उपलब्ध स्थितियों को दिखाएं",
+        "_cls_doc": "एफके मॉड्यूल विस्तारित सुविधाओं के साथ",
+    }
+
+    def __init__(self):
         self._ratelimit = []
         self._sent_messages = []
 

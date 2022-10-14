@@ -13,13 +13,12 @@ __version__ = (2, 0, 3)
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.2.10
+# scope: hikka_min 1.5.2
 
 import asyncio
 import time
 
 from telethon.tl.types import Message, Channel
-from telethon.tl.functions.channels import InviteToChannelRequest
 from telethon.tl.functions.contacts import GetBlockedRequest
 
 from .. import loader, utils
@@ -82,6 +81,128 @@ class SilentTagsMod(loader.Module):
         "_cfg_doc_silent": "Не отправлять сообщение о том, что активны Silent Tags",
         "_cfg_doc_use_whitelist": (
             "Преобразовать все списковые настройки в белый список"
+        ),
+    }
+
+    strings_de = {
+        "tag_mentioned": "<b>🤫 Stille Tags sind aktiviert</b>",
+        "stags_status": "<b>🤫 Stille Tags sind {}</b>",
+        "_cmd_doc_stags": "<on\\off> - Stille Tags aktivieren\\deaktivieren",
+        "_cls_doc": "Deaktiviert Stille Tags",
+        "_cfg_doc_ignore_users": (
+            "Deaktiviert Stille Tags für Nutzer mit den folgenden IDs"
+        ),
+        "_cfg_doc_ignore_chats": (
+            "Deaktiviert Stille Tags in Chats mit den folgenden IDs"
+        ),
+        "_cfg_doc_ignore_bots": "Deaktiviert Stille Tags für Bots",
+        "_cfg_doc_ignore_blocked": "Deaktiviert Stille Tags für blockierte Nutzer",
+        "_cfg_doc_silent_users": (
+            "Sendet keine Nachrichten über Stille Tags von Nutzern mit den"
+            " folgenden IDs"
+        ),
+        "_cfg_doc_silent_chats": (
+            "Sendet keine Nachrichten über Stille Tags in Chats mit den folgenden IDs"
+        ),
+        "_cfg_doc_silent_bots": "Sendet keine Nachrichten über Stille Tags von Bots",
+        "_cfg_doc_silent_blocked": (
+            "Sendet keine Nachrichten über Stille Tags von blockierten Nutzern"
+        ),
+        "_cfg_doc_silent": (
+            "Sendet keine Nachricht über den aktivierten Status von Stille Tags"
+        ),
+        "_cfg_doc_use_whitelist": (
+            "Konvertiert alle Serienähnlichen Optionen in eine Whitelist"
+        ),
+    }
+
+    strings_hi = {
+        "tag_mentioned": "<b>🤫 साइलेंट टैग चालू हैं</b>",
+        "stags_status": "<b>🤫 साइलेंट टैग {}</b>",
+        "_cmd_doc_stags": "<on\\off> - साइलेंट टैग को चालू\\बंद करें",
+        "_cls_doc": "साइलेंट टैग निष्क्रिय करता है",
+        "_cfg_doc_ignore_users": "निम्न आईडी के साथ साइलेंट टैग नहीं करें",
+        "_cfg_doc_ignore_chats": "निम्न आईडी के साथ साइलेंट टैग नहीं करें",
+        "_cfg_doc_ignore_bots": "साइलेंट टैग नहीं करें बॉटों के लिए",
+        "_cfg_doc_ignore_blocked": (
+            "साइलेंट टैग नहीं करें ब्लॉक किए गए उपयोगकर्ताओं के लिए"
+        ),
+        "_cfg_doc_silent_users": (
+            "निम्न आईडी के साथ साइलेंट टैग के साथ संदेश नहीं भेजें"
+        ),
+        "_cfg_doc_silent_chats": (
+            "निम्न आईडी के साथ साइलेंट टैग के साथ संदेश नहीं भेजें"
+        ),
+        "_cfg_doc_silent_bots": "साइलेंट टैग के साथ संदेश नहीं भेजें बॉटों के लिए",
+        "_cfg_doc_silent_blocked": (
+            "साइलेंट टैग के साथ संदेश नहीं भेजें ब्लॉक किए गए उपयोगकर्ताओं के लिए"
+        ),
+        "_cfg_doc_silent": "साइलेंट टैग की स्थिति को सक्रिय करने से संदेश नहीं भेजें",
+        "_cfg_doc_use_whitelist": "सभी सीरीज़ विकल्पों को व्हाइटलिस्ट में कनवर्ट करें",
+    }
+
+    strings_tr = {
+        "tag_mentioned": "<b>🤫 Sessiz etiketler etkin</b>",
+        "stags_status": "<b>🤫 Sessiz etiketler {}</b>",
+        "_cmd_doc_stags": (
+            "<on\\off> - Sessiz etiketleri etkinleştirin\\devre dışı bırakın"
+        ),
+        "_cls_doc": "Sessiz etiketleri devre dışı bırakır",
+        "_cfg_doc_ignore_users": (
+            "Sessiz etiketleri aşağıdaki kimliklerle devre dışı bırakın"
+        ),
+        "_cfg_doc_ignore_chats": (
+            "Sessiz etiketleri aşağıdaki kimliklerle devre dışı bırakın"
+        ),
+        "_cfg_doc_ignore_bots": "Sessiz etiketleri devre dışı bırakın",
+        "_cfg_doc_ignore_blocked": (
+            "Sessiz etiketleri engellenen kullanıcılar için devre dışı bırakın"
+        ),
+        "_cfg_doc_silent_users": (
+            "Aşağıdaki kimliklerle sessiz etiketlerle ileti gönderme"
+        ),
+        "_cfg_doc_silent_chats": (
+            "Aşağıdaki kimliklerle sessiz etiketlerle ileti gönderme"
+        ),
+        "_cfg_doc_silent_bots": "Sessiz etiketlerle ileti gönderme",
+        "_cfg_doc_silent_blocked": (
+            "Sessiz etiketlerle ileti gönderme engellenen kullanıcılar için"
+        ),
+        "_cfg_doc_silent": "Sessiz etiketlerin etkinleştirilmesi ile ileti gönderme",
+        "_cfg_doc_use_whitelist": (
+            "Tüm serisi benzer seçenekleri beyaz listeye dönüştürün"
+        ),
+    }
+
+    strings_uz = {
+        "tag_mentioned": "<b>🤫 Sessiz etiketlar yoqilgan</b>",
+        "stags_status": "<b>🤫 Sessiz etiketlar {}</b>",
+        "_cmd_doc_stags": "<on\\off> - Sessiz etiketlarni yoqish\\o'chirish",
+        "_cls_doc": "Sessiz etiketlarni o'chiradi",
+        "_cfg_doc_ignore_users": (
+            "Sessiz etiketlarni quyidagi identifikatorlar bilan o'chirish"
+        ),
+        "_cfg_doc_ignore_chats": (
+            "Sessiz etiketlarni quyidagi identifikatorlar bilan o'chirish"
+        ),
+        "_cfg_doc_ignore_bots": "Sessiz etiketlarni o'chirish",
+        "_cfg_doc_ignore_blocked": (
+            "Sessiz etiketlarni bloklangan foydalanuvchilar uchun o'chirish"
+        ),
+        "_cfg_doc_silent_users": (
+            "Quyidagi identifikatorlar bilan sessiz etiketlar bilan xabar yuborish"
+        ),
+        "_cfg_doc_silent_chats": (
+            "Quyidagi identifikatorlar bilan sessiz etiketlar bilan xabar yuborish"
+        ),
+        "_cfg_doc_silent_bots": "Sessiz etiketlar bilan xabar yuborish",
+        "_cfg_doc_silent_blocked": (
+            "Sessiz etiketlar bilan xabar yuborish bloklangan foydalanuvchilar uchun"
+        ),
+        "_cfg_doc_silent": "Sessiz etiketlar yoqilgan bo'lishi xabar yuborish",
+        "_cfg_doc_use_whitelist": (
+            "Barcha seriyalar bir-biriga o'xshash variantlarni o'q ro'yxatiga"
+            " o'zgartirish"
         ),
     }
 
@@ -162,7 +283,7 @@ class SilentTagsMod(loader.Module):
             ).users
         ]
 
-    async def client_ready(self, client, db):
+    async def client_ready(self):
         self._ratelimit = []
         self._fw_protect = {}
         self._blocked = []
@@ -173,6 +294,7 @@ class SilentTagsMod(loader.Module):
             "silent-tags",
             "🔇 Chat for silent tags",
             silent=True,
+            invite_bot=True,
             _folder="hikka",
         )
 
@@ -264,22 +386,6 @@ class SilentTagsMod(loader.Module):
             uname = "Unknown user"
             user = None
 
-        async def send():
-            await self.inline.bot.send_message(
-                self.chat_aio,
-                self.strings("tagged").format(
-                    grouplink,
-                    utils.escape_html(ctitle),
-                    uid,
-                    utils.escape_html(uname),
-                    utils.escape_html(message.raw_text),
-                    cid,
-                    message.id,
-                ),
-                disable_web_page_preview=True,
-                parse_mode="HTML",
-            )
-
         if (
             (
                 self.config["whitelist"]
@@ -302,16 +408,20 @@ class SilentTagsMod(loader.Module):
         ):
             return
 
-        try:
-            await send()
-        except Exception:
-            await self._client(
-                InviteToChannelRequest(
-                    self.c,
-                    [self.inline.bot_username],
-                )
-            )
-            await send()
+        await self.inline.bot.send_message(
+            self.chat_aio,
+            self.strings("tagged").format(
+                grouplink,
+                utils.escape_html(ctitle),
+                uid,
+                utils.escape_html(uname),
+                utils.escape_html(message.raw_text),
+                cid,
+                message.id,
+            ),
+            disable_web_page_preview=True,
+            parse_mode="HTML",
+        )
 
         self._fw_protect[cid] += [time.time() + 5 * 60]
 

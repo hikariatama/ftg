@@ -66,6 +66,58 @@ class TagAllMod(loader.Module):
         "cancelled": "🧚‍♀️ <b>Сбор участников отменен!</b>",
     }
 
+    strings_de = {
+        "bot_error": "🚫 <b>Einladung des Inline-Bots in den Chat fehlgeschlagen</b>",
+        "_cfg_doc_default_message": "Standardnachricht für Erwähnungen",
+        "_cfg_doc_delete": "Nachrichten nach Erwähnung löschen",
+        "_cfg_doc_use_bot": "Inline-Bot verwenden, um Leute zu erwähnen",
+        "_cfg_doc_timeout": (
+            "Zeitintervall, in dem zwischen den Erwähnungen gewartet wird"
+        ),
+        "_cfg_doc_silent": "Nachricht ohne Abbrechen-Button senden",
+        "gathering": "🧚‍♀️ <b>Erwähne Teilnehmer dieses Chats...</b>",
+        "cancel": "🚫 Abbrechen",
+        "cancelled": "🧚‍♀️ <b>TagAll abgebrochen!</b>",
+    }
+
+    strings_tr = {
+        "bot_error": "🚫 <b>Inline botunu sohbete davet edilemedi</b>",
+        "_cfg_doc_default_message": "Varsayılan etiket mesajı",
+        "_cfg_doc_delete": "Etiketledikten sonra mesajları sil",
+        "_cfg_doc_use_bot": "İnsanları etiketlemek için inline botu kullan",
+        "_cfg_doc_timeout": "Her etiket mesajı arasında ne kadar bekleneceği",
+        "_cfg_doc_silent": "İptal düğmesi olmadan mesaj gönderme",
+        "gathering": "🧚‍♀️ <b>Bu sohbetteki katılımcıları çağırıyorum...</b>",
+        "cancel": "🚫 İptal",
+        "cancelled": "🧚‍♀️ <b>TagAll iptal edildi!</b>",
+    }
+
+    strings_hi = {
+        "bot_error": "🚫 <b>इनलाइन बॉट को चैट में आमंत्रित करने में विफल रहा</b>",
+        "_cfg_doc_default_message": "डिफ़ॉल्ट संदेश को उल्लेख करें",
+        "_cfg_doc_delete": "टैग करने के बाद संदेश को हटाएं",
+        "_cfg_doc_use_bot": "लोगों को टैग करने के लिए इनलाइन बॉट का उपयोग करें",
+        "_cfg_doc_timeout": "प्रत्येक टैग संदेश के बीच कैसे स्लीप करना है",
+        "_cfg_doc_silent": "रद्द बटन नहीं भेजने के लिए संदेश भेजें",
+        "gathering": "🧚‍♀️ <b>इस चैट के भागीदारों को कॉल कर रहा हूं...</b>",
+        "cancel": "🚫 रद्द करें",
+        "cancelled": "🧚‍♀️ <b>TagAll रद्द कर दिया गया है!</b>",
+    }
+
+    strings_uz = {
+        "bot_error": (
+            "🚫 <b>Inline botni chatga taklif qilish muvaffaqiyatsiz bo‘ldi</b>"
+        ),
+        "_cfg_doc_default_message": "Odatiy etiket xabari",
+        "_cfg_doc_delete": "Etiketdan so‘ng xabarlarni o‘chirish",
+        "_cfg_doc_use_bot": "Odamlarni etiketlash uchun inline botdan foydalanish",
+        "_cfg_doc_timeout": "Har bir etiket xabari orasida nechta kutish kerak",
+        "_cfg_doc_silent": "Bekor tugmasi olmadan xabar jo‘natish",
+        "gathering": "🧚‍♀️ <b>Ushbu chatta qatnashganlarni chaqiraman...</b>",
+        "cancel": "🚫 Bekor qilish",
+        "cancelled": "🧚‍♀️ <b>TagAll bekor qilindi!</b>",
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
@@ -103,7 +155,14 @@ class TagAllMod(loader.Module):
         event.stop()
         await call.answer(self.strings("cancel"))
 
-    @loader.command(groups=True, ru_doc="[текст] - Отметить всех участников чата")
+    @loader.command(
+        groups=True,
+        ru_doc="[текст] - Отметить всех участников чата",
+        de_doc="[Text] - Alle Chatteilnehmer erwähnen",
+        tr_doc="[metin] - Sohbet katılımcılarını etiketle",
+        hi_doc="[पाठ] - चैट के सभी भागीदारों को टैग करें",
+        uz_doc="[matn] - Chat qatnashuvchilarini tegish",
+    )
     async def tagall(self, message: Message):
         """[text] - Tag all users in chat"""
         args = utils.get_args_raw(message)

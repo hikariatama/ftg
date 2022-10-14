@@ -83,10 +83,56 @@ class ArtAIMod(loader.Module):
         "pick_engine": "👩‍🎤 <b>Please, choose engine to process this photo</b>",
         "uploading": "☁️ <b>Uploading...</b>",
         "success": (
-            "🎨 <b>This is nice</b>|"
-            "🎨 <b>Shee-e-esh</b>|"
-            "🎨 <b>I'm the artist, this is my POV!</b>|"
-            "🎨 <b>Do not blame me, I'm the artist</b>"
+            "🎨 <b>This is nice</b>",
+            "🎨 <b>Shee-e-esh</b>",
+            "🎨 <b>I'm the artist, this is my POV!</b>",
+            "🎨 <b>Do not blame me, I'm the artist</b>",
+        ),
+    }
+
+    strings_ru = {
+        "no_reply": "🚫 <b>Ответь на фото</b>",
+        "pick_engine": "👩‍🎤 <b>Выбери движок для обработки этой фотографии</b>",
+        "uploading": "☁️ <b>Загружаю...</b>",
+        "success": (
+            "🎨 <b>Это классно</b>",
+            "🎨 <b>Shee-e-esh</b>",
+            "🎨 <b>Я художник, я так вижу!</b>",
+            "🎨 <b>Не обвиняй меня, я художник</b>",
+        ),
+    }
+
+    strings_de = {
+        "no_reply": "🚫 <b>Antworte auf ein Foto</b>",
+        "pick_engine": "👩‍🎤 <b>Wähle einen Motor, um dieses Foto zu verarbeiten</b>",
+        "uploading": "☁️ <b>Hochladen...</b>",
+        "success": (
+            "🎨 <b>Das ist schön</b>",
+            "🎨 <b>Shee-e-esh</b>",
+            "🎨 <b>Ich bin der Künstler, das ist meine Sicht!</b>",
+            "🎨 <b>Verurteile mich nicht, ich bin der Künstler</b>",
+        ),
+    }
+
+    strings_hi = {
+        "no_reply": "🚫 <b>एक तस्वीर पर जवाब दें</b>",
+        "pick_engine": "👩‍🎤 <b>इस तस्वीर को प्रोसेस करने के लिए एक इंजन चुनें</b>",
+        "uploading": "☁️ <b>अपलोड कर रहा हूं...</b>",
+        "success": (
+            "🎨 <b>यह अच्छा है</b>",
+            "🎨 <b>Shee-e-esh</b>",
+            "🎨 <b>मैं कलाकार हूं, यह मेरा प्रतिदर्शन है!</b>",
+            "🎨 <b>मुझे नामांकित न करो, मैं कलाकार हूं</b>",
+        ),
+    }
+
+    strings_uz = {
+        "no_reply": "🚫 <b>Fotoya javob bering</b>",
+        "pick_engine": "👩‍🎤 <b>Ushbu rasmni ishlash uchun injinani tanlang</b>",
+        "uploading": "☁️ <b>Yuklanmoqda...</b>",
+        "success": (
+            "🎨 <b>Bu yaxshi</b>",
+            "🎨 <b>Shee-e-esh</b>",
         ),
     }
 
@@ -128,7 +174,7 @@ class ArtAIMod(loader.Module):
                 chat_id,
                 file=await animefy(media, engine),
                 reply_to=message_id,
-                caption=random.choice(self.strings("success").split("|")),
+                caption=random.choice(self.strings("success")),
             )
             await call.delete()
             return
@@ -161,7 +207,7 @@ class ArtAIMod(loader.Module):
                     chat_id,
                     file=res,
                     reply_to=message_id,
-                    caption=random.choice(self.strings("success").split("|")),
+                    caption=random.choice(self.strings("success")),
                 )
             except TypeError:
                 pass

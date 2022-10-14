@@ -95,6 +95,90 @@ class VoiceChatMod(loader.Module):
         "choose_delete": "♻️ <b>Выберите элемент очереди для удаления</b>",
     }
 
+    strings_de = {
+        "already_joined": "🚫 <b>Du bist bereits in einem Sprachchat</b>",
+        "joined": "🎙 <b>In Sprachchat beigetreten</b>",
+        "no_reply": "🚫 <b>Antworte auf eine Nachricht</b>",
+        "no_queue": "🚫 <b>Keine Warteschlange</b>",
+        "queue": "🎙 <b>Warteschlange</b>:\n\n{}",
+        "queueadd": "🎧 <b>{} zur Warteschlange hinzugefügt</b>",
+        "queueaddv": "📼 <b>{} zur Warteschlange hinzugefügt</b>",
+        "downloading": "📥 <b>Herunterladen...</b>",
+        "playing": "🎶 <b>Spiele {}</b>",
+        "playing_with_next": "🎶 <b>Spiele {}</b>\n➡️ <b>Nächster: {}</b>",
+        "pause": "🎵 Pause",
+        "play": "🎵 Spielen",
+        "mute": "🔇 Stumm",
+        "unmute": "🔈 Ton",
+        "next": "➡️ Nächster",
+        "stopped": "🚨 <b>Gestoppt</b>",
+        "stop": "🚨 Stoppen",
+        "choose_delete": "♻️ <b>Wähle einen Eintrag aus der Warteschlange zum Löschen</b>",
+    }
+
+    strings_tr = {
+        "already_joined": "🚫 <b>Zaten sesli sohbette</b>",
+        "joined": "🎙 <b>Sesli sohbete katıldı</b>",
+        "no_reply": "🚫 <b>Bir mesaja yanıt verin</b>",
+        "no_queue": "🚫 <b>Kuyruk yok</b>",
+        "queue": "🎙 <b>Kuyruk</b>:\n\n{}",
+        "queueadd": "🎧 <b>{} kuyruğa eklendi</b>",
+        "queueaddv": "📼 <b>{} kuyruğa eklendi</b>",
+        "downloading": "📥 <b>İndiriliyor...</b>",
+        "playing": "🎶 <b>Oynatılıyor {}</b>",
+        "playing_with_next": "🎶 <b>Oynatılıyor {}</b>\n➡️ <b>Sonraki: {}</b>",
+        "pause": "🎵 Duraklat",
+        "play": "🎵 Oynat",
+        "mute": "🔇 Sessiz",
+        "unmute": "🔈 Sesi aç",
+        "next": "➡️ Sonraki",
+        "stopped": "🚨 <b>Durduruldu</b>",
+        "stop": "🚨 Durdur",
+        "choose_delete": "♻️ <b>Silinecek kuyruk öğesini seçin</b>",
+    }
+
+    strings_uz = {
+        "already_joined": "🚫 <b>Siz allaqachon g‘ovushda</b>",
+        "joined": "🎙 <b>G‘ovushga qo‘shildi</b>",
+        "no_reply": "🚫 <b>Xabarga javob bering</b>",
+        "no_queue": "🚫 <b>Navbat yo‘q</b>",
+        "queue": "🎙 <b>Navbat</b>:\n\n{}",
+        "queueadd": "🎧 <b>{} navbatga qo‘shildi</b>",
+        "queueaddv": "📼 <b>{} navbatga qo‘shildi</b>",
+        "downloading": "📥 <b>Yuklanmoqda...</b>",
+        "playing": "🎶 <b>O‘ynatilmoqda {}</b>",
+        "playing_with_next": "🎶 <b>O‘ynatilmoqda {}</b>\n➡️ <b>Keyingi: {}</b>",
+        "pause": "🎵 To‘xtatish",
+        "play": "🎵 O‘ynatish",
+        "mute": "🔇 Sessiz",
+        "unmute": "🔈 Suv",
+        "next": "➡️ Keyingi",
+        "stopped": "🚨 <b>To‘xtatildi</b>",
+        "stop": "🚨 To‘xtatish",
+        "choose_delete": "♻️ <b>O‘chirish uchun navbatdagi elementni tanlang</b>",
+    }
+
+    strings_hi = {
+        "already_joined": "🚫 <b>आप पहले से ही एक वाणिज्यिक चैट में हैं</b>",
+        "joined": "🎙 <b>वाणिज्यिक चैट में शामिल हो गए</b>",
+        "no_reply": "🚫 <b>एक संदेश पर उत्तर दें</b>",
+        "no_queue": "🚫 <b>कोई पंक्ति नहीं</b>",
+        "queue": "🎙 <b>पंक्ति</b>:\n\n{}",
+        "queueadd": "🎧 <b>{} पंक्ति में जोड़ा गया</b>",
+        "queueaddv": "📼 <b>{} पंक्ति में जोड़ा गया</b>",
+        "downloading": "📥 <b>डाउनलोड हो रहा है...</b>",
+        "playing": "🎶 <b>खेला जा रहा है {}</b>",
+        "playing_with_next": "🎶 <b>खेला जा रहा है {}</b>\n➡️ <b>अगला: {}</b>",
+        "pause": "🎵 रोकें",
+        "play": "🎵 खेलो",
+        "mute": "🔇 मौन",
+        "unmute": "🔈 आवाज",
+        "next": "➡️ अगला",
+        "stopped": "🚨 <b>रोक दिया</b>",
+        "stop": "🚨 रोकें",
+        "choose_delete": "♻️ <b>हटाने के लिए पंक्ति आइटम का चयन करें</b>",
+    }
+
     _calls = {}
     _muted = {}
     _forms = {}
@@ -238,7 +322,14 @@ class VoiceChatMod(loader.Module):
 
         return filename
 
-    async def qaddcmd(self, message: Message):
+    @loader.command(
+        ru_doc="<ответ на песню или ее имя> - Добавить песню в очередь прослушивания чата",
+        de_doc="<auf eine Musik oder ihren Namen antworten> - Fügen Sie eine Musik in die Warteschlange für die Wiedergabe im Chat hinzu",
+        tr_doc="<şarkıya veya adına yanıt> - Sohbette dinleme sırasına şarkı ekleyin",
+        hi_doc="<एक गाने या उसके नाम पर उत्तर> - चैट में प्लेबैक के लिए गाने को लंबित करने के लिए गाने को लंबित करें",
+        uz_doc="<musiqaga yoki uning nomiga javob> - Chatda o'qish uchun musiqani qo'shing",
+    )
+    async def qadd(self, message: Message):
         """<reply to song or its name> - Add song to chat's voicechat queue"""
         reply = await message.get_reply_message()
         song = utils.get_args_raw(message)
@@ -279,7 +370,14 @@ class VoiceChatMod(loader.Module):
 
         await utils.answer(message, self.strings("queueadd").format(filename))
 
-    async def qaddvcmd(self, message: Message):
+    @loader.command(
+        ru_doc="<ответ на видео или ссылка на YouTube> - Добавить видео в очередь чата",
+        de_doc="<auf ein Video oder einen YouTube-Link antworten> - Fügen Sie ein Video in die Warteschlange des Chats ein",
+        tr_doc="<bir videoya veya YouTube bağlantısına yanıt> - Bir videoyu sohbet sırasına ekleyin",
+        hi_doc="<एक वीडियो या YouTube लिंक पर उत्तर> - चैट की लंबित को एक वीडियो जोड़ें",
+        uz_doc="<videoga yoki YouTube havolasiga javob> - Chatni qo'shish uchun video qo'shing",
+    )
+    async def qaddv(self, message: Message):
         """<reply to video or yt link> - Add video to chat's voicechat queue"""
         reply = await message.get_reply_message()
         link = utils.get_args_raw(message)
@@ -329,7 +427,14 @@ class VoiceChatMod(loader.Module):
 
         await utils.answer(message, self.strings("queueadd").format(filename))
 
-    async def qnextcmd(self, message: Message):
+    @loader.command(
+        ru_doc="Переключить трек",
+        de_doc="Track wechseln",
+        tr_doc="Parçayı değiştir",
+        hi_doc="ट्रैक बदलें",
+        uz_doc="Trackni o'zgartiring",
+    )
+    async def qnext(self, message: Message):
         """Skips current audio in queue"""
         chat_id = utils.get_chat_id(message)
 
@@ -537,7 +642,14 @@ class VoiceChatMod(loader.Module):
 
         return msg, markup
 
-    async def qpausecmd(self, message: Message):
+    @loader.command(
+        ru_doc="Приостановить воспроизведение",
+        de_doc="Pausiere die Wiedergabe",
+        tr_doc="Oynatmayı duraklat",
+        hi_doc="प्लेबैक को रोकें",
+        uz_doc="Oynatmani to'xtatish",
+    )
+    async def qpause(self, message: Message):
         """Pause current chat's queue"""
         chat_id = utils.get_chat_id(message)
         with contextlib.suppress(Exception):
@@ -548,11 +660,25 @@ class VoiceChatMod(loader.Module):
             await self._forms[chat_id].delete()
         self._forms[chat_id] = await utils.answer(message, msg, reply_markup=markup)
 
-    async def qstopcmd(self, message: Message):
+    @loader.command(
+        ru_doc="Остановить воспроизведение",
+        de_doc="Stoppe die Wiedergabe",
+        tr_doc="Oynatmayı durdur",
+        hi_doc="प्लेबैक को बंद करें",
+        uz_doc="Oynatmani to'xtatish",
+    )
+    async def qstop(self, message: Message):
         """Stop current chat's queue"""
         await self._inline__stop(message, utils.get_chat_id(message))
 
-    async def qresumecmd(self, message: Message):
+    @loader.command(
+        ru_doc="Продолжить воспроизведение",
+        de_doc="Fahre die Wiedergabe fort",
+        tr_doc="Oynatmaya devam et",
+        hi_doc="प्लेबैक को फिर से शुरू करें",
+        uz_doc="Oynatmani davom ettirish",
+    )
+    async def qresume(self, message: Message):
         """Resume current chat's queue"""
         chat_id = utils.get_chat_id(message)
         with contextlib.suppress(Exception):

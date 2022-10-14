@@ -54,56 +54,100 @@ class SpotifyMod(loader.Module):
     strings = {
         "name": "SpotifyNow",
         "need_auth": (
-            "🚫 <b>Call </b><code>.sauth</code><b> before using this action.</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Call"
+            " </b><code>.sauth</code><b> before using this action.</b>"
         ),
         "on-repeat": "🔂 <b>Set on-repeat.</b>",
         "off-repeat": "🔁 <b>Stopped track repeat.</b>",
         "skipped": "⏭ <b>Skipped track.</b>",
         "err": (
-            "🚫 <b>Error occurred. Make sure the track is playing!</b>\n<code>{}</code>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Error occurred. Make"
+            " sure the track is playing!</b>\n<code>{}</code>"
         ),
-        "already_authed": "🚫 <b>You are already authentificated</b>",
-        "authed": "🎧 <b>Auth successful</b>",
-        "playing": "🎧 <b>Playing...</b>",
+        "already_authed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You are already"
+            " authentificated</b>"
+        ),
+        "authed": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Auth successful</b>"
+        ),
+        "playing": "<emoji document_id=6319076999105087378>🎧</emoji> <b>Playing...</b>",
         "back": "🔙 <b>Switched to previous track</b>",
         "paused": "⏸ <b>Pause</b>",
-        "deauth": "🚪 <b>Unauthentificated</b>",
+        "deauth": (
+            "<emoji document_id=6037460928423791421>🚪</emoji> <b>Unauthentificated</b>"
+        ),
         "restarted": "🔙 <b>Playing track from the beginning</b>",
         "auth": (
-            '🔐 <a href="{}">Proceed here</a>, approve request, then <code>.scode'
-            " https://...</code> with redirected url"
+            '<emoji document_id=5472308992514464048>🔐</emoji> <a href="{}">Proceed'
+            " here</a>, approve request, then <code>.scode https://...</code> with"
+            " redirected url"
         ),
-        "liked": "❤️ <b>Liked current playback</b>",
-        "autobio": "🎧 <b>Spotify autobio {}</b>",
-        "404": "🚫 <b>No results</b>",
-        "playing_track": "🎹 <b>{} added to queue</b>",
-        "no_music": "🚫 <b>No music is playing!</b>",
-        "searching": "🔍 <b>Searching...</b>",
+        "liked": (
+            "<emoji document_id=5199727145022134809>❤️</emoji> <b>Liked current"
+            " playback</b>"
+        ),
+        "autobio": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Spotify autobio {}</b>"
+        ),
+        "404": "<emoji document_id=5312526098750252863>🚫</emoji> <b>No results</b>",
+        "playing_track": (
+            "<emoji document_id=5212941939053175244>🎧</emoji> <b>{} added to queue</b>"
+        ),
+        "no_music": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No music is"
+            " playing!</b>"
+        ),
+        "searching": (
+            "<emoji document_id=5188311512791393083>🔎</emoji> <b>Searching...</b>"
+        ),
     }
 
     strings_ru = {
         "need_auth": (
-            "🚫 <b>Выполни </b><code>.sauth</code><b> перед выполнением этого"
-            " действия.</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Выполни"
+            " </b><code>.sauth</code><b> перед выполнением этого действия.</b>"
         ),
         "on-repeat": "🔂 <b>Повторение включено.</b>",
         "off-repeat": "🔁 <b>Повторение выключено.</b>",
         "skipped": "⏭ <b>Трек переключен.</b>",
         "err": (
-            "🚫 <b>Произошла ошибка. Убедитесь, что музыка играет!</b>\n<code>{}</code>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Произошла ошибка."
+            " Убедитесь, что музыка играет!</b>\n<code>{}</code>"
         ),
-        "already_authed": "🚫 <b>Уже авторизован</b>",
-        "authed": "🎧 <b>Успешная аутентификация</b>",
-        "playing": "🎧 <b>Играю...</b>",
+        "already_authed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Уже авторизован</b>"
+        ),
+        "authed": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Успешная"
+            " аутентификация</b>"
+        ),
+        "playing": "<emoji document_id=6319076999105087378>🎧</emoji> <b>Играю...</b>",
         "back": "🔙 <b>Переключил назад</b>",
         "paused": "⏸ <b>Пауза</b>",
-        "deauth": "🚪 <b>Авторизация отменена</b>",
+        "deauth": (
+            "<emoji document_id=6037460928423791421>🚪</emoji> <b>Авторизация"
+            " отменена</b>"
+        ),
         "restarted": "🔙 <b>Начал трек сначала</b>",
-        "liked": '❤️ <b>Поставил "Мне нравится" текущему треку</b>',
-        "autobio": "🎧 <b>Обновление био включено {}</b>",
-        "404": "🚫 <b>Нет результатов</b>",
-        "playing_track": "🎹 <b>{} добавлен в очередь</b>",
-        "no_music": "🚫 <b>Музыка не играет!</b>",
+        "liked": (
+            '<emoji document_id=5199727145022134809>❤️</emoji> <b>Поставил "Мне'
+            ' нравится" текущему треку</b>'
+        ),
+        "autobio": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Обновление био"
+            " включено {}</b>"
+        ),
+        "404": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Нет результатов</b>"
+        ),
+        "playing_track": (
+            "<emoji document_id=5212941939053175244>🎧</emoji> <b>{} добавлен в"
+            " очередь</b>"
+        ),
+        "no_music": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Музыка не играет!</b>"
+        ),
         "_cmd_doc_sfind": "Найти информацию о треке",
         "_cmd_doc_sauth": "Первый этап аутентификации",
         "_cmd_doc_scode": "Второй этап аутентификации",
@@ -113,6 +157,241 @@ class SpotifyMod(loader.Module):
         "_cmd_doc_snow": "Показать карточку текущего трека",
         "_cls_doc": (
             "Тулкит для Spotify. Автор идеи: @fuccsoc. Реализация: @hikariatama"
+        ),
+    }
+
+    strings_de = {
+        "need_auth": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Führe"
+            " </b><code>.sauth</code><b> aus, bevor du diese Aktion ausführst.</b>"
+        ),
+        "on-repeat": "🔂 <b>Wiederholung aktiviert.</b>",
+        "off-repeat": "🔁 <b>Wiederholung deaktiviert.</b>",
+        "skipped": "⏭ <b>Track übersprungen.</b>",
+        "err": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ein Fehler ist"
+            " aufgetreten. Stelle sicher, dass eine Musik abgespielt"
+            " wird!</b>\n<code>{}</code>"
+        ),
+        "already_authed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bereits"
+            " authentifiziert</b>"
+        ),
+        "authed": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Authentifizierung"
+            " erfolgreich</b>"
+        ),
+        "playing": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Spielt ab...</b>"
+        ),
+        "back": "🔙 <b>Zum vorherigen Track gewechselt</b>",
+        "paused": "⏸ <b>Pausiert</b>",
+        "deauth": (
+            "<emoji document_id=6037460928423791421>🚪</emoji> <b>Authentifizierung"
+            " aufgehoben</b>"
+        ),
+        "restarted": "🔙 <b>Track von vorne gestartet</b>",
+        "liked": (
+            "<emoji document_id=5199727145022134809>❤️</emoji> <b>Der aktuelle Track"
+            " wurde geliked</b>"
+        ),
+        "autobio": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Spotify Autobio {}</b>"
+        ),
+        "404": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Keine Ergebnisse</b>"
+        ),
+        "playing_track": (
+            "<emoji document_id=5212941939053175244>🎧</emoji> <b>{} zur Warteschlange"
+            " hinzugefügt</b>"
+        ),
+        "no_music": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Es wird keine Musik"
+            " abgespielt!</b>"
+        ),
+        "_cmd_doc_sfind": "Finde Informationen über einen Track",
+        "_cmd_doc_sauth": "Erster Schritt der Authentifizierung",
+        "_cmd_doc_scode": "Zweiter Schritt der Authentifizierung",
+        "_cmd_doc_unauth": "Authentifizierung aufheben",
+        "_cmd_doc_sbio": "Spotify Autobio aktivieren",
+        "_cmd_doc_stokrefresh": "Token erzwingen",
+        "_cmd_doc_snow": "Zeige die Karte des aktuellen Tracks",
+        "_cls_doc": (
+            "Toolkit für Spotify. Idee von: @fuccsoc. Implementierung von: @hikariatama"
+        ),
+    }
+
+    strings_tr = {
+        "need_auth": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu eylemi"
+            " gerçekleştirmeden önce </b><code>.sauth</code><b> komutunu kullanın.</b>"
+        ),
+        "on-repeat": "🔂 <b>Tekrar açık.</b>",
+        "off-repeat": "🔁 <b>Tekrar kapalı.</b>",
+        "skipped": "⏭ <b>Şarkı atlandı.</b>",
+        "err": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bir hata oluştu. Müzik"
+            " çalmak istediğinizden emin olun!</b>\n<code>{}</code>"
+        ),
+        "already_authed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Zaten"
+            " yetkilendirildi</b>"
+        ),
+        "authed": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Yetkilendirme"
+            " başarılı</b>"
+        ),
+        "playing": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Oynatılıyor...</b>"
+        ),
+        "back": "🔙 <b>Önceki şarkıya geçildi</b>",
+        "paused": "⏸ <b>Duraklatıldı</b>",
+        "deauth": (
+            "<emoji document_id=6037460928423791421>🚪</emoji> <b>Yetkilendirme iptal"
+            " edildi</b>"
+        ),
+        "restarted": "🔙 <b>Şarkı tekrar başlatıldı</b>",
+        "liked": (
+            "<emoji document_id=5199727145022134809>❤️</emoji> <b>Geçerli şarkı"
+            " beğenildi</b>"
+        ),
+        "autobio": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Spotify Otomatik Bio"
+            " {}</b>"
+        ),
+        "404": "<emoji document_id=5312526098750252863>🚫</emoji> <b>Sonuç yok</b>",
+        "playing_track": (
+            "<emoji document_id=5212941939053175244>🎧</emoji> <b>{} kuyruğa eklendi</b>"
+        ),
+        "no_music": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Şu anda müzik"
+            " çalmıyor!</b>"
+        ),
+        "_cmd_doc_sfind": "Bir şarkı hakkında bilgi bul",
+        "_cmd_doc_sauth": "Yetkilendirme için ilk adım",
+        "_cmd_doc_scode": "Yetkilendirme için ikinci adım",
+        "_cmd_doc_unauth": "Yetkilendirmeyi kaldır",
+        "_cmd_doc_sbio": "Spotify Otomatik Bio etkinleştir",
+        "_cmd_doc_stokrefresh": "Zorla token yenile",
+        "_cmd_doc_snow": "Geçerli şarkı kartını göster",
+        "_cls_doc": "Spotify için bir araç. Fikir: @fuccsoc. Uygulama: @hikariatama",
+    }
+
+    strings_uz = {
+        "need_auth": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu harakatni"
+            " bajarishdan oldin </b><code>.sauth</code><b> buyrug'ini ishlating.</b>"
+        ),
+        "on-repeat": "🔂 <b>Takror yoqilgan.</b>",
+        "off-repeat": "🔁 <b>Takror yopilgan.</b>",
+        "skipped": "⏭ <b>Mashq o'tkazildi.</b>",
+        "err": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Xatolik yuz berdi."
+            " Muzyka oynatilganiga ishonchingiz komilmi?</b>\n<code>{}</code>"
+        ),
+        "already_authed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Allaqachon"
+            " tasdiqlangan</b>"
+        ),
+        "authed": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Tasdiqlash"
+            " muvaffaqiyatli bajarildi</b>"
+        ),
+        "playing": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Oynatilmoqda...</b>"
+        ),
+        "back": "🔙 <b>Oldingi mashqa o'tildi</b>",
+        "paused": "⏸ <b>To'xtatildi</b>",
+        "deauth": (
+            "<emoji document_id=6037460928423791421>🚪</emoji> <b>Tasdiqlash bekor"
+            " qilindi</b>"
+        ),
+        "restarted": "🔙 <b>Mashq qayta boshlandi</b>",
+        "liked": (
+            "<emoji document_id=5199727145022134809>❤️</emoji> <b>Joriy mashq"
+            " yoqildi</b>"
+        ),
+        "autobio": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Spotify Avtomatik Bio"
+            " {}</b>"
+        ),
+        "404": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Natija topilmadi</b>"
+        ),
+        "playing_track": (
+            "<emoji document_id=5212941939053175244>🎧</emoji> <b>{} qo'shildi</b>"
+        ),
+        "no_music": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Hozircha hech qanday"
+            " musiqa oynatilmoqda emas!</b>"
+        ),
+        "_cmd_doc_sfind": "Mashq haqida ma'lumot toping",
+        "_cmd_doc_sauth": "Tasdiqlash uchun birinchi qadam",
+        "_cmd_doc_scode": "Tasdiqlash uchun ikkinchi qadam",
+        "_cmd_doc_unauth": "Tasdiqlashni bekor qilish",
+        "_cmd_doc_sbio": "Spotify Avtomatik Bio yoqish",
+        "_cmd_doc_stokrefresh": "Tokenni qo'lda qayta tiklash",
+        "_cmd_doc_snow": "Joriy mashq kartasini ko'rsatish",
+        "_cls_doc": "Spotify uchun asbob. Fikr: @fuccsoc. Tuzilishi: @hikariatama",
+    }
+
+    strings_hi = {
+        "need_auth": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>इस कार्रवाई को करने से"
+            " पहले </b><code>.sauth</code><b> कमांड चलाएं.</b>"
+        ),
+        "on-repeat": "🔂 <b>पुनः चालू है.</b>",
+        "off-repeat": "🔁 <b>पुनः बंद है.</b>",
+        "skipped": "⏭ <b>गाना छोड़ दिया गया है.</b>",
+        "err": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>कोई त्रुटि हुई। आपने"
+            " सुनने के लिए गाना चलाना चाहते हैं यह सुनिश्चित करें?</b>\n<code>{}</code>"
+        ),
+        "already_authed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>पहले से ही प्रमाणित"
+            " है</b>"
+        ),
+        "authed": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>प्रमाणन सफल हुआ</b>"
+        ),
+        "playing": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>चल रहा है...</b>"
+        ),
+        "back": "🔙 <b>पिछले गाने पर जाया गया</b>",
+        "paused": "⏸ <b>रोक दिया गया है</b>",
+        "deauth": (
+            "<emoji document_id=6037460928423791421>🚪</emoji> <b>प्रमाणन रद्द कर दिया"
+            " गया है</b>"
+        ),
+        "restarted": "🔙 <b>गाना पुनः शुरू कर दिया गया है</b>",
+        "liked": (
+            "<emoji document_id=5199727145022134809>❤️</emoji> <b>वर्तमान गाना पसंद"
+            " किया गया है</b>"
+        ),
+        "autobio": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>स्पॉटिफाई ऑटोबायो"
+            " {}</b>"
+        ),
+        "404": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>कोई परिणाम नहीं"
+            " मिला</b>"
+        ),
+        "playing_track": (
+            "<emoji document_id=5212941939053175244>🎧</emoji> <b>{} गाना चल रहा है</b>"
+        ),
+        "no_music": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>अभी तक कोई गाना चल रहा"
+            " है!</b>"
+        ),
+        "_cmd_doc_sfind": "गाने के बारे में जानकारी प्राप्त करें",
+        "_cmd_doc_sauth": "पहला कदम प्रमाणन के लिए",
+        "_cmd_doc_scode": "दूसरा कदम प्रमाणन के लिए",
+        "_cmd_doc_unauth": "प्रमाणन रद्द करें",
+        "_cmd_doc_sbio": "स्पॉटिफाई ऑटोबायो बनाएं",
+        "_cmd_doc_stokrefresh": "टोकन को रीफ्रेश करें",
+        "_cmd_doc_snow": "वर्तमान गाना कार्ड दिखाएं",
+        "_cls_doc": (
+            "स्पॉटिफाई के लिए एक उपकरण। विचार: @fuccsoc। बनाने के लिए: @hikariatama"
         ),
     }
 

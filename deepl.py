@@ -6,16 +6,16 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: hikka_min 1.2.10
-
 # meta pic: https://img.icons8.com/external-xnimrodx-lineal-color-xnimrodx/512/000000/external-translate-discussion-xnimrodx-lineal-color-xnimrodx.png
 # meta banner: https://mods.hikariatama.ru/badges/deepl.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
+# scope: hikka_min 1.2.10
 
 import logging
 import random
 import time
+import typing
 
 import requests
 from telethon.tl.types import Message
@@ -23,10 +23,9 @@ from telethon.tl.types import Message
 from .. import loader, utils
 
 
-def translate(text, target="en", proxy=None):
-    if proxy is None:
-        proxy = {}
-    a = requests.post(
+async def translate(text: str, target: str, proxy: dict) -> str:
+    a = await utils.run_sync(
+        requests.post,
         "https://www2.deepl.com/jsonrpc?method=LMT_handle_jobs",
         headers={
             "User-Agent": (
@@ -95,15 +94,64 @@ class DeepLMod(loader.Module):
 
     strings = {
         "name": "DeepLScraper",
-        "no_text": "🚫 <b>No text specified</b>",
+        "no_text": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No text specified</b>"
+        ),
         "translated": "🇺🇸 <code>{}</code>",
     }
 
     strings_ru = {
-        "no_text": "🚫 <b>Не указан текст</b>",
+        "no_text": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Не указан текст</b>"
+        ),
         "translated": "🇺🇸 <code>{}</code>",
         "_cmd_doc_deepl": "<text or reply> - Перевести текст через DeepL",
         "_cls_doc": "Переводит текст через DeepL. Рекомендуется использовать прокси",
+    }
+
+    strings_de = {
+        "no_text": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Kein Text"
+            " angegeben</b>"
+        ),
+        "translated": "🇺🇸 <code>{}</code>",
+        "_cmd_doc_deepl": "<Text oder Antwort> - Übersetze Text über DeepL",
+        "_cls_doc": (
+            "Übersetzt Text über DeepL. Es wird empfohlen, einen Proxy zu verwenden"
+        ),
+    }
+
+    strings_uz = {
+        "no_text": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Matn ko'rsatilmadi</b>"
+        ),
+        "translated": "🇺🇸 <code>{}</code>",
+        "_cmd_doc_deepl": "<matn yoki javob> - DeepL orqali matnni tarjima qilish",
+        "_cls_doc": (
+            "DeepL orqali matnni tarjima qilish. Proxydan foydalanish maslahat beriladi"
+        ),
+    }
+
+    strings_hi = {
+        "no_text": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>कोई टेक्स्ट नहीं दिया"
+            " गया</b>"
+        ),
+        "translated": "🇺🇸 <code>{}</code>",
+        "_cmd_doc_deepl": "<टेक्स्ट या उत्तर> - डीपएल के माध्यम से पाठ का अनुवाद करें",
+        "_cls_doc": (
+            "डीपएल के माध्यम से पाठ का अनुवाद करता है। प्रॉक्सी का उपयोग करने की सलाह"
+            " दी जाती है"
+        ),
+    }
+
+    strings_tr = {
+        "no_text": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Metin belirtilmedi</b>"
+        ),
+        "translated": "🇺🇸 <code>{}</code>",
+        "_cmd_doc_deepl": "<metin veya yanıt> - DeepL ile metni çevir",
+        "_cls_doc": "DeepL ile metni çevirir. Proxy kullanmanız önerilir",
     }
 
     def __init__(self):
@@ -129,6 +177,6 @@ class DeepLMod(loader.Module):
         await utils.answer(
             message,
             self.strings("translated").format(
-                translate(text, target=target, proxy={"https": self.config["proxy"]})
+                await translate(text, target, {"https": self.config["proxy"]})
             ),
         )

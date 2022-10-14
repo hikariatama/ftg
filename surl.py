@@ -32,6 +32,8 @@ class AutoShortenerMod(loader.Module):
         "name": "AutoShortener",
         "state": "🔗 <b>Auotmatic url shortener is now {}</b>",
         "no_args": "🔗 <b>No link to shorten</b>",
+        "on": "on",
+        "off": "off",
     }
 
     strings_ru = {
@@ -43,6 +45,64 @@ class AutoShortenerMod(loader.Module):
             "Автоматически сокращает ссылки в твоих сообщениях, если они длиннее"
             " значения в конфиге"
         ),
+        "on": "включен",
+        "off": "выключен",
+    }
+
+    strings_de = {
+        "state": "🔗 <b>Automatisches URL-Kürzen ist jetzt {}</b>",
+        "no_args": "🔗 <b>Kein Link zum Kürzen</b>",
+        "_cmd_doc_autosurl": (
+            "Aktivieren\\Deaktivieren Sie das automatische Kürzen von URLs"
+        ),
+        "_cmd_doc_surl": "[URL] [Engine] - URL kürzen",
+        "_cls_doc": (
+            "Kürzt automatisch URLs in Ihren Nachrichten, wenn sie länger sind als"
+            " Wert in der Konfiguration"
+        ),
+        "on": "Aktiviert",
+        "off": "Deaktiviert",
+    }
+
+    strings_tr = {
+        "state": "🔗 <b>Otomatik URL kısaltıcı şimdi {}</b>",
+        "no_args": "🔗 <b>Kısaltılacak URL yok</b>",
+        "_cmd_doc_autosurl": (
+            "URL'leri otomatik olarak kısaltmayı etkinleştirin\\devre dışı bırakın"
+        ),
+        "_cmd_doc_surl": "[URL] [motor] - URL kısalt",
+        "_cls_doc": (
+            "URL'leri, yapılandırmanın değerinden daha uzun olduğunda mesajlarınızda"
+            " otomatik olarak kısaltır"
+        ),
+        "on": "açık",
+        "off": "kapalı",
+    }
+
+    strings_hi = {
+        "state": "🔗 <b>ऑटो यूआरएल शॉर्टनर अब {} है</b>",
+        "no_args": "🔗 <b>संक्षिप्त करने के लिए कोई लिंक नहीं</b>",
+        "_cmd_doc_autosurl": "URL को स्वचालित रूप से छोटा करना चालू\\बंद करें",
+        "_cmd_doc_surl": "[URL] [Engine] - URL को छोटा करें",
+        "_cls_doc": (
+            "अपने संदेशों में यूआरएल को छोटा करता है, जब वे विन्यास में निर्दिष्ट मान"
+            " से अधिक होते हैं"
+        ),
+        "on": "चालू",
+        "off": "बंद",
+    }
+
+    strings_uz = {
+        "state": "🔗 <b>URL avtomatik qisqartiruvchisi hozir {}</b>",
+        "no_args": "🔗 <b>Qisqartiladigan URL yo'q</b>",
+        "_cmd_doc_autosurl": "URL'ni avtomatik ravishda qisqartishni yoqish\\o'chirish",
+        "_cmd_doc_surl": "[URL] [mashina] - URL'ni qisqartirish",
+        "_cls_doc": (
+            "So'rovlarizdagi URL'ni konfiguratsiyadagi qiymatdan katta bo'lganda"
+            " avtomatik ravishda qisqartadi"
+        ),
+        "on": "yoqilgan",
+        "off": "o'chirilgan",
     }
 
     def __init__(self):

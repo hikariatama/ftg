@@ -44,7 +44,96 @@ class TidalMod(loader.Module):
         "auth_first": "🚫 <b>You need to login first</b>",
     }
 
-    async def client_ready(self, client, _):
+    strings_ru = {
+        "args": "🚫 <b>Укажите поисковый запрос</b>",
+        "404": "🚫 <b>Ничего не найдено</b>",
+        "oauth": (
+            "🔑 <b>Авторизуйтесь в TIDAL</b>\n\n<i>Эта ссылка будет действительна в"
+            " течение 5 минут</i>"
+        ),
+        "oauth_btn": "🔑 Авторизоваться",
+        "success": "✅ <b>Успешно авторизованы!</b>",
+        "error": "🚫 <b>Ошибка авторизации</b>",
+        "search": "🐈‍⬛ <b>{}</b>",
+        "tidal_btn": "🐈‍⬛ Tidal",
+        "searching": "🔍 <b>Ищем...</b>",
+        "tidal_like_btn": "🖤 Нравится",
+        "tidal_dislike_btn": "💔 Не нравится",
+        "auth_first": "🚫 <b>Сначала нужно авторизоваться</b>",
+    }
+
+    strings_de = {
+        "args": "🚫 <b>Gib einen Suchbegriff an</b>",
+        "404": "🚫 <b>Nichts gefunden</b>",
+        "oauth": (
+            "🔑 <b>Logge dich bei TIDAL ein</b>\n\n<i>Dieser Link ist 5 Minuten lang"
+            " gültig</i>"
+        ),
+        "oauth_btn": "🔑 Einloggen",
+        "success": "✅ <b>Erfolgreich eingeloggt!</b>",
+        "error": "🚫 <b>Fehler beim Einloggen</b>",
+        "search": "🐈‍⬛ <b>{}</b>",
+        "tidal_btn": "🐈‍⬛ Tidal",
+        "searching": "🔍 <b>Suche...</b>",
+        "tidal_like_btn": "🖤 Gefällt mir",
+        "tidal_dislike_btn": "💔 Gefällt mir nicht",
+        "auth_first": "🚫 <b>Du musst dich zuerst einloggen</b>",
+    }
+
+    strings_tr = {
+        "args": "🚫 <b>Arama sorgusu belirtin</b>",
+        "404": "🚫 <b>Sonuç bulunamadı</b>",
+        "oauth": (
+            "🔑 <b>TIDAL'e giriş yapın</b>\n\n<i>Bu bağlantı 5 dakika içinde sona"
+            " erecek</i>"
+        ),
+        "oauth_btn": "🔑 Giriş yap",
+        "success": "✅ <b>Başarıyla giriş yaptınız!</b>",
+        "error": "🚫 <b>Giriş hatası</b>",
+        "search": "🐈‍⬛ <b>{}</b>",
+        "tidal_btn": "🐈‍⬛ Tidal",
+        "searching": "🔍 <b>Aranıyor...</b>",
+        "tidal_like_btn": "🖤 Beğen",
+        "tidal_dislike_btn": "💔 Beğenme",
+        "auth_first": "🚫 <b>Önce giriş yapmanız gerekir</b>",
+    }
+
+    strings_hi = {
+        "args": "🚫 <b>खोज प्रश्न निर्दिष्ट करें</b>",
+        "404": "🚫 <b>कोई परिणाम नहीं मिला</b>",
+        "oauth": (
+            "🔑 <b>TIDAL में लॉगिन करें</b>\n\n<i>यह लिंक 5 मिनट के लिए सक्रिय होगा</i>"
+        ),
+        "oauth_btn": "🔑 लॉगिन करें",
+        "success": "✅ <b>सफलतापूर्वक लॉगिन किया गया!</b>",
+        "error": "🚫 <b>लॉगिन त्रुटि</b>",
+        "search": "🐈‍⬛ <b>{}</b>",
+        "tidal_btn": "🐈‍⬛ Tidal",
+        "searching": "🔍 <b>खोज रहा है...</b>",
+        "tidal_like_btn": "🖤 पसंद",
+        "tidal_dislike_btn": "💔 पसंद नहीं",
+        "auth_first": "🚫 <b>पहले लॉगिन करना आवश्यक है</b>",
+    }
+
+    strings_uz = {
+        "args": "🚫 <b>Qidiruv so'rovi belgilang</b>",
+        "404": "🚫 <b>Natija topilmadi</b>",
+        "oauth": (
+            "🔑 <b>TIDAL'da kirishingiz kerak</b>\n\n<i>Ushbu havola 5 daqiqaga aktiv"
+            " bo'ladi</i>"
+        ),
+        "oauth_btn": "🔑 Kirish",
+        "success": "✅ <b>Muvaffaqiyatli kirildi!</b>",
+        "error": "🚫 <b>Kirishda xatolik</b>",
+        "search": "🐈‍⬛ <b>{}</b>",
+        "tidal_btn": "🐈‍⬛ Tidal",
+        "searching": "🔍 <b>Izlanmoqda...</b>",
+        "tidal_like_btn": "🖤 Yoqadi",
+        "tidal_dislike_btn": "💔 Yo'qadi",
+        "auth_first": "🚫 <b>Avval kirish kerak</b>",
+    }
+
+    async def client_ready(self):
         self._faved = []
 
         self.tidal = tidalapi.Session()
@@ -64,8 +153,8 @@ class TidalMod(loader.Module):
 
         if not self.get("muted"):
             try:
-                await utils.dnd(client, "@hikka_musicdl_bot", archive=True)
-                await utils.dnd(client, "@DirectLinkGenerator_Bot", archive=True)
+                await utils.dnd(self._client, "@hikka_musicdl_bot", archive=True)
+                await utils.dnd(self._client, "@DirectLinkGenerator_Bot", archive=True)
             except Exception:
                 pass
 
@@ -101,6 +190,13 @@ class TidalMod(loader.Module):
         self.set("access_token", self.tidal.access_token)
         self.set("refresh_token", self.tidal.refresh_token)
 
+    @loader.command(
+        ru_doc="Авторизация в TIDAL",
+        de_doc="Authentifizierung in TIDAL",
+        tr_doc="TIDAL'de oturum açma",
+        hi_doc="TIDAL में प्रमाणीकरण",
+        uz_doc="TIDAL'da avtorizatsiya",
+    )
     async def tlogincmd(self, message: Message):
         """Open OAuth window to login into TIDAL"""
         result, future = self.tidal.login_oauth()
@@ -132,6 +228,13 @@ class TidalMod(loader.Module):
 
         future.add_done_callback(callback)
 
+    @loader.command(
+        ru_doc="<запрос> - Поиск трека в TIDAL",
+        de_doc="<Anfrage> - Suche nach einem Track in TIDAL",
+        tr_doc="<sorgu> - TIDAL'de bir parça arama",
+        hi_doc="<अनुरोध> - TIDAL में एक ट्रैक खोजें",
+        uz_doc="<so'rov> - TIDAL'da parca qidirish",
+    )
     async def tidalcmd(self, message: Message):
         """<query> - Search TIDAL"""
         if not await utils.run_sync(self.tidal.check_login):

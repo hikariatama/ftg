@@ -48,7 +48,19 @@ class CatgirlMod(loader.Module):
     """Sends cute anime girl pictures"""
 
     strings = {"name": "Catgirl"}
+    strings_ru = {"_cls_doc": "Отправляет милые фотографии аниме девочек"}
+    strings_de = {"_cls_doc": "Sendet Anime-Katzenmädchen-Bilder"}
+    strings_uz = {"_cls_doc": "Anime qiz rasmlarini jo'natadi"}
+    strings_hi = {"_cls_doc": "एक एनीमे कैटगर्ल तस्वीर भेजें"}
+    strings_tr = {"_cls_doc": "Anime kedi kız resmi gönderir"}
 
+    @loader.command(
+        ru_doc="[nsfw] - Показать кошкодевочку",
+        de_doc="[nsfw] - Zeigt ein Anime-Katzenmädchen-Bild",
+        uz_doc="[nsfw] - Anime qiz rasmlarini ko'rsatadi",
+        hi_doc="[nsfw] - एक एनीमे कैटगर्ल तस्वीर दिखाएं",
+        tr_doc="[nsfw] - Anime kedi kız resmi gönderir",
+    )
     async def catgirlcmd(self, message: Message):
         """[nsfw] - Send catgirl picture"""
         await self.inline.gallery(

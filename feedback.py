@@ -64,8 +64,56 @@ class FeedbackMod(loader.Module):
         ),
     }
 
-    async def client_ready(self, client, _):
-        self._name = utils.escape_html(get_display_name(await client.get_me()))
+    strings_de = {
+        "/start": (
+            "🤵‍♀️ <b>Hallo. Ich bin der Feedback-Bot von {}. Lies /nometa, bevor"
+            " du fortfährst</b>\n<b>Du kannst nur eine Nachricht pro Minute senden</b>"
+        ),
+        "enter_message": "✍️ <b>Gib deine Nachricht hier ein</b>",
+        "sent": "✅ <b>Deine Nachricht wurde dem Besitzer gesendet</b>",
+        "_cls_doc": "Feedback-Bot für Hikka",
+        "/nometa": (
+            "👨‍🎓 <b><u>Internet-Talk-Regeln:</u></b>\n\n <b>🚫 <u>Nicht</u> 'Hallo'"
+            " schreiben</b>\n <b>🚫 <u>Nicht</u> werben</b>\n <b>🚫 <u>Nicht</u>"
+            " beleidigen</b>\n <b>🚫 <u>Nicht</u> aufteilen</b>\n <b>✅ Schreibe deine"
+            " Frage in einer Nachricht</b>"
+        ),
+    }
+
+    strings_hi = {
+        "/start": (
+            "🤵‍♀️ <b>नमस्ते। मैं {} का फीडबैक बॉट हूँ। जारी रखने से पहले /nometa"
+            " पढ़ें</b>\n<b>आप मिनट में केवल एक संदेश भेज सकते हैं</b>"
+        ),
+        "enter_message": "✍️ <b>यहां संदेश दर्ज करें</b>",
+        "sent": "✅ <b>आपका संदेश मालिक को भेज दिया गया है</b>",
+        "_cls_doc": "Hikka के लिए प्रतिक्रिया बॉट",
+        "/nometa": (
+            "👨‍🎓 <b><u>इंटरनेट बातचीत नियम:</u></b>\n\n <b>🚫 'नमस्ते' न लिखें</b>\n"
+            " <b>🚫 विज्ञापन न करें</b>\n <b>🚫 अपमान न करें</b>\n <b>🚫 संदेश को विभाजित"
+            " न करें</b>\n <b>✅ अपना सवाल एक संदेश में लिखें</b>"
+        ),
+    }
+
+    strings_tr = {
+        "/start": (
+            "🤵‍♀️ <b>Merhaba. Ben {}'ın geri bildirim botuyum. Devam etmeden önce"
+            " /nometa'ya bakın</b>\n<b>Sadece bir dakikada bir mesaj"
+            " gönderebilirsiniz</b>"
+        ),
+        "enter_message": "✍️ <b>Mesajınızı buraya girin</b>",
+        "sent": "✅ <b>Sahibine mesajınız gönderildi</b>",
+        "_cls_doc": "Hikka için geri bildirim botu",
+        "/nometa": (
+            "👨‍🎓 <b><u>İnternet Konuşma Kuralları:</u></b>\n\n <b>🚫 'Merhaba'"
+            " yazmayın</b>\n <b>🚫 Reklam yapmayın</b>\n <b>🚫 Kimsenin ağzına"
+            " sıçramayın</b>\n <b>🚫 Mesajı parçalaymayın</b>\n <b>✅ Sorunuzu bir"
+            " mesajda yazın</b>"
+        ),
+    }
+
+    async def client_ready(self):
+        self._name = utils.escape_html(get_display_name(self._client.hikka_me))
         self._ratelimit = {}
         self._markup = self.inline.generate_markup(
             {"text": "✍️ Leave a message [1 per minute]", "data": "fb_leave_message"}

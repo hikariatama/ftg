@@ -59,31 +59,68 @@ class ModuleCloudMod(loader.Module):
         ),
     }
 
-    async def search(self, entity, message: Message):
-        args = utils.get_args_raw(message)
-        try:
-            msgs = await self._client.get_messages(entity, limit=100)
-        except Exception:
-            try:
-                await self._client(
-                    telethon.tl.functions.channels.JoinChannelRequest(entity)
-                )
-            except Exception:
-                await utils.answer(message, self.strings("cannot_join"))
-                return
+    strings_de = {
+        "args": "🚫 <b>Keine Argumente</b>",
+        "mod404": "🚫 <b>Modul {} nicht gefunden</b>",
+        "ilink": (
+            "💻 <b><u>{name}</u> - <a"
+            ' href="https://mods.hikariatama.ru/view/{file}.py">Quelle</a></b>\nℹ️'
+            " <i>{desc}</i>\n\n<i>Von @hikarimods mit 💗</i>\n\n🌘 <code>.dlmod"
+            " {file}</code>"
+        ),
+        "404": "😔 <b>Modul nicht gefunden</b>",
+        "not_exact": (
+            "⚠️ <b>Es wurde keine genaue Übereinstimmung gefunden, daher wird"
+            " stattdessen das am besten geeignete Ergebnis angezeigt</b>"
+        ),
+    }
 
-            msgs = await self._client.get_messages(entity, limit=100)
+    strings_hi = {
+        "args": "🚫 <b>आर्ग्यूमेंट्स नहीं दिए गए</b>",
+        "mod404": "🚫 <b>मॉड्यूल {} नहीं मिला</b>",
+        "ilink": (
+            "💻 <b><u>{name}</u> - <a"
+            ' href="https://mods.hikariatama.ru/view/{file}.py">सोर्स</a></b>\nℹ️'
+            " <i>{desc}</i>\n\n<i>@hikarimods के साथ 💗</i>\n\n🌘 <code>.dlmod"
+            " {file}</code>"
+        ),
+        "404": "😔 <b>मॉड्यूल नहीं मिला</b>",
+        "not_exact": (
+            "⚠️ <b>कोई ठीक से मिलान नहीं हुआ, इसलिए बहुत अच्छा जवाब दिखाया गया</b>"
+        ),
+    }
 
-        for msg in msgs:
-            with contextlib.suppress(Exception):
-                c = any(
-                    word not in msg.raw_text.lower() for word in args.lower().split()
-                )
-                if not c:
-                    await utils.answer(message, msg.text)
-                    return
+    strings_uz = {
+        "args": "🚫 <b>Argumentlar ko'rsatilmadi</b>",
+        "mod404": "🚫 <b>Modul {} topilmadi</b>",
+        "ilink": (
+            "💻 <b><u>{name}</u> - <a"
+            ' href="https://mods.hikariatama.ru/view/{file}.py">manba</a></b>\nℹ️'
+            " <i>{desc}</i>\n\n<i>@hikarimods tomonidan 💗</i>\n\n🌘 <code>.dlmod"
+            " {file}</code>"
+        ),
+        "404": "😔 <b>Modul topilmadi</b>",
+        "not_exact": (
+            "⚠️ <b>Hech qanday moslik topilmadi, shuning uchun eng yaxshi javob"
+            " ko'rsatildi</b>"
+        ),
+    }
 
-        await utils.answer(message, self.strings("mod404").format(args))
+    strings_tr = {
+        "args": "🚫 <b>Argümanlar belirtilmedi</b>",
+        "mod404": "🚫 <b>Modül {} bulunamadı</b>",
+        "ilink": (
+            "💻 <b><u>{name}</u> - <a"
+            ' href="https://mods.hikariatama.ru/view/{file}.py">kaynak</a></b>\nℹ️'
+            " <i>{desc}</i>\n\n<i>@hikarimods ile 💗</i>\n\n🌘 <code>.dlmod"
+            " {file}</code>"
+        ),
+        "404": "😔 <b>Modül bulunamadı</b>",
+        "not_exact": (
+            "⚠️ <b>Herhangi bir eşleşme bulunamadı, bu yüzden en iyi sonuç"
+            " gösterildi</b>"
+        ),
+    }
 
     @loader.unrestricted
     async def ilinkcmd(self, message: Message):
@@ -91,7 +128,8 @@ class ModuleCloudMod(loader.Module):
         args = utils.get_args_raw(message)
 
         badge = await utils.run_sync(
-            requests.get, f"https://mods.hikariatama.ru/badge/{args}"
+            requests.get,
+            f"https://mods.hikariatama.ru/badge/{args}",
         )
 
         if badge.status_code == 404:
@@ -112,12 +150,19 @@ class ModuleCloudMod(loader.Module):
         else:
             await message.edit(self.strings("ilink").format(**info), file=img)
 
+    @loader.command(
+        ru_doc="<имя модуля> - Отправить ссылку на модуль",
+        uz_doc="<modul nomi> - Hikari modulini olish",
+        de_doc="<modulname> - Hikari Modul Banner",
+        tr_doc="<modül adı> - Modülün bağlantısını gönder",
+        hi_doc="<मॉड्यूल का नाम> - हिकारी मॉड्यूल बैनर",
+    )
     async def mlcmd(self, message: Message):
         """<module name> - Send link to module"""
         args = utils.get_args_raw(message)
         exact = True
         if not args:
-            await utils.answer(message, "🚫 <b>No args</b>")
+            await utils.answer(message, self.strings("args"))
             return
 
         try:

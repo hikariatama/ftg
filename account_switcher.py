@@ -17,9 +17,8 @@ __version__ = (2, 0, 1)
 import io
 import logging
 import re
-from typing import Union
+import typing
 
-from aiogram.types import Message as AiogramMessage
 from aiogram.utils.exceptions import ChatNotFound
 from telethon.tl.functions.account import UpdateProfileRequest
 from telethon.tl.functions.channels import InviteToChannelRequest
@@ -28,7 +27,7 @@ from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import Message as TelethonMessage
 
 from .. import loader, utils
-from ..inline.types import InlineCall
+from ..inline.types import InlineCall, InlineMessage
 
 logger = logging.getLogger(__name__)
 
@@ -39,42 +38,222 @@ class AccountSwitcherMod(loader.Module):
 
     strings = {
         "name": "AccountSwitcher",
-        "account_saved": '📼 <b><a href="https://t.me/c/{}/{}">Account</a> saved!</b>',
+        "account_saved": (
+            "<emoji document_id=5301255387306009369>🌚</emoji> <b><a"
+            ' href="https://t.me/c/{}/{}">Account</a> saved!</b>'
+        ),
         "restore_btn": "👆 Restore",
         "desc": "This chat will handle your saved profiles",
-        "first_name_restored": "✅ First name restored\n",
-        "first_name_unsaved": "🔘 First name not saved\n",
-        "last_name_restored": "✅ First name restored\n",
-        "last_name_unsaved": "🔘 First name not saved\n",
-        "bio_restored": "✅ Bio restored\n",
-        "bio_unsaved": "🔘 Bio not saved\n",
-        "data_not_restored": (
-            "🚫 First name not restored\n🚫 Last name not restored\n🚫 Bio not restored\n"
+        "first_name_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> First name restored\n"
         ),
-        "pfp_restored": "✅ Profile photo restored",
-        "pfp_unsaved": "🔘 Profile photo not saved",
+        "first_name_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> First name not saved\n"
+        ),
+        "last_name_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> First name restored\n"
+        ),
+        "last_name_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> First name not saved\n"
+        ),
+        "bio_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Bio restored\n"
+        ),
+        "bio_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Bio not saved\n"
+        ),
+        "data_not_restored": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> First name not"
+            " restored\n<emoji document_id=5312526098750252863>🚫</emoji> Last name not"
+            " restored\n<emoji document_id=5312526098750252863>🚫</emoji> Bio not"
+            " restored\n"
+        ),
+        "pfp_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Profile photo restored"
+        ),
+        "pfp_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Profile photo not saved"
+        ),
     }
 
     strings_ru = {
         "account_saved": (
-            '📼 <b><a href="https://t.me/c/{}/{}">Аккаунт</a> сохранен!</b>'
+            "<emoji document_id=5301255387306009369>🌚</emoji> <b><a"
+            ' href="https://t.me/c/{}/{}">Аккаунт</a> сохранен!</b>'
         ),
         "restore_btn": "👆 Восстановить",
         "desc": "Тут будут появляться сохраненные профили",
-        "first_name_restored": "✅ Имя восстановлено\n",
-        "first_name_unsaved": "🔘 Имя не сохранялось\n",
-        "last_name_restored": "✅ Фамилия восстановлена\n",
-        "last_name_unsaved": "🔘 Фамилия не сохранялась\n",
-        "bio_restored": "✅ Био восстановлено\n",
-        "bio_unsaved": "🔘 Био не сохранялось\n",
+        "first_name_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Имя восстановлено\n"
+        ),
+        "first_name_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Имя не сохранялось\n"
+        ),
+        "last_name_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Фамилия восстановлена\n"
+        ),
+        "last_name_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Фамилия не сохранялась\n"
+        ),
+        "bio_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Био восстановлено\n"
+        ),
+        "bio_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Био не сохранялось\n"
+        ),
         "data_not_restored": (
-            "🚫 Имя не восстановлено\n🚫 Фамилия не восстановлена\n🚫 Био не"
+            "<emoji document_id=5312526098750252863>🚫</emoji> Имя не"
+            " восстановлено\n<emoji document_id=5312526098750252863>🚫</emoji> Фамилия"
+            " не восстановлена\n<emoji document_id=5312526098750252863>🚫</emoji> Био не"
             " восстановлено\n"
         ),
-        "pfp_restored": "✅ Аватарка восстановлена",
-        "pfp_unsaved": "🔘 Аватарка не сохранялась",
+        "pfp_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Аватарка восстановлена"
+        ),
+        "pfp_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Аватарка не сохранялась"
+        ),
         "_cmd_doc_accsave": "Сохранить аккаунт для последующего использования",
         "_cls_doc": "Позволяет быстро переключаться между разными аккаунтами",
+    }
+
+    strings_de = {
+        "account_saved": (
+            "<emoji document_id=5301255387306009369>🌚</emoji> <b><a"
+            ' href="https://t.me/c/{}/{}">Konto</a> gespeichert!</b>'
+        ),
+        "restore_btn": "👆 Wiederherstellen",
+        "desc": "Dieser Chat wird deine gespeicherten Profile verwalten",
+        "first_name_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Vorname"
+            " wiederhergestellt.\n"
+        ),
+        "first_name_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Vorname nicht"
+            " gespeichert.\n"
+        ),
+        "last_name_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Nachname"
+            " wiederhergestellt.\n"
+        ),
+        "last_name_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Nachname nicht"
+            " gespeichert.\n"
+        ),
+        "bio_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Bio wiederhergestellt.\n"
+        ),
+        "bio_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Bio nicht gespeichert.\n"
+        ),
+        "data_not_restored": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> Vorname nicht"
+            " wiederhergestellt.\n<emoji document_id=5312526098750252863>🚫</emoji>"
+            " Nachname nicht wiederhergestellt.\n<emoji"
+            " document_id=5312526098750252863>🚫</emoji> Bio nicht wiederhergestellt.\n"
+        ),
+        "pfp_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Profilbild"
+            " wiederhergestellt."
+        ),
+        "pfp_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Profilbild nicht"
+            " gespeichert."
+        ),
+        "_cmd_doc_accsave": "Speichert das Konto für spätere Verwendung",
+        "_cls_doc": "Ermöglicht es, schnell zwischen verschiedenen Konten zu wechseln",
+    }
+
+    strings_hi = {
+        "account_saved": (
+            "<emoji document_id=5301255387306009369>🌚</emoji> <b><a"
+            ' href="https://t.me/c/{}/{}">खाता</a> सहेजा गया!</b>'
+        ),
+        "restore_btn": "👆 पुनर्स्थापित करें",
+        "desc": "यह चैट आपके सहेजे गए प्रोफाइल का प्रबंधन करेगा",
+        "first_name_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> पहला नाम पुनर्स्थापित"
+            " किया गया।\n"
+        ),
+        "first_name_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> पहला नाम सहेजा नहीं"
+            " गया।\n"
+        ),
+        "last_name_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> अंतिम नाम पुनर्स्थापित"
+            " किया गया।\n"
+        ),
+        "last_name_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> अंतिम नाम सहेजा नहीं"
+            " गया।\n"
+        ),
+        "bio_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> बायो पुनर्स्थापित किया"
+            " गया।\n"
+        ),
+        "bio_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> बायो सहेजा नहीं गया।\n"
+        ),
+        "data_not_restored": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> पहला नाम पुनर्स्थापित"
+            " नहीं किया गया।\n<emoji document_id=5312526098750252863>🚫</emoji> अंतिम"
+            " नाम पुनर्स्थापित नहीं किया गया।\n<emoji"
+            " document_id=5312526098750252863>🚫</emoji> बायो पुनर्स्थापित नहीं किया"
+            " गया।\n"
+        ),
+        "pfp_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> प्रोफ़ाइल चित्र"
+            " पुनर्स्थापित किया गया।"
+        ),
+        "pfp_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> प्रोफ़ाइल चित्र सहेजा"
+            " नहीं गया।"
+        ),
+        "_cmd_doc_accsave": "भविष्य के उपयोग के लिए खाता सहेजें",
+        "_cls_doc": "विभिन्न खातों के बीच जल्दी से जल्दी बदलने की अनुमति देता है",
+    }
+
+    strings_uz = {
+        "account_saved": (
+            "<emoji document_id=5301255387306009369>🌚</emoji> <b><a"
+            ' href="https://t.me/c/{}/{}">Hisob</a> saqlandi!</b>'
+        ),
+        "restore_btn": "👆 Qayta tiklash",
+        "desc": "Bu chat sizning saqlangan profilni boshqaradi",
+        "first_name_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Nomi qayta tiklandi.\n"
+        ),
+        "first_name_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Nomi saqlanmadi.\n"
+        ),
+        "last_name_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Familiya qayta"
+            " tiklandi.\n"
+        ),
+        "last_name_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Familiya saqlanmadi.\n"
+        ),
+        "bio_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Bio qayta tiklandi.\n"
+        ),
+        "bio_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Bio saqlanmadi.\n"
+        ),
+        "data_not_restored": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> Nomi qayta"
+            " tiklanmadi.\n<emoji document_id=5312526098750252863>🚫</emoji> Familiya"
+            " qayta tiklanmadi.\n<emoji document_id=5312526098750252863>🚫</emoji> Bio"
+            " qayta tiklanmadi.\n"
+        ),
+        "pfp_restored": (
+            "<emoji document_id=5314250708508220914>✅</emoji> Profil rasmi qayta"
+            " tiklandi."
+        ),
+        "pfp_unsaved": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> Profil rasmi saqlanmadi."
+        ),
+        "_cmd_doc_accsave": "Keyingi ishlatish uchun hisobni saqlash",
+        "_cls_doc": "Tez-tez turli hisoblarga o'tishga imkon beradi",
     }
 
     async def client_ready(self, client, db):
@@ -102,7 +281,7 @@ class AccountSwitcherMod(loader.Module):
 
     async def _save_acc(
         self,
-        photo: Union[bytes, None],
+        photo: typing.Optional[bytes],
         first_name: str,
         last_name: str,
         bio: str,
@@ -182,7 +361,10 @@ class AccountSwitcherMod(loader.Module):
             message, self.strings("account_saved").format(self._accs_db.id, message_id)
         )
 
-    async def _restore(self, reply: Union[TelethonMessage, AiogramMessage]) -> str:
+    async def _restore(
+        self,
+        reply: typing.Union[TelethonMessage, InlineMessage],
+    ) -> str:
         log = ""
 
         first_name, last_name, bio = list(

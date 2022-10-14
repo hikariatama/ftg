@@ -11,16 +11,14 @@
 # meta developer: @hikarimods
 # scope: hikka_only
 # scope: hikka_min 1.2.10
+# requires: urllib requests
 
 import io
-from os import stat
 
 import requests
 from telethon.tl.types import Message
 
 from .. import loader, utils
-
-# requires: urllib requests
 
 
 @loader.tds
@@ -29,15 +27,68 @@ class CarbonMod(loader.Module):
 
     strings = {
         "name": "Carbon",
-        "args": "🚫 <b>No args specified</b>",
-        "loading": "🕐 <b>Loading...</b>",
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No args specified</b>"
+        ),
+        "loading": "<emoji document_id=5213452215527677338>⏳</emoji> <b>Loading...</b>",
     }
 
     strings_ru = {
-        "args": "🚫 <b>Не указаны аргументы</b>",
-        "loading": "🕐 <b>Обработка...</b>",
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Не указаны"
+            " аргументы</b>"
+        ),
+        "loading": (
+            "<emoji document_id=5213452215527677338>⏳</emoji> <b>Обработка...</b>"
+        ),
         "_cls_doc": "Создает симпатичные фотки кода",
         "_cmd_doc_carbon": "<код> - Сделать красивую фотку кода",
+    }
+
+    strings_de = {
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Keine Argumente"
+            " angegeben</b>"
+        ),
+        "loading": "<emoji document_id=5213452215527677338>⏳</emoji> <b>Laden...</b>",
+        "_cls_doc": "Erstellt schöne Code-Bilder",
+        "_cmd_doc_carbon": "<code> - Erstelle ein schönes Code-Bild",
+    }
+
+    strings_hi = {
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>कोई आर्ग्यूमेंट नहीं"
+            " दिया गया</b>"
+        ),
+        "loading": (
+            "<emoji document_id=5213452215527677338>⏳</emoji> <b>लोड हो रहा है...</b>"
+        ),
+        "_cls_doc": "सुंदर कोड छवियां बनाएं",
+        "_cmd_doc_carbon": "<कोड> - सुंदर कोड छवि बनाएं",
+    }
+
+    strings_uz = {
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Hech qanday"
+            " argumentlar ko'rsatilmadi</b>"
+        ),
+        "loading": (
+            "<emoji document_id=5213452215527677338>⏳</emoji> <b>Yuklanmoqda...</b>"
+        ),
+        "_cls_doc": "G'ayratli kod rasmlarini yaratish",
+        "_cmd_doc_carbon": "<kod> - G'ayratli kod rasmini yaratish",
+    }
+
+    strings_tr = {
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Argümanlar"
+            " belirtilmedi</b>"
+        ),
+        "loading": (
+            "<emoji document_id=5213452215527677338>⏳</emoji> <b>Yükleniyor...</b>"
+        ),
+        "_cls_doc": "Güzel kod resimleri oluşturur",
+        "_cmd_doc_carbon": "<kod> - Güzel kod resmi oluşturur",
     }
 
     async def carboncmd(self, message: Message):

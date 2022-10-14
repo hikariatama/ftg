@@ -15,14 +15,13 @@
 # meta developer: @hikarimods
 
 # ⚠️ Please, ensure that userbot has enough rights to control units
-# Put these lines in /etc/sudoers:
+# Put these lines in /etc/sudoers using visudo command:
 #
 # user ALL=(ALL) NOPASSWD: /bin/systemctl
 # user ALL=(ALL) NOPASSWD: /bin/journalctl
 #
 # Where `user` is user on behalf of which the userbot is running
 
-from dataclasses import replace
 from .. import loader, utils
 from telethon.tl.types import Message
 from ..inline.types import InlineCall
@@ -32,7 +31,7 @@ import io
 from typing import Union
 
 
-def human_readable_size(size, decimal_places=2):
+def human_readable_size(size: float, decimal_places: int = 2) -> str:
     for unit in ["B", "K", "M", "G", "T", "P"]:
         if size < 1024.0 or unit == "P":
             break
@@ -47,23 +46,42 @@ class SystemdMod(loader.Module):
 
     strings = {
         "name": "Systemd",
-        "panel": "🎛 <b>Here you can control your systemd units</b>\n\n{}",
-        "unit_doesnt_exist": "🚫 <b>Unit</b> <code>{}</code> <b>doesn't exist!</b>",
-        "args": "🚫 <b>No arguments specified</b>",
-        "unit_added": (
-            "✅ <b>Unit </b><code>{}</code><b> with name </b><code>{}</code><b> added"
+        "panel": (
+            "<emoji document_id=5771858080664915483>🎛</emoji> <b>Here you can control"
+            " your systemd units</b>\n\n{}"
         ),
-        "unit_removed": "✅ <b>Unit </b><code>{}</code><b> removed</b>",
+        "unit_doesnt_exist": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Unit</b>"
+            " <code>{}</code> <b>doesn't exist!</b>"
+        ),
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No arguments"
+            " specified</b>"
+        ),
+        "unit_added": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Unit"
+            " </b><code>{}</code><b> with name </b><code>{}</code><b> added"
+        ),
+        "unit_removed": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Unit"
+            " </b><code>{}</code><b> removed</b>"
+        ),
         "unit_action_done": (
-            "✅ <b>Action </b><code>{}</code><b> performed on unit </b><code>{}</code>"
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Action"
+            " </b><code>{}</code><b> performed on unit </b><code>{}</code>"
         ),
         "unit_control": (
-            "🎛 <b>Interacting with unit </b><code>{}</code><b>"
-            " (</b><code>{}</code><b>)</b>\n{} <b>Unit status: </b><code>{}</code>"
+            "<emoji document_id=5771858080664915483>🎛</emoji> <b>Interacting with unit"
+            " </b><code>{}</code><b> (</b><code>{}</code><b>)</b>\n{} <b>Unit status:"
+            " </b><code>{}</code>"
         ),
-        "action_not_found": "🚫 <b>Action </b><code>{}</code><b> not found</b>",
+        "action_not_found": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Action"
+            " </b><code>{}</code><b> not found</b>"
+        ),
         "unit_renamed": (
-            "✅ <b>Unit </b><code>{}</code><b> renamed to </b><code>{}</code>"
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Unit"
+            " </b><code>{}</code><b> renamed to </b><code>{}</code>"
         ),
         "stop_btn": "🍎 Stop",
         "start_btn": "🍏 Start",
@@ -73,6 +91,221 @@ class SystemdMod(loader.Module):
         "back_btn": "🔙 Back",
         "close_btn": "✖️ Close",
         "refresh_btn": "🔄 Refresh",
+    }
+
+    strings_ru = {
+        "panel": (
+            "<emoji document_id=5771858080664915483>🎛</emoji> <b>Здесь вы можете"
+            " управлять своими юнитами systemd</b>\n\n{}"
+        ),
+        "unit_doesnt_exist": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Юнит</b>"
+            " <code>{}</code> <b>не существует!</b>"
+        ),
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Не указаны"
+            " аргументы</b>"
+        ),
+        "unit_added": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Юнит"
+            " </b><code>{}</code><b> с именем </b><code>{}</code><b> добавлен"
+        ),
+        "unit_removed": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Юнит"
+            " </b><code>{}</code><b> удалён</b>"
+        ),
+        "unit_action_done": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Действие"
+            " </b><code>{}</code><b> выполнено на юните </b><code>{}</code>"
+        ),
+        "unit_control": (
+            "<emoji document_id=5771858080664915483>🎛</emoji> <b>Взаимодействие с"
+            " юнитом </b><code>{}</code><b> (</b><code>{}</code><b>)</b>\n{} <b>Статус"
+            " юнита: </b><code>{}</code>"
+        ),
+        "action_not_found": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Действие"
+            " </b><code>{}</code><b> не найдено</b>"
+        ),
+        "unit_renamed": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Юнит"
+            " </b><code>{}</code><b> переименован в </b><code>{}</code>"
+        ),
+        "stop_btn": "🍎 Стоп",
+        "start_btn": "🍏 Старт",
+        "restart_btn": "🔄 Рестарт",
+        "logs_btn": "📄 Логи",
+        "tail_btn": "🚅 Тейл",
+        "back_btn": "🔙 Назад",
+        "close_btn": "✖️ Закрыть",
+        "refresh_btn": "🔄 Обновить",
+        "_cmd_doc_units": "Показать список юнитов",
+        "_cmd_doc_addunit": "<unit> - Добавить юнит",
+        "_cmd_doc_nameunit": "<unit> - Переименовать юнит",
+        "_cmd_doc_delunit": "<unit> - Удалить юнит",
+        "_cmd_doc_unit": "<unit> - Управлять юнитом",
+        "_cls_doc": "Простое и удобное управление юнитами systemd",
+    }
+
+    strings_de = {
+        "panel": (
+            "<emoji document_id=5771858080664915483>🎛</emoji> <b>Hier kannst du deine"
+            " systemd-Einheiten kontrollieren</b>\n\n{}"
+        ),
+        "unit_doesnt_exist": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Einheit</b>"
+            " <code>{}</code> <b>existiert nicht!</b>"
+        ),
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Keine Argumente"
+            " angegeben</b>"
+        ),
+        "unit_added": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Einheit"
+            " </b><code>{}</code><b> mit dem Namen </b><code>{}</code><b> hinzugefügt"
+        ),
+        "unit_removed": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Einheit"
+            " </b><code>{}</code><b> entfernt</b>"
+        ),
+        "unit_action_done": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Aktion"
+            " </b><code>{}</code><b> auf Einheit </b><code>{}</code><b> ausgeführt</b>"
+        ),
+        "unit_control": (
+            "<emoji document_id=5771858080664915483>🎛</emoji> <b>Interagiere mit"
+            " Einheit </b><code>{}</code><b> (</b><code>{}</code><b>)</b>\n{}"
+            " <b>Einheitsstatus: </b><code>{}</code>"
+        ),
+        "action_not_found": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Aktion"
+            " </b><code>{}</code><b> nicht gefunden</b>"
+        ),
+        "unit_renamed": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Einheit"
+            " </b><code>{}</code><b> umbenannt zu </b><code>{}</code>"
+        ),
+        "stop_btn": "🍎 Stop",
+        "start_btn": "🍏 Start",
+        "restart_btn": "🔄 Neustart",
+        "logs_btn": "📄 Logs",
+        "tail_btn": "🚅 Tail",
+        "back_btn": "🔙 Zurück",
+        "close_btn": "✖️ Schließen",
+        "refresh_btn": "🔄 Aktualisieren",
+        "_cmd_doc_units": "Liste der Einheiten anzeigen",
+        "_cmd_doc_addunit": "<unit> - Einheit hinzufügen",
+        "_cmd_doc_nameunit": "<unit> - Einheit umbenennen",
+        "_cmd_doc_delunit": "<unit> - Einheit entfernen",
+        "_cmd_doc_unit": "<unit> - Einheit verwalten",
+        "_cls_doc": "Einfache und bequeme Verwaltung von systemd-Einheiten",
+    }
+
+    strings_hi = {
+        "panel": (
+            "<emoji document_id=5771858080664915483>🎛</emoji> <b>यहाँ आप अपने systemd"
+            " इकाइयों का नियंत्रण कर सकते हैं</b>\n\n{}"
+        ),
+        "unit_doesnt_exist": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>इकाई</b>"
+            " <code>{}</code> <b>अस्तित्व में नहीं है!</b>"
+        ),
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>कोई तर्क निर्दिष्ट"
+            " नहीं किया गया</b>"
+        ),
+        "unit_added": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>इकाई"
+            " </b><code>{}</code><b> नाम </b><code>{}</code><b> के साथ जोड़ा गया"
+        ),
+        "unit_removed": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>इकाई"
+            " </b><code>{}</code><b> हटा दिया गया</b>"
+        ),
+        "unit_action_done": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>कार्य"
+            " </b><code>{}</code><b> इकाई </b><code>{}</code><b> पर किया गया</b>"
+        ),
+        "unit_control": (
+            "<emoji document_id=5771858080664915483>🎛</emoji> <b>इकाई"
+            " </b><code>{}</code><b> के साथ इंटरैक्ट करें"
+            " (</b><code>{}</code><b>)</b>\n{} <b>इकाई स्थिति: </b><code>{}</code>"
+        ),
+        "action_not_found": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>कार्य"
+            " </b><code>{}</code><b> नहीं मिला</b>"
+        ),
+        "unit_renamed": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>इकाई"
+            " </b><code>{}</code><b> का नाम बदल दिया गया </b><code>{}</code>"
+        ),
+        "stop_btn": "🍎 रोकें",
+        "start_btn": "🍏 शुरू करें",
+        "restart_btn": "🔄 पुनः शुरू करें",
+        "logs_btn": "📄 लॉग",
+        "tail_btn": "🚅 Tail",
+        "back_btn": "🔙 पीछे जाएँ",
+        "close_btn": "✖️ बंद करें",
+        "refresh_btn": "🔄 ताज़ा करें",
+        "_cmd_doc_units": "इकाइयों की सूची दिखाएँ",
+        "_cmd_doc_addunit": "<unit> - इकाई जोड़ें",
+        "_cmd_doc_nameunit": "<unit> - इकाई का नाम बदलें",
+        "_cmd_doc_delunit": "<unit> - इकाई हटाएँ",
+        "_cmd_doc_unit": "<unit> - इकाई प्रबंधित करें",
+        "_cls_doc": "systemd इकाइयों का सरल और सुविधाजनक प्रबंधन",
+    }
+
+    strings_uz = {
+        "panel": (
+            "<emoji document_id=5771858080664915483>🎛</emoji> <b>Bu yerda siz sizning"
+            " systemd birliklaringizni boshqarishingiz mumkin</b>\n\n{}"
+        ),
+        "unit_doesnt_exist": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Birlik</b>"
+            " <code>{}</code> <b>mavjud emas!</b>"
+        ),
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Hech qanday"
+            " argumentlar ko'rsatilmadi</b>"
+        ),
+        "unit_added": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Birlik"
+            " </b><code>{}</code><b> nomi </b><code>{}</code><b> qo'shildi"
+        ),
+        "unit_removed": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Birlik"
+            " </b><code>{}</code><b> o'chirildi</b>"
+        ),
+        "unit_action_done": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Amal"
+            " </b><code>{}</code><b> birlik </b><code>{}</code><b> uchun bajirildi</b>"
+        ),
+        "unit_control": (
+            "<emoji document_id=5771858080664915483>🎛</emoji> <b>Birlik"
+            " </b><code>{}</code><b> bilan ishlash (</b><code>{}</code><b>)</b>\n{}"
+            " <b>Birlik holati: </b><code>{}</code>"
+        ),
+        "action_not_found": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Amal"
+            " </b><code>{}</code><b> topilmadi</b>"
+        ),
+        "unit_renamed": (
+            "<emoji document_id=5314250708508220914>✅</emoji> <b>Birlik"
+            " </b><code>{}</code><b> nomi </b><code>{}</code><b> o'zgartirildi</b>"
+        ),
+        "stop_btn": "🍎 To'xtatish",
+        "start_btn": "🍏 Boshlash",
+        "restart_btn": "🔄 Qayta ishga tushirish",
+        "logs_btn": "📄 Jurnal",
+        "tail_btn": "🚅 Tail",
+        "back_btn": "🔙 Orqaga",
+        "close_btn": "✖️ Yopish",
+        "refresh_btn": "🔄 Yangilash",
+        "_cmd_doc_units": "Birliklar ro'yxatini ko'rsatish",
+        "_cmd_doc_addunit": "<birlik> - Birlik qo'shish",
+        "_cmd_doc_nameunit": "<birlik> - Birlik nomini o'zgartirish",
+        "_cmd_doc_delunit": "<birlik> - Birlikni o'chirish",
+        "_cmd_doc_unit": "<birlik> - Birlikni boshqarish",
     }
 
     def _get_unit_status_text(self, unit: str) -> str:

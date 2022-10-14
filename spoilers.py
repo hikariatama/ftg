@@ -61,15 +61,105 @@ class SpoilersMod(loader.Module):
         "not4u": "🫦 Я не буду тебе шептать",
         "open": "👀 Открыть",
         "in_the_end": "Отправь шепот пользователю в ответе",
-        "_ihandle_doc_hide": "Создать спойлер",
         "_cls_doc": (
             "Создает спойлеры, которые доступны только определенным пользователям"
         ),
         "broken": "🫦 Коты съели этот шепот. Не шепчите в личных сообщениях.",
     }
 
-    async def hide_inline_handler(self, query: InlineQuery):
-        """Create new hidden message"""
+    strings_de = {
+        "only_he_can_open": "ℹ Nur er/sie kann es öffnen",
+        "message": (
+            '🫦 <b>Geheimnachricht für <a href="tg://user?id={}">{}</a></b>\n<i>Du'
+            " kannst diese Nachricht nur einmal öffnen!</i>"
+        ),
+        "user_not_specified": (
+            "🫦 <b>Geheimnachricht für dich!</b>\n<i>Du kannst diese Nachricht nur"
+            " einmal öffnen!</i>"
+        ),
+        "not4u": "🫦 Ich werde dir nicht flüstern",
+        "open": "👀 Öffnen",
+        "in_the_end": "Sende Geheimnachricht an Benutzer als Antwort",
+        "_cls_doc": (
+            "Erstellt Geheimnachrichten, die nur bestimmten Benutzern zugänglich sind"
+        ),
+        "broken": (
+            "🫦 Die Katzen haben diesen Geheimnachricht gefressen. Flüstern Sie nicht"
+            " mehr in PM."
+        ),
+    }
+
+    strings_hi = {
+        "only_he_can_open": "ℹ केवल वह इसे खोल सकता है",
+        "message": (
+            '🫦 <b><a href="tg://user?id={}">{}</a> के लिए छिपा संदेश</b>\n<i>आप इस'
+            " संदेश को केवल एक बार खोल सकते हैं!</i>"
+        ),
+        "user_not_specified": (
+            "🫦 <b>आपके लिए छिपा संदेश!</b>\n<i>आप इस संदेश को केवल एक बार खोल सकते"
+            " हैं!</i>"
+        ),
+        "not4u": "🫦 मैं आपको छुपाने के लिए नहीं हूं",
+        "open": "👀 खोलना",
+        "in_the_end": "उपयोगकर्ता को उत्तर के रूप में छिपा संदेश भेजें",
+        "_cls_doc": "केवल निर्दिष्ट उपयोगकर्ताओं के लिए छिपा संदेश बनाता है",
+        "broken": (
+            "🫦 यह छिपा संदेश बिल्लियों ने खाया है। अब अपने व्यक्तिगत संदेशों में छुपाने"
+            " से बचें।"
+        ),
+    }
+
+    strings_tr = {
+        "only_he_can_open": "ℹ Sadece onu açabilir",
+        "message": (
+            '🫦 <b><a href="tg://user?id={}">{}</a> için gizli mesaj</b>\n<i>Bu mesajı'
+            " yalnızca bir kez açabilirsiniz!</i>"
+        ),
+        "user_not_specified": (
+            "🫦 <b>Sana gizli mesaj!</b>\n<i>Bu mesajı yalnızca bir kez"
+            " açabilirsiniz!</i>"
+        ),
+        "not4u": "🫦 Sana fısıldamayacağım",
+        "open": "👀 Açmak",
+        "in_the_end": "Kullanıcıya yanıt olarak gizli mesaj gönder",
+        "_cls_doc": (
+            "Sadece belirli kullanıcılara erişilebilen gizli mesajlar oluşturur"
+        ),
+        "broken": "🫦 Bu gizli mesaj kediler tarafından yendi. PM'de fısıldamayın.",
+    }
+
+    strings_uz = {
+        "only_he_can_open": "ℹ Faqat u o'ynay oladi",
+        "message": (
+            '🫦 <b><a href="tg://user?id={}">{}</a> uchun shifrlangan xabar</b>\n<i>Siz'
+            " bu xabarni faqat bir marta ochishingiz mumkin!</i>"
+        ),
+        "user_not_specified": (
+            "🫦 <b>Siz uchun shifrlangan xabar!</b>\n<i>Siz bu xabarni faqat bir marta"
+            " ochishingiz mumkin!</i>"
+        ),
+        "not4u": "🫦 Sizga shifrlashmayman",
+        "open": "👀 Ochish",
+        "in_the_end": "Foydalanuvchiga javob sifrlangan xabarini yuborish",
+        "_cls_doc": (
+            "Faqat belgilangan foydalanuvchilarga kirish mumkin bo'lgan shifrlangan"
+            " xabarlar yaratadi"
+        ),
+        "broken": (
+            "🫦 Bu shifrlangan xabar moshinalar tomonidan yig'ildi. PM'da"
+            " shifrlashmayin."
+        ),
+    }
+
+    @loader.inline_handler(
+        ru_doc="Создать скрытое сообщение",
+        de_doc="Erstellt eine versteckte Nachricht",
+        uz_doc="Shifrlangan xabar yaratish",
+        tr_doc="Gizli mesaj oluştur",
+        hi_doc="छिपा संदेश बनाएं",
+    )
+    async def hide(self, query: InlineQuery):
+        """Create hidden message"""
         text = query.args
         for_user = self.strings("in_the_end")
         for_user_id = None

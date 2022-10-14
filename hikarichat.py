@@ -1,4 +1,4 @@
-__version__ = (13, 0, 1)
+__version__ = (13, 0, 3)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
@@ -16,7 +16,7 @@ __version__ = (13, 0, 1)
 # scope: disable_onload_docs
 # scope: inline
 # scope: hikka_only
-# scope: hikka_min 1.2.7
+# scope: hikka_min 1.3.0
 # requires: aiohttp websockets
 
 import abc
@@ -100,7 +100,6 @@ PROTECTS = {
     "antilagsticks": "⚰️ AntiLagSticks",
     "cas": "🛡 CAS",
     "bnd": "💬 BND",
-    "ndspam": "🐳 NDSpam",
     "antiraid": "🚪 AntiRaid",
     "banninja": "🥷 BanNinja",
     "welcome": "👋 Welcome",
@@ -738,14 +737,6 @@ class HikariChatMod(loader.Module):
             "<emoji document_id=5465300082628763143>💬</emoji> <b>Block-Non-Discussion"
             " is now off in this chat</b>"
         ),
-        "ndspam_on": (
-            "<emoji document_id=5431815452437257407>🐳</emoji> <b>Non-Discussion-Whale"
-            " is now on in this chat"
-        ),
-        "ndspam_off": (
-            "<emoji document_id=5431815452437257407>🐳</emoji> <b>Non-Discussion-Whale"
-            " is now off in this chat</b>"
-        ),
         "antiraid": (
             "<emoji document_id=6334359218593728345><emoji"
             " document_id=6037460928423791421>🚪</emoji></emoji> <b>AntiRaid is On. I {}"
@@ -879,10 +870,6 @@ class HikariChatMod(loader.Module):
         "tagall": (
             '<emoji document_id=5785175271011259591>🐵</emoji> <b><a href="{}">{}</a>'
             " used TagAll.\n👊 Action: I {}</b>"
-        ),
-        "sex_datings": (
-            '<emoji document_id=4976982981341086273>🔞</emoji> <b><a href="{}">{}</a> is'
-            " suspicious 🧐\n👊 Action: I {}</b>"
         ),
         "fwarn": (
             "<emoji document_id=5193091781327068499>👮‍♀️</emoji><emoji"
@@ -1071,7 +1058,27 @@ class HikariChatMod(loader.Module):
         ),
         "fban": (
             '<emoji document_id=5773781976905421370>💼</emoji> <b><a href="{}">{}</a>'
-            " banned in federation {} {}\nReason: </b><i>{}</i>\n{}"
+            " was banned in federation {} {}\nReason: </b><i>{}</i>\n{}"
+        ),
+        "gban": (
+            '<emoji document_id=5301059317753979286>🖕</emoji> <b><a href="{}">{}</a>'
+            " was gbanned.</b>\n<b>Reason: </b><i>{}</i>\n\n{}"
+        ),
+        "gbanning": (
+            "<emoji document_id=5301059317753979286>🖕</emoji> <b>Gbanning <a"
+            ' href="{}">{}</a>...</b>'
+        ),
+        "gunban": (
+            '<emoji document_id=6334872157947955302>🤗</emoji> <b><a href="{}">{}</a>'
+            " was gunbanned.</b>\n\n{}"
+        ),
+        "gunbanning": (
+            "<emoji document_id=6334872157947955302>🤗</emoji> <b>Gunbanning <a"
+            ' href="{}">{}</a>...</b>'
+        ),
+        "in_n_chats": (
+            "<emoji document_id=5379568936218009290>👎</emoji> <b>Banned in {}"
+            " chat(-s)</b>"
         ),
         "fmute": (
             '<emoji document_id=5773781976905421370>💼</emoji> <b><a href="{}">{}</a>'
@@ -1253,23 +1260,9 @@ class HikariChatMod(loader.Module):
             " job.</b>\n<i>Deleted {} bot(-s)</i>\n\n🏹 <i>«BanNinja can handle any size"
             " of attack»</i> © <code>@hikariatama</code>"
         ),
-        "ndspam_active": (
-            "<emoji document_id=5431815452437257407>🐳</emoji> <b>Non-Discussion-Whale"
-            " is working hard to prevent intrusion to attached channel"
-            " comments.</b>\n\n{}<i>Deleted {} bot(-s)</i>"
-        ),
         "forbid_messages": (
             "⚠️ <b>I've forbidden sending messages until attack is fully"
             " released</b>\n\n"
-        ),
-        "ndspam_off": "🚨 Stop",
-        "ndspam_stopped": (
-            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja Stopped</b>"
-        ),
-        "ndspam_report": (
-            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja has done his"
-            " job.</b>\n<i>Deleted {} bot(-s)</i>\n\n🏹 <i>«BanNinja can handle any size"
-            " of attack»</i> © <code>@hikariatama</code>"
         ),
         "confirm_rmfed": (
             "⚠️ <b>Warning! This operation can't be reverted! Are you sure, "
@@ -1418,14 +1411,6 @@ class HikariChatMod(loader.Module):
         ),
         "bnd_off": (
             "<emoji document_id=5465300082628763143>💬</emoji> <b>Block-Non-Discussion"
-            " теперь выключен в этом чате</b>"
-        ),
-        "ndspam_on": (
-            "<emoji document_id=5431815452437257407>🐳</emoji> <b>Non-Discussion-Whale"
-            " теперь включен в этом чате"
-        ),
-        "ndspam_off": (
-            "<emoji document_id=5431815452437257407>🐳</emoji> <b>Non-Discussion-Whale"
             " теперь выключен в этом чате</b>"
         ),
         "antichannel_on": (
@@ -1743,6 +1728,27 @@ class HikariChatMod(loader.Module):
     }
 
     def __init__(self):
+        self._punish_queue = []
+        self._raid_cleaners = []
+        self._global_queue = []
+        self._captcha_db = {}
+        self._captcha_messages = {}
+        self._ban_ninja = {}
+        self._ban_ninja_messages = []
+        self._ban_ninja_forms = {}
+        self._ban_ninja_progress = {}
+        self._ban_ninja_tasks = {}
+        self._ban_ninja_default_rights = {}
+        self.flood_timeout = FLOOD_TIMEOUT
+        self.flood_threshold = FLOOD_TRESHOLD
+        self._my_protects = {}
+        self._linked_channels = {}
+        self._sticks_ratelimit = {}
+        self._flood_fw_protection = {}
+        self._ratelimit = {"notes": {}, "report": {}}
+        self._delete_soon = []
+        self._gban_cache = {}
+
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "silent",
@@ -2571,14 +2577,27 @@ class HikariChatMod(loader.Module):
         if msg_id is not None:
             await self._client.delete_messages(chat, message_ids=[msg_id])
 
-    async def args_parser(self, message: Message, include_force: bool = False) -> tuple:
+    async def args_parser(
+        self,
+        message: Message,
+        include_force: bool = False,
+        include_silent: bool = False,
+    ) -> tuple:
         """Get args from message"""
-        args = utils.get_args_raw(message)
-        if " -f" in args:
+        args = " " + utils.get_args_raw(message)
+        if include_force and " -f" in args:
             force = True
             args = args.replace(" -f", "")
         else:
             force = False
+
+        if include_silent and " -s" in args:
+            silent = True
+            args = args.replace(" -s", "")
+        else:
+            silent = False
+
+        args = args.strip()
 
         reply = await message.get_reply_message()
 
@@ -2588,6 +2607,7 @@ class HikariChatMod(loader.Module):
                 0,
                 utils.escape_html(self.strings("no_reason")).strip(),
                 *((force,) if include_force else []),
+                *((silent,) if include_silent else []),
             )
 
         try:
@@ -2619,7 +2639,8 @@ class HikariChatMod(loader.Module):
             user,
             t,
             utils.escape_html(args or self.strings("no_reason")).strip(),
-            *((force,) if include_force else [])
+            *((force,) if include_force else []),
+            *((silent,) if include_silent else []),
         )
 
     async def find_fed(self, message: typing.Union[Message, int]) -> str:
@@ -3174,6 +3195,166 @@ class HikariChatMod(loader.Module):
             ),
         )
 
+    @loader.command(
+        ru_doc=(
+            "<реплай | юзер> [причина] [-s] - Заблокировать пользователя во всех чатах,"
+            " где ты админ"
+        )
+    )
+    async def gban(self, message: Message):
+        """<reply|user> [reason] [-s] - Ban user in all chats where you are admin"""
+        reply = await message.get_reply_message()
+        args = utils.get_args_raw(message)
+        if not reply and not args:
+            await utils.answer(message, self.strings("args"))
+            return
+
+        a = await self.args_parser(message, include_silent=True)
+
+        if not a:
+            await utils.answer(message, self.strings("args"))
+            return
+
+        user, t, reason, silent = a
+
+        message = await utils.answer(
+            message,
+            self.strings("gbanning").format(
+                utils.get_entity_url(user),
+                utils.escape_html(get_full_name(user)),
+            ),
+        )
+
+        if not self._gban_cache or self._gban_cache["exp"] < time.time():
+            self._gban_cache = {
+                "exp": int(time.time()) + 10 * 60,
+                "chats": [
+                    chat.entity.id
+                    async for chat in self._client.iter_dialogs()
+                    if (
+                        (
+                            isinstance(chat.entity, Chat)
+                            or (
+                                isinstance(chat.entity, Channel)
+                                and getattr(chat.entity, "megagroup", False)
+                            )
+                        )
+                        and chat.entity.admin_rights
+                        and chat.entity.participants_count > 5
+                        and chat.entity.admin_rights.ban_users
+                    )
+                ],
+            }
+
+        chats = ""
+        counter = 0
+
+        for chat in self._gban_cache["chats"]:
+            try:
+                await self.ban(chat, user, 0, reason, silent=True)
+            except Exception:
+                pass
+            else:
+                chats += '▫️ <b><a href="{}">{}</a></b>\n'.format(
+                    utils.get_entity_url(await self._client.get_entity(chat, exp=0)),
+                    utils.escape_html(
+                        get_full_name(await self._client.get_entity(chat, exp=0))
+                    ),
+                )
+                counter += 1
+
+        await utils.answer(
+            message,
+            self.strings("gban").format(
+                utils.get_entity_url(user),
+                utils.escape_html(get_full_name(user)),
+                reason,
+                self.strings("in_n_chats").format(counter) if silent else chats,
+            ),
+        )
+
+    @loader.command(
+        ru_doc=(
+            "<реплай | юзер> [причина] [-s] - Разблокировать пользователя во всех"
+            " чатах, где ты админ"
+        )
+    )
+    async def gunban(self, message: Message):
+        """<reply|user> [reason] [-s] - Unban user in all chats where you are admin"""
+        reply = await message.get_reply_message()
+        args = utils.get_args_raw(message)
+        if not reply and not args:
+            await utils.answer(message, self.strings("args"))
+            return
+
+        a = await self.args_parser(message, include_silent=True)
+
+        if not a:
+            await utils.answer(message, self.strings("args"))
+            return
+
+        user, t, reason, silent = a
+
+        message = await utils.answer(
+            message,
+            self.strings("gunbanning").format(
+                utils.get_entity_url(user),
+                utils.escape_html(get_full_name(user)),
+            ),
+        )
+
+        if not self._gban_cache or self._gban_cache["exp"] < time.time():
+            self._gban_cache = {
+                "exp": int(time.time()) + 10 * 60,
+                "chats": [
+                    chat.entity.id
+                    async for chat in self._client.iter_dialogs()
+                    if (
+                        (
+                            isinstance(chat.entity, Chat)
+                            or (
+                                isinstance(chat.entity, Channel)
+                                and getattr(chat.entity, "megagroup", False)
+                            )
+                        )
+                        and chat.entity.admin_rights
+                        and chat.entity.participants_count > 5
+                        and chat.entity.admin_rights.ban_users
+                    )
+                ],
+            }
+
+        chats = ""
+        counter = 0
+
+        for chat in self._gban_cache["chats"]:
+            try:
+                await self._client.edit_permissions(
+                    chat,
+                    user,
+                    until_date=0,
+                    **{right: True for right in BANNED_RIGHTS.keys()},
+                )
+            except Exception:
+                pass
+            else:
+                chats += '▫️ <b><a href="{}">{}</a></b>\n'.format(
+                    utils.get_entity_url(await self._client.get_entity(chat, exp=0)),
+                    utils.escape_html(
+                        get_full_name(await self._client.get_entity(chat, exp=0))
+                    ),
+                )
+                counter += 1
+
+        await utils.answer(
+            message,
+            self.strings("gunban").format(
+                utils.get_entity_url(user),
+                utils.escape_html(get_full_name(user)),
+                self.strings("in_n_chats").format(counter) if silent else chats,
+            ),
+        )
+
     @error_handler
     @chat_command
     async def fbancmd(self, message: Message):
@@ -3607,8 +3788,10 @@ class HikariChatMod(loader.Module):
             return
 
         fed = await self.find_fed(message)
-        if not force and fed in self.api.feds and user.id in list(
-            map(int, self.api.feds[fed]["fdef"])
+        if (
+            not force
+            and fed in self.api.feds
+            and user.id in list(map(int, self.api.feds[fed]["fdef"]))
         ):
             await utils.answer(message, self.strings("fdef403").format("ban"))
             return
@@ -3637,8 +3820,10 @@ class HikariChatMod(loader.Module):
             return
 
         fed = await self.find_fed(message)
-        if not force and fed in self.api.feds and user.id in list(
-            map(int, self.api.feds[fed]["fdef"])
+        if (
+            not force
+            and fed in self.api.feds
+            and user.id in list(map(int, self.api.feds[fed]["fdef"]))
         ):
             await utils.answer(message, self.strings("fdef403").format("mute"))
             return
@@ -4669,22 +4854,6 @@ class HikariChatMod(loader.Module):
             await self.disable_smart_anti_raid(None, chat_id)
         except Exception:
             pass
-
-    @error_handler
-    async def p__ndspam(
-        self,
-        chat_id: typing.Union[str, int],
-        user_id: typing.Union[str, int],
-        message: Message,
-    ) -> bool:
-        if not (
-            self.api.should_protect(chat_id, "ndspam")
-            and (
-                getattr(message, "user_joined", False)
-                or getattr(message, "user_added", False)
-            )
-        ):
-            return False
 
     @error_handler
     async def p__banninja(
@@ -5747,9 +5916,6 @@ class HikariChatMod(loader.Module):
         if await self.p__banninja(chat_id, user_id, message):
             return
 
-        if await self.p__ndspam(chat_id, user_id, message):
-            return
-
         fed = await self.find_fed(message)
 
         if fed in self.api.feds:
@@ -5941,30 +6107,6 @@ class HikariChatMod(loader.Module):
             return
 
         await self.p__antihelp(*args)
-
-    _punish_queue = []
-    _raid_cleaners = []
-    _global_queue = []
-
-    _captcha_db = {}
-    _captcha_messages = {}
-
-    _ban_ninja = {}
-    _ban_ninja_messages = []
-    _ban_ninja_forms = {}
-    _ban_ninja_progress = {}
-    _ban_ninja_tasks = {}
-    _ban_ninja_default_rights = {}
-
-    flood_timeout = FLOOD_TIMEOUT
-    flood_threshold = FLOOD_TRESHOLD
-
-    _my_protects = {}
-    _linked_channels = {}
-    _sticks_ratelimit = {}
-    _flood_fw_protection = {}
-    _ratelimit = {"notes": {}, "report": {}}
-    _delete_soon = []
 
     async def client_ready(
         self,

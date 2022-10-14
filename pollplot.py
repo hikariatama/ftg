@@ -27,15 +27,79 @@ class PollPlotMod(loader.Module):
 
     strings = {
         "name": "PollPlot",
-        "no_reply": "🚫 <b>Reply to a poll is required!</b>",
-        "no_answers": "😔 <b>This poll has not answers yet.</b>",
+        "no_reply": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Reply to a poll is"
+            " required!</b>"
+        ),
+        "no_answers": (
+            "<emoji document_id=5197183257367552085>😢</emoji> <b>This poll has not"
+            " answers yet.</b>"
+        ),
     }
 
     strings_ru = {
-        "no_reply": "🚫 <b>Нужен ответ на опрос!</b>",
-        "no_answers": "😔 <b>В этом опросе пока что нет участников.</b>",
+        "no_reply": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Нужен ответ на"
+            " опрос!</b>"
+        ),
+        "no_answers": (
+            "<emoji document_id=5197183257367552085>😢</emoji> <b>В этом опросе пока что"
+            " нет участников.</b>"
+        ),
         "_cmd_doc_plot": "<reply> - Создать визуализацию опроса",
         "_cls_doc": "Визуализирует опросы в виде графиков",
+    }
+
+    strings_de = {
+        "no_reply": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Antwort auf eine"
+            " Umfrage erforderlich!</b>"
+        ),
+        "no_answers": (
+            "<emoji document_id=5197183257367552085>😢</emoji> <b>Diese Umfrage hat noch"
+            " keine Antworten.</b>"
+        ),
+        "_cmd_doc_plot": "<reply> - Erstelle eine Visualisierung von Umfragen",
+        "_cls_doc": "Visualisiert Umfragen als Diagramme",
+    }
+
+    strings_hi = {
+        "no_reply": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>एक पोल पर जवाब आवश्यक"
+            " है!</b>"
+        ),
+        "no_answers": (
+            "<emoji document_id=5197183257367552085>😢</emoji> <b>इस पोल में अभी तक कोई"
+            " उत्तर नहीं है।</b>"
+        ),
+        "_cmd_doc_plot": "<reply> - पोल को बनाने के लिए प्लॉट करें",
+        "_cls_doc": "पोल को प्लॉट के रूप में दर्शाता है",
+    }
+
+    strings_uz = {
+        "no_reply": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Javob berilgan savol"
+            " kerak!</b>"
+        ),
+        "no_answers": (
+            "<emoji document_id=5197183257367552085>😢</emoji> <b>Ushbu savolda hali"
+            " hech qanday javob yo'q.</b>"
+        ),
+        "_cmd_doc_plot": "<reply> - Savolni chizishga o'tkazish",
+        "_cls_doc": "Savollarni chizishlar shaklida ko'rsatadi",
+    }
+
+    strings_tr = {
+        "no_reply": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bir anket yanıtı"
+            " gerekli!</b>"
+        ),
+        "no_answers": (
+            "<emoji document_id=5197183257367552085>😢</emoji> <b>Bu anket henüz cevap"
+            " yok.</b>"
+        ),
+        "_cmd_doc_plot": "<yanıt> - Bir anketi çizimden oluşturun",
+        "_cls_doc": "Anketleri çizimler şeklinde gösterir",
     }
 
     async def plotcmd(self, message: Message):

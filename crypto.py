@@ -173,6 +173,222 @@ class Crypto(loader.Module):
         ),
     }
 
+    strings_de = {
+        "no_args": (
+            "<emoji document_id=6053166094816905153>💀</emoji> <b>Du musst Argumente"
+            " angeben</b>"
+        ),
+        "incorrect_args": (
+            "<emoji document_id=6053166094816905153>💀</emoji> <b>Falsche Argumente</b>"
+        ),
+        "insufficient_funds": (
+            "<emoji document_id=5472363448404809929>👛</emoji> <b>Unzureichende"
+            " Mittel</b>"
+        ),
+        "confirm_check": (
+            "👛 <b>Bitte bestätige, dass die folgenden Informationen korrekt sind:</b>"
+            "\n\n<b>🪙 Betrag: {amount}</b>{receiver}{comment}\n\n{balance}"
+        ),
+        "confirm_invoice": (
+            "👛 <b>Bitte bestätige, dass die folgenden Informationen korrekt sind:</b>"
+            "\n\n<b>🪙 Betrag: {amount}</b>{comment}\n\n{balance}"
+        ),
+        "check": (
+            "{emoji} <b>Check für {amount}</b>{receiver}{comment}\n\n<emoji"
+            ' document_id=5188509837201252052>💸</emoji> <b><a href="{link}">Erhalte'
+            " Zahlung</a></b>"
+        ),
+        "invoice": (
+            "{emoji} <b>Rechnung für {amount}</b>{comment}\n\n<emoji"
+            ' document_id=5188509837201252052>💸</emoji> <b><a href="{link}">Bezahle'
+            "</a></b>"
+        ),
+        "comment": "\n💬 <b>Kommentar: </b><i>{}</i>",
+        "receiver": "\n👤 <b>Empfänger: </b><i>{}</i>",
+        "available": "💰 <b>Verfügbar: </b><i>{}</i>",
+        "send_check": "👛 Senden Sie den Scheck",
+        "send_invoice": "👛 Senden Sie die Rechnung",
+        "cancel": "🔻 Stornieren",
+        "wallet": (
+            "<emoji document_id=5472363448404809929>👛</emoji> <b>Deine <a"
+            ' href="{}">CryptoBot</a> Brieftasche:</b>\n\n{}'
+        ),
+        "multi-use_invoice": (
+            "<emoji document_id=5472363448404809929>👛</emoji> <b><a"
+            ' href="{url}">Mehrfachrechnung</a></b>'
+        ),
+        "processing_rates": (
+            "<emoji document_id=5213452215527677338>⏳</emoji> <b>Ich stehle"
+            " Kryptowährung von der Börse...</b>"
+        ),
+        "exchange_rates": "{emoji} <b>Kurs {amount} {name}:</b>\n\n{rates}",
+        "empty_balance": (
+            "<emoji document_id=5370646412243510708>😭</emoji> <b>Nichts auf dem"
+            " Konto</b>"
+        ),
+    }
+
+    strings_hi = {
+        "no_args": (
+            "<emoji document_id=6053166094816905153>💀</emoji> <b>आपको आर्गुमेंट्स"
+            " देना होगा</b>"
+        ),
+        "incorrect_args": (
+            "<emoji document_id=6053166094816905153>💀</emoji> <b>गलत आर्गुमेंट्स</b>"
+        ),
+        "insufficient_funds": (
+            "<emoji document_id=5472363448404809929>👛</emoji> <b>अपर्याप्त धन</b>"
+        ),
+        "confirm_check": (
+            "👛 <b>कृपया सुनिश्चित करें कि निम्नलिखित जानकारी सही है:</b>"
+            "\n\n<b>🪙 राशि: {amount}</b>{receiver}{comment}\n\n{balance}"
+        ),
+        "confirm_invoice": (
+            "👛 <b>कृपया सुनिश्चित करें कि निम्नलिखित जानकारी सही है:</b>"
+            "\n\n<b>🪙 राशि: {amount}</b>{comment}\n\n{balance}"
+        ),
+        "check": (
+            "{emoji} <b>{amount} के लिए चेक</b>{receiver}{comment}\n\n<emoji"
+            ' document_id=5188509837201252052>💸</emoji> <b><a href="{link}">भुगतान'
+            "</a></b>"
+        ),
+        "invoice": (
+            "{emoji} <b>{amount} के लिए चालान</b>{comment}\n\n<emoji"
+            ' document_id=5188509837201252052>💸</emoji> <b><a href="{link}">भुगतान'
+            "</a></b>"
+        ),
+        "comment": "\n💬 <b>टिप्पणी: </b><i>{}</i>",
+        "receiver": "\n👤 <b>प्राप्तकर्ता: </b><i>{}</i>",
+        "available": "💰 <b>उपलब्ध: </b><i>{}</i>",
+        "send_check": "👛 चेक भेजें",
+        "send_invoice": "👛 चालान भेजें",
+        "cancel": "🔻 रद्द करना",
+        "wallet": (
+            "<emoji document_id=5472363448404809929>👛</emoji> <b>आपका <a"
+            ' href="{}">CryptoBot</a> बटुआ:</b>\n\n{}'
+        ),
+        "multi-use_invoice": (
+            "<emoji document_id=5472363448404809929>👛</emoji> <b><a"
+            ' href="{url}">एक प्रयोग के लिए बहुत चालान</a></b>'
+        ),
+        "processing_rates": (
+            "<emoji document_id=5213452215527677338>⏳</emoji> <b>मैं बाजार से क्रिप्टो"
+            " को चोरी कर रहा हूं...</b>"
+        ),
+        "exchange_rates": "{emoji} <b>{amount} {name} का दर:</b>\n\n{rates}",
+        "empty_balance": (
+            "<emoji document_id=5370646412243510708>😭</emoji> <b>कोई खाता नहीं</b>"
+        ),
+    }
+
+    strings_uz = {
+        "no_args": (
+            "<emoji document_id=6053166094816905153>💀</emoji> <b>Siz argumentlar"
+            " berishingiz kerak</b>"
+        ),
+        "incorrect_args": (
+            "<emoji document_id=6053166094816905153>💀</emoji> <b>Noto'g'ri"
+            " argumentlar</b>"
+        ),
+        "insufficient_funds": (
+            "<emoji document_id=5472363448404809929>👛</emoji> <b>Kifoya pul yo'q</b>"
+        ),
+        "confirm_check": (
+            "👛 <b>Iltimos, quyidagi ma'lumotlarning to'g'ri yoki yo'qligini"
+            " tekshiring:</b>\n\n<b>🪙 Summa:"
+            " {amount}</b>{receiver}{comment}\n\n{balance}"
+        ),
+        "confirm_invoice": (
+            "👛 <b>Iltimos, quyidagi ma'lumotlarning to'g'ri yoki yo'qligini"
+            " tekshiring:</b>\n\n<b>🪙 Summa: {amount}</b>{comment}\n\n{balance}"
+        ),
+        "check": (
+            "{emoji} <b>{amount} uchun chex</b>{receiver}{comment}\n\n<emoji"
+            ' document_id=5188509837201252052>💸</emoji> <b><a href="{link}">To\'lov'
+            "</a></b>"
+        ),
+        "invoice": (
+            "{emoji} <b>{amount} uchun chalan</b>{comment}\n\n<emoji"
+            ' document_id=5188509837201252052>💸</emoji> <b><a href="{link}">To\'lov'
+            "</a></b>"
+        ),
+        "comment": "\n💬 <b>Izoh: </b><i>{}</i>",
+        "receiver": "\n👤 <b>Qabul qiluvchi: </b><i>{}</i>",
+        "available": "💰 <b>Mavjud: </b><i>{}</i>",
+        "send_check": "👛 Chexni yuborish",
+        "send_invoice": "👛 Chalan yuborish",
+        "cancel": "🔻 Bekor qilish",
+        "wallet": (
+            "<emoji document_id=5472363448404809929>👛</emoji> <b>Sizning <a"
+            ' href="{}">CryptoBot</a> botingiz:</b>\n\n{}'
+        ),
+        "multi-use_invoice": (
+            "<emoji document_id=5472363448404809929>👛</emoji> <b><a"
+            ' href="{url}">Bir qatorda ko\'p foydalanish uchun chalan</a></b>'
+        ),
+        "processing_rates": (
+            "<emoji document_id=5213452215527677338>⏳</emoji> <b>Mening bozoridan"
+            " kriptoni chorayman...</b>"
+        ),
+        "exchange_rates": "{emoji} <b>{amount} {name} narxi:</b>\n\n{rates}",
+        "empty_balance": (
+            "<emoji document_id=5370646412243510708>😭</emoji> <b>Hisob bo'sh</b>"
+        ),
+    }
+
+    strings_tr = {
+        "no_args": (
+            "<emoji document_id=6053166094816905153>💀</emoji> <b>Argümanlarınız"
+            " gerekli</b>"
+        ),
+        "incorrect_args": (
+            "<emoji document_id=6053166094816905153>💀</emoji> <b>Yanlış argümanlar</b>"
+        ),
+        "insufficient_funds": (
+            "<emoji document_id=5472363448404809929>👛</emoji> <b>Yeterli bakiye yok</b>"
+        ),
+        "confirm_check": (
+            "👛 <b>Lütfen, aşağıdaki bilgilerin doğru veya yanlış olduğunu kontrol"
+            " edin:</b>\n\n<b>🪙 Miktar: {amount}</b>{receiver}{comment}\n\n{balance}"
+        ),
+        "confirm_invoice": (
+            "👛 <b>Lütfen, aşağıdaki bilgilerin doğru veya yanlış olduğunu"
+            " kontrol edin:</b>\n\n<b>🪙 Miktar: {amount}</b>{comment}\n\n{balance}"
+        ),
+        "check": (
+            "{emoji} <b>{amount} için çek</b>{receiver}{comment}\n\n<emoji"
+            ' document_id=5188509837201252052>💸</emoji> <b><a href="{link}">Ödeme'
+            "</a></b>"
+        ),
+        "invoice": (
+            "{emoji} <b>{amount} için fatura</b>{comment}\n\n<emoji"
+            ' document_id=5188509837201252052>💸</emoji> <b><a href="{link}">Ödeme'
+            "</a></b>"
+        ),
+        "comment": "\n💬 <b>Yorum: </b><i>{}</i>",
+        "receiver": "\n👤 <b>Alıcı: </b><i>{}</i>",
+        "available": "💰 <b>Mevcut: </b><i>{}</i>",
+        "send_check": "👛 Çeki yolla",
+        "send_invoice": "👛 Faturayı yolla",
+        "cancel": "🔻 İptal et",
+        "wallet": (
+            "<emoji document_id=5472363448404809929>👛</emoji> <b><a"
+            ' href="{}">CryptoBot</a> cüzdanınız:</b>\n\n{}'
+        ),
+        "multi-use_invoice": (
+            "<emoji document_id=5472363448404809929>👛</emoji> <b><a"
+            ' href="{url}">Tek kullanımlık fatura</a></b>'
+        ),
+        "processing_rates": (
+            "<emoji document_id=5213452215527677338>⏳</emoji> <b>Kripto para"
+            " değiştiriyorum...</b>"
+        ),
+        "exchange_rates": "{emoji} <b>{amount} {name} fiyatı:</b>\n\n{rates}",
+        "empty_balance": (
+            "<emoji document_id=5370646412243510708>😭</emoji> <b>Bakiye boş</b>"
+        ),
+    }
+
     def __init__(self):
         self.bot = "@CryptoBot"
         self.config = loader.ModuleConfig(
@@ -240,7 +456,13 @@ class Crypto(loader.Module):
         )
         await call.delete()
 
-    @loader.command(ru_doc="<сумма> [человек] [комментарий] - Выписать чек")
+    @loader.command(
+        ru_doc="<сумма> [человек] [комментарий] - Выписать чек",
+        de_doc="<Betrag> [Person] [Kommentar] - Ausstellen eines Schecks",
+        tr_doc="<miktar> [kişi] [yorum] - Çek çıkar",
+        uz_doc="<miqdor> [odam] [izoh] - Chiqarish chiqoni",
+        hi_doc="<राशि> [व्यक्ति] [टिप्पणी] - चेक बनाएं",
+    )
     async def check(self, message: Message):
         """<amount> [person] [comment] - Send check"""
         args = utils.get_args_raw(message)
@@ -346,7 +568,13 @@ class Crypto(loader.Module):
             ],
         )
 
-    @loader.command(ru_doc="Показать баланс криптокошелька")
+    @loader.command(
+        ru_doc="Показать баланс криптокошелька",
+        de_doc="Zeige den Kryptowährungsbetrag",
+        tr_doc="Kripto cüzdanınızın bakiyesini göster",
+        uz_doc="Kriptovalyuta portfelingizdagi balansni ko'rsatish",
+        hi_doc="क्रिप्टो वॉलेट की शेष राशि दिखाएं",
+    )
     async def wallet(self, message: Message):
         """Show wallet balance"""
         async with self._client.conversation(self.bot) as conv:
@@ -377,7 +605,13 @@ class Crypto(loader.Module):
             else self.strings("empty_balance"),
         )
 
-    @loader.command(ru_doc="[-o - не создавать новый] - Отправить мультисчёт")
+    @loader.command(
+        ru_doc="[-o - не создавать новый] - Отправить мультисчёт",
+        de_doc="[-o - erstelle keine neue] - Sende eine Mehrfachzahlung",
+        tr_doc="[-o - yeni oluşturma] - Çoklu ödeme gönder",
+        uz_doc="[-o - yangi yaratmaslik] - Ko'p mablag'li to'lovni yuborish",
+        hi_doc="[-o - नया नहीं बनाएं] - एकाधिक भुगतान भेजें",
+    )
     async def muinvoice(self, message: Message):
         """[-o - don't create new one] Send multi-use invoice"""
         if "-o" in utils.get_args_raw(message) and self.get("muinvoice_url"):
@@ -394,7 +628,13 @@ class Crypto(loader.Module):
             self.strings("multi-use_invoice").format(url=url),
         )
 
-    @loader.command(ru_doc="<сумма> [комментарий] - Выставить счет")
+    @loader.command(
+        ru_doc="<сумма> [комментарий] - Выставить счет",
+        de_doc="<Betrag> [Kommentar] - Stelle eine Rechnung aus",
+        tr_doc="<miktar> [yorum] - Fatura çıkar",
+        uz_doc="<miqdor> [izoh] - Hisobni chiqarish",
+        hi_doc="<राशि> [टिप्पणी] - चालान बनाएं",
+    )
     async def invoice(self, message: Message):
         """<amount> [comment] - Send invoice"""
         args = utils.get_args_raw(message)
@@ -456,7 +696,13 @@ class Crypto(loader.Module):
             ],
         )
 
-    @loader.command(ru_doc="[amount] <name> - Показать курс криптовалюты")
+    @loader.command(
+        ru_doc="[amount] <name> - Показать курс криптовалюты",
+        de_doc="[Betrag] <Name> - Zeige den Kurs der Kryptowährung",
+        tr_doc="[miktar] <isim> - Kripto para biriminin kurunu göster",
+        uz_doc="[miqdor] <nomi> - Kriptovalyutaning kursini ko'rsatish",
+        hi_doc="[राशि] <नाम> - क्रिप्टोकरेंसी की दर दिखाएं",
+    )
     async def rates(self, message: Message):
         """[amount] <name> - Show cryptocurrency exchange rates"""
         args = utils.get_args_raw(message)

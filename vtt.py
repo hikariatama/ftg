@@ -37,22 +37,22 @@ class VoicyMod(loader.Module):
     strings = {
         "name": "Voicy",
         "converting": (
-            "<b><emoji document_id='6041850934756119589'>🫠</emoji> Recognizing voice"
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> Recognizing voice"
             " message...</b>"
         ),
         "converted": (
-            "<b><emoji document_id='6041850934756119589'>🫠</emoji>"
+            "<b><emoji document_id=6041850934756119589>🫠</emoji>"
             " Recognized:</b>\n<i>{}</i>"
         ),
         "voice_not_found": (
-            "<emoji document_id='6041850934756119589'>🫠</emoji> <b>Voice not found</b>"
+            "<emoji document_id=6041850934756119589>🫠</emoji> <b>Voice not found</b>"
         ),
         "autovoice_off": (
-            "<b><emoji document_id='6041850934756119589'>🫠</emoji> I will not recognize"
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> I will not recognize"
             " voice messages in this chat</b>"
         ),
         "autovoice_on": (
-            "<b><emoji document_id='6041850934756119589'>🫠</emoji> I will recognize"
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> I will recognize"
             " voice messages in this chat</b>"
         ),
         "_cfg_lang": "Language of voices to recognize",
@@ -65,23 +65,22 @@ class VoicyMod(loader.Module):
 
     strings_ru = {
         "converting": (
-            "<b><emoji document_id='6041850934756119589'>🫠</emoji> Распознаю голосовое"
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> Распознаю голосовое"
             " сообщение...</b>"
         ),
         "converted": (
-            "<b><emoji document_id='6041850934756119589'>🫠</emoji>"
+            "<b><emoji document_id=6041850934756119589>🫠</emoji>"
             " Распознано:</b>\n<i>{}</i>"
         ),
         "voice_not_found": (
-            "<emoji document_id='6041850934756119589'>🫠</emoji> <b>Нет ответа на"
-            " войс</b>"
+            "<emoji document_id=6041850934756119589>🫠</emoji> <b>Нет ответа на войс</b>"
         ),
         "autovoice_off": (
-            "<b><emoji document_id='6041850934756119589'>🫠</emoji> Я больше не буду"
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> Я больше не буду"
             " распознавать голосовые сообщения в этом чате</b>"
         ),
         "autovoice_on": (
-            "<b><emoji document_id='6041850934756119589'>🫠</emoji> Я буду распознавать"
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> Я буду распознавать"
             " голосовые сообщения в этом чате</b>"
         ),
         "_cmd_doc_voicy": "Распознает голосовое сообщение",
@@ -97,6 +96,146 @@ class VoicyMod(loader.Module):
         "too_big": (
             "🫥 <b>Голосовое сообщение слишком большое, я не могу его распознать...</b>"
         ),
+    }
+
+    strings_de = {
+        "converting": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> Sprachnachricht wird"
+            " erkannt...</b>"
+        ),
+        "converted": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji>"
+            " Erkannt:</b>\n<i>{}</i>"
+        ),
+        "voice_not_found": (
+            "<emoji document_id=6041850934756119589>🫠</emoji> <b>Keine Antwort auf"
+            " Voice</b>"
+        ),
+        "autovoice_off": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> Ich werde in diesem"
+            " Chat keine Sprachnachrichten mehr erkennen</b>"
+        ),
+        "autovoice_on": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> Ich werde in diesem"
+            " Chat Sprachnachrichten erkennen</b>"
+        ),
+        "_cmd_doc_voicy": "Erkennt eine Sprachnachricht",
+        "_cmd_doc_autovoice": (
+            "Aktiviert\\Deaktiviert die automatische Erkennung von Sprachnachrichten im"
+            " Chat"
+        ),
+        "_cls_doc": "Erkennt Sprachnachrichten, Audios, Videos und Rundnachrichten",
+        "_cfg_lang": "Sprache für die Spracherkennung",
+        "_cfg_engine": "Erkennungsprogramm",
+        "_cfg_ignore_users": "Benutzer ignorieren",
+        "_cfg_silent": "Stiller Modus - Fehler nicht melden",
+        "error": "🚫 <b>Erkennungsfehler!</b>",
+        "too_big": (
+            "🫥 <b>Sprachnachricht ist zu groß, ich kann sie nicht erkennen...</b>"
+        ),
+    }
+
+    strings_tr = {
+        "converting": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> Sesli mesajı"
+            " tanıyorum...</b>"
+        ),
+        "converted": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji>"
+            " Tanımlandı:</b>\n<i>{}</i>"
+        ),
+        "voice_not_found": (
+            "<emoji document_id=6041850934756119589>🫠</emoji> <b>Sesli mesaja cevap"
+            " yok</b>"
+        ),
+        "autovoice_off": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> Bu sohbetteki sesli"
+            " mesajları artık tanımayacağım</b>"
+        ),
+        "autovoice_on": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> Bu sohbetteki sesli"
+            " mesajları tanıyacağım</b>"
+        ),
+        "_cmd_doc_voicy": "Sesli mesajı tanır",
+        "_cmd_doc_autovoice": (
+            "Sohbetteki sesli mesajların otomatik tanınmasını etkinleştirir\\devre dışı"
+            " bırakır"
+        ),
+        "_cls_doc": "Sesli mesajları, sesleri, videoları ve çevirileri tanır",
+        "_cfg_lang": "Ses tanıma için dil",
+        "_cfg_engine": "Tanıyıcı",
+        "_cfg_ignore_users": "Kullanıcıları yoksay",
+        "_cfg_silent": "Sessiz mod - hataları bildirmeyin",
+        "error": "🚫 <b>Tanıma hatası!</b>",
+        "too_big": "🫥 <b>Sesli mesaj çok büyük, tanıyamıyorum...</b>",
+    }
+
+    strings_uz = {
+        "converting": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> So'zli xabar"
+            " aniqlanmoqda...</b>"
+        ),
+        "converted": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji>"
+            " Aniqlandi:</b>\n<i>{}</i>"
+        ),
+        "voice_not_found": (
+            "<emoji document_id=6041850934756119589>🫠</emoji> <b>So'zli xabarga"
+            " javob yo'q</b>"
+        ),
+        "autovoice_off": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> Bu suhbatda so'zli"
+            " xabarlar aniqlanmaydi</b>"
+        ),
+        "autovoice_on": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> Bu suhbatda so'zli"
+            " xabarlar aniqlanadi</b>"
+        ),
+        "_cmd_doc_voicy": "So'zli xabarni aniqlash",
+        "_cmd_doc_autovoice": (
+            "Suhbatdagi so'zli xabarlar avtomatik aniqlashini yoqish\\o'chirish"
+        ),
+        "_cls_doc": "So'zli xabarlar, audio, videolar va qarishmalarni aniqlaydi",
+        "_cfg_lang": "Tilni aniqlash uchun",
+        "_cfg_engine": "Aniqlash moliyaviyasi",
+        "_cfg_ignore_users": "Foydalanuvchilarni e'tiborsiz qoldirish",
+        "_cfg_silent": "Sessiz rejim - xatolarni bildirmang",
+        "error": "🚫 <b>Aniqlash xatosi!</b>",
+        "too_big": "🫥 <b>So'zli xabar juda katta, aniqlay olmayman...</b>",
+    }
+
+    strings_hi = {
+        "converting": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> वायस संदेश"
+            " पहचान रहा है...</b>"
+        ),
+        "converted": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji>"
+            " पहचान लिया:</b>\n<i>{}</i>"
+        ),
+        "voice_not_found": (
+            "<emoji document_id=6041850934756119589>🫠</emoji> <b>वायस संदेश"
+            " के लिए जवाब नहीं</b>"
+        ),
+        "autovoice_off": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> इस चैट में वायस"
+            " संदेश पहचान नहीं करेंगे</b>"
+        ),
+        "autovoice_on": (
+            "<b><emoji document_id=6041850934756119589>🫠</emoji> इस चैट में वायस"
+            " संदेश पहचान करेंगे</b>"
+        ),
+        "_cmd_doc_voicy": "वायस संदेश पहचान करें",
+        "_cmd_doc_autovoice": (
+            "इस चैट में वायस संदेशों को ऑटोमैटिक पहचानने को सक्षम\\अक्षम करें"
+        ),
+        "_cls_doc": "वायस संदेश, ऑडियो, वीडियो और रैडियो संदेश पहचानता है",
+        "_cfg_lang": "पहचान के लिए भाषा",
+        "_cfg_engine": "पहचानकर्ता",
+        "_cfg_ignore_users": "उपयोगकर्ताओं को नजरअंदाज करें",
+        "_cfg_silent": "शांत मोड - त्रुटियों को सूचित न करें",
+        "error": "🚫 <b>पहचान त्रुटि!</b>",
+        "too_big": "🫥 <b>वायस संदेश बहुत बड़ा है, पहचान नहीं कर सकता...</b>",
     }
 
     def __init__(self):

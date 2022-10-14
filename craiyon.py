@@ -34,6 +34,66 @@ class CrAIyonMod(loader.Module):
         "drawing": "🖌 <b>This is delicious </b><code>{}</code>",
     }
 
+    strings_ru = {
+        "args": "🚫 <b>Не указано описание фотографии</b>",
+        "generating": (
+            "🖌 <b>Рисую запрос </b><code>{}</code><b> через craiyon. Будьте терпеливы,"
+            " это занимает некоторое время</b>"
+        ),
+        "error": "🚫 <b>Я не могу нарисовать </b><code>{}</code>",
+        "drawing": "🖌 <b>Восхитительный </b><code>{}</code>",
+        "_cmd_doc_craiyon": "<описание> - Сгенерировать изображение по описанию с помощью Craiyon AI (DALL-E)",
+        "_cls_doc": "Генерирует изображения по описанию с помощью Craiyon AI (DALL-E)",
+    }
+
+    strings_de = {
+        "args": "🚫 <b>Keine Bildbeschreibung angegeben</b>",
+        "generating": (
+            "🖌 <b>Zeichne Anfrage </b><code>{}</code><b> mit craiyon. Sei geduldig,"
+            " das dauert ein wenig</b>"
+        ),
+        "error": "🚫 <b>Kann nicht zeichnen </b><code>{}</code>",
+        "drawing": "🖌 <b>Das ist lecker </b><code>{}</code>",
+        "_cmd_doc_craiyon": "<Beschreibung> - Generiert ein Bild nach Beschreibung mit Craiyon AI (DALL-E)",
+        "_cls_doc": "Generiert Bilder nach Beschreibung mit Craiyon AI (DALL-E)",
+    }
+
+    strings_hi = {
+        "args": "🚫 <b>कोई फोटो विवरण निर्दिष्ट नहीं किया गया</b>",
+        "generating": (
+            "🖌 <b>craiyon के साथ अनुरोध रचना </b><code>{}</code><b>। धैर्य रखें,"
+            " यह कुछ समय लेता है</b>"
+        ),
+        "error": "🚫 <b>मैं नहीं चित्र बना सकता </b><code>{}</code>",
+        "drawing": "🖌 <b>यह अद्भुत है </b><code>{}</code>",
+        "_cmd_doc_craiyon": "<विवरण> - Craiyon AI (DALL-E) का उपयोग करके विवरण के अनुसार एक छवि उत्पन्न करता है",
+        "_cls_doc": "Craiyon AI (DALL-E) का उपयोग करके विवरण के अनुसार छवियां उत्पन्न करता है",
+    }
+
+    strings_uz = {
+        "args": "🚫 <b>Rasm tavsifi ko'rsatilmadi</b>",
+        "generating": (
+            "🖌 <b>craiyon orqali so'rovni chizish </b><code>{}</code><b>."
+            " Sabr qiling, bu bir necha vaqt oladi</b>"
+        ),
+        "error": "🚫 <b>Rasmni chizib bo'lmadi </b><code>{}</code>",
+        "drawing": "🖌 <b>Bu juda yaxshi </b><code>{}</code>",
+        "_cmd_doc_craiyon": "<tavsif> - Craiyon AI (DALL-E) orqali tavsifga mos rasm yaratadi",
+        "_cls_doc": "Craiyon AI (DALL-E) orqali tavsifga mos rasmlar yaratadi",
+    }
+
+    strings_tr = {
+        "args": "🚫 <b>Fotoğraf açıklaması belirtilmedi</b>",
+        "generating": (
+            "🖌 <b>craiyon ile istek çizimi </b><code>{}</code><b>."
+            " Sabırlı olun, bu biraz zaman alır</b>"
+        ),
+        "error": "🚫 <b>Çizemiyorum </b><code>{}</code>",
+        "drawing": "🖌 <b>Bu lezzetli </b><code>{}</code>",
+        "_cmd_doc_craiyon": "<açıklama> - Craiyon AI (DALL-E) kullanarak açıklamaya göre bir resim oluşturun",
+        "_cls_doc": "Craiyon AI (DALL-E) kullanarak açıklamaya göre resimler oluşturur",
+    }
+
     async def craiyoncmd(self, message: Message):
         """<description> - Generate an image by description using Craiyon AI (DALL-E)"""
         args = utils.get_args_raw(message)
@@ -46,7 +106,7 @@ class CrAIyonMod(loader.Module):
             message=message,
             gif="https://pa1.narvii.com/6074/b2f0163e5dd1ff7ee6582e1e032eb906b25228ac_hq.gif",
             silent=True,
-            reply_markup={"text": "🧑‍🎨 Im the drower", "data": "empty"},
+            reply_markup={"text": "🧑‍🎨 Drawing...", "data": "empty"},
             ttl=24 * 60 * 60,
         )
 

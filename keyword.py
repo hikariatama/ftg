@@ -67,7 +67,106 @@ class KeywordMod(loader.Module):
         "_cls_doc": "Создавай кастомные кейворды с регулярными выражениями и командами",
     }
 
-    async def client_ready(self, client, db):
+    strings_de = {
+        "args": "🚫 <b>Falsche Argumente</b>",
+        "kw_404": '🚫 <b>Keyword "{}" nicht gefunden</b>',
+        "kw_added": "✅ <b>Neuer Keyword:\nTrigger: {}\nNachricht: {}\n{}{}{}{}{}</b>",
+        "kw_removed": '✅ <b>Keyword "{}" entfernt</b>',
+        "kwbl_list": "🦊 <b>Blacklisted Chats:</b>\n{}",
+        "bl_added": "✅ <b>Dieser Chat ist nun blacklisted für Keywords</b>",
+        "bl_removed": "✅ <b>Dieser Chat ist nun whitelisted für Keywords</b>",
+        "sent": "🦊 <b>[Keywords]: Nachricht an {}, getriggert durch {}:\n{}</b>",
+        "kwords": "🦊 <b>Aktuelle Keywords:\n</b>{}",
+        "no_command": (
+            "🚫 <b>Kommando nicht ausgeführt, da die Nachricht einen Reply enthält</b>"
+        ),
+        "_cmd_doc_kword": (
+            "<keyword | kann in Anführungszeichen | & für mehrere Wörter, die in"
+            " Nachricht in irgendeiner Reihenfolge sein müssen> <Nachricht | leer"
+            " lassen um Keyword zu löschen> [-r für exakte Übereinstimmung] [-m für"
+            " automatische Nachrichtenlöschung] [-l für Logging] [-e für reguläre"
+            " Ausdrücke]"
+        ),
+        "_cmd_doc_kwords": "Zeige aktive Keywords",
+        "_cmd_doc_kwbl": "Füge Chat zur Keyword Blacklist hinzu",
+        "_cmd_doc_kwbllist": "Zeige Chats in der Keyword Blacklist",
+        "_cls_doc": "Erstelle eigene Keywords mit regulären Ausdrücken und Befehlen",
+    }
+
+    strings_hi = {
+        "args": "🚫 <b>गलत तर्क</b>",
+        "kw_404": '🚫 <b>"{}" कीवर्ड नहीं मिला</b>',
+        "kw_added": "✅ <b>नया कीवर्ड:\nट्रिगर: {}\nसंदेश: {}\n{}{}{}{}{}</b>",
+        "kw_removed": '✅ <b>"{}" कीवर्ड हटा दिया</b>',
+        "kwbl_list": "🦊 <b>ब्लैकलिस्टेड चैट्स:</b>\n{}",
+        "bl_added": "✅ <b>यह चैट अब कीवर्ड ब्लैकलिस्ट में है</b>",
+        "bl_removed": "✅ <b>यह चैट अब कीवर्ड व्हाइटलिस्ट में है</b>",
+        "sent": "🦊 <b>[कीवर्ड्स]: {} को, {} ने ट्रिगर किया:\n{}</b>",
+        "kwords": "🦊 <b>वर्तमान कीवर्ड्स:\n</b>{}",
+        "no_command": (
+            "🚫 <b>कमांड नहीं चलाया क्योंकि संदेश रिप्लाई का सामना कर रहा है</b>"
+        ),
+        "_cmd_doc_kword": (
+            "<कीवर्ड | उदाहरण के लिए & | & के बाद एक से अधिक शब्द, जो संदेश में किसी भी"
+            " क्रम में होने चाहिए> <संदेश | खाली छोड़ने से कीवर्ड हट जाएगा> [-r बिल्कुल"
+            " मेल के लिए] [-m स्वचालित संदेश हटाने के लिए] [-l लॉगिंग के लिए] [-e"
+            " रेगुलर एक्सप्रेशन के लिए]"
+        ),
+        "_cmd_doc_kwords": "वर्तमान कीवर्ड्स दिखाएं",
+        "_cmd_doc_kwbl": "कीवर्ड ब्लैकलिस्ट में चैट जोड़ें",
+        "_cmd_doc_kwbllist": "कीवर्ड ब्लैकलिस्ट में चैट दिखाएं",
+        "_cls_doc": "रेगुलर एक्सप्रेशन और कमांड के साथ अपने कीवर्ड बनाएं",
+    }
+
+    strings_uz = {
+        "args": "🚫 <b>Noto'g'ri argument</b>",
+        "kw_404": '🚫 <b>"{}" kalit so\'z topilmadi</b>',
+        "kw_added": "✅ <b>Yangi kalit so'z:\nTriger: {}\nXabar: {}\n{}{}{}{}{}</b>",
+        "kw_removed": "✅ <b>\"{}\" kalit so'z o'chirildi</b>",
+        "kwbl_list": "🦊 <b>Qora ro'yxatli guruhlar:</b>\n{}",
+        "bl_added": "✅ <b>Bu guruh kalit so'zlarni qora ro'yxatga qo'shildi</b>",
+        "bl_removed": "✅ <b>Bu guruh kalit so'zlarni oq ro'yxatga qo'shildi</b>",
+        "sent": "🦊 <b>[Kalit so'zlarni]: {} ga, {} guruhga xabar jo'natdi:\n{}</b>",
+        "kwords": "🦊 <b>Hozirgi kalit so'zlarni:\n</b>{}",
+        "no_command": "🚫 <b>Komanda bajarilmadi chunki xabar javob qaytaradi</b>",
+        "_cmd_doc_kword": (
+            "<kalit so'z | & orqali bir nechta so'zlarni | & keyingi bir nechta so'z,"
+            " xabarda biror tartibda bo'lishi kerak> <xabar | bo'sh qoldirish kalit"
+            " so'zni o'chiradi> [-r to'g'ri moslik uchun] [-m avtomatik xabar o'chirish"
+            " uchun] [-l yozuvni qayd etish uchun] [-e regular ifodalar uchun]"
+        ),
+        "_cmd_doc_kwords": "Hozirgi kalit so'zlarni ko'rsatish",
+        "_cmd_doc_kwbl": "Qora ro'yxatga guruh qo'shish",
+        "_cmd_doc_kwbllist": "Qora ro'yxatda guruhlar ro'yxatini ko'rsatish",
+        "_cls_doc": "Regular ifodalarni va buyruqlarni ishlatib kalit so'z yarating",
+    }
+
+    strings_tr = {
+        "args": "🚫 <b>Yanlış argüman</b>",
+        "kw_404": '🚫 <b>"{}" anahtar kelime bulunamadı</b>',
+        "kw_added": "✅ <b>Yeni anahtar kelime:\nTriger: {}\nMesaj: {}\n{}{}{}{}{}</b>",
+        "kw_removed": '✅ <b>"{}" anahtar kelime kaldırıldı</b>',
+        "kwbl_list": "🦊 <b>Kara liste sohbetler:</b>\n{}",
+        "bl_added": "✅ <b>Bu sohbet anahtar kelimeleri kara listeye eklendi</b>",
+        "bl_removed": "✅ <b>Bu sohbet anahtar kelimeleri açık listeye eklendi</b>",
+        "sent": "🦊 <b>[Anahtar Kelimeler]: {}'a, {} sohbetine mesaj gönderdi:\n{}</b>",
+        "kwords": "🦊 <b>Geçerli anahtar kelimeler:\n</b>{}",
+        "no_command": "🚫 <b>Komut yürütülemedi çünkü mesaj yanıt veriyor</b>",
+        "_cmd_doc_kword": (
+            "<anahtar kelime | & ile birden çok sözcük | & sonra birden çok sözcük,"
+            " mesajda herhangi bir sırayla olmalıdır> <mesaj | boş bırakmak anahtar"
+            " kelimeyi kaldırır> [-r tam eşleme için] [-m otomatik mesaj silmek için]"
+            " [-l kayıt için] [-e düzenli ifadeler için]"
+        ),
+        "_cmd_doc_kwords": "Geçerli anahtar kelimeleri göster",
+        "_cmd_doc_kwbl": "Sohbeti kara listeye ekle",
+        "_cmd_doc_kwbllist": "Kara listede sohbetleri göster",
+        "_cls_doc": (
+            "Anahtar kelimeleri oluşturmak için düzenli ifadeleri ve komutları kullanın"
+        ),
+    }
+
+    async def client_ready(self):
         self.keywords = self.get("keywords", {})
         self.bl = self.get("bl", [])
 
@@ -85,7 +184,7 @@ class KeywordMod(loader.Module):
             args = args.replace(" -m", "").replace("-m", "")
 
         if "-l" in args:
-            l = True  # noqa: E741
+            l = True
             args = args.replace(" -l", "").replace("-l", "")
 
         if "-e" in args:

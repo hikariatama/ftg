@@ -57,7 +57,79 @@ class NotesMod(loader.Module):
         "_cls_doc": "Модуль заметок с расширенным функционалом. Папки и категории",
     }
 
-    async def client_ready(self, client, db):
+    strings_de = {
+        "saved": (
+            "💾 <b>Notiz mit dem Namen </b><code>{}</code><b> gespeichert</b>.\nOrdner:"
+            " </b><code>{}</code>.</b>"
+        ),
+        "no_reply": "🚫 <b>Antworte auf den Inhalt der Notiz.</b>",
+        "no_name": "🚫 <b>Gib einen Namen für die Notiz an.</b>",
+        "no_note": "🚫 <b>Notiz nicht gefunden.</b>",
+        "available_notes": "💾 <b>Aktuelle Notizen:</b>\n",
+        "no_notes": "😔 <b>Du hast noch keine Notizen</b>",
+        "deleted": "🙂 <b>Notiz mit dem Namen </b><code>{}</code> <b>gelöscht</b>",
+        "_cmd_doc_hsave": "[Ordner] <Name> - Speichert eine neue Notiz",
+        "_cmd_doc_hget": "<Name> - Zeigt eine Notiz an",
+        "_cmd_doc_hdel": "<Name> - Löscht eine Notiz",
+        "_cmd_doc_hlist": "[Ordner] - Zeigt alle Notizen an",
+        "_cls_doc": "Notizenmodul mit erweiterten Funktionen. Ordner und Kategorien",
+    }
+
+    strings_tr = {
+        "saved": (
+            "💾 <b>Notu adı </b><code>{}</code><b> kaydedildi</b>.\nKlasör:"
+            " </b><code>{}</code>.</b>"
+        ),
+        "no_reply": "🚫 <b>Not içeriğine yanıt verin.</b>",
+        "no_name": "🚫 <b>Bir not adı belirtin.</b>",
+        "no_note": "🚫 <b>Not bulunamadı.</b>",
+        "available_notes": "💾 <b>Mevcut notlar:</b>\n",
+        "no_notes": "😔 <b>Henüz notunuz yok</b>",
+        "deleted": "🙂 <b>Not adı </b><code>{}</code> <b>silindi</b>",
+        "_cmd_doc_hsave": "[Klasör] <Ad> - Yeni bir not kaydedin",
+        "_cmd_doc_hget": "<Ad> - Bir notu göster",
+        "_cmd_doc_hdel": "<Ad> - Bir notu sil",
+        "_cmd_doc_hlist": "[Klasör] - Tüm notları göster",
+        "_cls_doc": "Gelişmiş not modülü. Klasörler ve diğer özellikler",
+    }
+
+    strings_uz = {
+        "saved": (
+            "💾 <b>Qayd nomi </b><code>{}</code><b> saqlandi</b>.\nJild:"
+            " </b><code>{}</code>.</b>"
+        ),
+        "no_reply": "🚫 <b>Qayd tarkibiga javob bering.</b>",
+        "no_name": "🚫 <b>Qayd nomini kiriting.</b>",
+        "no_note": "🚫 <b>Qayd topilmadi.</b>",
+        "available_notes": "💾 <b>Mavjud qaydlar:</b>\n",
+        "no_notes": "😔 <b>Hozircha sizda qayd yo'q</b>",
+        "deleted": "🙂 <b>Qayd nomi </b><code>{}</code> <b>o'chirildi</b>",
+        "_cmd_doc_hsave": "[Jild] <Nomi> - Yangi qayd saqlash",
+        "_cmd_doc_hget": "<Nomi> - Qaydni ko'rsatish",
+        "_cmd_doc_hdel": "<Nomi> - Qaydni o'chirish",
+        "_cmd_doc_hlist": "[Jild] - Barcha qaydlarni ko'rsatish",
+        "_cls_doc": "Kengaytirilgan qayd moduli. Jildlar va kategoriyalar",
+    }
+
+    strings_hi = {
+        "saved": (
+            "💾 <b>नोट का नाम </b><code>{}</code><b> सहेजा गया</b>.\nफ़ोल्डर:"
+            " </b><code>{}</code>.</b>"
+        ),
+        "no_reply": "🚫 <b>नोट की अंतर्दृष्टि पर जवाब दें।</b>",
+        "no_name": "🚫 <b>एक नोट नाम दर्ज करें।</b>",
+        "no_note": "🚫 <b>नोट नहीं मिला।</b>",
+        "available_notes": "💾 <b>उपलब्ध नोट्स:</b>\n",
+        "no_notes": "😔 <b>आपके पास अभी तक कोई नोट नहीं है</b>",
+        "deleted": "🙂 <b>नोट नाम </b><code>{}</code> <b>हटा दिया गया</b>",
+        "_cmd_doc_hsave": "[फ़ोल्डर] <नाम> - एक नया नोट सहेजें",
+        "_cmd_doc_hget": "<नाम> - एक नोट दिखाएं",
+        "_cmd_doc_hdel": "<नाम> - एक नोट हटाएं",
+        "_cmd_doc_hlist": "[फ़ोल्डर] - सभी नोट्स दिखाएं",
+        "_cls_doc": "उन्नत नोट्स मॉड्यूल। फ़ोल्डर और श्रेणियाँ",
+    }
+
+    async def client_ready(self):
         self._notes = self.get("notes", {})
 
     async def hsavecmd(self, message: Message):

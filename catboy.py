@@ -34,8 +34,19 @@ class CatboyMod(loader.Module):
     """Sends cute anime boy pictures"""
 
     strings = {"name": "Catboy"}
+    strings_ru = {"_cls_doc": "Отправляет фотографии милых аниме мальчиков"}
+    strings_de = {"_cls_doc": "Sendet Anime-Katzenjungen-Bilder"}
+    strings_uz = {"_cls_doc": "Anime o'g'irlar rasmlarini jo'natadi"}
+    strings_hi = {"_cls_doc": "एक एनीमे कैटबॉय तस्वीर भेजें"}
+    strings_tr = {"_cls_doc": "Anime kedi erkek resmi gönderir"}
 
-    @loader.command(ru_doc="Показать кошкомальчика")
+    @loader.command(
+        ru_doc="Показать кошкомальчика",
+        de_doc="Zeigt ein Anime-Katzenjungen-Bild",
+        uz_doc="Anime kishi rasmlarini ko'rsatadi",
+        hi_doc="एक एनीमे कैटबॉय तस्वीर दिखाएं",
+        tr_doc="Anime kedi erkek resmi gönderir",
+    )
     async def catboycmd(self, message: Message):
         """Send catboy picture"""
         await self.inline.gallery(
@@ -45,7 +56,13 @@ class CatboyMod(loader.Module):
             preload=5,
         )
 
-    @loader.inline_handler(ru_doc="Показать кошкомальчиков")
+    @loader.inline_handler(
+        ru_doc="Показать кошкомальчиков",
+        de_doc="Zeigt Anime-Katzenjungen-Bilder",
+        uz_doc="Anime kishi rasmlarini ko'rsatadi",
+        hi_doc="एनीमे कैटबॉय तस्वीरें दिखाएं",
+        tr_doc="Anime kedi erkek resimleri gönderir",
+    )
     async def catboy(self, query: InlineQuery):
         """Send Catboys"""
         await self.inline.query_gallery(

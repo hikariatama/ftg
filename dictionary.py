@@ -26,7 +26,7 @@ from .. import loader, utils
 
 logging.getLogger("charset_normalizer").setLevel(logging.ERROR)
 
-headers = {
+HEADERS = {
     "accept": "text/html",
     "user-agent": "Hikka userbot",
 }
@@ -53,6 +53,34 @@ class UrbanDictionaryMod(loader.Module):
         "_cls_doc": "Ищет определения слов в UrbanDictionary",
     }
 
+    strings_de = {
+        "no_args": "🚫 <b>Gib ein Wort ein, um dessen Bedeutung zu finden</b>",
+        "err": "🧞‍♂️ <b>Ich weiß nicht, was </b><code>{}</code><b> bedeutet</b>",
+        "no_page": "🚫 Du kannst nicht zu dieser Seite wechseln",
+        "meaning": "🧞‍♂️ <b><u>{}</u></b>:\n\n<i>{}</i>",
+        "_cmd_doc_mean": "<Wort> - Finde die Bedeutung eines Wortes in UrbanDictionary",
+        "_cls_doc": "Sucht nach Bedeutungen von Wörtern in UrbanDictionary",
+    }
+
+    strings_hi = {
+        "no_args": "🚫 <b>किस शब्द के लिए परिभाषा ढूंढने के लिए निर्दिष्ट करें</b>",
+        "err": "🧞‍♂️ <b>मैं नहीं जानता है कि </b><code>{}</code><b> क्या मतलब है</b>",
+        "no_page": "🚫 आप इस पृष्ठ पर नहीं जा सकते",
+        "meaning": "🧞‍♂️ <b><u>{}</u></b>:\n\n<i>{}</i>",
+        "_cmd_doc_mean": "<शब्द> - उर्बन डिक्शनरी में शब्द का अर्थ ढूंढें",
+        "_cls_doc": "उर्बन डिक्शनरी में शब्दों के अर्थ ढूंढता है",
+    }
+
+    strings_tr = {
+        "no_args": "🚫 <b>Bir kelimenin anlamını bulmak için belirtin</b>",
+        "err": "🧞‍♂️ <b>Bilmiyorum </b><code>{}</code><b> ne demek</b>",
+        "no_page": "🚫 Bu sayfaya geçemezsiniz",
+        "meaning": "🧞‍♂️ <b><u>{}</u></b>:\n\n<i>{}</i>",
+        "_cmd_doc_mean": "<kelime> - UrbanDictionary'de bir kelimenin anlamını bulun",
+        "_cls_doc": "UrbanDictionary'de kelimelerin anlamlarını arar",
+    }
+
+
     async def scrape(self, term: str) -> str:
         term = "".join(
             [
@@ -65,7 +93,7 @@ class UrbanDictionaryMod(loader.Module):
         endpoint = "https://www.urbandictionary.com/define.php?term={}"
         url = endpoint.format(quote_plus(term.lower()))
         async with aiohttp.ClientSession() as session:
-            async with session.request("GET", url, headers=headers) as resp:
+            async with session.request("GET", url, headers=HEADERS) as resp:
                 html = await resp.text()
 
         soup = BeautifulSoup(re.sub(r"<br.*?>", "♠️", html), "html.parser")

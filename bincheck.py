@@ -27,14 +27,54 @@ class BinCheckerMod(loader.Module):
     strings = {
         "name": "BinCheck",
         "args": (
-            "💳 <b>To get bin info, you need to specify Bin of card (first 6 digits)</b>"
+            "<emoji document_id=5765086867154276106>💳</emoji> <b>To get bin info, you"
+            " need to specify Bin of card (first 6 digits)</b>"
         ),
     }
 
     strings_ru = {
-        "args": "💳 <b>Для получения информации БИН укажи первые 6 цифр карты</b>",
+        "args": (
+            "<emoji document_id=5765086867154276106>💳</emoji> <b>Для получения"
+            " информации БИН укажи первые 6 цифр карты</b>"
+        ),
         "_cmd_doc_bincheck": "[bin] - Получить информацию БИН",
         "_cls_doc": "Показать информацию БИН о банковской карте",
+    }
+
+    strings_de = {
+        "args": (
+            "<emoji document_id=5765086867154276106>💳</emoji> <b>Um die Bin-Info zu"
+            " erhalten, musst du die Bin der Karte (erste 6 Ziffern) angeben</b>"
+        ),
+        "_cmd_doc_bincheck": "[bin] - Erhalte Bin-Info",
+        "_cls_doc": "Zeigt Bin-Info über eine Bankkarte an",
+    }
+
+    strings_hi = {
+        "args": (
+            "<emoji document_id=5765086867154276106>💳</emoji> <b>बिन जानकारी प्राप्त"
+            " करने के लिए, आपको कार्ड का बिन (पहले 6 अंक) निर्दिष्ट करना होगा</b>"
+        ),
+        "_cmd_doc_bincheck": "[bin] - बिन जानकारी प्राप्त करें",
+        "_cls_doc": "बैंक कार्ड के बारे में बिन जानकारी दिखाएं",
+    }
+
+    strings_uz = {
+        "args": (
+            "<emoji document_id=5765086867154276106>💳</emoji> <b>Bin haqida ma'lumot"
+            " olish uchun, siz karta bin (birinchi 6 raqam) belgilashingiz kerak</b>"
+        ),
+        "_cmd_doc_bincheck": "[bin] - Bin haqida ma'lumot olish",
+        "_cls_doc": "Bank karta haqida bin ma'lumotini ko'rsatish",
+    }
+
+    strings_tr = {
+        "args": (
+            "<emoji document_id=5765086867154276106>💳</emoji> <b>Bin bilgisi almak"
+            " için, kartın bin (ilk 6 rakam) belirtmeniz gerekir</b>"
+        ),
+        "_cmd_doc_bincheck": "[bin] - Bin bilgisi al",
+        "_cls_doc": "Banka kartı hakkında bin bilgisi göster",
     }
 
     @loader.unrestricted
