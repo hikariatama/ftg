@@ -15,9 +15,9 @@ __version__ = (3, 0, 4)
 # scope: hikka_only
 # scope: hikka_min 1.5.0
 
+import contextlib
 import logging
 import time
-import contextlib
 from typing import Optional
 
 from telethon.tl.functions.contacts import BlockRequest
@@ -56,7 +56,7 @@ class PMBLMod(loader.Module):
             " </b><code>.pmbanlast 5</code>"
         ),
         "banned": (
-            "<emoji document_id=5375414397172717975>😃</emoji> <b>Hey there"
+            "😃 <b>Hey there"
             " •ᴗ•</b>\n<b>Unit «SIGMA»<b>, the <b>guardian</b> of this account. You are"
             " <b>not approved</b>! You can contact my owner <b>in chat</b>, if you need"
             " help.\n<b>I need to ban you in terms of security</b>"
@@ -79,8 +79,8 @@ class PMBLMod(loader.Module):
         ),
         "banned_log": (
             '👮 <b>I banned <a href="tg://user?id={}">{}</a>.</b>\n\n<b>{} Reported'
-            " spam</b>\n<b>{} Deleted dialog</b>\n\n<b><emoji"
-            " document_id=5312526098750252863>🚫</emoji> Message</b>\n<code>{}</code>"
+            " spam</b>\n<b>{} Deleted dialog</b>\n\n<b>"
+            " 📝 Message</b>\n<code>{}</code>"
         ),
         "hello": (
             "🔏 <b>Unit «SIGMA»</b> protects your personal messages from intrusions. It"
@@ -105,7 +105,7 @@ class PMBLMod(loader.Module):
             " </b><code>.pmbanlast 5</code>"
         ),
         "banned": (
-            "<emoji document_id=5375414397172717975>😃</emoji> <b>Добрый день"
+            "😃 <b>Добрый день"
             " •ᴗ•</b>\n<b>Юнит «SIGMA»<b>, <b>защитник</b> этого аккаунта. Вы <b>не"
             " потверждены</b>! Вы можете связаться с моим владельцем <b>в чате</b>,"
             " если нужна помощь.\n<b>Я вынужден заблокировать вас из соображений"
@@ -141,8 +141,8 @@ class PMBLMod(loader.Module):
         ),
         "banned_log": (
             '👮 <b>Я заблокировал <a href="tg://user?id={}">{}</a>.</b>\n\n<b>{} Сообщил'
-            " о спаме</b>\n<b>{} Удалил диалог</b>\n\n<b><emoji"
-            " document_id=5312526098750252863>🚫</emoji> Сообщение</b>\n<code>{}</code>"
+            " о спаме</b>\n<b>{} Удалил диалог</b>\n\n<b>📝"
+            " Сообщение</b>\n<code>{}</code>"
         ),
     }
 
@@ -160,7 +160,7 @@ class PMBLMod(loader.Module):
             " </b><code>.pmbanlast 5</code>"
         ),
         "banned": (
-            "<emoji document_id=5375414397172717975>😃</emoji> <b>Hallo"
+            "😃 <b>Hallo"
             " •ᴗ•</b>\n<b>Einheit «SIGMA»<b>, <b>der Schutz dieses Accounts</b>. Sie"
             " sind <b>nicht autorisiert</b>! Sie können sich an den Besitzer meines"
             " Accounts wenden, wenn Sie Hilfe benötigen.\n<b>Ich bin gezwungen, Sie aus"
@@ -200,8 +200,8 @@ class PMBLMod(loader.Module):
         ),
         "banned_log": (
             '👮 <b>Ich habe <a href="tg://user?id={}">{}</a> geblockt.</b>\n\n<b>{} Hat'
-            " über Spam berichtet</b>\n<b>{} Hat den Dialog gelöscht</b>\n\n<b><emoji"
-            " document_id=5312526098750252863>🚫</emoji> Nachricht</b>\n<code>{}</code>"
+            " über Spam berichtet</b>\n<b>{} Hat den Dialog gelöscht</b>\n\n<b>📝"
+            " Nachricht</b>\n<code>{}</code>"
         ),
     }
 
@@ -219,7 +219,7 @@ class PMBLMod(loader.Module):
             " </b><code>.pmbanlast 5</code>"
         ),
         "banned": (
-            "<emoji document_id=5375414397172717975>😃</emoji> <b>Merhaba"
+            "😃 <b>Merhaba"
             " •ᴗ•</b>\n<b>«SIGMA» birimi</b>, <b>hesabınızın koruması</b>. <b>Yetkili"
             " değilsiniz</b>! Yardım için hesabımın sahibi ile iletişime"
             " geçebilirsiniz.\n<b>Güvenlik nedeniyle sizi zorunlu olarak"
@@ -259,8 +259,7 @@ class PMBLMod(loader.Module):
         ),
         "banned_log": (
             '👮 <b><a href="tg://user?id={}">{}</a> engellendi.</b>\n\n<b>{} Spam rapor'
-            " etti</b>\n<b>{} Sohbeti sildi</b>\n\n<b><emoji"
-            " document_id=5312526098750252863>🚫</emoji> Mesaj</b>\n<code>{}</code>"
+            " etti</b>\n<b>{} Sohbeti sildi</b>\n\n<b>📝 Mesaj</b>\n<code>{}</code>"
         ),
     }
 
@@ -279,7 +278,7 @@ class PMBLMod(loader.Module):
             " </b><code>.pmbanlast 5</code>"
         ),
         "banned": (
-            "<emoji document_id=5375414397172717975>😃</emoji> <b>Salom"
+            "😃 <b>Salom"
             " •ᴗ•</b>\n<b>«SIGMA» birimi</b>, <b>hisobingizni himoya</b>. <b>Ruxsat"
             " berilmaganingiz</b>! Yordam kerak bo'lsa hisobimning egasi bilan"
             " bog'lanishingiz mumkin.\n<b>Xavfsizlik sababli sizni majbur qilishim"
@@ -319,8 +318,8 @@ class PMBLMod(loader.Module):
         ),
         "banned_log": (
             '👮 <b><a href="tg://user?id={}">{}</a> bloklandi.</b>\n\n<b>{} Spam xabar'
-            " berdi</b>\n<b>{} Suhbat o'chirildi</b>\n\n<b><emoji"
-            " document_id=5312526098750252863>🚫</emoji> Xabar</b>\n<code>{}</code>"
+            " berdi</b>\n<b>{} Suhbat o'chirildi</b>\n\n<b>📝"
+            " Xabar</b>\n<code>{}</code>"
         ),
     }
 
@@ -338,7 +337,7 @@ class PMBLMod(loader.Module):
             " </b><code>.pmbanlast 5</code>"
         ),
         "banned": (
-            "<emoji document_id=5375414397172717975>😃</emoji> <b>नमस्ते"
+            "😃 <b>नमस्ते"
             " •ᴗ•</b>\n<b>यूनिट «SIGMA»<b>, <b>इस खाते की सुरक्षा</b>. आप"
             " <b>अनधिकृत</b> हैं! आप मेरे खाते के मालिक को अपनी मदद के लिए या आपको"
             " सहायता की आवश्यकता है तो उसे संपर्क कर सकते हैं।\n<b>मैं आपको सुरक्षा के"

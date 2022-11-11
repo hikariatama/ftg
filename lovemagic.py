@@ -14,12 +14,12 @@
 # scope: hikka_min 1.3.0
 
 import json
+import logging
 import random
 from asyncio import sleep
 from typing import Union
-import logging
-import requests
 
+import requests
 from telethon.tl.types import Message
 
 from .. import loader, utils

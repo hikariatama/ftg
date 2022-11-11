@@ -17,13 +17,13 @@
 __version__ = (2, 0, 2)
 
 import asyncio
-import re
-from typing import Iterable, Optional
 import logging
+import re
 import time
+from typing import Iterable, Optional
 
-from telethon.tl.types import Message
 from russian_names import RussianNames
+from telethon.tl.types import Message
 
 from .. import loader, utils
 

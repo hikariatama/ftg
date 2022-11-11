@@ -18,8 +18,8 @@ __version__ = (2, 0, 3)
 import asyncio
 import time
 
-from telethon.tl.types import Message, Channel
 from telethon.tl.functions.contacts import GetBlockedRequest
+from telethon.tl.types import Channel, Message
 
 from .. import loader, utils
 

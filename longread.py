@@ -15,9 +15,10 @@ __version__ = (1, 0, 2)
 # scope: hikka_only
 # scope: hikka_min 1.2.10
 
+from telethon.tl.types import Message
+
 from .. import loader, utils
 from ..inline.types import InlineCall, InlineQuery
-from telethon.tl.types import Message
 
 
 @loader.tds

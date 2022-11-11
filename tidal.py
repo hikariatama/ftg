@@ -15,11 +15,13 @@
 # requires: tidalapi
 
 import asyncio
+import logging
+
+import tidalapi
+from telethon.tl.types import Message
+
 from .. import loader, utils
 from ..inline.types import InlineCall
-from telethon.tl.types import Message
-import logging
-import tidalapi
 
 logger = logging.getLogger(__name__)
 

@@ -15,9 +15,9 @@ import asyncio
 import contextlib
 import logging
 
-from telethon.tl.types import Message
-from telethon.tl.functions.channels import InviteToChannelRequest
 from aiogram import Bot
+from telethon.tl.functions.channels import InviteToChannelRequest
+from telethon.tl.types import Message
 
 from .. import loader, utils
 from ..inline.types import InlineCall

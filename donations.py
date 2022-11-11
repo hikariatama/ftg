@@ -13,9 +13,11 @@
 # scope: hikka_only
 # scope: hikka_min 1.2.10
 
-from .. import loader, utils
-from telethon.tl.types import Message
 import logging
+
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

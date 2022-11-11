@@ -21,6 +21,7 @@ __version__ = (13, 0, 3)
 
 import abc
 import asyncio
+import contextlib
 import functools
 import imghdr
 import io
@@ -29,10 +30,9 @@ import logging
 import random
 import re
 import time
+import typing
 from math import ceil
 from types import FunctionType
-import typing
-import contextlib
 
 import aiohttp
 import requests
@@ -40,6 +40,7 @@ import websockets
 from aiogram.types import CallbackQuery, ChatPermissions
 from aiogram.utils.exceptions import MessageCantBeDeleted, MessageToDeleteNotFound
 from telethon.errors import ChatAdminRequiredError, UserAdminInvalidError
+from telethon.errors.rpcerrorlist import WebpageCurlFailedError
 from telethon.tl.functions.channels import (
     EditAdminRequest,
     EditBannedRequest,
@@ -61,11 +62,9 @@ from telethon.tl.types import (
     User,
     UserStatusOnline,
 )
-from telethon.errors.rpcerrorlist import WebpageCurlFailedError
 
 from .. import loader, utils
 from ..inline.types import InlineCall, InlineMessage
-
 
 try:
     from PIL import Image, ImageDraw, ImageFont
@@ -1080,6 +1079,10 @@ class HikariChatMod(loader.Module):
             "<emoji document_id=5379568936218009290>👎</emoji> <b>Banned in {}"
             " chat(-s)</b>"
         ),
+        "unbanned_in_n_chats": (
+            "<emoji document_id=5461129450341014019>✋️</emoji> <b>Unbanned in {}"
+            " chat(-s)</b>"
+        ),
         "fmute": (
             '<emoji document_id=5773781976905421370>💼</emoji> <b><a href="{}">{}</a>'
             " muted in federation {} {}\nReason: </b><i>{}</i>\n{}"
@@ -1161,15 +1164,15 @@ class HikariChatMod(loader.Module):
             " federative warns of federation</b>"
         ),
         "cleaning": (
-            "<emoji document_id=5771385342204580039>🫥</emoji> <b>Looking for Deleted"
+            "<emoji document_id=5215493819641895305>🫥</emoji> <b>Looking for Deleted"
             " accounts...</b>"
         ),
         "deleted": (
-            "<emoji document_id=5771385342204580039>🫥</emoji> <b>Removed {} Deleted"
+            "<emoji document_id=5215493819641895305>🫥</emoji> <b>Removed {} Deleted"
             " accounts</b>"
         ),
         "fcleaning": (
-            "<emoji document_id=5771385342204580039>🫥</emoji> <b>Looking for Deleted"
+            "<emoji document_id=5215493819641895305>🫥</emoji> <b>Looking for Deleted"
             " accounts in federation...</b>"
         ),
         "btn_unban": "🔓 Unban (ADM)",
@@ -1581,15 +1584,15 @@ class HikariChatMod(loader.Module):
             " предупреждения в федерации</b>"
         ),
         "cleaning": (
-            "<emoji document_id=5771385342204580039>🫥</emoji> <b>Поиск удаленных"
+            "<emoji document_id=5215493819641895305>🫥</emoji> <b>Поиск удаленных"
             " аккаунтов...</b>"
         ),
         "deleted": (
-            "<emoji document_id=5771385342204580039>🫥</emoji> <b>Удалено {} удаленных"
+            "<emoji document_id=5215493819641895305>🫥</emoji> <b>Удалено {} удаленных"
             " аккаунтов</b>"
         ),
         "fcleaning": (
-            "<emoji document_id=5771385342204580039>🫥</emoji> <b>Поиск удаленных"
+            "<emoji document_id=5215493819641895305>🫥</emoji> <b>Поиск удаленных"
             " аккаунтов в федерации...</b>"
         ),
         "btn_unban": "🔓 Разбанить (админ)",
@@ -2614,21 +2617,20 @@ class HikariChatMod(loader.Module):
             a = args.split()[0]
             if str(a).isdigit():
                 a = int(a)
-            user = (
-                (await self._client.get_entity(reply.sender_id))
-                if reply
-                else (await self._client.get_entity(a))
-            )
+            user = await self._client.get_entity(a)
         except Exception:
-            return False
+            try:
+                user = await self._client.get_entity(reply.sender_id)
+            except Exception:
+                return False
 
-        t = ([_ for _ in args.split() if self.convert_time(_)] or ["0"])[0]
+        t = ([arg for arg in args.split() if self.convert_time(arg)] or ["0"])[0]
         args = args.replace(t, "").replace("  ", " ")
         t = self.convert_time(t)
 
         if not reply:
             try:
-                args = " ".join(args.split(" ")[1:])
+                args = " ".join(args.split()[1:])
             except Exception:
                 pass
 
@@ -2699,22 +2701,26 @@ class HikariChatMod(loader.Module):
                 pass
 
         messages = []
-        from_ids = set()
 
         async for msg in self._client.iter_messages(
             entity=message.peer_id,
             min_id=message.reply_to_msg_id - 1,
             reverse=True,
         ):
-            if from_users and msg.sender_id not in from_users:
-                continue
+            logger.debug(msg)
+            if (not from_users or msg.sender_id in from_users) and (
+                not getattr(message.reply_to, "forum_topic", False)
+                or msg.reply_to
+                and (msg.reply_to.reply_to_top_id or msg.reply_to.reply_to_msg_id)
+                == (
+                    message.reply_to.reply_to_top_id or message.reply_to.reply_to_msg_id
+                )
+            ):
+                messages += [msg.id]
 
-            messages += [msg.id]
-            from_ids.add(msg.sender_id)
-
-            if len(messages) >= 99:
-                await self._client.delete_messages(message.peer_id, messages)
-                messages.clear()
+                if len(messages) >= 99:
+                    await self._client.delete_messages(message.peer_id, messages)
+                    messages.clear()
 
         if messages:
             await self._client.delete_messages(message.peer_id, messages)
@@ -3351,7 +3357,9 @@ class HikariChatMod(loader.Module):
             self.strings("gunban").format(
                 utils.get_entity_url(user),
                 utils.escape_html(get_full_name(user)),
-                self.strings("in_n_chats").format(counter) if silent else chats,
+                self.strings("unbanned_in_n_chats").format(counter)
+                if silent
+                else chats,
             ),
         )
 

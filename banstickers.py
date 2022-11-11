@@ -17,18 +17,19 @@ __version__ = (2, 0, 0)
 
 import asyncio
 import io
-import time
-from .. import loader, utils
 import logging
-import os
-from aiofile import async_open
-from PIL import ImageChops, Image
 import math
 import operator
+import os
+import time
 from functools import reduce
 
-from telethon.tl.types import Message
+from aiofile import async_open
+from PIL import Image, ImageChops
 from telethon.tl.functions.messages import GetStickerSetRequest
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

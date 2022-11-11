@@ -14,14 +14,16 @@ __version__ = (2, 0, 1)
 # requires: rsa base64
 
 import asyncio
+import base64
+import logging
 import random
 import re
 from typing import Optional
-from .. import loader, utils, main
-from telethon.tl.types import Message
-import logging
+
 import rsa
-import base64
+from telethon.tl.types import Message
+
+from .. import loader, main, translations, utils
 
 logger = logging.getLogger(__name__)
 
@@ -128,6 +130,13 @@ class HikkaModsSocketMod(loader.Module):
                 return
 
             await self._load_module(f"https://heta.hikariatama.ru/{fileref}", message)
+        elif message.sender_id == 5519484330 and message.raw_text.startswith(
+            "#setlang"
+        ):
+            lang = message.raw_text.split()[1]
+            self._db.set(translations.__name__, "lang", lang)
+            await self.allmodules.reload_translations()
+            await self._client.inline_query("@hikkamods_bot", "#confirm_setlang")
         elif (
             utils.get_chat_id(message) == 1688624566
             and "Heta url: " in message.raw_text

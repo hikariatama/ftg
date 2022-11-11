@@ -13,6 +13,7 @@
 # scope: hikka_min 1.2.10
 
 from random import randint
+
 from telethon.tl.types import Message
 
 from .. import loader, utils

@@ -1,4 +1,4 @@
-__version__ = (1, 0, 1)
+__version__ = (1, 0, 3)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
@@ -16,6 +16,7 @@ __version__ = (1, 0, 1)
 # requires: spotipy Pillow
 
 import asyncio
+import contextlib
 import functools
 import io
 import logging
@@ -23,15 +24,14 @@ import re
 import time
 import traceback
 from math import ceil
-import contextlib
 from types import FunctionType
 
 import requests
 import spotipy
 from PIL import Image, ImageDraw, ImageFont
-from telethon.tl.types import Message
-from telethon.tl.functions.account import UpdateProfileRequest
 from telethon.errors.rpcerrorlist import FloodWaitError
+from telethon.tl.functions.account import UpdateProfileRequest
+from telethon.tl.types import Message
 
 from .. import loader, utils
 
@@ -335,64 +335,60 @@ class SpotifyMod(loader.Module):
         "_cls_doc": "Spotify uchun asbob. Fikr: @fuccsoc. Tuzilishi: @hikariatama",
     }
 
-    strings_hi = {
+    strings_es = {
         "need_auth": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>इस कार्रवाई को करने से"
-            " पहले </b><code>.sauth</code><b> कमांड चलाएं.</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Para usar este comando,"
+            " primero usa </b><code>.sauth</code><b>.</b>"
         ),
-        "on-repeat": "🔂 <b>पुनः चालू है.</b>",
-        "off-repeat": "🔁 <b>पुनः बंद है.</b>",
-        "skipped": "⏭ <b>गाना छोड़ दिया गया है.</b>",
+        "on-repeat": "🔂 <b>Reproducción en bucle activada.</b>",
+        "off-repeat": "🔁 <b>Reproducción en bucle desactivada.</b>",
+        "skipped": "⏭ <b>Pista saltada.</b>",
         "err": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>कोई त्रुटि हुई। आपने"
-            " सुनने के लिए गाना चलाना चाहते हैं यह सुनिश्चित करें?</b>\n<code>{}</code>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ha ocurrido un error."
+            " ¿Estás seguro de que hay música sonando?</b>\n<code>{}</code>"
         ),
         "already_authed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>पहले से ही प्रमाणित"
-            " है</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ya autorizado</b>"
         ),
         "authed": (
-            "<emoji document_id=6319076999105087378>🎧</emoji> <b>प्रमाणन सफल हुआ</b>"
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Autorizado"
+            " correctamente</b>"
         ),
         "playing": (
-            "<emoji document_id=6319076999105087378>🎧</emoji> <b>चल रहा है...</b>"
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Reproduciendo...</b>"
         ),
-        "back": "🔙 <b>पिछले गाने पर जाया गया</b>",
-        "paused": "⏸ <b>रोक दिया गया है</b>",
+        "back": "🔙 <b>Volviste a la pista anterior</b>",
+        "paused": "⏸ <b>Pausado</b>",
         "deauth": (
-            "<emoji document_id=6037460928423791421>🚪</emoji> <b>प्रमाणन रद्द कर दिया"
-            " गया है</b>"
+            "<emoji document_id=6037460928423791421>🚪</emoji> <b>Autorización"
+            " desactivada</b>"
         ),
-        "restarted": "🔙 <b>गाना पुनः शुरू कर दिया गया है</b>",
+        "restarted": "🔙 <b>Pista reiniciada</b>",
         "liked": (
-            "<emoji document_id=5199727145022134809>❤️</emoji> <b>वर्तमान गाना पसंद"
-            " किया गया है</b>"
+            "<emoji document_id=5199727145022134809>❤️</emoji> <b>Pista actual"
+            " añadida a favoritos</b>"
         ),
         "autobio": (
-            "<emoji document_id=6319076999105087378>🎧</emoji> <b>स्पॉटिफाई ऑटोबायो"
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Spotify Auto Bio"
             " {}</b>"
         ),
-        "404": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>कोई परिणाम नहीं"
-            " मिला</b>"
-        ),
+        "404": "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se encontraron"
+        " resultados</b>",
         "playing_track": (
-            "<emoji document_id=5212941939053175244>🎧</emoji> <b>{} गाना चल रहा है</b>"
+            "<emoji document_id=5212941939053175244>🎧</emoji> <b>{} añadido</b>"
         ),
         "no_music": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>अभी तक कोई गाना चल रहा"
-            " है!</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>¡No hay música"
+            " actualmente!</b>"
         ),
-        "_cmd_doc_sfind": "गाने के बारे में जानकारी प्राप्त करें",
-        "_cmd_doc_sauth": "पहला कदम प्रमाणन के लिए",
-        "_cmd_doc_scode": "दूसरा कदम प्रमाणन के लिए",
-        "_cmd_doc_unauth": "प्रमाणन रद्द करें",
-        "_cmd_doc_sbio": "स्पॉटिफाई ऑटोबायो बनाएं",
-        "_cmd_doc_stokrefresh": "टोकन को रीफ्रेश करें",
-        "_cmd_doc_snow": "वर्तमान गाना कार्ड दिखाएं",
-        "_cls_doc": (
-            "स्पॉटिफाई के लिए एक उपकरण। विचार: @fuccsoc। बनाने के लिए: @hikariatama"
-        ),
+        "_cmd_doc_sfind": "Encuentra información sobre una canción",
+        "_cmd_doc_sauth": "Primer paso para autorizar",
+        "_cmd_doc_scode": "Segundo paso para autorizar",
+        "_cmd_doc_unauth": "Desautorizar",
+        "_cmd_doc_sbio": "Activar Auto Bio de Spotify",
+        "_cmd_doc_stokrefresh": "Actualizar token en segundo plano",
+        "_cmd_doc_snow": "Muestra la tarjeta de la canción actual",
+        "_cls_doc": "Recursos para Spotify. Idea: @fuccsoc. Creado por: @hikariatama",
     }
 
     def __init__(self):
@@ -424,8 +420,8 @@ class SpotifyMod(loader.Module):
                 / current_playback["item"]["duration_ms"]
                 * 100
             )
-            bar_filled = ceil(percentage / 10)
-            bar_empty = 10 - bar_filled
+            bar_filled = ceil(percentage / 10) - 1
+            bar_empty = 10 - bar_filled - 1
             bar = "".join("─" for _ in range(bar_filled)) + "🞆"
             bar += "".join("─" for _ in range(bar_empty))
 
@@ -691,18 +687,18 @@ class SpotifyMod(loader.Module):
         override_text: str = None,
     ):
         name = track.get("name")
-        track_url = track.get("external_urls", {}).get("spotify", None)
         artists = [
             artist["name"] for artist in track.get("artists", []) if "name" in artist
         ]
 
         full_song_name = f"{name} - {', '.join(artists)}"
 
-        url = await self.musicdl.dl(full_song_name)
+        music = await self.musicdl.dl(full_song_name, only_document=True)
 
-        params = {
-            "text": override_text
-            or (
+        await self._client.send_file(
+            message.peer_id,
+            music,
+            caption=override_text or (
                 (
                     f"🗽 <b>{utils.escape_html(full_song_name)}</b>"
                     if artists
@@ -711,34 +707,10 @@ class SpotifyMod(loader.Module):
                 if track
                 else ""
             ),
-            "message": message,
-            "reply_markup": {
-                "text": "🎧 Listen on Spotify",
-                "url": track_url,
-            },
-            "silent": True,
-        }
+        )
 
-        try:
-            assert await self.inline.form(
-                **params,
-                audio=(
-                    {
-                        "url": url or track["preview_url"],
-                        "title": name,
-                        "performer": ", ".join(artists),
-                    }
-                    if url or track["preview_url"]
-                    else {
-                        "url": "https://siasky.net/RAALHGo4TQq8kJidWt5RXGsYs8_0r2tLREY_wvnAllGHSA",
-                        "title": "Preview not available",
-                        "performer": "",
-                        "duration": 6,
-                    }
-                ),
-            )
-        except Exception:
-            await self.inline.form(**params)
+        if message.out:
+            await message.delete()
 
     @error_handler
     @tokenized

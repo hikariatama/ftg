@@ -60,8 +60,7 @@ class EmotionlessMod(loader.Module):
 
     strings_hi = {
         "state": (
-            "<emoji document_id=5314591660192046611>😑</emoji> <b>एमोशनलेस मोड"
-            " {}</b>"
+            "<emoji document_id=5314591660192046611>😑</emoji> <b>एमोशनलेस मोड {}</b>"
         ),
         "on": "चालू",
         "off": "बंद",
@@ -120,7 +119,6 @@ class EmotionlessMod(loader.Module):
 
     @loader.raw_handler(UpdateMessageReactions)
     async def _handler(self, update: UpdateMessageReactions):
-        logger.info(update)
         if (
             not self.get("state", False)
             or not hasattr(update, "reactions")

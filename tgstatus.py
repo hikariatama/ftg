@@ -12,14 +12,16 @@
 # scope: hikka_only
 # scope: hikka_min 1.4.2
 
+import logging
 import time
-from .. import loader, utils
-from telethon.tl.types import Message, MessageEntityCustomEmoji
+
 from telethon.tl.functions.messages import (
     GetCustomEmojiDocumentsRequest,
     GetStickerSetRequest,
 )
-import logging
+from telethon.tl.types import Message, MessageEntityCustomEmoji
+
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

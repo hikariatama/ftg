@@ -17,13 +17,13 @@ __version__ = (2, 0, 1)
 # requires: pydub speechrecognition python-ffmpeg
 
 import asyncio
-import tempfile
-import os
 import logging
+import os
+import tempfile
 
 import speech_recognition as sr
 from pydub import AudioSegment
-from telethon.tl.types import Message, DocumentAttributeVideo
+from telethon.tl.types import DocumentAttributeVideo, Message
 
 from .. import loader, utils
 

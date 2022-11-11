@@ -62,15 +62,17 @@ class StatusesMod(loader.Module):
         "status_not_found": "<b>🚫 Status nicht gefunden</b>",
         "status_set": "<b>✅ Status gesetzt\n</b><code>{}</code>\nBenachrichtigen: {}",
         "pzd_with_args": "<b>🚫 Falsche Argumente</b>",
-        "status_created": "<b>✅ Status {} erstellt\n</b><code>{}</code>\nBenachrichtigen: {}",
+        "status_created": (
+            "<b>✅ Status {} erstellt\n</b><code>{}</code>\nBenachrichtigen: {}"
+        ),
         "status_removed": "<b>✅ Status {} gelöscht</b>",
         "no_status": "<b>🚫 Es ist kein Status aktiv</b>",
         "status_unset": "<b>✅ Status gelöscht</b>",
         "available_statuses": "<b>🦊 Verfügbarer Status:</b>\n\n",
         "_cmd_doc_status": "<short_name> - Setze Status",
         "_cmd_doc_newstatus": (
-            "<short_name> <benachrichtigen|0/1> <text> - Erstelle neuen Status\nBeispiel:"
-            " .newstatus test 1 Hallo!"
+            "<short_name> <benachrichtigen|0/1> <text> - Erstelle neuen"
+            " Status\nBeispiel: .newstatus test 1 Hallo!"
         ),
         "_cmd_doc_delstatus": "<short_name> - Lösche Status",
         "_cmd_doc_unstatus": "Lösche Status",
@@ -82,7 +84,9 @@ class StatusesMod(loader.Module):
         "status_not_found": "<b>🚫 Status topilmadi</b>",
         "status_set": "<b>✅ Status o'rnatildi\n</b><code>{}</code>\nBildirish: {}",
         "pzd_with_args": "<b>🚫 Argumetlarni xato kiritdingiz</b>",
-        "status_created": "<b>✅ Status {} yaratildi\n</b><code>{}</code>\nBildirish: {}",
+        "status_created": (
+            "<b>✅ Status {} yaratildi\n</b><code>{}</code>\nBildirish: {}"
+        ),
         "status_removed": "<b>✅ Status {} o'chirildi</b>",
         "no_status": "<b>🚫 Hozircha aktiv status yo'q</b>",
         "status_unset": "<b>✅ Status o'chirildi</b>",
@@ -102,7 +106,9 @@ class StatusesMod(loader.Module):
         "status_not_found": "<b>🚫 Durum bulunamadı</b>",
         "status_set": "<b>✅ Durum ayarlandı\n</b><code>{}</code>\nBildirim: {}",
         "pzd_with_args": "<b>🚫 Yanlış argümanlar</b>",
-        "status_created": "<b>✅ Durum {} oluşturuldu\n</b><code>{}</code>\nBildirim: {}",
+        "status_created": (
+            "<b>✅ Durum {} oluşturuldu\n</b><code>{}</code>\nBildirim: {}"
+        ),
         "status_removed": "<b>✅ Durum {} kaldırıldı</b>",
         "no_status": "<b>🚫 Şu anda aktif durum yok</b>",
         "status_unset": "<b>✅ Durum kaldırıldı</b>",
@@ -122,7 +128,9 @@ class StatusesMod(loader.Module):
         "status_not_found": "<b>🚫 स्थिति नहीं मिली</b>",
         "status_set": "<b>✅ स्थिति सेट की गई\n</b><code>{}</code>\nसूचित करना: {}",
         "pzd_with_args": "<b>🚫 गलत तर्क</b>",
-        "status_created": "<b>✅ स्थिति {} बनाया गया\n</b><code>{}</code>\nसूचित करना: {}",
+        "status_created": (
+            "<b>✅ स्थिति {} बनाया गया\n</b><code>{}</code>\nसूचित करना: {}"
+        ),
         "status_removed": "<b>✅ स्थिति {} हटाया गया</b>",
         "no_status": "<b>🚫 अभी कोई सक्रिय स्थिति नहीं है</b>",
         "status_unset": "<b>✅ स्थिति हटाया गया</b>",

@@ -11,8 +11,10 @@
 # meta developer: @hikarimods
 
 import random
-from .. import loader
+
 from telethon.tl.types import Message
+
+from .. import loader
 
 
 @loader.tds

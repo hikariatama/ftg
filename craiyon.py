@@ -14,9 +14,11 @@
 # scope: hikka_min 1.2.10
 
 import base64
-from .. import loader, utils
-from telethon.tl.types import Message
+
 import requests
+from telethon.tl.types import Message
+
+from .. import loader, utils
 
 
 @loader.tds
@@ -42,7 +44,10 @@ class CrAIyonMod(loader.Module):
         ),
         "error": "🚫 <b>Я не могу нарисовать </b><code>{}</code>",
         "drawing": "🖌 <b>Восхитительный </b><code>{}</code>",
-        "_cmd_doc_craiyon": "<описание> - Сгенерировать изображение по описанию с помощью Craiyon AI (DALL-E)",
+        "_cmd_doc_craiyon": (
+            "<описание> - Сгенерировать изображение по описанию с помощью Craiyon AI"
+            " (DALL-E)"
+        ),
         "_cls_doc": "Генерирует изображения по описанию с помощью Craiyon AI (DALL-E)",
     }
 
@@ -54,7 +59,10 @@ class CrAIyonMod(loader.Module):
         ),
         "error": "🚫 <b>Kann nicht zeichnen </b><code>{}</code>",
         "drawing": "🖌 <b>Das ist lecker </b><code>{}</code>",
-        "_cmd_doc_craiyon": "<Beschreibung> - Generiert ein Bild nach Beschreibung mit Craiyon AI (DALL-E)",
+        "_cmd_doc_craiyon": (
+            "<Beschreibung> - Generiert ein Bild nach Beschreibung mit Craiyon AI"
+            " (DALL-E)"
+        ),
         "_cls_doc": "Generiert Bilder nach Beschreibung mit Craiyon AI (DALL-E)",
     }
 
@@ -66,8 +74,13 @@ class CrAIyonMod(loader.Module):
         ),
         "error": "🚫 <b>मैं नहीं चित्र बना सकता </b><code>{}</code>",
         "drawing": "🖌 <b>यह अद्भुत है </b><code>{}</code>",
-        "_cmd_doc_craiyon": "<विवरण> - Craiyon AI (DALL-E) का उपयोग करके विवरण के अनुसार एक छवि उत्पन्न करता है",
-        "_cls_doc": "Craiyon AI (DALL-E) का उपयोग करके विवरण के अनुसार छवियां उत्पन्न करता है",
+        "_cmd_doc_craiyon": (
+            "<विवरण> - Craiyon AI (DALL-E) का उपयोग करके विवरण के अनुसार एक छवि उत्पन्न"
+            " करता है"
+        ),
+        "_cls_doc": (
+            "Craiyon AI (DALL-E) का उपयोग करके विवरण के अनुसार छवियां उत्पन्न करता है"
+        ),
     }
 
     strings_uz = {
@@ -78,7 +91,9 @@ class CrAIyonMod(loader.Module):
         ),
         "error": "🚫 <b>Rasmni chizib bo'lmadi </b><code>{}</code>",
         "drawing": "🖌 <b>Bu juda yaxshi </b><code>{}</code>",
-        "_cmd_doc_craiyon": "<tavsif> - Craiyon AI (DALL-E) orqali tavsifga mos rasm yaratadi",
+        "_cmd_doc_craiyon": (
+            "<tavsif> - Craiyon AI (DALL-E) orqali tavsifga mos rasm yaratadi"
+        ),
         "_cls_doc": "Craiyon AI (DALL-E) orqali tavsifga mos rasmlar yaratadi",
     }
 
@@ -90,7 +105,10 @@ class CrAIyonMod(loader.Module):
         ),
         "error": "🚫 <b>Çizemiyorum </b><code>{}</code>",
         "drawing": "🖌 <b>Bu lezzetli </b><code>{}</code>",
-        "_cmd_doc_craiyon": "<açıklama> - Craiyon AI (DALL-E) kullanarak açıklamaya göre bir resim oluşturun",
+        "_cmd_doc_craiyon": (
+            "<açıklama> - Craiyon AI (DALL-E) kullanarak açıklamaya göre bir resim"
+            " oluşturun"
+        ),
         "_cls_doc": "Craiyon AI (DALL-E) kullanarak açıklamaya göre resimler oluşturur",
     }
 

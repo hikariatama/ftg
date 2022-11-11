@@ -16,9 +16,9 @@ __version__ = (2, 0, 1)
 
 import imghdr
 import io
+import os
 import random
 import re
-import os
 
 import requests
 from telethon.errors.rpcerrorlist import YouBlockedUserError

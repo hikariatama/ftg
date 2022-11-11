@@ -22,13 +22,15 @@
 #
 # Where `user` is user on behalf of which the userbot is running
 
-from .. import loader, utils
-from telethon.tl.types import Message
-from ..inline.types import InlineCall
-import subprocess
 import asyncio
 import io
+import subprocess
 from typing import Union
+
+from telethon.tl.types import Message
+
+from .. import loader, utils
+from ..inline.types import InlineCall
 
 
 def human_readable_size(size: float, decimal_places: int = 2) -> str:
@@ -60,7 +62,7 @@ class SystemdMod(loader.Module):
         ),
         "unit_added": (
             "<emoji document_id=5314250708508220914>✅</emoji> <b>Unit"
-            " </b><code>{}</code><b> with name </b><code>{}</code><b> added"
+            " </b><code>{}</code><b> with name </b><code>{}</code><b> added</b>"
         ),
         "unit_removed": (
             "<emoji document_id=5314250708508220914>✅</emoji> <b>Unit"
@@ -108,7 +110,7 @@ class SystemdMod(loader.Module):
         ),
         "unit_added": (
             "<emoji document_id=5314250708508220914>✅</emoji> <b>Юнит"
-            " </b><code>{}</code><b> с именем </b><code>{}</code><b> добавлен"
+            " </b><code>{}</code><b> с именем </b><code>{}</code><b> добавлен</b>"
         ),
         "unit_removed": (
             "<emoji document_id=5314250708508220914>✅</emoji> <b>Юнит"
@@ -162,7 +164,8 @@ class SystemdMod(loader.Module):
         ),
         "unit_added": (
             "<emoji document_id=5314250708508220914>✅</emoji> <b>Einheit"
-            " </b><code>{}</code><b> mit dem Namen </b><code>{}</code><b> hinzugefügt"
+            " </b><code>{}</code><b> mit dem Namen </b><code>{}</code><b>"
+            " hinzugefügt</b>"
         ),
         "unit_removed": (
             "<emoji document_id=5314250708508220914>✅</emoji> <b>Einheit"
@@ -216,7 +219,7 @@ class SystemdMod(loader.Module):
         ),
         "unit_added": (
             "<emoji document_id=5314250708508220914>✅</emoji> <b>इकाई"
-            " </b><code>{}</code><b> नाम </b><code>{}</code><b> के साथ जोड़ा गया"
+            " </b><code>{}</code><b> नाम </b><code>{}</code><b> के साथ जोड़ा गया</b>"
         ),
         "unit_removed": (
             "<emoji document_id=5314250708508220914>✅</emoji> <b>इकाई"
@@ -270,7 +273,7 @@ class SystemdMod(loader.Module):
         ),
         "unit_added": (
             "<emoji document_id=5314250708508220914>✅</emoji> <b>Birlik"
-            " </b><code>{}</code><b> nomi </b><code>{}</code><b> qo'shildi"
+            " </b><code>{}</code><b> nomi </b><code>{}</code><b> qo'shildi</b>"
         ),
         "unit_removed": (
             "<emoji document_id=5314250708508220914>✅</emoji> <b>Birlik"

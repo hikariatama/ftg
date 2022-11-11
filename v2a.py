@@ -15,12 +15,12 @@
 
 import asyncio
 import io
-import os
 import logging
+import os
 import tempfile
 
-from telethon.tl.types import Message, DocumentAttributeAudio
 import telethon.utils as tlutils
+from telethon.tl.types import DocumentAttributeAudio, Message
 
 from .. import loader, utils
 

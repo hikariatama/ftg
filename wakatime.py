@@ -19,8 +19,8 @@ __version__ = (2, 0, 0)
 # scope: hikka_min 1.2.10
 
 import asyncio
-import logging
 import json
+import logging
 
 import aiohttp
 from telethon.errors.rpcerrorlist import FloodWaitError, MessageNotModifiedError

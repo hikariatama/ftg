@@ -13,8 +13,9 @@
 # scope: hikka_min 1.2.10
 
 import os
-import requests
 from random import choice
+
+import requests
 from telethon.tl.types import Message
 
 from .. import loader, utils

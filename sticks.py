@@ -18,19 +18,19 @@ __version__ = (3, 0, 2)
 
 import asyncio
 import io
-import re
 import logging
 import math
 import os
 import random
+import re
 import time
-import requests
-from requests_toolbelt import MultipartEncoder
+
+import emoji
 import grapheme
 import moviepy.editor as mp
-import emoji
-from PIL import Image, ImageChops, ImageFont, ImageDraw
-
+import requests
+from PIL import Image, ImageChops, ImageDraw, ImageFont
+from requests_toolbelt import MultipartEncoder
 from telethon.errors.rpcerrorlist import RPCError
 from telethon.tl.functions.messages import (
     ClearRecentStickersRequest,
@@ -50,7 +50,6 @@ from telethon.utils import get_input_document
 
 from .. import loader, utils
 from ..inline.types import InlineCall
-
 
 # https://gist.github.com/turicas/1455973
 

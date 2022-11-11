@@ -13,14 +13,16 @@
 # scope: hikka_min 1.2.10
 
 import io
+import logging
 import random
 import string
 import time
 from typing import List
-from telethon.tl.types import Message
-import logging
-import requests
 from urllib.parse import quote
+
+import requests
+from telethon.tl.types import Message
+
 from .. import loader, utils
 from ..inline.types import InlineCall
 

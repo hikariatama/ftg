@@ -12,24 +12,20 @@
 
 import asyncio
 import difflib
-import re
 import logging
+import re
+
 import requests
-
 from lxml import etree
-
-from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import BotResponseTimeoutError
+from telethon.tl.types import Message
 
 from .. import loader, utils
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 
-AMOUNT_REGEX = (
-    r"(?:Сheck for |Чек на)(.*?\(.*?\))(?:\.| given to| для| with description.| с"
-    r" описанием.)"
-)
+AMOUNT_REGEX = r"(?:Create check · |Создать чек · )(.*?)(?: ·|$)"
 INVOICE_AMOUNT_REGEX = (
     r"(?:Invoice for |Счёт на)(.*?)(?:\.$| with description.| с описанием.)"
 )
@@ -225,59 +221,6 @@ class Crypto(loader.Module):
         "empty_balance": (
             "<emoji document_id=5370646412243510708>😭</emoji> <b>Nichts auf dem"
             " Konto</b>"
-        ),
-    }
-
-    strings_hi = {
-        "no_args": (
-            "<emoji document_id=6053166094816905153>💀</emoji> <b>आपको आर्गुमेंट्स"
-            " देना होगा</b>"
-        ),
-        "incorrect_args": (
-            "<emoji document_id=6053166094816905153>💀</emoji> <b>गलत आर्गुमेंट्स</b>"
-        ),
-        "insufficient_funds": (
-            "<emoji document_id=5472363448404809929>👛</emoji> <b>अपर्याप्त धन</b>"
-        ),
-        "confirm_check": (
-            "👛 <b>कृपया सुनिश्चित करें कि निम्नलिखित जानकारी सही है:</b>"
-            "\n\n<b>🪙 राशि: {amount}</b>{receiver}{comment}\n\n{balance}"
-        ),
-        "confirm_invoice": (
-            "👛 <b>कृपया सुनिश्चित करें कि निम्नलिखित जानकारी सही है:</b>"
-            "\n\n<b>🪙 राशि: {amount}</b>{comment}\n\n{balance}"
-        ),
-        "check": (
-            "{emoji} <b>{amount} के लिए चेक</b>{receiver}{comment}\n\n<emoji"
-            ' document_id=5188509837201252052>💸</emoji> <b><a href="{link}">भुगतान'
-            "</a></b>"
-        ),
-        "invoice": (
-            "{emoji} <b>{amount} के लिए चालान</b>{comment}\n\n<emoji"
-            ' document_id=5188509837201252052>💸</emoji> <b><a href="{link}">भुगतान'
-            "</a></b>"
-        ),
-        "comment": "\n💬 <b>टिप्पणी: </b><i>{}</i>",
-        "receiver": "\n👤 <b>प्राप्तकर्ता: </b><i>{}</i>",
-        "available": "💰 <b>उपलब्ध: </b><i>{}</i>",
-        "send_check": "👛 चेक भेजें",
-        "send_invoice": "👛 चालान भेजें",
-        "cancel": "🔻 रद्द करना",
-        "wallet": (
-            "<emoji document_id=5472363448404809929>👛</emoji> <b>आपका <a"
-            ' href="{}">CryptoBot</a> बटुआ:</b>\n\n{}'
-        ),
-        "multi-use_invoice": (
-            "<emoji document_id=5472363448404809929>👛</emoji> <b><a"
-            ' href="{url}">एक प्रयोग के लिए बहुत चालान</a></b>'
-        ),
-        "processing_rates": (
-            "<emoji document_id=5213452215527677338>⏳</emoji> <b>मैं बाजार से क्रिप्टो"
-            " को चोरी कर रहा हूं...</b>"
-        ),
-        "exchange_rates": "{emoji} <b>{amount} {name} का दर:</b>\n\n{rates}",
-        "empty_balance": (
-            "<emoji document_id=5370646412243510708>😭</emoji> <b>कोई खाता नहीं</b>"
         ),
     }
 
@@ -514,11 +457,12 @@ class Crypto(loader.Module):
             return
 
         article = query[0].description.strip()
-        if not article.startswith("Сheck") and not article.startswith("Чек"):
+        article_t = query[0].title.strip()
+        if not article.startswith("Check") and not article.startswith("Чек"):
             await utils.answer(message, self.strings("insufficient_funds"))
             return
 
-        amount = re.search(AMOUNT_REGEX, article)[1]
+        amount = re.search(AMOUNT_REGEX, article_t)[1]
         if re.search(RECEIVER_REGEX, article):
             receiver = self.strings("receiver").format(
                 utils.escape_html(re.search(RECEIVER_REGEX, article)[1])

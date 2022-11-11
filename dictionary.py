@@ -80,7 +80,6 @@ class UrbanDictionaryMod(loader.Module):
         "_cls_doc": "UrbanDictionary'de kelimelerin anlamlarını arar",
     }
 
-
     async def scrape(self, term: str) -> str:
         term = "".join(
             [

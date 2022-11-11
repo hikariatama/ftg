@@ -14,14 +14,15 @@
 # scope: hikka_min 1.2.11
 
 import asyncio
+import logging
+import re
 from urllib.parse import quote_plus
+
+import requests
+from telethon.tl.types import Message
+
 from .. import loader, utils
 from ..inline.types import InlineCall
-from telethon.tl.types import Message
-import logging
-import requests
-import re
-
 
 logger = logging.getLogger(__name__)
 

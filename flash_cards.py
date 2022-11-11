@@ -234,7 +234,8 @@ class FlashCardsMod(loader.Module):
         "deck_created": "#Deck <code>#{}</code> <b>{}</b> erfolgreich erstellt!",
         "deck_removed": "<b>🚫 Deck entfernt</b>",
         "save_deck_no_reply": (
-            "<b>🚫 Dieser Befehl sollte in Antwort auf eine Nachricht mit Deck-Elementen verwendet werden.</b>"
+            "<b>🚫 Dieser Befehl sollte in Antwort auf eine Nachricht mit Deck-Elementen"
+            " verwendet werden.</b>"
         ),
         "deck_saved": "✅ <b>Deck gespeichert!</b>",
         "generating_page": "<b>⚙️ Seite wird generiert, bitte warten ...</b>",
@@ -254,9 +255,7 @@ class FlashCardsMod(loader.Module):
         "no_deck_name": "<b>Deck adı belirtmedin</b>",
         "deck_created": "#Deck <code>#{}</code> <b>{}</b> başarıyla oluşturuldu!",
         "deck_removed": "<b>🚫 Deck kaldırıldı</b>",
-        "save_deck_no_reply": (
-            "<b>🚫 Bu komut, deck öğeleriyle yanıtlanmalıdır.</b>"
-        ),
+        "save_deck_no_reply": "<b>🚫 Bu komut, deck öğeleriyle yanıtlanmalıdır.</b>",
         "deck_saved": "✅ <b>Deck kaydedildi!</b>",
         "generating_page": "<b>⚙️ Sayfa oluşturuluyor, lütfen bekleyin ...</b>",
         "offline_testing": "<b>📖 {} deckine dayalı çevrimdışı test</b>",
@@ -279,7 +278,9 @@ class FlashCardsMod(loader.Module):
             "<b>🚫 यह कमांड डेक आइटम के साथ उत्तर देने के लिए उपयोग किया जाना चाहिए।</b>"
         ),
         "deck_saved": "✅ <b>डेक सहेज लिया गया!</b>",
-        "generating_page": "<b>⚙️ पेज उत्पन्न किया जा रहा है, कृपया प्रतीक्षा करें ...</b>",
+        "generating_page": (
+            "<b>⚙️ पेज उत्पन्न किया जा रहा है, कृपया प्रतीक्षा करें ...</b>"
+        ),
         "offline_testing": "<b>📖 {} डेक पर आधारित ऑफ़लाइन परीक्षण</b>",
         "_cmd_doc_newdeck": "<नाम> - एक नया डेक बनाएं",
         "_cmd_doc_decks": "डेक दिखाएं",
@@ -366,9 +367,7 @@ class FlashCardsMod(loader.Module):
             int_args = False
 
         if int(int_args) < 1000:
-            args = self.get_deck_from_reply(
-                await message.get_reply_message(), int_args
-            )
+            args = self.get_deck_from_reply(await message.get_reply_message(), int_args)
 
         if not args or args not in self.decks:
             await utils.answer(message, self.strings("deck_not_found"))
