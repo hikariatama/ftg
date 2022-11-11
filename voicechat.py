@@ -18,32 +18,30 @@ __version__ = (2, 0, 0)
 import asyncio
 import atexit
 import contextlib
+import logging
 import os
 import re
-import tempfile
-import logging
 import shutil
+import tempfile
 
-from telethon.tl.types import Message, DocumentAttributeFilename
-from telethon.tl.functions.phone import CreateGroupCallRequest
-
-from pytgcalls import PyTgCalls, types, StreamType
-from pytgcalls.exceptions import NoActiveGroupCall, AlreadyJoinedError
+from pytgcalls import PyTgCalls, StreamType, types
 from pytgcalls.binding import Binding
 from pytgcalls.environment import Environment
+from pytgcalls.exceptions import AlreadyJoinedError, NoActiveGroupCall
 from pytgcalls.handlers import HandlersHolder
+from pytgcalls.methods import Methods
+from pytgcalls.mtproto import MtProtoClient
+from pytgcalls.scaffold import Scaffold
 from pytgcalls.types import Cache
 from pytgcalls.types.call_holder import CallHolder
 from pytgcalls.types.update_solver import UpdateSolver
-from pytgcalls.methods import Methods
-from pytgcalls.scaffold import Scaffold
-from pytgcalls.mtproto import MtProtoClient
+from telethon.tl.functions.phone import CreateGroupCallRequest
+from telethon.tl.types import DocumentAttributeFilename, Message
+from youtube_dl import YoutubeDL
 
 from .. import loader, utils
 from ..inline.types import InlineCall
 from ..tl_cache import CustomTelegramClient
-
-from youtube_dl import YoutubeDL
 
 logging.getLogger("pytgcalls").setLevel(logging.ERROR)
 
@@ -113,7 +111,9 @@ class VoiceChatMod(loader.Module):
         "next": "➡️ Nächster",
         "stopped": "🚨 <b>Gestoppt</b>",
         "stop": "🚨 Stoppen",
-        "choose_delete": "♻️ <b>Wähle einen Eintrag aus der Warteschlange zum Löschen</b>",
+        "choose_delete": (
+            "♻️ <b>Wähle einen Eintrag aus der Warteschlange zum Löschen</b>"
+        ),
     }
 
     strings_tr = {
@@ -195,6 +195,10 @@ class VoiceChatMod(loader.Module):
         )
 
     async def client_ready(self, client, db):
+        raise loader.LoadError(
+            "For the sake of security, this module is temporarily disabled for loading."
+            " See https://t.me/hikari_life/80 for more details"
+        )
         # Monkeypatch pytgcalls MtProtoClient to support hikka's custom one
 
         class HikkaTLClient(MtProtoClient):
@@ -323,11 +327,21 @@ class VoiceChatMod(loader.Module):
         return filename
 
     @loader.command(
-        ru_doc="<ответ на песню или ее имя> - Добавить песню в очередь прослушивания чата",
-        de_doc="<auf eine Musik oder ihren Namen antworten> - Fügen Sie eine Musik in die Warteschlange für die Wiedergabe im Chat hinzu",
+        ru_doc=(
+            "<ответ на песню или ее имя> - Добавить песню в очередь прослушивания чата"
+        ),
+        de_doc=(
+            "<auf eine Musik oder ihren Namen antworten> - Fügen Sie eine Musik in die"
+            " Warteschlange für die Wiedergabe im Chat hinzu"
+        ),
         tr_doc="<şarkıya veya adına yanıt> - Sohbette dinleme sırasına şarkı ekleyin",
-        hi_doc="<एक गाने या उसके नाम पर उत्तर> - चैट में प्लेबैक के लिए गाने को लंबित करने के लिए गाने को लंबित करें",
-        uz_doc="<musiqaga yoki uning nomiga javob> - Chatda o'qish uchun musiqani qo'shing",
+        hi_doc=(
+            "<एक गाने या उसके नाम पर उत्तर> - चैट में प्लेबैक के लिए गाने को लंबित करने"
+            " के लिए गाने को लंबित करें"
+        ),
+        uz_doc=(
+            "<musiqaga yoki uning nomiga javob> - Chatda o'qish uchun musiqani qo'shing"
+        ),
     )
     async def qadd(self, message: Message):
         """<reply to song or its name> - Add song to chat's voicechat queue"""
@@ -372,10 +386,21 @@ class VoiceChatMod(loader.Module):
 
     @loader.command(
         ru_doc="<ответ на видео или ссылка на YouTube> - Добавить видео в очередь чата",
-        de_doc="<auf ein Video oder einen YouTube-Link antworten> - Fügen Sie ein Video in die Warteschlange des Chats ein",
-        tr_doc="<bir videoya veya YouTube bağlantısına yanıt> - Bir videoyu sohbet sırasına ekleyin",
-        hi_doc="<एक वीडियो या YouTube लिंक पर उत्तर> - चैट की लंबित को एक वीडियो जोड़ें",
-        uz_doc="<videoga yoki YouTube havolasiga javob> - Chatni qo'shish uchun video qo'shing",
+        de_doc=(
+            "<auf ein Video oder einen YouTube-Link antworten> - Fügen Sie ein Video in"
+            " die Warteschlange des Chats ein"
+        ),
+        tr_doc=(
+            "<bir videoya veya YouTube bağlantısına yanıt> - Bir videoyu sohbet"
+            " sırasına ekleyin"
+        ),
+        hi_doc=(
+            "<एक वीडियो या YouTube लिंक पर उत्तर> - चैट की लंबित को एक वीडियो जोड़ें"
+        ),
+        uz_doc=(
+            "<videoga yoki YouTube havolasiga javob> - Chatni qo'shish uchun video"
+            " qo'shing"
+        ),
     )
     async def qaddv(self, message: Message):
         """<reply to video or yt link> - Add video to chat's voicechat queue"""
