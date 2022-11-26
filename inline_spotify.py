@@ -1,5 +1,4 @@
-# scope: hikka_min 1.2.10
-__version__ = (2, 0, 1)
+__version__ = (2, 1, 1)
 
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
@@ -14,6 +13,7 @@ __version__ = (2, 0, 1)
 # meta developer: @hikarimods
 # scope: inline
 # scope: hikka_only
+# scope: hikka_min 1.5.3
 
 import asyncio
 import logging
@@ -23,7 +23,7 @@ from typing import Union
 
 from telethon.tl.types import Message
 
-from .. import loader
+from .. import loader, utils
 from ..inline.types import InlineCall, InlineMessage
 
 logger = logging.getLogger(__name__)
@@ -58,6 +58,8 @@ class InlineSpotifyMod(loader.Module):
         "name": "InlineSpotify",
         "input": "🎧 Enter the track name",
         "search": "🔎 Search",
+        "listening_to": "I'm listening to",
+        "download": "📥 Download",
     }
 
     strings_ru = {
@@ -69,21 +71,102 @@ class InlineSpotifyMod(loader.Module):
         "_cls_doc": (
             "Дополнение для модуля SpotifyNow, позволяющее вызвать интерактивный плеер."
         ),
+        "listening_to": "Сейчас я слушаю",
+        "download": "📥 Скачать",
     }
 
-    async def _reload_sp(self, once=False):
-        while True:
-            for mod in self.allmodules.modules:
-                if mod.strings("name") == "SpotifyNow":
-                    self.sp = mod.sp
-                    break
+    strings_it = {
+        "input": "🎧 Inserisci il nome della traccia",
+        "search": "🔎 Cerca",
+        "_cmd_doc_splayer": (
+            "Invia un player Spotify interattivo (attivo per 5 minuti!)"
+        ),
+        "_cls_doc": (
+            "Estensione per il modulo SpotifyNow, che consente di inviare un player"
+            " interattivo."
+        ),
+        "listening_to": "Sto ascoltando",
+        "download": "📥 Scarica",
+    }
 
+    strings_es = {
+        "input": "🎧 Introduzca el nombre de la pista",
+        "search": "🔎 Buscar",
+        "_cmd_doc_splayer": (
+            "Envía un reproductor de Spotify interactivo (¡activo durante 5 minutos!)"
+        ),
+        "_cls_doc": (
+            "Extensión para el módulo SpotifyNow, que permite enviar un reproductor"
+            " interactivo."
+        ),
+        "listening_to": "Estoy escuchando",
+        "download": "📥 Descargar",
+    }
+
+    strings_uz = {
+        "input": "🎧 Ishora nomini kiriting",
+        "search": "🔎 Qidirish",
+        "_cmd_doc_splayer": (
+            "Qo'llab-quvvatlash uchun Spotify interaktiv oynasini yuboring (5 daqiqada"
+            " faol!)"
+        ),
+        "_cls_doc": (
+            "SpotifyNow moduli uchun kengaytma, interaktiv oynani yuborish mumkin."
+        ),
+        "listening_to": "Meni eshitib turaman",
+        "download": "📥 Yuklab oling",
+    }
+
+    strings_tr = {
+        "input": "🎧 Parçanın adını girin",
+        "search": "🔎 Ara",
+        "_cmd_doc_splayer": (
+            "Etkileşimli bir Spotify oynatıcı gönderir (5 dakika boyunca etkin!)"
+        ),
+        "_cls_doc": (
+            "SpotifyNow modülü eklentisi, etkileşimli bir oynatıcı göndermenizi sağlar."
+        ),
+        "listening_to": "Şu anda dinliyorum",
+        "download": "📥 İndir",
+    }
+
+    strings_kk = {
+        "input": "🎧 Тақырып атауын енгізіңіз",
+        "search": "🔎 іздеу",
+        "_cmd_doc_splayer": (
+            "Spotify интерактивті ойынды жіберіңіз (5 минутта белсенді!)"
+        ),
+        "_cls_doc": (
+            "SpotifyNow модулі қосымшасы, интерактивті ойынды жіберуге мүмкіндік"
+            " береді."
+        ),
+        "listening_to": "Ағымда маңызды болатындыңызды көрудіңіз керек",
+        "download": "📥 Жүктеу",
+    }
+
+    strings_de = {
+        "input": "🎧 Geben Sie den Namen des Tracks ein",
+        "search": "🔎 Suche",
+        "_cmd_doc_splayer": (
+            "Sendet einen interaktiven Spotify-Player (aktiv für 5 Minuten!)"
+        ),
+        "_cls_doc": (
+            "Erweiterung für das SpotifyNow-Modul, das es ermöglicht, einen"
+            " interaktiven Player zu senden."
+        ),
+        "listening_to": "Ich höre zu",
+        "download": "📥 Herunterladen",
+    }
+
+    async def _reload_sp(self, once: bool = False):
+        while True:
+            self.sp = getattr(self.lookup("SpotifyMod"), "sp", None)
             if once:
                 break
 
             await asyncio.sleep(5)
 
-    async def client_ready(self, client, db):
+    async def client_ready(self):
         self.sp = None
 
         self._tasks = [asyncio.ensure_future(self._reload_sp())]
@@ -97,21 +180,18 @@ class InlineSpotifyMod(loader.Module):
 
     async def inline_close(self, call: InlineCall):
         if any(
-            call.form["id"] == getattr(i, "unit_id", None) for i in self._active_forms
+            call.form.get("uid") == getattr(i, "unit_id", None)
+            for i in self._active_forms
         ):
             self._active_forms.remove(
                 next(
                     i
                     for i in self._active_forms
-                    if call.form["id"] == getattr(i, "unit_id", None)
+                    if call.form.get("uid") == getattr(i, "unit_id", None)
                 )
             )
 
         await call.delete()
-
-    @staticmethod
-    async def _empty(self, *args, **kwargs):
-        ...
 
     async def sp_previous(self, call: InlineCall):
         self.sp.previous_track()
@@ -186,6 +266,8 @@ class InlineSpotifyMod(loader.Module):
                     track = ""
                     track_id = ""
 
+                full_name = f"{', '.join(artists)} - {track}"
+
                 keyboard = [
                     [
                         {"text": "🔁", "callback": self.sp_repeat, "args": (False,)}
@@ -210,14 +292,18 @@ class InlineSpotifyMod(loader.Module):
                             "input": self.strings("input"),
                             "handler": self.sp_play_track,
                         },
+                        {
+                            "text": self.strings("download"),
+                            "callback": self._download,
+                            "args": (full_name,),
+                        },
                         {"text": "🔗 Link", "url": f"https://song.link/s/{track_id}"},
                     ],
                     [{"text": "🚫 Close", "callback": self.inline_close}],
                 ]
 
                 text = (
-                    f"🎧 <b>{', '.join(artists)} -"
-                    f" {track}</b>\n<code>{create_bar(pb)}</code><a"
+                    f"🎧 <b>{self.strings('listening_to')} {full_name}</b>\n<code>{create_bar(pb)}</code><a"
                     f" href='https://song.link/s/{track_id}'>\u206f</a>"
                 )
 
@@ -234,13 +320,29 @@ class InlineSpotifyMod(loader.Module):
         except Exception:
             logger.exception("BRUH")
 
-    async def splayercmd(self, message: Message):
+    async def _download(self, call: InlineCall, track: str):
+        await call.answer(self.strings("download"))
+        await self.allmodules.commands["sfind"](
+            await call.form["caller"].reply(
+                f"<code>{self.get_prefix()}sfind {utils.escape_html(track)}</code>"
+            )
+        )
+
+    @loader.command(
+        ru_doc="Отправляет интерактивный плеер Spotify (активен в течение 5 минут!)",
+        it_doc="Invia un player interattivo di Spotify (attivo per 5 minuti!)",
+        de_doc="Sendet einen interaktiven Spotify-Player (aktiv für 5 Minuten!)",
+        tr_doc="Etkin Spotify oynatıcı gönderir (5 dakika boyunca aktif!)",
+        uz_doc="Faol Spotify oynatuvchisini yuboradi (5 daqiqada aktiv!)",
+        es_doc=(
+            "Envía un reproductor interactivo de Spotify (activo durante 5 minutos!)"
+        ),
+        kk_doc="Интерактивті Spotify ойындысын жібереді (5 минутта актив!)",
+    )
+    async def splayer(self, message: Message):
         """Send interactive Spotify player (active only for 5 minutes!)"""
         form = await self.inline.form(
-            "<b>🐻 Bear with us, while player is loading...</b>",
-            message=message,
-            reply_markup=[[{"text": "Loading", "callback": self._empty}]],
-            ttl=10 * 60,
+            "<b>🐻 Bear with us, while player is loading...</b>", message=message
         )
 
         self._active_forms += [form]

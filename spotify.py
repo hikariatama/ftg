@@ -57,9 +57,16 @@ class SpotifyMod(loader.Module):
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Call"
             " </b><code>.sauth</code><b> before using this action.</b>"
         ),
-        "on-repeat": "🔂 <b>Set on-repeat.</b>",
-        "off-repeat": "🔁 <b>Stopped track repeat.</b>",
-        "skipped": "⏭ <b>Skipped track.</b>",
+        "on-repeat": (
+            "<emoji document_id=5469741319330996757>💫</emoji> <b>Set on-repeat.</b>"
+        ),
+        "off-repeat": (
+            "<emoji document_id=5472354553527541051>✋</emoji> <b>Stopped track"
+            " repeat.</b>"
+        ),
+        "skipped": (
+            "<emoji document_id=5471978009449731768>👉</emoji> <b>Skipped track.</b>"
+        ),
         "err": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Error occurred. Make"
             " sure the track is playing!</b>\n<code>{}</code>"
@@ -72,12 +79,18 @@ class SpotifyMod(loader.Module):
             "<emoji document_id=6319076999105087378>🎧</emoji> <b>Auth successful</b>"
         ),
         "playing": "<emoji document_id=6319076999105087378>🎧</emoji> <b>Playing...</b>",
-        "back": "🔙 <b>Switched to previous track</b>",
-        "paused": "⏸ <b>Pause</b>",
+        "back": (
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Switched to previous"
+            " track</b>"
+        ),
+        "paused": "<emoji document_id=5469904794376217131>🤚</emoji> <b>Pause</b>",
         "deauth": (
             "<emoji document_id=6037460928423791421>🚪</emoji> <b>Unauthentificated</b>"
         ),
-        "restarted": "🔙 <b>Playing track from the beginning</b>",
+        "restarted": (
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Playing track from the"
+            " beginning</b>"
+        ),
         "auth": (
             '<emoji document_id=5472308992514464048>🔐</emoji> <a href="{}">Proceed'
             " here</a>, approve request, then <code>.scode https://...</code> with"
@@ -101,6 +114,10 @@ class SpotifyMod(loader.Module):
         "searching": (
             "<emoji document_id=5188311512791393083>🔎</emoji> <b>Searching...</b>"
         ),
+        "currently_on": "Currently listening on",
+        "playlist": "Playlist",
+        "owner": "Owner",
+        "quality": "Quality",
     }
 
     strings_ru = {
@@ -108,9 +125,17 @@ class SpotifyMod(loader.Module):
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Выполни"
             " </b><code>.sauth</code><b> перед выполнением этого действия.</b>"
         ),
-        "on-repeat": "🔂 <b>Повторение включено.</b>",
-        "off-repeat": "🔁 <b>Повторение выключено.</b>",
-        "skipped": "⏭ <b>Трек переключен.</b>",
+        "on-repeat": (
+            "<emoji document_id=5469741319330996757>💫</emoji> <b>Повторение"
+            " включено.</b>"
+        ),
+        "off-repeat": (
+            "<emoji document_id=5472354553527541051>✋</emoji> <b>Повторение"
+            " выключено.</b>"
+        ),
+        "skipped": (
+            "<emoji document_id=5471978009449731768>👉</emoji> <b>Трек переключен.</b>"
+        ),
         "err": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Произошла ошибка."
             " Убедитесь, что музыка играет!</b>\n<code>{}</code>"
@@ -123,13 +148,17 @@ class SpotifyMod(loader.Module):
             " аутентификация</b>"
         ),
         "playing": "<emoji document_id=6319076999105087378>🎧</emoji> <b>Играю...</b>",
-        "back": "🔙 <b>Переключил назад</b>",
-        "paused": "⏸ <b>Пауза</b>",
+        "back": (
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Переключил назад</b>"
+        ),
+        "paused": "<emoji document_id=5469904794376217131>🤚</emoji> <b>Пауза</b>",
         "deauth": (
             "<emoji document_id=6037460928423791421>🚪</emoji> <b>Авторизация"
             " отменена</b>"
         ),
-        "restarted": "🔙 <b>Начал трек сначала</b>",
+        "restarted": (
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Начал трек сначала</b>"
+        ),
         "liked": (
             '<emoji document_id=5199727145022134809>❤️</emoji> <b>Поставил "Мне'
             ' нравится" текущему треку</b>'
@@ -158,6 +187,10 @@ class SpotifyMod(loader.Module):
         "_cls_doc": (
             "Тулкит для Spotify. Автор идеи: @fuccsoc. Реализация: @hikariatama"
         ),
+        "currently_on": "Сейчас слушаю на",
+        "playlist": "Плейлист",
+        "owner": "Владелец",
+        "quality": "Качество",
     }
 
     strings_de = {
@@ -165,9 +198,18 @@ class SpotifyMod(loader.Module):
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Führe"
             " </b><code>.sauth</code><b> aus, bevor du diese Aktion ausführst.</b>"
         ),
-        "on-repeat": "🔂 <b>Wiederholung aktiviert.</b>",
-        "off-repeat": "🔁 <b>Wiederholung deaktiviert.</b>",
-        "skipped": "⏭ <b>Track übersprungen.</b>",
+        "on-repeat": (
+            "<emoji document_id=5469741319330996757>💫</emoji> <b>Wiederholung"
+            " aktiviert.</b>"
+        ),
+        "off-repeat": (
+            "<emoji document_id=5472354553527541051>✋</emoji> <b>Wiederholung"
+            " deaktiviert.</b>"
+        ),
+        "skipped": (
+            "<emoji document_id=5471978009449731768>👉</emoji> <b>Track"
+            " übersprungen.</b>"
+        ),
         "err": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ein Fehler ist"
             " aufgetreten. Stelle sicher, dass eine Musik abgespielt"
@@ -184,13 +226,19 @@ class SpotifyMod(loader.Module):
         "playing": (
             "<emoji document_id=6319076999105087378>🎧</emoji> <b>Spielt ab...</b>"
         ),
-        "back": "🔙 <b>Zum vorherigen Track gewechselt</b>",
-        "paused": "⏸ <b>Pausiert</b>",
+        "back": (
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Zum vorherigen Track"
+            " gewechselt</b>"
+        ),
+        "paused": "<emoji document_id=5469904794376217131>🤚</emoji> <b>Pausiert</b>",
         "deauth": (
             "<emoji document_id=6037460928423791421>🚪</emoji> <b>Authentifizierung"
             " aufgehoben</b>"
         ),
-        "restarted": "🔙 <b>Track von vorne gestartet</b>",
+        "restarted": (
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Track von vorne"
+            " gestartet</b>"
+        ),
         "liked": (
             "<emoji document_id=5199727145022134809>❤️</emoji> <b>Der aktuelle Track"
             " wurde geliked</b>"
@@ -219,6 +267,10 @@ class SpotifyMod(loader.Module):
         "_cls_doc": (
             "Toolkit für Spotify. Idee von: @fuccsoc. Implementierung von: @hikariatama"
         ),
+        "currently_on": "Aktuell auf",
+        "playlist": "Wiedergabeliste",
+        "owner": "Besitzer",
+        "quality": "Qualität",
     }
 
     strings_tr = {
@@ -226,9 +278,15 @@ class SpotifyMod(loader.Module):
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu eylemi"
             " gerçekleştirmeden önce </b><code>.sauth</code><b> komutunu kullanın.</b>"
         ),
-        "on-repeat": "🔂 <b>Tekrar açık.</b>",
-        "off-repeat": "🔁 <b>Tekrar kapalı.</b>",
-        "skipped": "⏭ <b>Şarkı atlandı.</b>",
+        "on-repeat": (
+            "<emoji document_id=5469741319330996757>💫</emoji> <b>Tekrar açık.</b>"
+        ),
+        "off-repeat": (
+            "<emoji document_id=5472354553527541051>✋</emoji> <b>Tekrar kapalı.</b>"
+        ),
+        "skipped": (
+            "<emoji document_id=5471978009449731768>👉</emoji> <b>Şarkı atlandı.</b>"
+        ),
         "err": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bir hata oluştu. Müzik"
             " çalmak istediğinizden emin olun!</b>\n<code>{}</code>"
@@ -244,13 +302,21 @@ class SpotifyMod(loader.Module):
         "playing": (
             "<emoji document_id=6319076999105087378>🎧</emoji> <b>Oynatılıyor...</b>"
         ),
-        "back": "🔙 <b>Önceki şarkıya geçildi</b>",
-        "paused": "⏸ <b>Duraklatıldı</b>",
+        "back": (
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Önceki şarkıya"
+            " geçildi</b>"
+        ),
+        "paused": (
+            "<emoji document_id=5469904794376217131>🤚</emoji> <b>Duraklatıldı</b>"
+        ),
         "deauth": (
             "<emoji document_id=6037460928423791421>🚪</emoji> <b>Yetkilendirme iptal"
             " edildi</b>"
         ),
-        "restarted": "🔙 <b>Şarkı tekrar başlatıldı</b>",
+        "restarted": (
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Şarkı tekrar"
+            " başlatıldı</b>"
+        ),
         "liked": (
             "<emoji document_id=5199727145022134809>❤️</emoji> <b>Geçerli şarkı"
             " beğenildi</b>"
@@ -275,6 +341,10 @@ class SpotifyMod(loader.Module):
         "_cmd_doc_stokrefresh": "Zorla token yenile",
         "_cmd_doc_snow": "Geçerli şarkı kartını göster",
         "_cls_doc": "Spotify için bir araç. Fikir: @fuccsoc. Uygulama: @hikariatama",
+        "currently_on": "Şu anda dinleniyor",
+        "playlist": "Çalma listesi",
+        "owner": "Sahibi",
+        "quality": "Kalite",
     }
 
     strings_uz = {
@@ -282,9 +352,15 @@ class SpotifyMod(loader.Module):
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu harakatni"
             " bajarishdan oldin </b><code>.sauth</code><b> buyrug'ini ishlating.</b>"
         ),
-        "on-repeat": "🔂 <b>Takror yoqilgan.</b>",
-        "off-repeat": "🔁 <b>Takror yopilgan.</b>",
-        "skipped": "⏭ <b>Mashq o'tkazildi.</b>",
+        "on-repeat": (
+            "<emoji document_id=5469741319330996757>💫</emoji> <b>Takror yoqilgan.</b>"
+        ),
+        "off-repeat": (
+            "<emoji document_id=5472354553527541051>✋</emoji> <b>Takror yopilgan.</b>"
+        ),
+        "skipped": (
+            "<emoji document_id=5471978009449731768>👉</emoji> <b>Mashq o'tkazildi.</b>"
+        ),
         "err": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Xatolik yuz berdi."
             " Muzyka oynatilganiga ishonchingiz komilmi?</b>\n<code>{}</code>"
@@ -300,13 +376,19 @@ class SpotifyMod(loader.Module):
         "playing": (
             "<emoji document_id=6319076999105087378>🎧</emoji> <b>Oynatilmoqda...</b>"
         ),
-        "back": "🔙 <b>Oldingi mashqa o'tildi</b>",
-        "paused": "⏸ <b>To'xtatildi</b>",
+        "back": (
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Oldingi mashqa"
+            " o'tildi</b>"
+        ),
+        "paused": "<emoji document_id=5469904794376217131>🤚</emoji> <b>To'xtatildi</b>",
         "deauth": (
             "<emoji document_id=6037460928423791421>🚪</emoji> <b>Tasdiqlash bekor"
             " qilindi</b>"
         ),
-        "restarted": "🔙 <b>Mashq qayta boshlandi</b>",
+        "restarted": (
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Mashq qayta"
+            " boshlandi</b>"
+        ),
         "liked": (
             "<emoji document_id=5199727145022134809>❤️</emoji> <b>Joriy mashq"
             " yoqildi</b>"
@@ -333,16 +415,28 @@ class SpotifyMod(loader.Module):
         "_cmd_doc_stokrefresh": "Tokenni qo'lda qayta tiklash",
         "_cmd_doc_snow": "Joriy mashq kartasini ko'rsatish",
         "_cls_doc": "Spotify uchun asbob. Fikr: @fuccsoc. Tuzilishi: @hikariatama",
+        "currently_on": "Hozircha",
+        "playlist": "O'ynatiladiganlar",
+        "owner": "Sahibi",
+        "quality": "Sifat",
     }
 
     strings_es = {
         "need_auth": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Para usar este comando,"
-            " primero usa </b><code>.sauth</code><b>.</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Para usar este"
+            " comando, primero usa </b><code>.sauth</code><b>.</b>"
         ),
-        "on-repeat": "🔂 <b>Reproducción en bucle activada.</b>",
-        "off-repeat": "🔁 <b>Reproducción en bucle desactivada.</b>",
-        "skipped": "⏭ <b>Pista saltada.</b>",
+        "on-repeat": (
+            "<emoji document_id=5469741319330996757>💫</emoji> <b>Reproducción en bucle"
+            " activada.</b>"
+        ),
+        "off-repeat": (
+            "<emoji document_id=5472354553527541051>✋</emoji> <b>Reproducción en bucle"
+            " desactivada.</b>"
+        ),
+        "skipped": (
+            "<emoji document_id=5471978009449731768>👉</emoji> <b>Pista saltada.</b>"
+        ),
         "err": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ha ocurrido un error."
             " ¿Estás seguro de que hay música sonando?</b>\n<code>{}</code>"
@@ -357,13 +451,18 @@ class SpotifyMod(loader.Module):
         "playing": (
             "<emoji document_id=6319076999105087378>🎧</emoji> <b>Reproduciendo...</b>"
         ),
-        "back": "🔙 <b>Volviste a la pista anterior</b>",
-        "paused": "⏸ <b>Pausado</b>",
+        "back": (
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Volviste a la pista"
+            " anterior</b>"
+        ),
+        "paused": "<emoji document_id=5469904794376217131>🤚</emoji> <b>Pausado</b>",
         "deauth": (
             "<emoji document_id=6037460928423791421>🚪</emoji> <b>Autorización"
             " desactivada</b>"
         ),
-        "restarted": "🔙 <b>Pista reiniciada</b>",
+        "restarted": (
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Pista reiniciada</b>"
+        ),
         "liked": (
             "<emoji document_id=5199727145022134809>❤️</emoji> <b>Pista actual"
             " añadida a favoritos</b>"
@@ -372,8 +471,10 @@ class SpotifyMod(loader.Module):
             "<emoji document_id=6319076999105087378>🎧</emoji> <b>Spotify Auto Bio"
             " {}</b>"
         ),
-        "404": "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se encontraron"
-        " resultados</b>",
+        "404": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se encontraron"
+            " resultados</b>"
+        ),
         "playing_track": (
             "<emoji document_id=5212941939053175244>🎧</emoji> <b>{} añadido</b>"
         ),
@@ -389,6 +490,10 @@ class SpotifyMod(loader.Module):
         "_cmd_doc_stokrefresh": "Actualizar token en segundo plano",
         "_cmd_doc_snow": "Muestra la tarjeta de la canción actual",
         "_cls_doc": "Recursos para Spotify. Idea: @fuccsoc. Creado por: @hikariatama",
+        "currently_on": "Escuchando actualmente en",
+        "playlist": "Lista de reproducción",
+        "owner": "Propietario",
+        "quality": "Calidad",
     }
 
     def __init__(self):
@@ -582,7 +687,7 @@ class SpotifyMod(loader.Module):
     @tokenized
     @autodelete
     async def srepeatcmd(self, message: Message):
-        """🔂"""
+        """💫 Repeat"""
         self.sp.repeat("track")
         await utils.answer(message, self.strings("on-repeat"))
 
@@ -590,7 +695,7 @@ class SpotifyMod(loader.Module):
     @tokenized
     @autodelete
     async def sderepeatcmd(self, message: Message):
-        """🔁"""
+        """✋ Stop repeat"""
         self.sp.repeat("context")
         await utils.answer(message, self.strings("off-repeat"))
 
@@ -598,7 +703,7 @@ class SpotifyMod(loader.Module):
     @tokenized
     @autodelete
     async def snextcmd(self, message: Message):
-        """⏭"""
+        """👉 Skip"""
         self.sp.next_track()
         await utils.answer(message, self.strings("skipped"))
 
@@ -606,7 +711,7 @@ class SpotifyMod(loader.Module):
     @tokenized
     @autodelete
     async def spausecmd(self, message: Message):
-        """⏸"""
+        """🤚 Pause"""
         self.sp.pause_playback()
         await utils.answer(message, self.strings("paused"))
 
@@ -614,7 +719,7 @@ class SpotifyMod(loader.Module):
     @tokenized
     @autodelete
     async def splaycmd(self, message: Message, from_sq: bool = False):
-        """▶️"""
+        """▶️ Play"""
         args = utils.get_args_raw(message)
         reply = await message.get_reply_message()
 
@@ -698,13 +803,23 @@ class SpotifyMod(loader.Module):
         await self._client.send_file(
             message.peer_id,
             music,
-            caption=override_text or (
-                (
-                    f"🗽 <b>{utils.escape_html(full_song_name)}</b>"
-                    if artists
-                    else f"🗽 <b>{utils.escape_html(track)}</b>"
+            caption=(
+                override_text
+                or (
+                    (
+                        f"🗽 <b>{utils.escape_html(full_song_name)}</b>{{is_flac}}"
+                        if artists
+                        else f"🗽 <b>{utils.escape_html(track)}</b>{{is_flac}}"
+                    )
+                    if track
+                    else "{is_flac}"
                 )
-                if track
+            ).format(
+                is_flac=(
+                    "\n<emoji document_id=5359582743992737342>😎</emoji> <b>FLAC"
+                    f" {self.strings('quality')}</b>"
+                )
+                if getattr(music, "is_flac", False)
                 else ""
             ),
         )
@@ -858,33 +973,55 @@ class SpotifyMod(loader.Module):
         try:
             result = (
                 (
-                    f"🦉 <b>{utils.escape_html(track)} -"
+                    "<emoji document_id=5188705588925702510>🎶</emoji>"
+                    f" <b>{utils.escape_html(track)} -"
                     f" {utils.escape_html(' '.join(artists))}</b>"
                     if artists
-                    else f"🦉 <b>{utils.escape_html(track)}</b>"
+                    else (
+                        "<emoji document_id=5188705588925702510>🎶</emoji>"
+                        f" <b>{utils.escape_html(track)}</b>"
+                    )
                 )
                 if track
                 else ""
             )
-            icon = "🖥" if "computer" in str(device) else "🗣"
-            result += f"\n{icon} <code>{device}</code>" if device else ""
+            icon = (
+                "<emoji document_id=5431376038628171216>💻</emoji>"
+                if "computer" in str(device)
+                else "<emoji document_id=5407025283456835913>📱</emoji>"
+            )
             result += (
-                "\n🎑 <b>Playlist</b>: <a"
+                f"{{is_flac}}\n\n{icon} <b>{self.strings('currently_on')}</b>"
+                f" <code>{device}</code>"
+                if device
+                else ""
+            )
+            result += (
+                "\n<emoji document_id=5431736674147114227>🗂</emoji>"
+                f" <b>{self.strings('playlist')}</b>: <a"
                 f' href="https://open.spotify.com/playlist/{playlist_id}">{playlist_name}</a>'
                 if playlist_name and playlist_id
                 else ""
             )
-            result += f"\n🫂 <b>Owner</b>: {playlist_owner}" if playlist_owner else ""
             result += (
-                f"\n\n<code>{self.create_bar(current_playback)}</code>"
-                f" {self.create_vol(volume)} 🔊"
+                "\n<emoji document_id=5467406098367521267>👑</emoji>"
+                f" <b>{self.strings('owner')}</b>: {playlist_owner}"
+                if playlist_owner
+                else ""
+            )
+            result += (
+                "\n\n<emoji document_id=5359342878659191095>🎵</emoji> <b><a"
+                f' href="{track_url}">Spotify</a></b>'
             )
 
         except Exception:
             result = self.strings("no_music")
 
         message = await utils.answer(
-            message, result + "\n\n<i>Loading audio file...</i>"
+            message,
+            result.format(is_flac="")
+            + "\n\n<emoji document_id=5325617665874600234>🕔</emoji> <i>Loading audio"
+            " file...</i>",
         )
         await self._open_track(current_playback["item"], message, result)
 
