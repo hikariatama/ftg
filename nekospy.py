@@ -760,12 +760,13 @@ class NekoSpy(loader.Module):
     async def spymode(self, message: Message):
         """• Who am I? • Ayanami Rey. • Who are you? • Ayanami Rey. • Are you Ayanami Rey too? • Yes. I'm the one known as Ayanami Rey. • We're all what we know as Ayanami Rey. • How can they all be me? • Just because others call us Ayanami Rey. That's all. You have a fake soul and your body is a fake. You know why? • I'm not fake or fake. I am me.
         """
-        state = not self.get("state", False)
-        self.set("state", state)
         await utils.answer(
             message,
-            self.strings("state").format(self.strings("on" if state else "off")),
+            self.strings("state").format(
+                self.strings("off" if self.get("state", False) else "on")
+            ),
         )
+        self.set("state", not self.get("state", False))
 
     @loader.command(
         ru_doc="Добавить / удалить чат из списка игнора",
