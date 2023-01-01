@@ -90,16 +90,19 @@ class HikkaModsSocketMod(loader.Module):
                 logger.debug(f"Failed to send stats for {module}", exc_info=True)
 
     async def _load_module(self, url: str, message: Optional[Message] = None):
-        await self.lookup("loader").download_and_install(url, None)
+        loader_m = self.lookup("loader")
 
-        if self.lookup("loader")._fully_loaded:
-            self.lookup("loader")._update_modules_in_db()
+        await loader_m.download_and_install(url, None)
+
+        if getattr(loader_m, "_fully_loaded", getattr(loader_m, "fully_loaded", False)):
+            getattr(
+                loader_m,
+                "_update_modules_in_db",
+                getattr(loader_m, "update_modules_in_db", lambda: None),
+            )()
 
         if message:
-            if any(
-                link == url
-                for link in self.lookup("loader").get("loaded_modules", {}).values()
-            ):
+            if any(link == url for link in loader_m.get("loaded_modules", {}).values()):
                 await self._client.inline_query(
                     "@hikkamods_bot",
                     f"#confirm_load {message.raw_text.splitlines()[2].strip()}",
