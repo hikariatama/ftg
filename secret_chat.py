@@ -120,8 +120,10 @@ class SecretChatMod(loader.Module):
         u = await self._client.get_entity(user)
         await self._client.send_message(
             self._chats[user],
-            "㊙️ <b>New secret chat with <a"
-            f' href="tg://user?id={user}">{get_display_name(u)}</a> started</b>',
+            (
+                "㊙️ <b>New secret chat with <a"
+                f' href="tg://user?id={user}">{get_display_name(u)}</a> started</b>'
+            ),
         )
 
     async def on_unload(self):

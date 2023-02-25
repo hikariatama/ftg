@@ -29,5 +29,7 @@ class PremiumStickersMod(loader.Module):
             await message.delete()
 
         await message.respond(
-            f'<a href="https://t.me/hikka_premum_stickers/{random.randint(2, 106)}">­</a>',
+            (
+                f'<a href="https://t.me/hikka_premum_stickers/{random.randint(2, 106)}">­</a>'
+            ),
         )

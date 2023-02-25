@@ -249,7 +249,9 @@ class ArtAIMod(loader.Module):
 
             for engine in statuses:
                 suffix = (
-                    lambda: f"<i>Processing image...</i>\n\n{''.join(statuses.values())}"
+                    lambda: (
+                        f"<i>Processing image...</i>\n\n{''.join(statuses.values())}"
+                    )
                 )
                 res += [await animefy(media, engine)]
                 statuses[engine] = "🟩"

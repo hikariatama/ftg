@@ -32,8 +32,7 @@ logger = logging.getLogger(__name__)
 
 @loader.tds
 class LeomatchMod(loader.Module):
-    """Simplifies the interaction with @leomatchbot - Rejects slag, allows you to create filters by age, cities, blacklisted words. Check .config for more info
-    """
+    """Simplifies the interaction with @leomatchbot - Rejects slag, allows you to create filters by age, cities, blacklisted words. Check .config for more info"""
 
     strings = {"name": "Leomatch"}
 
@@ -54,43 +53,55 @@ class LeomatchMod(loader.Module):
             loader.ConfigValue(
                 "min_age",
                 0,
-                "Минимальный возраст собеседника - будет автоматически отклонять всех,"
-                " кто младше",
+                (
+                    "Минимальный возраст собеседника - будет автоматически отклонять"
+                    " всех, кто младше"
+                ),
                 validator=loader.validators.Integer(minimum=0),
             ),
             loader.ConfigValue(
                 "max_age",
                 100,
-                "Максимальный возраст собеседника - будет автоматически отклонять всех,"
-                " кто старше",
+                (
+                    "Максимальный возраст собеседника - будет автоматически отклонять"
+                    " всех, кто старше"
+                ),
                 validator=loader.validators.Integer(minimum=0),
             ),
             loader.ConfigValue(
                 "blacklist_cities",
                 [],
-                "Список городов, пользователи из которых будут автоматически"
-                " отклоняться",
+                (
+                    "Список городов, пользователи из которых будут автоматически"
+                    " отклоняться"
+                ),
                 validator=loader.validators.Series(),
             ),
             loader.ConfigValue(
                 "whitelist_cities",
                 [],
-                "Список городов для белого списка. Пользователи из других городов будут"
-                " автоматически отклоняться",
+                (
+                    "Список городов для белого списка. Пользователи из других городов"
+                    " будут автоматически отклоняться"
+                ),
                 validator=loader.validators.Series(),
             ),
             loader.ConfigValue(
                 "blacklist_words",
                 [],
-                "Если в анкете пользователя есть слово из этого списка, она будет"
-                " автоматически отклонена",
+                (
+                    "Если в анкете пользователя есть слово из этого списка, она будет"
+                    " автоматически отклонена"
+                ),
                 validator=loader.validators.Series(),
             ),
             loader.ConfigValue(
                 "whitelist_words",
                 [],
-                "Если в анкете пользователя есть нет слов из этого списка, она будет"
-                " автоматически отклонена",
+                (
+                    "Если в анкете пользователя есть нет слов из этого списка, она"
+                    " будет автоматически отклонена"
+                ),
                 validator=loader.validators.Series(),
             ),
             loader.ConfigValue(
@@ -267,10 +278,12 @@ class LeomatchMod(loader.Module):
             r" {2,}",
             " ",
             "".join(
-                symbol
-                if symbol
-                in "abcdefghijklmnopqrstuvwxyzёйцукенгшщзхъфывапролджэячсмитьбю1234567890 "
-                else " "
+                (
+                    symbol
+                    if symbol
+                    in "abcdefghijklmnopqrstuvwxyzёйцукенгшщзхъфывапролджэячсмитьбю1234567890 "
+                    else " "
+                )
                 for symbol in (
                     ""
                     if len(message.raw_text.lower().split(",", maxsplit=2)) < 3

@@ -349,9 +349,11 @@ class AccountSwitcherMod(loader.Module):
         acc = await self._client.force_get_entity("me")
 
         message_id = await self._save_acc(
-            (await self._client.download_profile_photo(acc, bytes))
-            if full.full_user.profile_photo
-            else None,
+            (
+                (await self._client.download_profile_photo(acc, bytes))
+                if full.full_user.profile_photo
+                else None
+            ),
             getattr(acc, "first_name", "None"),
             getattr(acc, "last_name", "None"),
             (getattr(full.full_user, "about", "None")),

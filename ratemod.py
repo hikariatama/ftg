@@ -74,9 +74,11 @@ class RateModuleMod(loader.Module):
         if type(checking) is not str:
             try:
                 file = await self._client.download_file(
-                    getattr(reply, "media", None)
-                    if getattr(reply, "media", None) is not None
-                    else getattr(message, "media", None),
+                    (
+                        getattr(reply, "media", None)
+                        if getattr(reply, "media", None) is not None
+                        else getattr(message, "media", None)
+                    ),
                     bytes,
                 )
             except Exception:

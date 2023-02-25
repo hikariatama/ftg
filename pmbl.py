@@ -606,13 +606,19 @@ class PMBLMod(loader.Module):
                 utils.escape_html(
                     "<sticker"
                     if message.sticker
-                    else "<photo>"
-                    if message.photo
-                    else "<video>"
-                    if message.video
-                    else "<file>"
-                    if message.document
-                    else message.raw_text[:3000]
+                    else (
+                        "<photo>"
+                        if message.photo
+                        else (
+                            "<video>"
+                            if message.video
+                            else (
+                                "<file>"
+                                if message.document
+                                else message.raw_text[:3000]
+                            )
+                        )
+                    )
                 ),
             ),
             parse_mode="HTML",

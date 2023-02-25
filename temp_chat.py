@@ -229,7 +229,7 @@ class TempChatsMod(loader.Module):
         for chat, info in self.get("chats", {}).items():
             res += (
                 f"<b>{info[1]}</b> (<code>{chat}</code>)<b>:"
-                f' {datetime.datetime.utcfromtimestamp(info[0] + 10800).strftime("%d.%m.%Y %H:%M:%S")}.</b>\n'
+                f" {datetime.datetime.utcfromtimestamp(info[0] + 10800).strftime('%d.%m.%Y %H:%M:%S')}.</b>\n"
             )
 
         await utils.answer(message, res)

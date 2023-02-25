@@ -371,9 +371,11 @@ class TicTacToeMod(loader.Module):
         text = self.strings("normal_game").format(
             choice(phrases),
             game["name"],
-            utils.escape_html(get_display_name(self._me))
-            if game["turn"] == self._me.id
-            else game["name"],
+            (
+                utils.escape_html(get_display_name(self._me))
+                if game["turn"] == self._me.id
+                else game["name"]
+            ),
         )
         score = game["score"].split("|")
         kb = []
@@ -391,9 +393,11 @@ class TicTacToeMod(loader.Module):
 
             return {
                 "text": self.strings("win").format(
-                    game["name"]
-                    if winner != self._me.id
-                    else utils.escape_html(get_display_name(self._me)),
+                    (
+                        game["name"]
+                        if winner != self._me.id
+                        else utils.escape_html(get_display_name(self._me))
+                    ),
                     "❌" if win_x else "⭕️",
                     self._render_text(score),
                 )
@@ -403,9 +407,9 @@ class TicTacToeMod(loader.Module):
             for i, row in enumerate(score):
                 kb_row = [
                     {
-                        "text": line.replace(".", " ")
-                        .replace("x", "❌")
-                        .replace("o", "⭕️"),
+                        "text": (
+                            line.replace(".", " ").replace("x", "❌").replace("o", "⭕️")
+                        ),
                         "callback": self._process_click,
                         "args": (
                             i,
@@ -513,9 +517,11 @@ class TicTacToeMod(loader.Module):
 
             return {
                 "text": self.strings("win").format(
-                    "🐻 Bear"
-                    if winner != game["user"]
-                    else utils.escape_html(get_display_name(game["user"])),
+                    (
+                        "🐻 Bear"
+                        if winner != game["user"]
+                        else utils.escape_html(get_display_name(game["user"]))
+                    ),
                     "❌" if win_x else "⭕️",
                     self._render_text(score),
                 )
@@ -525,9 +531,9 @@ class TicTacToeMod(loader.Module):
             for i, row in enumerate(score):
                 kb_row = [
                     {
-                        "text": line.replace(".", " ")
-                        .replace("x", "❌")
-                        .replace("o", "⭕️"),
+                        "text": (
+                            line.replace(".", " ").replace("x", "❌").replace("o", "⭕️")
+                        ),
                         "callback": self._process_click_ai,
                         "args": (
                             i,

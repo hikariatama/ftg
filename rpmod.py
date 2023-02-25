@@ -89,8 +89,7 @@ class RPMod(loader.Module):
         self.chats = self.get("active", [])
 
     async def rpcmd(self, message: Message):
-        """<command> <message> - Add RP Command. If message unspecified, remove command
-        """
+        """<command> <message> - Add RP Command. If message unspecified, remove command"""
         args = utils.get_args_raw(message)
         try:
             command = args.split(" ", 1)[0]
@@ -224,8 +223,10 @@ class RPMod(loader.Module):
 
         await utils.answer(
             message,
-            f"{emoji} <a"
-            f' href="tg://user?id={sender.id}">{utils.escape_html(sender.first_name)}</a>'
-            f" <b>{utils.escape_html(msg)}</b> <a"
-            f' href="tg://user?id={reply.id}">{utils.escape_html(reply.first_name)}</a>',
+            (
+                f"{emoji} <a"
+                f' href="tg://user?id={sender.id}">{utils.escape_html(sender.first_name)}</a>'
+                f" <b>{utils.escape_html(msg)}</b> <a"
+                f' href="tg://user?id={reply.id}">{utils.escape_html(reply.first_name)}</a>'
+            ),
         )

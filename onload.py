@@ -29,8 +29,10 @@ class OnloadExecutorMod(loader.Module):
         self.c, _ = await utils.asset_channel(
             client,
             "hikka-onload",
-            "All commands from this chat will be executed once Hikka is started, be"
-            " careful!",
+            (
+                "All commands from this chat will be executed once Hikka is started, be"
+                " careful!"
+            ),
             archive=True,
             avatar="https://raw.githubusercontent.com/hikariatama/assets/master/hikka-onload.png",
             _folder="hikka",

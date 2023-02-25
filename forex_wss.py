@@ -61,7 +61,9 @@ class RealTimeValutesMod(loader.Module):
     async def _connect(self):
         r = await utils.run_sync(
             requests.get,
-            f"https://rates-live.efxnow.com/signalr/negotiate?clientProtocol=2.1&connectionData=%5B%7B%22name%22%3A%22ratesstreamer%22%7D%5D&_={time.time() * 1000:.0f}",
+            (
+                f"https://rates-live.efxnow.com/signalr/negotiate?clientProtocol=2.1&connectionData=%5B%7B%22name%22%3A%22ratesstreamer%22%7D%5D&_={time.time() * 1000:.0f}"
+            ),
         )
 
         token = quote_plus(r.json()["ConnectionToken"])

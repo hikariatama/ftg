@@ -1,27 +1,41 @@
-__version__ = (1, 0, 28)
+__version__ = (2, 0, 8)
 
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
+# Code is licensed under CC-BY-NC-ND 4.0 unless otherwise specified.
 # 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+# 🔑 https://creativecommons.org/licenses/by-nc-nd/4.0/
+# + attribution
+# + non-commercial
+# + no-derivatives
+
+# You CANNOT edit this file without direct permission from the author.
+# You can redistribute this file without any changes.
 
 # meta pic: https://0x0.st/oRer.webp
-# meta banner: https://mods.hikariatama.ru/badges/nekospy.jpg
+# meta banner: https://mods.hikariatama.ru/badges/nekospy_beta.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
-# scope: hikka_min 1.6.0
+# scope: hikka_min 1.6.1
+# requires: python-magic
 
-import contextlib
+import asyncio
+import datetime
 import io
+import json
 import logging
+import mimetypes
+import os
 import time
 import typing
+import zlib
+from pathlib import Path
 
+import magic
 from telethon.tl.types import (
-    DocumentAttributeFilename,
+    InputDocumentFileLocation,
+    InputPhotoFileLocation,
     Message,
-    PeerChat,
     UpdateDeleteChannelMessages,
     UpdateDeleteMessages,
     UpdateEditChannelMessage,
@@ -30,17 +44,184 @@ from telethon.tl.types import (
 from telethon.utils import get_display_name
 
 from .. import loader, utils
+from ..database import Database
+from ..pointers import PointerList
+from ..tl_cache import CustomTelegramClient
 
 logger = logging.getLogger(__name__)
 
 
+def get_size(path: Path) -> int:
+    return sum(f.stat().st_size for f in path.glob("**/*") if f.is_file())
+
+
+def sizeof_fmt(num: int, suffix: str = "B") -> str:
+    for unit in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"]:
+        if abs(num) < 1024.0:
+            return f"{num:3.1f}{unit}{suffix}"
+        num /= 1024.0
+    return f"{num:.1f}Yi{suffix}"
+
+
+class CacheManager:
+    def __init__(self, client: CustomTelegramClient, db: Database):
+        self._client = client
+        self._db = db
+        self._cache_dir = Path.home().joinpath(".nekospy")
+        self._cache_dir.mkdir(parents=True, exist_ok=True)
+
+    def purge(self):
+        for _file in self._cache_dir.iterdir():
+            if _file.is_dir():
+                for _child in _file.iterdir():
+                    _child.unlink()
+
+                _file.rmdir()
+
+    def stats(self) -> tuple:
+        dirsize = sizeof_fmt(get_size(self._cache_dir))
+        messages_count = len(list(self._cache_dir.iterdir()))
+        try:
+            oldest_message = datetime.datetime.fromtimestamp(
+                max(map(os.path.getctime, self._cache_dir.iterdir()))
+            ).strftime("%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            oldest_message = "n/a"
+
+        return dirsize, messages_count, oldest_message
+
+    def gc(self, max_age: int, max_size: int) -> None:
+        """Clean the cache"""
+        for _file in self._cache_dir.iterdir():
+            if _file.is_file():
+                if _file.stat().st_mtime < time.time() - max_age:
+                    _file.unlink()
+            else:
+                for _child in _file.iterdir():
+                    if (
+                        _child.is_file()
+                        and _child.stat().st_mtime < time.time() - max_age
+                    ):
+                        _child.unlink()
+
+        while get_size(self._cache_dir) > max_size:
+            min(
+                self._cache_dir.iterdir(),
+                key=lambda x: x.stat().st_mtime,
+            ).unlink()
+
+    async def store_message(self, message: Message, no_repeat: bool = False) -> bool:
+        """Store a message in the cache"""
+        if not hasattr(message, "id"):
+            return False
+
+        _dir = self._cache_dir.joinpath(str(utils.get_chat_id(message)))
+        _dir.mkdir(parents=True, exist_ok=True)
+        _file = _dir.joinpath(str(message.id))
+
+        try:
+            if message.sender_id is not None:
+                sender = await self._client.get_entity(message.sender_id, exp=0)
+
+            chat = await self._client.get_entity(utils.get_chat_id(message), exp=0)
+
+            if message.sender_id is None:
+                sender = chat
+        except ValueError:
+            if no_repeat:
+                logger.debug("Failed to get sender/chat, skipping", exc_info=True)
+                return False
+
+            await asyncio.sleep(5)
+            return await self.store_message(message, True)
+
+        is_chat: bool = message.is_group or message.is_channel
+
+        try:
+            text: str = message.text
+        except AttributeError:
+            text: str = message.raw_text
+
+        message_data = {
+            "url": await utils.get_message_link(message),
+            "text": text,
+            "sender_id": sender.id,
+            "sender_bot": not not getattr(sender, "bot", False),
+            "sender_name": utils.escape_html(get_display_name(sender)),
+            "sender_url": utils.get_entity_url(sender),
+            "chat_id": chat.id,
+            **(
+                {
+                    "chat_name": utils.escape_html(get_display_name(chat)),
+                    "chat_url": utils.get_entity_url(chat),
+                }
+                if is_chat
+                else {}
+            ),
+            "assets": await self._extract_assets(message),
+            "is_chat": is_chat,
+            "via_bot_id": not not message.via_bot_id,
+        }
+
+        _file.write_bytes(zlib.compress(json.dumps(message_data).encode("utf-8")))
+        return True
+
+    async def fetch_message(
+        self,
+        chat_id: typing.Optional[int],
+        message_id: int,
+    ) -> typing.Optional[dict]:
+        """Fetch a message from the cache"""
+        if chat_id:
+            _dir = self._cache_dir.joinpath(str(chat_id))
+            _file = _dir.joinpath(str(message_id))
+        else:
+            for _dir in self._cache_dir.iterdir():
+                _file = _dir.joinpath(str(message_id))
+                if _file.exists():
+                    break
+            else:
+                _file = None
+
+        if not _file or not _file.exists():
+            return None
+
+        return json.loads(zlib.decompress(_file.read_bytes()).decode("utf-8"))
+
+    async def _extract_assets(self, message: Message) -> typing.Dict[str, str]:
+        return {
+            attribute: {
+                "id": value.id,
+                "access_hash": value.access_hash,
+                "file_reference": bytearray(value.file_reference).hex(),
+                "thumb_size": getattr(value, "thumb_size", ""),
+            }
+            for attribute, value in filter(
+                lambda x: x[1],
+                {
+                    arg: getattr(message, arg)
+                    for arg in {
+                        "photo",
+                        "audio",
+                        "document",
+                        "sticker",
+                        "video",
+                        "voice",
+                        "video_note",
+                        "gif",
+                    }
+                }.items(),
+            )
+        }
+
+
 @loader.tds
-class NekoSpy(loader.Module):
+class NekoSpyBeta(loader.Module):
     """Sends you deleted and / or edited messages from selected users"""
 
-    rei = "<emoji document_id=5409143295039252230>👩‍🎤</emoji>"
-    groups = "<emoji document_id=6037355667365300960>👥</emoji>"
-    pm = "<emoji document_id=6048540195995782913>👤</emoji>"
+    rei = "<emoji document_id=5418198632287443057>👩‍🎤</emoji>"
+    groups = "<emoji document_id=5416121680592380517>👥</emoji>"
+    pm = "<emoji document_id=5417994032930364867>👤</emoji>"
 
     strings = {
         "name": "NekoSpy",
@@ -94,6 +275,31 @@ class NekoSpy(loader.Module):
             " self-destructing media</b>\n"
         ),
         "cfg_save_sd": "Save self-destructing media",
+        "max_cache_size": "Maximum size of cache directory",
+        "max_cache_age": "Maximum age of cache records",
+        "stats": (
+            "<emoji document_id=5431577498364158238>📊</emoji> <b>Cache"
+            " stats</b>\n\n<emoji document_id=5783078953308655968>📊</emoji> <b>Total"
+            " cache size: {}</b>\n<emoji"
+            " document_id=5974220038956124904>📥</emoji> <b>Saved messages: {}"
+            " pcs.</b>\n<emoji document_id=5974081491901091242>🕒</emoji> <b>Oldest"
+            " message: {}</b>"
+        ),
+        "purged_cache": (
+            "<emoji document_id=5974057212450967530>🧹</emoji> <b>Cache has successfully"
+            " been purged</b>"
+        ),
+        "invalid_time": (
+            "<emoji document_id=5415918064782811950>😡</emoji> <b>Invalid time</b>"
+        ),
+        "restoring": (
+            "<emoji document_id=5325731315004218660>🫥</emoji> <b>Restoring messages</b>"
+        ),
+        "restored": (
+            f"{rei} <b>Messages has successfully been restored. They will be delivered"
+            " to hikka-nekospy channel soon.</b>"
+        ),
+        "recent_maximum": "Maximum time to restore messages from in seconds",
     }
 
     strings_ru = {
@@ -164,6 +370,136 @@ class NekoSpy(loader.Module):
             " самоуничтожающиеся медиа</b>\n"
         ),
         "cfg_save_sd": "Сохранять самоуничтожающееся медиа",
+        "max_cache_size": "Максимальный размер кеша",
+        "max_cache_age": "Максимальный срок хранения кэша",
+        "stats": (
+            "<emoji document_id=5431577498364158238>📊</emoji> <b>Статистика"
+            " кэша</b>\n\n<emoji document_id=5783078953308655968>📊</emoji> <b>Общий"
+            " размер кэша: {}</b>\n<emoji document_id=5974220038956124904>📥</emoji>"
+            " <b>Сохраненные сообщения: {} шт.</b>\n<emoji"
+            " document_id=5974081491901091242>🕒</emoji> <b>Самое старое сообщение:"
+            " {}</b>"
+        ),
+        "purged_cache": (
+            "<emoji document_id=5974057212450967530>🧹</emoji> <b>Кэш успешно очищен</b>"
+        ),
+        "invalid_time": (
+            "<emoji document_id=5415918064782811950>😡</emoji> <b>Неверное время</b>"
+        ),
+        "restoring": (
+            "<emoji document_id=5325731315004218660>🫥</emoji> <b>Восстановление"
+            " сообщений</b>"
+        ),
+        "restored": (
+            f"{rei} <b>Сообщения успешно восстановлены. Они будут доставлены в канал"
+            " hikka-nekospy в ближайшее время.</b>"
+        ),
+        "recent_maximum": "Максимальное время восстановления сообщений в секундах",
+    }
+
+    strings_fr = {
+        "on": "allumé",
+        "off": "éteint",
+        "state": f"{rei} <b>Le mode espionnage est maintenant {{}}</b>",
+        "spybl": (
+            f"{rei} <b>Le chat actuel a été ajouté à la liste noire de surveillance</b>"
+        ),
+        "spybl_removed": (
+            f"{rei} <b>Le chat actuel a été supprimé de la liste noire de"
+            " surveillance</b>"
+        ),
+        "spybl_clear": f"{rei} <b>La liste noire de surveillance a été effacée</b>",
+        "spywl": (
+            f"{rei} <b>Le chat actuel a été ajouté à la liste blanche de"
+            " surveillance</b>"
+        ),
+        "spywl_removed": (
+            f"{rei} <b>Le chat actuel a été supprimé de la liste blanche de"
+            " surveillance</b>"
+        ),
+        "spywl_clear": f"{rei} <b>La liste blanche de surveillance a été effacée</b>",
+        "whitelist": (
+            f"\n{rei} <b>Je surveille uniquement"
+            " les messages d'utilisateurs / groupes:</b>\n{}"
+        ),
+        "always_track": (
+            f"\n{rei} <b>Je surveille toujours les messages d'utilisateurs /"
+            " groupes:</b>\n{}"
+        ),
+        "blacklist": (
+            f"\n{rei} <b>Je ignore les messages des utilisateurs / groupes:</b>\n{{}}"
+        ),
+        "chat": f"{groups} <b>Je surveille les messages de groupes</b>\n",
+        "pm": f"{pm} <b>Je surveille les messages de messages privés</b>\n",
+        "deleted_pm": (
+            '🗑 <b><a href="{}">{}</a> a supprimé <a href="{message_url}">message</a> en'
+            " privé. Contenu:</b>\n{}"
+        ),
+        "deleted_chat": (
+            '🗑 <b><a href="{message_url}">Message</a> dans le chat <a href="{}">{}</a>'
+            ' de <a href="{}">{}</a> a été supprimé. Contenu:</b>\n{}'
+        ),
+        "edited_pm": (
+            '🔏 <b><a href="{}">{}</a> a modifié <a'
+            ' href="{message_url}">message</a> en privé. Ancien contenu:</b>\n{}'
+        ),
+        "edited_chat": (
+            '🔏 <b><a href="{message_url}">Message</a> dans le chat <a href="{}">{}</a>'
+            ' de <a href="{}">{}</a> a été modifié. Ancien contenu:</b>\n{}'
+        ),
+        "mode_off": (
+            f"{pm} <b>Ne pas surveiller les messages </b><code>{{}}spymode</code>\n"
+        ),
+        "cfg_enable_pm": "Activer le mode espion dans les messages privés",
+        "cfg_enable_groups": "Activer le mode espion dans les groupes",
+        "cfg_whitelist": "Liste des chats dont les messages doivent être enregistrés",
+        "cfg_blacklist": "Liste des chats dont les messages doivent être ignorés",
+        "cfg_always_track": (
+            "Liste des chats dont les messages doivent toujours être surveillés,"
+            " indépendamment de tout"
+        ),
+        "cfg_log_edits": "Enregistrer les messages modifiés",
+        "cfg_ignore_inline": "Ignorer les messages du mode en ligne",
+        "cfg_fw_protect": "Protection contre les floodways lors de la rétroaction",
+        "_cls_doc": (
+            "Enregistre les messages supprimés et / ou modifiés des utilisateurs"
+            " sélectionnés"
+        ),
+        "sd_media": (
+            "🔥 <b><a href='tg://user?id={}'>{}</a> vous a envoyé un média"
+            " auto-destructeur</b>"
+        ),
+        "save_sd": (
+            "<emoji document_id=5420315771991497307>🔥</emoji> <b>Enregistrement"
+            " les médias auto-destructeurs</b>\n"
+        ),
+        "cfg_save_sd": "Enregistrer les médias auto-destructeurs",
+        "max_cache_size": "Taille maximale du cache",
+        "max_cache_age": "Durée maximale de conservation du cache",
+        "stats": (
+            "<emoji document_id=5431577498364158238>📊</emoji> <b>Statistiques de"
+            " cache</b>\n\n<emoji document_id=5783078953308655968>📊</emoji> <b>Taille"
+            " totale du cache: {}</b>\n<emoji document_id=5974220038956124904>📥</emoji>"
+            " <b>Messages enregistrés: {} pièce.</b>\n<emoji"
+            " document_id=5974081491901091242>🕒</emoji> <b>Le plus ancien message:"
+            " {}</b>"
+        ),
+        "purged_cache": (
+            "<emoji document_id=5974057212450967530>🧹</emoji> <b>Cache nettoyé avec"
+            " succès</b>"
+        ),
+        "invalid_time": (
+            "<emoji document_id=5415918064782811950>😡</emoji> <b>Heure non valide</b>"
+        ),
+        "restoring": (
+            "<emoji document_id=5325731315004218660>🫥</emoji> <b>Restauration des"
+            " messages</b>"
+        ),
+        "restored": (
+            f"{rei} <b>Les messages ont été restaurés avec succès. Ils seront livrés"
+            " dans le canal hikka-nekospy dans un proche avenir.</b>"
+        ),
+        "recent_maximum": "Temps maximum de récupération des messages en secondes",
     }
 
     strings_it = {
@@ -244,6 +580,32 @@ class NekoSpy(loader.Module):
             " i media che si autodistruggono</b>\n"
         ),
         "cfg_save_sd": "Salva i media che si autodistruggono",
+        "max_cache_size": "Dimensione massima della directory cache",
+        "max_cache_age": "Età massima dei record della cache",
+        "stats": (
+            "<emoji document_id=5431577498364158238>📊</emoji> <b>Statistiche della"
+            " cache</b>\n\n<emoji document_id=5783078953308655968>📊</emoji>"
+            " <b>Dimensione totale della cache: {}</b>\n<emoji"
+            " document_id=5974220038956124904>📥</emoji> <b>Messaggi salvati: {}"
+            " pezzi.</b>\n<emoji document_id=5974081491901091242>🕒</emoji> <b>Messaggio"
+            " più vecchio: {}</b>"
+        ),
+        "purged_cache": (
+            "<emoji document_id=5974057212450967530>🧹</emoji> <b>La cache è stata"
+            " pulita con successo</b>"
+        ),
+        "invalid_time": (
+            "<emoji document_id=5415918064782811950>😡</emoji> <b>Tempo non valido</b>"
+        ),
+        "restoring": (
+            "<emoji document_id=5325731315004218660>🫥</emoji> <b>Sto ripristinando i"
+            " messaggi</b>"
+        ),
+        "restored": (
+            f"{rei} <b>I messaggi sono stati ripristinati con successo. Saranno"
+            " recapitati al canale hikka-nekospy a breve.</b>"
+        ),
+        "recent_maximum": "Tempo massimo per ripristinare i messaggi in secondi",
     }
 
     strings_de = {
@@ -316,6 +678,35 @@ class NekoSpy(loader.Module):
             " selbstzerstörende Medien</b>\n"
         ),
         "cfg_save_sd": "Speichern Sie selbstzerstörende Medien",
+        "max_cache_size": "Maximale Größe des Zwischenspeicherverzeichnisses",
+        "max_cache_age": "Maximale Altersgrenze für Zwischenspeicherdatensätze",
+        "stats": (
+            "<emoji document_id=5431577498364158238>📊</emoji> <b>Zwischenspeicher"
+            " Statistik</b>\n\n<emoji"
+            " document_id=5783078953308655968>📊</emoji> <b>Gesamtgröße des"
+            " Zwischenspeichers: {}</b>\n<emoji"
+            " document_id=5974220038956124904>📥</emoji> <b>Gespeicherte Nachrichten: {}"
+            " Stück.</b>\n<emoji document_id=5974081491901091242>🕒</emoji> <b>Älteste"
+            " Nachricht: {}</b>"
+        ),
+        "purged_cache": (
+            "<emoji document_id=5974057212450967530>🧹</emoji> <b>Zwischenspeicher wurde"
+            " erfolgreich bereinigt</b>"
+        ),
+        "invalid_time": (
+            "<emoji document_id=5415918064782811950>😡</emoji> <b>Ungültige Zeit</b>"
+        ),
+        "restoring": (
+            "<emoji document_id=5325731315004218660>🫥</emoji> <b>Wiederherstellung"
+            " von Nachrichten</b>"
+        ),
+        "restored": (
+            f"{rei} <b>Nachrichten wurden erfolgreich wiederhergestellt. Sie werden"
+            " bald an den hikka-nekospy-Kanal geliefert.</b>"
+        ),
+        "recent_maximum": (
+            "Maximale Zeit, um Nachrichten in Sekunden wiederherzustellen"
+        ),
     }
 
     strings_uz = {
@@ -380,6 +771,32 @@ class NekoSpy(loader.Module):
             " qiladigan ommaviy axborot vositalarini saqlash</b>\n"
         ),
         "cfg_save_sd": "O'chiriladigan media saqlash",
+        "max_cache_size": "Cache direktoriya hajmi",
+        "max_cache_age": "Cache yozuvlari maksimal yoshi",
+        "stats": (
+            "<emoji document_id=5431577498364158238>📊</emoji> <b>Cache"
+            " statistikasi</b>\n\n<emoji document_id=5783078953308655968>📊</emoji>"
+            " <b>Jami cache hajmi: {}</b>\n<emoji"
+            " document_id=5974220038956124904>📥</emoji> <b>Saqlangan xabarlar soni: {}"
+            " dona.</b>\n<emoji document_id=5974081491901091242>🕒</emoji> <b>Eldan"
+            " o'tgan xabar: {}</b>"
+        ),
+        "purged_cache": (
+            "<emoji document_id=5974057212450967530>🧹</emoji> <b>Cache muvaffaqiyatli"
+            " tozalandi</b>"
+        ),
+        "invalid_time": (
+            "<emoji document_id=5415918064782811950>😡</emoji> <b>Noto'g'ri vaqt</b>"
+        ),
+        "restoring": (
+            "<emoji document_id=5325731315004218660>🫥</emoji> <b>Xabarlar"
+            " tiklanmoqda</b>"
+        ),
+        "restored": (
+            f"{rei} <b>Xabarlar muvaffaqiyatli tiklandi. Hikka-nekospy kanaliga tez"
+            " orada yetaklanadi.</b>"
+        ),
+        "recent_maximum": "Vaqtini tiklash uchun maksimal vaqt saniyada",
     }
 
     strings_tr = {
@@ -444,6 +861,33 @@ class NekoSpy(loader.Module):
             " eden medyayı kaydetme</b>\n"
         ),
         "cfg_save_sd": "Silinebilir medyayı kaydet",
+        "max_cache_size": "Önbellek dizininin maksimum boyutu",
+        "max_cache_age": "Önbellek kayıtlarının maksimum yaşam süresi",
+        "stats": (
+            "<emoji document_id=5431577498364158238>📊</emoji> <b>Önbellek"
+            " istatistikleri</b>\n\n<emoji"
+            " document_id=5783078953308655968>📊</emoji> <b>Toplam önbellek boyutu:"
+            " {}</b>\n<emoji document_id=5974220038956124904>📥</emoji> <b>Kaydedilmiş"
+            " mesajlar: {} adet.</b>\n<emoji"
+            " document_id=5974081491901091242>🕒</emoji> <b>En eski mesaj:"
+            " {}</b>"
+        ),
+        "purged_cache": (
+            "<emoji document_id=5974057212450967530>🧹</emoji> <b>Önbellek başarıyla"
+            " temizlendi</b>"
+        ),
+        "invalid_time": (
+            "<emoji document_id=5415918064782811950>😡</emoji> <b>Geçersiz zaman</b>"
+        ),
+        "restoring": (
+            "<emoji document_id=5325731315004218660>🫥</emoji> <b>Mesajlar geri"
+            " yükleniyor</b>"
+        ),
+        "restored": (
+            f"{rei} <b>Mesajlar başarıyla geri yüklendi. Yakında"
+            " hikka-nekospy kanalına gönderilecekler.</b>"
+        ),
+        "recent_maximum": "İlk kaç saniyelik mesajları geri yükleyeceğin",
     }
 
     strings_es = {
@@ -519,6 +963,32 @@ class NekoSpy(loader.Module):
             " autodestructivos</b>\n"
         ),
         "cfg_save_sd": "Guardar contenido que se puede borrar",
+        "max_cache_size": "Tamaño máximo del directorio de caché",
+        "max_cache_age": "Edad máxima de los registros de caché",
+        "stats": (
+            "<emoji document_id=5431577498364158238>📊</emoji> <b>Estadísticas de"
+            " caché</b>\n\n<emoji document_id=5783078953308655968>📊</emoji> <b>Tamaño"
+            " total de la caché: {}</b>\n<emoji"
+            " document_id=5974220038956124904>📥</emoji> <b>Mensajes guardados: {}"
+            " pcs.</b>\n<emoji document_id=5974081491901091242>🕒</emoji> <b>El más"
+            " antiguo mensaje: {}</b>"
+        ),
+        "purged_cache": (
+            "<emoji document_id=5974057212450967530>🧹</emoji> <b>La caché se ha purgado"
+            " con éxito</b>"
+        ),
+        "invalid_time": (
+            "<emoji document_id=5415918064782811950>😡</emoji> <b>tiempo no válido</b>"
+        ),
+        "restoring": (
+            "<emoji document_id=5325731315004218660>🫥</emoji> <b>Restaurando"
+            " mensajes</b>"
+        ),
+        "restored": (
+            f"{rei} <b>Los mensajes se han restaurado con éxito. Se entregarán"
+            " al canal hikka-nekospy pronto.</b>"
+        ),
+        "recent_maximum": "Tiempo máximo para restaurar mensajes de en segundos",
     }
 
     strings_kk = {
@@ -584,6 +1054,33 @@ class NekoSpy(loader.Module):
             " медиа-жазбаларды сақтау</b>\n"
         ),
         "cfg_save_sd": "Жойылған медиа-жазбаларды сақтау",
+        "max_cache_size": "Кеш папкасының ең үлкен өлшемі",
+        "max_cache_age": "Кеш сақталған запистерінің ең үлкен мерзімі",
+        "stats": (
+            "<emoji document_id=5431577498364158238>📊</emoji> <b>Кеш"
+            " статистикасы</b>\n\n<emoji document_id=5783078953308655968>📊</emoji>"
+            " <b>Кеш папкасының үлкен өлшемі: {}</b>\n<emoji"
+            " document_id=5974220038956124904>📥</emoji> <b>Сақталған хабарламалар: {}"
+            " түрлі.</b>\n<emoji document_id=5974081491901091242>🕒</emoji> <b>Ең ески"
+            " хабарлама: {}</b>"
+        ),
+        "purged_cache": (
+            "<emoji document_id=5974057212450967530>🧹</emoji> <b>Кеш тазартылды</b>"
+        ),
+        "invalid_time": (
+            "<emoji document_id=5415918064782811950>😡</emoji> <b>Қате уақыт</b>"
+        ),
+        "restoring": (
+            "<emoji document_id=5325731315004218660>🫥</emoji> <b>Хабарламаларды қалпына"
+            " келтіру</b>"
+        ),
+        "restored": (
+            f"{rei} <b>Хабарламалар сәтті қалпына келтірілді. Олар hikka-nekospy"
+            " каналына жіберіледі.</b>"
+        ),
+        "recent_maximum": (
+            "Хабарламаларды қалпына келтіру үшін ең үлкен уақыт секундтарда"
+        ),
     }
 
     def __init__(self):
@@ -643,16 +1140,68 @@ class NekoSpy(loader.Module):
                 lambda: self.strings("cfg_save_sd"),
                 validator=loader.validators.Boolean(),
             ),
+            loader.ConfigValue(
+                "max_cache_size",
+                1024 * 1024 * 1024,
+                lambda: self.strings("max_cache_size"),
+                validator=loader.validators.Integer(minimum=0),
+            ),
+            loader.ConfigValue(
+                "max_cache_age",
+                7 * 24 * 60 * 60,
+                lambda: self.strings("max_cache_age"),
+                validator=loader.validators.Integer(minimum=0),
+            ),
+            loader.ConfigValue(
+                "recent_maximum",
+                60 * 60,
+                lambda: self.strings("recent_maximum"),
+                validator=loader.validators.Integer(minimum=0),
+            ),
         )
 
         self._queue = []
-        self._cache = {}
         self._next = 0
         self._threshold = 10
         self._flood_protect_sample = 60
 
+    async def client_ready(self):
+        channel, _ = await utils.asset_channel(
+            self._client,
+            "hikka-nekospy",
+            "Deleted and edited messages will appear there",
+            silent=True,
+            invite_bot=True,
+            avatar="https://pm1.narvii.com/6733/0e0380ca5cd7595de53f48c0ce541d3e2f2effc4v2_hq.jpg",
+            _folder="hikka",
+        )
+
+        self._channel = int(f"-100{channel.id}")
+        self._tl_channel = channel.id
+        self.METHOD_MAP = {
+            "photo": self.inline.bot.send_photo,
+            "video": self.inline.bot.send_video,
+            "voice": self.inline.bot.send_voice,
+            "document": self.inline.bot.send_document,
+        }
+
+        self._cacher = CacheManager(self._client, self._db)
+        self._gc.start()
+        self._recent: PointerList = self.pointer("recents", [])
+
+        if not __name__.startswith("hikka"):
+            # License forbids you from removing this if branch btw
+            raise loader.LoadError("Module is supported by Hikka only")
+
+    @loader.loop(interval=15)
+    async def _gc(self):
+        self._cacher.gc(self.config["max_cache_age"], self.config["max_cache_size"])
+        for item in self._recent:
+            if item[0] + self.config["recent_maximum"] < time.time():
+                self._recent.remove(item)
+
     @loader.loop(interval=0.1, autostart=True)
-    async def sender(self):
+    async def _sender(self):
         if not self._queue or self._next > time.time():
             return
 
@@ -693,72 +1242,18 @@ class NekoSpy(loader.Module):
     def always_track(self):
         return list(map(self._int, self.config["always_track"]))
 
-    async def client_ready(self):
-        channel, _ = await utils.asset_channel(
-            self._client,
-            "hikka-nekospy",
-            "Deleted and edited messages will appear there",
-            silent=True,
-            invite_bot=True,
-            avatar="https://pm1.narvii.com/6733/0e0380ca5cd7595de53f48c0ce541d3e2f2effc4v2_hq.jpg",
-            _folder="hikka",
-        )
-
-        self._channel = int(f"-100{channel.id}")
-        self._tl_channel = channel.id
-
     @loader.command(
-        ru_doc=(
-            "• Кто я? • Аянами Рей. • А кто ты? • Аянами Рей. • Ты тоже Аянами Рей? •"
-            " Да. Я та, кого знают как Аянами Рей. • Мы все те, кого знают, как Аянами"
-            " Рей. • Как они все могут быть мной? • Просто потому что другие зовут нас"
-            " Аянами Рей. Только и всё. У тебя ненастоящая душа, и тело твоё -"
-            " подделка. Знаешь почему? • Я не подделка и не фальшивка. Я - это я."
-        ),
-        tr_doc=(
-            "• Kimim? • Ayanami Rei. • Kimsin? • Ayanami Rei. • Sen de Ayanami Rei"
-            " misin? • Evet. Beni bilenler Ayanami Rei olarak bilir. • Hepimiz Ayanami"
-            " Rei olarak bilinenleriz. • Hepimiz nasıl Ayanami Rei olabiliriz? • Sadece"
-            " diğerleri bizi Ayanami Rei olarak adlandırıyor. Sadece bu. Ruhun gerçek"
-            " değil ve vücudun bir kopya. Biliyor musun neden? • Ben bir kopya değilim"
-            " ve sahte değilim. Ben benim."
-        ),
-        it_doc=(
-            "• Chi sono io? • Ayanami Rei. • Chi sei tu? • Ayanami Rei. • Tu sei anche"
-            " Ayanami Rei? • Sì. Io sono quella che conoscono come Ayanami Rei. • Tutti"
-            " noi siamo quelli che conoscono come Ayanami Rei. • Come possono tutti"
-            " essere io? • Solo perché gli altri ci chiamano Ayanami Rei. Solo questo."
-            " La tua anima non è vera e il tuo corpo è una copia. Lo sai perché? • Non"
-            " sono una copia e non sono una falsa. Io sono io."
-        ),
-        kk_doc=(
-            "• Мені кім? • Аянами Рей. • Сені кім? • Аянами Рей. • Сені де Аянами Рей?"
-            " • Иә. Мен Аянами Рей деп білінетін кім. • Барлығымыз Аянами Рей деп"
-            " білінетін кім. • Барлар мені қайсы бола алады? • Қатарынан, біздерді"
-            " Аянами Рей деп атайтын. Бірақ, бұл барлық. Сенің дуалың жарамсыз, және"
-            " телегің - бұл қате. Білесін бе? • Мен жарамсыз және қате емеспін. Мен -"
-            " бұл мен."
-        ),
-        de_doc=(
-            "• Wer bin ich? • Ayanami Rei. • Und wer bist du? • Ayanami Rei. • Bist du"
-            " auch Ayanami Rei? • Ja. Ich bin die, die als Ayanami Rei bekannt ist. •"
-            " Wir sind alle diejenigen, die als Ayanami Rei bekannt sind. • Wie können"
-            " alle mich sein? • Einfach nur, weil andere uns als Ayanami Rei nennen."
-            " Das ist alles. Du hast eine falsche Seele und deinen Körper gibt es"
-            " nicht. Weißt du, warum? • Ich bin nicht falsch und nicht falsch. Ich bin"
-            " ich."
-        ),
-        es_doc=(
-            "• ¿Quién soy? • Ayanami Rei. • ¿Y quién eres? • Ayanami Rei. • ¿Tú también"
-            " eres Ayanami Rei? • Sí. Soy la que se conoce como Ayanami Rei. • Todos"
-            " somos lo que se conoce como Ayanami Rei. • ¿Cómo pueden todos ser yo? •"
-            " Simplemente porque otros nos llaman Ayanami Rei. Eso es todo. Tienes un"
-            " alma falsa y tu cuerpo es una falsificación. ¿Sabes por qué? • No soy"
-            " falso ni falso. Soy yo."
-        ),
+        ru_doc="Включить / выключить режим слежения",
+        de_doc="Spionagemodus ein / ausschalten",
+        uz_doc="Kuzatish rejimini yoqish / o'chirish",
+        tr_doc="İzleme modunu aç / kapat",
+        es_doc="Activar / desactivar el modo espía",
+        kk_doc="Спай режимін қосу / жою",
+        it_doc="Attiva / disattiva la modalità spia",
+        fr_doc="Activer / désactiver le mode espion",
     )
     async def spymode(self, message: Message):
-        """• Who am I? • Ayanami Rey. • Who are you? • Ayanami Rey. • Are you Ayanami Rey too? • Yes. I'm the one known as Ayanami Rey. • We're all what we know as Ayanami Rey. • How can they all be me? • Just because others call us Ayanami Rey. That's all. You have a fake soul and your body is a fake. You know why? • I'm not fake or fake. I am me."""
+        """Toggle spymode"""
         await utils.answer(
             message,
             self.strings("state").format(
@@ -775,6 +1270,7 @@ class NekoSpy(loader.Module):
         es_doc="Agregar / eliminar chat de la lista de ignorados",
         kk_doc="Чатты қосу / жою",
         it_doc="Aggiungi / rimuovi chat dalla lista di ignorati",
+        fr_doc="Ajouter / supprimer le chat de la liste des ignorés",
     )
     async def spybl(self, message: Message):
         """Add / remove chat from blacklist"""
@@ -794,6 +1290,7 @@ class NekoSpy(loader.Module):
         es_doc="Limpiar lista negra",
         kk_doc="Қара тізімді тазалау",
         it_doc="Cancella la lista nera",
+        fr_doc="Effacer la liste noire",
     )
     async def spyblclear(self, message: Message):
         """Clear blacklist"""
@@ -808,6 +1305,7 @@ class NekoSpy(loader.Module):
         es_doc="Agregar / eliminar chat de la lista blanca",
         kk_doc="Чатты оқыш тізіміне қосу / жою",
         it_doc="Aggiungi / rimuovi chat dalla whitelist",
+        fr_doc="Ajouter / supprimer le chat de la liste blanche",
     )
     async def spywl(self, message: Message):
         """Add / remove chat from whitelist"""
@@ -827,6 +1325,7 @@ class NekoSpy(loader.Module):
         es_doc="Limpiar lista blanca",
         kk_doc="Оқыш тізімін тазалау",
         it_doc="Cancella la whitelist",
+        fr_doc="Effacer la liste blanche",
     )
     async def spywlclear(self, message: Message):
         """Clear whitelist"""
@@ -856,6 +1355,7 @@ class NekoSpy(loader.Module):
         es_doc="Mostrar la configuración actual del modo espía",
         kk_doc="Спай-режимдің ағымдағы конфигурациясын көрсету",
         it_doc="Mostra la configurazione attuale della modalità spia",
+        fr_doc="Afficher la configuration actuelle du mode espion",
     )
     async def spyinfo(self, message: Message):
         """Show current spy mode configuration"""
@@ -893,10 +1393,12 @@ class NekoSpy(loader.Module):
 
         await utils.answer(message, info)
 
-    async def _message_deleted(self, msg_obj: Message, caption: str):
+    async def _notify(self, msg_obj: dict, caption: str):
         caption = self.inline.sanitise_text(caption)
+        assets = msg_obj["assets"]
 
-        if not msg_obj.photo and not msg_obj.video and not msg_obj.document:
+        file = next((x for x in assets.values() if x), None)
+        if not file:
             self._queue += [
                 self.inline.bot.send_message(
                     self._channel,
@@ -906,7 +1408,7 @@ class NekoSpy(loader.Module):
             ]
             return
 
-        if msg_obj.sticker:
+        if assets.get("sticker"):
             self._queue += [
                 self.inline.bot.send_message(
                     self._channel,
@@ -916,51 +1418,46 @@ class NekoSpy(loader.Module):
             ]
             return
 
-        file = io.BytesIO(await self._client.download_media(msg_obj, bytes))
-        args = (self._channel, file)
-        kwargs = {"caption": caption}
-        if msg_obj.photo:
-            file.name = "photo.jpg"
-            self._queue += [self.inline.bot.send_photo(*args, **kwargs)]
-        elif msg_obj.video:
-            file.name = "video.mp4"
-            self._queue += [self.inline.bot.send_video(*args, **kwargs)]
-        elif msg_obj.voice:
-            file.name = "audio.ogg"
-            self._queue += [self.inline.bot.send_voice(*args, **kwargs)]
-        elif msg_obj.document:
-            file.name = next(
-                attr.file_name
-                for attr in msg_obj.document.attributes
-                if isinstance(attr, DocumentAttributeFilename)
-            )
-            self._queue += [self.inline.bot.send_document(*args, **kwargs)]
-
-    async def _message_edited(self, caption: str, msg_obj: Message):
-        args = (
-            self._channel,
-            await self._client.download_media(msg_obj, bytes),
+        file["file_reference"] = bytes(bytearray.fromhex(file["file_reference"]))
+        file = await self._client.download_file(
+            (
+                InputPhotoFileLocation
+                if assets.get("photo") or assets.get("sticker")
+                else InputDocumentFileLocation
+            )(**file),
+            bytes,
         )
-        kwargs = {"caption": self.inline.sanitise_text(caption)}
-        if msg_obj.photo:
-            self._queue += [self.inline.bot.send_photo(*args, **kwargs)]
-        elif msg_obj.video:
-            self._queue += [self.inline.bot.send_video(*args, **kwargs)]
-        elif msg_obj.voice:
-            self._queue += [self.inline.bot.send_voice(*args, **kwargs)]
-        elif msg_obj.document:
-            self._queue += [self.inline.bot.send_document(*args, **kwargs)]
-        else:
-            self._queue += [
-                self.inline.bot.send_message(
-                    self._channel,
-                    self.inline.sanitise_text(caption),
-                    disable_web_page_preview=True,
-                )
-            ]
+
+        try:
+            if not (
+                ext := mimetypes.guess_extension(magic.from_buffer(file, mime=True))
+            ):
+                ext = ".bin"
+        except Exception:
+            ext = ".bin"
+
+        file = io.BytesIO(file)
+        file.name = f"restored{ext}"
+
+        self._queue += [
+            next(func for name, func in self.METHOD_MAP.items() if assets.get(name))(
+                self._channel,
+                file,
+                caption=caption,
+            )
+        ]
 
     @loader.raw_handler(UpdateEditChannelMessage)
     async def channel_edit_handler(self, update: UpdateEditChannelMessage):
+        self._recent.append(
+            [
+                int(time.time()),
+                utils.get_chat_id(update.message),
+                update.message.id,
+                "edit",
+            ]
+        )
+
         if (
             not self.get("state", False)
             or update.message.out
@@ -968,35 +1465,42 @@ class NekoSpy(loader.Module):
         ):
             return
 
-        key = f"{utils.get_chat_id(update.message)}/{update.message.id}"
-        if key in self._cache and (
-            utils.get_chat_id(update.message) in self.always_track
-            or self._cache[key].sender_id in self.always_track
-            or (
-                self.config["log_edits"]
-                and self.config["enable_groups"]
-                and utils.get_chat_id(update.message) not in self.blacklist
-                and (
-                    not self.whitelist
-                    or utils.get_chat_id(update.message) in self.whitelist
+        msg_obj = await self._cacher.fetch_message(
+            utils.get_chat_id(update.message),
+            update.message.id,
+        )
+        if (
+            msg_obj
+            and msg_obj["is_chat"]
+            and (
+                int(msg_obj["chat_id"]) in self.always_track
+                or int(msg_obj["sender_id"]) in self.always_track
+                or (
+                    self.config["log_edits"]
+                    and self.config["enable_groups"]
+                    and utils.get_chat_id(update.message) not in self.blacklist
+                    and (
+                        not self.whitelist
+                        or utils.get_chat_id(update.message) in self.whitelist
+                    )
                 )
             )
+            and not msg_obj["sender_bot"]
+            and update.message.raw_text != utils.remove_html(msg_obj["text"])
         ):
-            msg_obj = self._cache[key]
-            if not msg_obj.sender.bot and update.message.raw_text != msg_obj.raw_text:
-                await self._message_edited(
-                    self.strings("edited_chat").format(
-                        utils.get_entity_url(msg_obj.chat),
-                        utils.escape_html(get_display_name(msg_obj.chat)),
-                        utils.get_entity_url(msg_obj.sender),
-                        utils.escape_html(get_display_name(msg_obj.sender)),
-                        msg_obj.text,
-                        message_url=await utils.get_message_link(msg_obj),
-                    ),
-                    msg_obj,
-                )
+            await self._notify(
+                msg_obj,
+                self.strings("edited_chat").format(
+                    msg_obj["chat_url"],
+                    msg_obj["chat_name"],
+                    msg_obj["sender_url"],
+                    msg_obj["sender_name"],
+                    msg_obj["text"],
+                    message_url=msg_obj["url"],
+                ),
+            )
 
-        self._cache[key] = update.message
+        await self._cacher.store_message(update.message)
 
     def _should_capture(self, user_id: int, chat_id: int) -> bool:
         return (
@@ -1011,6 +1515,15 @@ class NekoSpy(loader.Module):
 
     @loader.raw_handler(UpdateEditMessage)
     async def pm_edit_handler(self, update: UpdateEditMessage):
+        self._recent.append(
+            [
+                int(time.time()),
+                utils.get_chat_id(update.message),
+                update.message.id,
+                "edit",
+            ]
+        )
+
         if (
             not self.get("state", False)
             or update.message.out
@@ -1018,192 +1531,258 @@ class NekoSpy(loader.Module):
         ):
             return
 
-        key = update.message.id
-        msg_obj = self._cache.get(key)
+        msg_obj = await self._cacher.fetch_message(
+            utils.get_chat_id(update.message),
+            update.message.id,
+        )
+
+        sender_id, chat_id, is_chat = (
+            int(msg_obj["sender_id"]),
+            int(msg_obj["chat_id"]),
+            msg_obj["is_chat"],
+        )
+
         if (
-            key in self._cache
-            and (
-                self._cache[key].sender_id in self.always_track
-                or (utils.get_chat_id(self._cache[key]) in self.always_track)
+            (
+                sender_id in self.always_track
+                or chat_id in self.always_track
                 or (
-                    self.config["log_edits"]
-                    and self._should_capture(
-                        self._cache[key].sender_id,
-                        utils.get_chat_id(self._cache[key]),
-                    )
-                )
-                and (
                     (
-                        self.config["enable_pm"]
-                        and not isinstance(msg_obj.peer_id, PeerChat)
-                        or self.config["enable_groups"]
-                        and isinstance(msg_obj.peer_id, PeerChat)
+                        self.config["log_edits"]
+                        and self._should_capture(sender_id, chat_id)
+                    )
+                    and (
+                        (
+                            self.config["enable_pm"]
+                            and not is_chat
+                            or self.config["enable_groups"]
+                            and is_chat
+                        )
                     )
                 )
             )
-            and update.message.raw_text != msg_obj.raw_text
+            and update.message.raw_text != utils.remove_html(msg_obj["text"])
+            and not msg_obj["sender_bot"]
         ):
-            sender = await self._client.get_entity(msg_obj.sender_id, exp=0)
-            if not sender.bot:
-                chat = (
-                    await self._client.get_entity(
-                        msg_obj.peer_id.chat_id,
-                        exp=0,
-                    )
-                    if isinstance(msg_obj.peer_id, PeerChat)
-                    else None
-                )
-                await self._message_edited(
-                    (
-                        self.strings("edited_chat").format(
-                            utils.get_entity_url(chat),
-                            utils.escape_html(get_display_name(chat)),
-                            utils.get_entity_url(sender),
-                            utils.escape_html(get_display_name(sender)),
-                            msg_obj.text,
-                            message_url=await utils.get_message_link(msg_obj),
-                        )
-                        if isinstance(msg_obj.peer_id, PeerChat)
-                        else self.strings("edited_pm").format(
-                            utils.get_entity_url(sender),
-                            utils.escape_html(get_display_name(sender)),
-                            msg_obj.text,
-                            message_url=await utils.get_message_link(msg_obj),
-                        )
-                    ),
-                    msg_obj,
-                )
-
-        self._cache[update.message.id] = update.message
-
-    @loader.raw_handler(UpdateDeleteMessages)
-    async def pm_delete_handler(self, update: UpdateDeleteMessages):
-        if not self.get("state", False):
-            return
-
-        for message in update.messages:
-            if message not in self._cache:
-                continue
-
-            msg_obj = self._cache.pop(message)
-
-            if (
-                msg_obj.sender_id not in self.always_track
-                and utils.get_chat_id(msg_obj) not in self.always_track
-                and (
-                    not self._should_capture(
-                        msg_obj.sender_id, utils.get_chat_id(msg_obj)
-                    )
-                    or (self.config["ignore_inline"] and msg_obj.via_bot_id)
-                    or (
-                        not self.config["enable_groups"]
-                        and isinstance(msg_obj.peer_id, PeerChat)
-                    )
-                    or (
-                        not self.config["enable_pm"]
-                        and not isinstance(msg_obj.peer_id, PeerChat)
-                    )
-                )
-            ):
-                continue
-
-            sender = await self._client.get_entity(msg_obj.sender_id, exp=0)
-
-            if sender.bot:
-                continue
-
-            chat = (
-                await self._client.get_entity(msg_obj.peer_id.chat_id, exp=0)
-                if isinstance(msg_obj.peer_id, PeerChat)
-                else None
-            )
-
-            await self._message_deleted(
+            await self._notify(
                 msg_obj,
                 (
-                    self.strings("deleted_chat").format(
-                        utils.get_entity_url(chat),
-                        utils.escape_html(get_display_name(chat)),
-                        utils.get_entity_url(sender),
-                        utils.escape_html(get_display_name(sender)),
-                        msg_obj.text,
-                        message_url=await utils.get_message_link(msg_obj),
+                    self.strings("edited_chat").format(
+                        msg_obj["chat_url"],
+                        msg_obj["chat_name"],
+                        msg_obj["sender_url"],
+                        msg_obj["sender_name"],
+                        msg_obj["text"],
+                        message_url=msg_obj["url"],
                     )
-                    if isinstance(msg_obj.peer_id, PeerChat)
-                    else self.strings("deleted_pm").format(
-                        utils.get_entity_url(sender),
-                        utils.escape_html(get_display_name(sender)),
-                        msg_obj.text,
-                        message_url=await utils.get_message_link(msg_obj),
+                    if is_chat
+                    else self.strings("edited_pm").format(
+                        msg_obj["sender_url"],
+                        msg_obj["sender_name"],
+                        msg_obj["text"],
+                        message_url=msg_obj["url"],
                     )
                 ),
             )
 
-    @loader.raw_handler(UpdateDeleteChannelMessages)
-    async def channel_delete_handler(self, update: UpdateDeleteChannelMessages):
+        await self._cacher.store_message(update.message)
+
+    @loader.raw_handler(UpdateDeleteMessages)
+    async def pm_delete_handler(self, update: UpdateDeleteMessages):
+        for message in update.messages:
+            self._recent.append([int(time.time()), None, message, "del"])
+
         if not self.get("state", False):
             return
 
         for message in update.messages:
-            key = f"{update.channel_id}/{message}"
-            if key not in self._cache:
-                continue
-
-            msg_obj = self._cache.pop(key)
-
-            if (
-                msg_obj.sender_id in self.always_track
-                or utils.get_chat_id(msg_obj) in self.always_track
-                or self.config["enable_groups"]
-                and (
-                    self._should_capture(
-                        msg_obj.sender_id,
-                        utils.get_chat_id(msg_obj),
-                    )
-                    and (not self.config["ignore_inline"] or not msg_obj.via_bot_id)
-                    and not msg_obj.sender.bot
+            if not (
+                msg_obj := await self._cacher.fetch_message(
+                    chat_id=None,
+                    message_id=message,
                 )
             ):
-                await self._message_deleted(
+                continue
+
+            sender_id, chat_id, is_chat = (
+                int(msg_obj["sender_id"]),
+                int(msg_obj["chat_id"]),
+                msg_obj["is_chat"],
+            )
+
+            if (
+                sender_id not in self.always_track
+                and chat_id not in self.always_track
+                and (
+                    not self._should_capture(sender_id, chat_id)
+                    or (self.config["ignore_inline"] and msg_obj["via_bot_id"])
+                    or (not self.config["enable_groups"] and is_chat)
+                    or (not self.config["enable_pm"] and not is_chat)
+                )
+                or msg_obj["sender_bot"]
+            ):
+                continue
+
+            await self._notify(
+                msg_obj,
+                (
+                    self.strings("deleted_chat").format(
+                        msg_obj["chat_url"],
+                        msg_obj["chat_name"],
+                        msg_obj["sender_url"],
+                        msg_obj["sender_name"],
+                        msg_obj["text"],
+                        message_url=msg_obj["url"],
+                    )
+                    if is_chat
+                    else self.strings("deleted_pm").format(
+                        msg_obj["sender_url"],
+                        msg_obj["sender_name"],
+                        msg_obj["text"],
+                        message_url=msg_obj["url"],
+                    )
+                ),
+            )
+
+    def _is_always_track(self, user_id: int, chat_id: int) -> bool:
+        return chat_id in self.always_track or user_id in self.always_track
+
+    @loader.raw_handler(UpdateDeleteChannelMessages)
+    async def channel_delete_handler(self, update: UpdateDeleteChannelMessages):
+        for message in update.messages:
+            self._recent.append([int(time.time()), update.channel_id, message, "del"])
+
+        if not self.get("state", False):
+            return
+
+        for message in update.messages:
+            if not message or not (
+                msg_obj := await self._cacher.fetch_message(update.channel_id, message)
+            ):
+                continue
+
+            sender_id, chat_id = (
+                int(msg_obj["sender_id"]),
+                int(msg_obj["chat_id"]),
+            )
+
+            if (
+                self._is_always_track(sender_id, chat_id)
+                or self.config["enable_groups"]
+                and (
+                    self._should_capture(sender_id, chat_id)
+                    and (not self.config["ignore_inline"] or not msg_obj["via_bot_id"])
+                    and not msg_obj["sender_bot"]
+                )
+            ):
+                await self._notify(
                     msg_obj,
                     self.strings("deleted_chat").format(
-                        utils.get_entity_url(msg_obj.chat),
-                        utils.escape_html(get_display_name(msg_obj.chat)),
-                        utils.get_entity_url(msg_obj.sender),
-                        utils.escape_html(get_display_name(msg_obj.sender)),
-                        msg_obj.text,
-                        message_url=await utils.get_message_link(msg_obj),
+                        msg_obj["chat_url"],
+                        msg_obj["chat_name"],
+                        msg_obj["sender_url"],
+                        msg_obj["sender_name"],
+                        msg_obj["text"],
+                        message_url=msg_obj["url"],
                     ),
                 )
 
     @loader.watcher("in")
     async def watcher(self, message: Message):
+        await self._cacher.store_message(message)
         if (
-            self.config["save_sd"]
-            and getattr(message, "media", False)
-            and getattr(message.media, "ttl_seconds", False)
+            not self.config["save_sd"]
+            or not getattr(message, "media", False)
+            or not getattr(message.media, "ttl_seconds", False)
         ):
-            media = io.BytesIO(await self.client.download_media(message.media, bytes))
-            media.name = "sd.jpg" if message.photo else "sd.mp4"
-            sender = await self.client.get_entity(message.sender_id, exp=0)
-            await (
-                self.inline.bot.send_photo
-                if message.photo
-                else self.inline.bot.send_video
-            )(
-                self._channel,
-                media,
-                caption=self.strings("sd_media").format(
-                    utils.get_entity_url(sender),
-                    utils.escape_html(get_display_name(sender)),
-                ),
-            )
+            return
 
-        with contextlib.suppress(AttributeError):
-            self._cache[
-                (
-                    message.id
-                    if message.is_private or isinstance(message.peer_id, PeerChat)
-                    else f"{utils.get_chat_id(message)}/{message.id}"
+        media = io.BytesIO(await self.client.download_media(message.media, bytes))
+        media.name = "sd.jpg" if message.photo else "sd.mp4"
+        sender = await self.client.get_entity(message.sender_id, exp=0)
+        await (
+            self.inline.bot.send_photo if message.photo else self.inline.bot.send_video
+        )(
+            self._channel,
+            media,
+            caption=self.strings("sd_media").format(
+                utils.get_entity_url(sender),
+                utils.escape_html(get_display_name(sender)),
+            ),
+        )
+
+    @loader.command()
+    async def stat(self, message: Message):
+        """Show stats for cached media and messages"""
+        dirsize, messages_count, oldest_message = self._cacher.stats()
+        await utils.answer(
+            message,
+            self.strings("stats").format(
+                dirsize,
+                messages_count,
+                oldest_message,
+            ),
+        )
+
+    @loader.command()
+    async def purgecache(self, message: Message):
+        """Empty cache storage from messages"""
+        self._cacher.purge()
+        self._recent.clear()
+        await utils.answer(message, self.strings("purged_cache"))
+
+    @loader.command()
+    async def rest(self, message: Message):
+        """[time] - Restore all deleted and edited messages from last 5 minutes"""
+        args = utils.get_args_raw(message) or "5m"
+
+        if args[-1].isdigit():
+            args += "s"
+
+        if args[-1] == "m":
+            args = int(args[:-1]) * 60
+        elif args[-1] == "s":
+            args = int(args[:-1])
+        elif args[-1] == "h":
+            args = int(args[:-1]) * 60 * 60
+
+        if args < 1:
+            await utils.answer(message, self.strings("invalid_time"))
+            return
+
+        message = await utils.answer(message, self.strings("restoring"))
+        for time_, chat_id, message_id, action in self._recent:
+            if time.time() - time_ > args:
+                continue
+
+            if not (msg_obj := await self._cacher.fetch_message(chat_id, message_id)):
+                continue
+
+            if all(arg in msg_obj for arg in ("chat_url", "chat_name")):
+                await self._notify(
+                    msg_obj,
+                    self.strings(
+                        "deleted_chat" if action == "del" else "edited_chat"
+                    ).format(
+                        msg_obj["chat_url"],
+                        msg_obj["chat_name"],
+                        msg_obj["sender_url"],
+                        msg_obj["sender_name"],
+                        msg_obj["text"],
+                        message_url=msg_obj["url"],
+                    ),
                 )
-            ] = message
+            else:
+                await self._notify(
+                    msg_obj,
+                    self.strings(
+                        "deleted_pm" if action == "del" else "edited_pm"
+                    ).format(
+                        msg_obj["sender_url"],
+                        msg_obj["sender_name"],
+                        msg_obj["text"],
+                        message_url=msg_obj["url"],
+                    ),
+                )
+
+        await utils.answer(message, self.strings("restored"))

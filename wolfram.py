@@ -54,16 +54,18 @@ async def wolfram_compute(query: str) -> tuple:
         async with aiohttp.ClientSession() as session:
             async with session.request(
                 "GET",
-                "https://api.wolframalpha.com/v2/query?"
-                "scantimeout=30&"
-                "podtimeout=30&"
-                "formattimeout=30&"
-                "parsetimeout=30&"
-                "totaltimeout=30&"
-                "podstate=Show+all+steps&"
-                "output=json&"
-                f"input={quote_plus(query)}&"
-                f"appid={random.choice(appids)}",
+                (
+                    "https://api.wolframalpha.com/v2/query?"
+                    "scantimeout=30&"
+                    "podtimeout=30&"
+                    "formattimeout=30&"
+                    "parsetimeout=30&"
+                    "totaltimeout=30&"
+                    "podstate=Show+all+steps&"
+                    "output=json&"
+                    f"input={quote_plus(query)}&"
+                    f"appid={random.choice(appids)}"
+                ),
             ) as resp:
                 answer = await resp.text()
 
@@ -77,9 +79,11 @@ async def wolfram_compute(query: str) -> tuple:
                     if pod["title"] in {"Result", "Solution", "Exact result"}:
                         result += "\n".join(
                             [
-                                f"<code>{utils.escape_html(subpod['plaintext'])}</code>\n"
-                                if "plaintext" in subpod
-                                else ""
+                                (
+                                    f"<code>{utils.escape_html(subpod['plaintext'])}</code>\n"
+                                    if "plaintext" in subpod
+                                    else ""
+                                )
                                 for subpod in pod["subpods"]
                             ]
                         )

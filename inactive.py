@@ -133,8 +133,10 @@ class Inactive(loader.Module):
             loader.ConfigValue(
                 "inactive_time",
                 None,
-                "If specified, any user, which sent no messages for this amount of"
-                " hours, will be blocked.",
+                (
+                    "If specified, any user, which sent no messages for this amount of"
+                    " hours, will be blocked."
+                ),
                 validator=loader.validators.Union(
                     loader.validators.Integer(minimum=1), loader.validators.NoneType()
                 ),
@@ -142,8 +144,10 @@ class Inactive(loader.Module):
             loader.ConfigValue(
                 "inactive_messages",
                 None,
-                "If specified, any user, which sent less than this amount of messages,"
-                " will be blocked.",
+                (
+                    "If specified, any user, which sent less than this amount of"
+                    " messages, will be blocked."
+                ),
                 validator=loader.validators.Union(
                     loader.validators.Integer(minimum=1), loader.validators.NoneType()
                 ),
@@ -218,9 +222,11 @@ class Inactive(loader.Module):
                 )
 
         await call.edit(
-            self.strings("waiting_lock")
-            if self._global_lock.locked()
-            else self.strings("started"),
+            (
+                self.strings("waiting_lock")
+                if self._global_lock.locked()
+                else self.strings("started")
+            ),
             reply_markup=markup,
         )
 
@@ -416,9 +422,11 @@ class Inactive(loader.Module):
         await self.inline.form(
             message=message,
             text=self.strings("confirm").format(
-                f'{self.config["inactive_time"]} {self.strings("hrs")}'
-                if self.config["inactive_time"]
-                else "-",
+                (
+                    f'{self.config["inactive_time"]} {self.strings("hrs")}'
+                    if self.config["inactive_time"]
+                    else "-"
+                ),
                 self.config["inactive_messages"] or "-",
             ),
             reply_markup=[

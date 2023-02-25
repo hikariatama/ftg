@@ -644,15 +644,19 @@ class StickManagerMod(loader.Module):
                 self._raw_font,
                 max(
                     self.config["font_size"],
-                    40
-                    if len(text) < 5
-                    else 35
-                    if len(text) < 10
-                    else 30
-                    if len(text) < 15
-                    else 25
-                    if len(text) < 20
-                    else self.config["font_size"],
+                    (
+                        40
+                        if len(text) < 5
+                        else (
+                            35
+                            if len(text) < 10
+                            else (
+                                30
+                                if len(text) < 15
+                                else 25 if len(text) < 20 else self.config["font_size"]
+                            )
+                        )
+                    ),
                 ),
                 (255, 255, 255),
                 "center",

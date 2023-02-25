@@ -74,7 +74,9 @@ class XVideos:
     async def fetch_thumbs(self, query: str, gay: bool = False) -> list:
         res = await utils.run_sync(
             requests.get,
-            f"https://www.xvideos.com/switch-sexual-orientation/{'gay/gay' if gay else 'straight/straight'}",
+            (
+                f"https://www.xvideos.com/switch-sexual-orientation/{'gay/gay' if gay else 'straight/straight'}"
+            ),
             headers={"Referer": f"https://www.xvideos.com/?k={quote_plus(query)}"},
             allow_redirects=False,
         )

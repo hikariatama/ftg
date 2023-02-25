@@ -120,8 +120,10 @@ class NekosLifeMod(loader.Module):
         """Why?"""
         await utils.answer(
             message,
-            "<code>👾"
-            f" {(await utils.run_sync(requests.get, self.endpoints['why'])).json()['why']}</code>",
+            (
+                "<code>👾"
+                f" {(await utils.run_sync(requests.get, self.endpoints['why'])).json()['why']}</code>"
+            ),
         )
 
     @loader.unrestricted
@@ -129,8 +131,10 @@ class NekosLifeMod(loader.Module):
         """Did you know?"""
         await utils.answer(
             message,
-            "<b>🧐 Did you know, that"
-            f" </b><code>{(await utils.run_sync(requests.get, self.endpoints['fact'])).json()['fact']}</code>",
+            (
+                "<b>🧐 Did you know, that"
+                f" </b><code>{(await utils.run_sync(requests.get, self.endpoints['fact'])).json()['fact']}</code>"
+            ),
         )
 
     @loader.unrestricted
@@ -138,5 +142,7 @@ class NekosLifeMod(loader.Module):
         """Sends cat ascii art"""
         await utils.answer(
             message,
-            f"<b>{(await utils.run_sync(requests.get, self.endpoints['cat'])).json()['cat']}</b>",
+            (
+                f"<b>{(await utils.run_sync(requests.get, self.endpoints['cat'])).json()['cat']}</b>"
+            ),
         )

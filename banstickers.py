@@ -401,15 +401,19 @@ class BanStickers(loader.Module):
             loader.ConfigValue(
                 "rms_threshold",
                 4.0,
-                "The lower this value is - the more light the detection will be. 0.0 -"
-                " Full match, 4.0 - approximate match",
+                (
+                    "The lower this value is - the more light the detection will be."
+                    " 0.0 - Full match, 4.0 - approximate match"
+                ),
                 validator=loader.validators.Float(maximum=10.0),
             ),
             loader.ConfigValue(
                 "bantime",
                 180,
-                "Once the user sent forbidden sticker, he will be restricted from"
-                " sending more for this amount of seconds",
+                (
+                    "Once the user sent forbidden sticker, he will be restricted from"
+                    " sending more for this amount of seconds"
+                ),
                 validator=loader.validators.Integer(minimum=60),
             ),
         )

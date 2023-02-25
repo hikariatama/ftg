@@ -368,8 +368,10 @@ class HikariChatAPI:
                         await self._client.edit_message(
                             item["chat_id"],
                             item["message_id"],
-                            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Bad"
-                            " API arguments, PROKAZNIK!</b>",
+                            (
+                                "<emoji document_id=5300759756669984376>🚫</emoji>"
+                                " <b>Bad API arguments, PROKAZNIK!</b>"
+                            ),
                         )
                     return False
 
@@ -1762,7 +1764,9 @@ class HikariChatMod(loader.Module):
             loader.ConfigValue(
                 "join_ratelimit",
                 10,
-                lambda: "How many users per minute need to join until BanNinja activates",
+                lambda: (
+                    "How many users per minute need to join until BanNinja activates"
+                ),
                 validator=loader.validators.Integer(minimum=1),
             ),
             loader.ConfigValue(
@@ -2019,8 +2023,10 @@ class HikariChatMod(loader.Module):
                     else self.api.chats[str(chat)][protection][0]
                 )
                 await call.edit(
-                    f"🌁 <b>{get_full_name(cinfo)}</b>:"
-                    f" <code>{PROTECTS[protection]}</code> (now: {current_state})",
+                    (
+                        f"🌁 <b>{get_full_name(cinfo)}</b>:"
+                        f" <code>{PROTECTS[protection]}</code> (now: {current_state})"
+                    ),
                     reply_markup=markup,
                 )
             else:
@@ -2229,9 +2235,11 @@ class HikariChatMod(loader.Module):
                     await self._client.send_message(chat.id, msg)
             else:
                 await self.inline.form(
-                    message=message
-                    if isinstance(message, Message)
-                    else getattr(chat, "id", chat),
+                    message=(
+                        message
+                        if isinstance(message, Message)
+                        else getattr(chat, "id", chat)
+                    ),
                     text=msg,
                     reply_markup={
                         "text": self.strings("btn_unban"),
@@ -2321,9 +2329,11 @@ class HikariChatMod(loader.Module):
                     await self._client.send_message(chat.id, msg)
             else:
                 await self.inline.form(
-                    message=message
-                    if isinstance(message, Message)
-                    else getattr(chat, "id", chat),
+                    message=(
+                        message
+                        if isinstance(message, Message)
+                        else getattr(chat, "id", chat)
+                    ),
                     text=msg,
                     reply_markup={
                         "text": self.strings("btn_unmute"),
@@ -2849,9 +2859,11 @@ class HikariChatMod(loader.Module):
             message,
             self.strings("version").format(
                 ver,
-                "✅ Connected"
-                if self.api._connected
-                else ("🔁 Connecting..." if self.api._inited else "🗃 Local"),
+                (
+                    "✅ Connected"
+                    if self.api._connected
+                    else ("🔁 Connecting..." if self.api._inited else "🗃 Local")
+                ),
             ),
         )
 
@@ -3357,9 +3369,11 @@ class HikariChatMod(loader.Module):
             self.strings("gunban").format(
                 utils.get_entity_url(user),
                 utils.escape_html(get_full_name(user)),
-                self.strings("unbanned_in_n_chats").format(counter)
-                if silent
-                else chats,
+                (
+                    self.strings("unbanned_in_n_chats").format(counter)
+                    if silent
+                    else chats
+                ),
             ),
         )
 
@@ -3949,14 +3963,17 @@ class HikariChatMod(loader.Module):
         """typing.List available filters"""
         await utils.answer(
             message,
-            self.strings("protections")
-            if self.api._inited
-            else "\n".join(
-                [
-                    line
-                    for line in self.strings("protections").splitlines()
-                    if "antinsfw" not in line.lower() and "report" not in line.lower()
-                ]
+            (
+                self.strings("protections")
+                if self.api._inited
+                else "\n".join(
+                    [
+                        line
+                        for line in self.strings("protections").splitlines()
+                        if "antinsfw" not in line.lower()
+                        and "report" not in line.lower()
+                    ]
+                )
             ),
         )
 
@@ -4842,9 +4859,11 @@ class HikariChatMod(loader.Module):
             try:
                 await self._ban_ninja_forms[chat_id].edit(
                     self.strings("smart_anti_raid_active").format(
-                        self.strings("forbid_messages")
-                        if self.config["close_on_raid"]
-                        else "",
+                        (
+                            self.strings("forbid_messages")
+                            if self.config["close_on_raid"]
+                            else ""
+                        ),
                         self._ban_ninja_progress[chat_id],
                     ),
                     {
@@ -4934,9 +4953,11 @@ class HikariChatMod(loader.Module):
             )
             form = await self.inline.form(
                 self.strings("smart_anti_raid_active").format(
-                    self.strings("forbid_messages")
-                    if self.config["close_on_raid"]
-                    else "",
+                    (
+                        self.strings("forbid_messages")
+                        if self.config["close_on_raid"]
+                        else ""
+                    ),
                     self.config["join_ratelimit"],
                 ),
                 message=int(chat_id),
@@ -5372,8 +5393,9 @@ class HikariChatMod(loader.Module):
                         "link": await utils.get_message_link(reply, chat),
                         "user_link": utils.get_link(user),
                         "user_name": get_full_name(user),
-                        "text_thumbnail": (getattr(reply, "raw_text", "") or "")[:1024]
-                        or "<media>",
+                        "text_thumbnail": (getattr(reply, "raw_text", "") or "")[
+                            :1024
+                        ] or "<media>",
                     },
                 },
                 message,
@@ -5724,7 +5746,7 @@ class HikariChatMod(loader.Module):
                 )
                 and (
                     len(re.findall("[\u4e00-\u9fff]+", get_full_name(user))) != 0
-                    or len(re.findall("[\u0621-\u064A]+", get_full_name(user))) != 0
+                    or len(re.findall("[\u0621-\u064a]+", get_full_name(user))) != 0
                 )
             )
             else False
@@ -5744,7 +5766,7 @@ class HikariChatMod(loader.Module):
                 self.api.should_protect(chat_id, "antizalgo")
                 and len(
                     re.findall(
-                        "[\u200f\u200e\u0300-\u0361\u0316-\u0362\u0334-\u0338\u0363-\u036F\u3164\ud83d\udd07\u0020\u00A0\u2000-\u2009\u200A\u2028\u205F\u1160\ufff4]",
+                        "[\u200f\u200e\u0300-\u0361\u0316-\u0362\u0334-\u0338\u0363-\u036f\u3164\ud83d\udd07\u0020\u00a0\u2000-\u2009\u200a\u2028\u205f\u1160\ufff4]",
                         get_full_name(user),
                     )
                 )

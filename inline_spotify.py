@@ -270,21 +270,35 @@ class InlineSpotifyMod(loader.Module):
 
                 keyboard = [
                     [
-                        {"text": "🔁", "callback": self.sp_repeat, "args": (False,)}
-                        if pb["repeat_state"]
-                        else {"text": "🔂", "callback": self.sp_repeat, "args": (True,)},
+                        (
+                            {"text": "🔁", "callback": self.sp_repeat, "args": (False,)}
+                            if pb["repeat_state"]
+                            else {
+                                "text": "🔂",
+                                "callback": self.sp_repeat,
+                                "args": (True,),
+                            }
+                        ),
                         {"text": "⏮", "callback": self.sp_previous},
-                        {"text": "⏸", "callback": self.sp_pause}
-                        if is_resuming
-                        else {"text": "▶️", "callback": self.sp_play},
+                        (
+                            {"text": "⏸", "callback": self.sp_pause}
+                            if is_resuming
+                            else {"text": "▶️", "callback": self.sp_play}
+                        ),
                         {"text": "⏭", "callback": self.sp_next},
-                        {"text": "↩️", "callback": self.sp_shuffle, "args": (False,)}
-                        if pb["shuffle_state"]
-                        else {
-                            "text": "🔀",
-                            "callback": self.sp_shuffle,
-                            "args": (True,),
-                        },
+                        (
+                            {
+                                "text": "↩️",
+                                "callback": self.sp_shuffle,
+                                "args": (False,),
+                            }
+                            if pb["shuffle_state"]
+                            else {
+                                "text": "🔀",
+                                "callback": self.sp_shuffle,
+                                "args": (True,),
+                            }
+                        ),
                     ],
                     [
                         {

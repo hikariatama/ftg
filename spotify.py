@@ -48,8 +48,7 @@ ARTIST_FS = 32
 
 @loader.tds
 class SpotifyMod(loader.Module):
-    """Display beautiful spotify now bar. Idea: t.me/fuccsoc. Implementation: t.me/hikariatama
-    """
+    """Display beautiful spotify now bar. Idea: t.me/fuccsoc. Implementation: t.me/hikariatama"""
 
     strings = {
         "name": "SpotifyNow",
@@ -818,9 +817,9 @@ class SpotifyMod(loader.Module):
                 is_flac=(
                     "\n<emoji document_id=5359582743992737342>😎</emoji> <b>FLAC"
                     f" {self.strings('quality')}</b>"
+                    if getattr(music, "is_flac", False)
+                    else ""
                 )
-                if getattr(music, "is_flac", False)
-                else ""
             ),
         )
 

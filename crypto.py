@@ -544,9 +544,13 @@ class Crypto(loader.Module):
 
         await utils.answer(
             message,
-            self.strings("wallet").format(f"https://t.me/{self.bot.strip('@')}", info)
-            if info
-            else self.strings("empty_balance"),
+            (
+                self.strings("wallet").format(
+                    f"https://t.me/{self.bot.strip('@')}", info
+                )
+                if info
+                else self.strings("empty_balance")
+            ),
         )
 
     @loader.command(
@@ -665,8 +669,7 @@ class Crypto(loader.Module):
         valutes = {
             valute.getchildren()[1].text: float(
                 valute.getchildren()[4].text.replace(",", ".")
-            )
-            / int(valute.getchildren()[2].text)
+            ) / int(valute.getchildren()[2].text)
             for valute in etree.fromstring(
                 (
                     await utils.run_sync(

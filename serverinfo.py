@@ -123,8 +123,8 @@ class serverInfoMod(loader.Module):
             inf["os"] = utils.escape_html(system)
 
         with contextlib.suppress(Exception):
-            inf[
-                "python"
-            ] = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+            inf["python"] = (
+                f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+            )
 
         await utils.answer(message, self.strings("servinfo").format(**inf))

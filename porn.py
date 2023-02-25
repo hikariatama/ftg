@@ -141,8 +141,9 @@ class PornVideo:
                             "fallback": False,
                             "embed": True,
                             "supportedFormats": "hls,dash,mp4",
-                            "_": str(round(time.time()))
-                            + str(random.randint(100, 999)),
+                            "_": str(round(time.time())) + str(
+                                random.randint(100, 999)
+                            ),
                         }.items()
                     )
                 ),
@@ -185,7 +186,9 @@ class PornManager:
             (
                 await utils.run_sync(
                     requests.get,
-                    f"https://www.eporner.com/api/v2/video/search/?query={quote(query)}&per_page=30&page=1&thumbsize=big&order=top-weekly&gay={'2' if gay else '0'}&lq=0&format=json",
+                    (
+                        f"https://www.eporner.com/api/v2/video/search/?query={quote(query)}&per_page=30&page=1&thumbsize=big&order=top-weekly&gay={'2' if gay else '0'}&lq=0&format=json"
+                    ),
                 )
             ).json()["videos"]
         )

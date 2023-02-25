@@ -420,8 +420,10 @@ class BFG2Mod(loader.Module, Mining, Bonuses, Potions):
                     if "вы успешно увеличили" not in resp.raw_text:
                         await utils.answer(
                             message,
-                            f"🫶 <b>Ферма улучшена на {enchanced} уровней. Закончились"
-                            " деньги</b>",
+                            (
+                                f"🫶 <b>Ферма улучшена на {enchanced} уровней."
+                                " Закончились деньги</b>"
+                            ),
                         )
                         return
 
@@ -435,8 +437,7 @@ class BFG2Mod(loader.Module, Mining, Bonuses, Potions):
         ru_doc="[уровни] - покупка уровней для бизнеса (территория + сам бизнес)"
     )
     async def businesslvlcmd(self, message: Message):
-        """[levels] - Level-up business for specfied amount of levels (territory + business itself)
-        """
+        """[levels] - Level-up business for specfied amount of levels (territory + business itself)"""
         args = utils.get_args_raw(message)
         if args and not args.isdigit():
             await utils.answer(message, "🚫 <b>Некорректное количество уровней</b>")
@@ -461,8 +462,10 @@ class BFG2Mod(loader.Module, Mining, Bonuses, Potions):
                     if "вы достигли максимального размера" in resp.raw_text:
                         await utils.answer(
                             message,
-                            f"🫶 <b>Бизнес улучшен на {enchanced} уровней. Закончились"
-                            " деньги</b>",
+                            (
+                                f"🫶 <b>Бизнес улучшен на {enchanced} уровней."
+                                " Закончились деньги</b>"
+                            ),
                         )
                         return
 
@@ -474,8 +477,10 @@ class BFG2Mod(loader.Module, Mining, Bonuses, Potions):
                     if "чтобы увеличить бизнес" in resp.raw_text:
                         await utils.answer(
                             message,
-                            f"🫶 <b>Бизнес улучшен на {enchanced} уровней. Закончились"
-                            " деньги</b>",
+                            (
+                                f"🫶 <b>Бизнес улучшен на {enchanced} уровней."
+                                " Закончились деньги</b>"
+                            ),
                         )
                         return
 

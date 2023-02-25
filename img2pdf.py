@@ -25,7 +25,37 @@ from .. import loader, utils
 class Img2PdfMod(loader.Module):
     """Packs images to pdf"""
 
-    strings = {"name": "Img2Pdf"}
+    strings = {
+        "name": "Img2Pdf",
+        "processing": (
+            "<emoji document_id=5307865634032329170>🫥</emoji> <b>Processing"
+            " files...</b>"
+        ),
+    }
+    strings_ru = {
+        "processing": (
+            "<emoji document_id=5307865634032329170>🫥</emoji> <b>Обрабатываю"
+            " файлы...</b>"
+        )
+    }
+    strings_es = {
+        "processing": (
+            "<emoji document_id=5307865634032329170>🫥</emoji> <b>Procesando"
+            " archivos...</b>"
+        )
+    }
+    strings_de = {
+        "processing": (
+            "<emoji document_id=5307865634032329170>🫥</emoji> <b>Dateien werden"
+            " verarbeitet...</b>"
+        )
+    }
+    strings_tr = {
+        "processing": (
+            "<emoji document_id=5307865634032329170>🫥</emoji> <b>Dosyalar"
+            " işleniyor...</b>"
+        )
+    }
 
     @loader.unrestricted
     async def img2pdfcmd(self, message: Message):
@@ -36,6 +66,8 @@ class Img2PdfMod(loader.Module):
             )
         except Exception:
             return await utils.answer(message, self.strings("no_file"))
+
+        message = await utils.answer(message, self.strings("processing"))
 
         images = []
 
@@ -53,7 +85,11 @@ class Img2PdfMod(loader.Module):
         first_image, images = images[0], images[1:]
         file = io.BytesIO()
         first_image.save(
-            file, "PDF", resolution=100.0, save_all=True, append_images=images
+            file,
+            "PDF",
+            resolution=100.0,
+            save_all=True,
+            append_images=images,
         )
         f = io.BytesIO(file.getvalue())
         f.name = utils.get_args_raw(message) or "packed_images.pdf"

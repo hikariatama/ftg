@@ -44,8 +44,7 @@ REGEXES = [
 
 @loader.tds
 class HikkaModsSocketMod(loader.Module):
-    """Gives @hikkamods_bot a right to download modules from official modules aggregator and autoupdate them
-    """
+    """Gives @hikkamods_bot a right to download modules from official modules aggregator and autoupdate them"""
 
     strings = {"name": "HikkaModsSocket"}
 
@@ -54,8 +53,10 @@ class HikkaModsSocketMod(loader.Module):
             loader.ConfigValue(
                 "autoupdate",
                 False,
-                "Do you want to autoupdate modules? (Join @heta_updates in order for"
-                " this option to take effect) ⚠️ Use at your own risk!",
+                (
+                    "Do you want to autoupdate modules? (Join @heta_updates in order"
+                    " for this option to take effect) ⚠️ Use at your own risk!"
+                ),
                 validator=loader.validators.Boolean(),
             )
         )
@@ -186,7 +187,9 @@ class HikkaModsSocketMod(loader.Module):
                             await asyncio.sleep(random.randint(1, 10))
                             await self._client.inline_query(
                                 "@hikkamods_bot",
-                                "#confirm_update_noheta"
-                                f" {url.split('hikariatama.ru/')[1]}",
+                                (
+                                    "#confirm_update_noheta"
+                                    f" {url.split('hikariatama.ru/')[1]}"
+                                ),
                             )
                             return

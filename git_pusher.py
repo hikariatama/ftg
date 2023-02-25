@@ -75,8 +75,10 @@ class GitPusherMod(loader.Module):
 
         message = await utils.answer(
             message,
-            f"<code>.terminal cd {utils.escape_html(self.get('dir'))} && git commit -am"
-            f' "{utils.escape_html(args)}" && git push</code>',
+            (
+                f"<code>.terminal cd {utils.escape_html(self.get('dir'))} && git commit"
+                f' -am "{utils.escape_html(args)}" && git push</code>'
+            ),
         )
 
         await self.allmodules.commands["terminal"](message)

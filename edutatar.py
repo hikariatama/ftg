@@ -234,7 +234,7 @@ class EduTatarMod(loader.Module):
                         "@userbot_notifies_bot",
                         utils.escape_html(
                             f"<b>{subject}:"
-                            f' {current_marks_1[i]}->{current_marks_2[i]}\n</b><code>{" ".join(list(map(str, current_marks_2)))}</code>'
+                            f" {current_marks_1[i]}->{current_marks_2[i]}\n</b><code>{' '.join(list(map(str, current_marks_2)))}</code>"
                         ),
                     )
                     await asyncio.sleep(0.5)
@@ -246,7 +246,7 @@ class EduTatarMod(loader.Module):
                     "@userbot_notifies_bot",
                     utils.escape_html(
                         f"<b>{subject}:"
-                        f' {current_marks_2[i ]}\n</b><code>{" ".join(list(map(str, current_marks_2)))}</code>'
+                        f" {current_marks_2[i ]}\n</b><code>{' '.join(list(map(str, current_marks_2)))}</code>"
                     ),
                 )
                 await asyncio.sleep(0.5)

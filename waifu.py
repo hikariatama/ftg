@@ -84,9 +84,11 @@ class WaifuMod(loader.Module):
                 if category in utils.get_args_raw(message)
             ]
             or [
-                categories[0]
-                if "nsfw" not in utils.get_args_raw(message)
-                else nsfw_categories[0]
+                (
+                    categories[0]
+                    if "nsfw" not in utils.get_args_raw(message)
+                    else nsfw_categories[0]
+                )
             ]
         )[0]
 

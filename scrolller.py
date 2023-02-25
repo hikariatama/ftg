@@ -96,11 +96,13 @@ async def fetch_multiple_subreddits(subreddits: List[str]) -> Union[List[str], b
             requests.get,
             "https://api.scrolller.com/api/v2/graphql",
             json={
-                "query": """query SubredditQuery ("""
-                + "\n".join(args)
-                + """$filter: SubredditPostFilter $iterator: String ) {"""
-                + "\n".join(funcs)
-                + """} """,
+                "query": (
+                    """query SubredditQuery ("""
+                    + "\n".join(args)
+                    + """$filter: SubredditPostFilter $iterator: String ) {"""
+                    + "\n".join(funcs)
+                    + """} """
+                ),
                 "variables": {**vals, "filter": None, "hostsDown": None},
                 "authorization": None,
             },

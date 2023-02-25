@@ -155,8 +155,11 @@ def parse(text: str) -> Union[bool, str]:
         re.sub(r" {2,}", " ", soup.get_text().strip().replace("\n", " "))
         .replace("Types and number of errors found: ", "")
         .replace(
-            "Autocorrect: Check box to correct errors automatically, where possible.A"
-            " list of all corrected errors will be shown on the results page. Submit",
+            (
+                "Autocorrect: Check box to correct errors automatically, where"
+                " possible.A list of all corrected errors will be shown on the results"
+                " page. Submit"
+            ),
             "",
         )
         .strip()

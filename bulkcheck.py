@@ -170,7 +170,9 @@ class BulkCheckMod(loader.Module):
 
         await utils.answer(
             message,
-            self.strings("leaked").format("\n".join(results))
-            if results
-            else self.strings("404"),
+            (
+                self.strings("leaked").format("\n".join(results))
+                if results
+                else self.strings("404")
+            ),
         )
