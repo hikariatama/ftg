@@ -6018,7 +6018,11 @@ class HikariChatMod(loader.Module):
         if str(chat_id) not in self.api.chats or not self.api.chats[str(chat_id)]:
             return
 
-        user = await self._client.get_entity(user_id)
+        try:
+            user = await self._client.get_entity(user_id)
+        except ValueError:
+            return
+
         chat = await message.get_chat()
         user_name = get_full_name(user)
 

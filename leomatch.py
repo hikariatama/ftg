@@ -14,7 +14,7 @@
 # scope: hikka_only
 # scope: hikka_min 1.3.0
 
-__version__ = (2, 0, 2)
+__version__ = (2, 0, 3)
 
 import asyncio
 import logging
@@ -206,19 +206,16 @@ class LeomatchMod(loader.Module):
             else " " in needle and needle.strip().lower() in alter.lower()
         )
 
-    @loader.watcher("only_messages", "only_pm", "in")
-    async def watcher(self, message: Message):
-        if (
-            self._queue
-            and utils.get_chat_id(message) == 1234060895
-            and message.out
-            and self.config["enable"]
-        ):
+    @loader.watcher(chat_id=1234060895, out=True)
+    async def out_watcher(self, _):
+        if self._queue:
             self._queue = []
             logger.info("Останавливаюсь, т.к. ты отправил сообщение")
             return
 
-        if message.sender_id != 1234060895 or not self.config["enable"]:
+    @loader.watcher("in", from_id=1234060895)
+    async def watcher(self, message: Message):
+        if not self.config["enable"]:
             return
 
         if (

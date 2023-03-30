@@ -1,4 +1,4 @@
-__version__ = (2, 0, 8)
+__version__ = (2, 0, 9)
 
 # ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
@@ -20,6 +20,7 @@ __version__ = (2, 0, 8)
 # requires: python-magic
 
 import asyncio
+import contextlib
 import datetime
 import io
 import json
@@ -80,7 +81,7 @@ class CacheManager:
 
     def stats(self) -> tuple:
         dirsize = sizeof_fmt(get_size(self._cache_dir))
-        messages_count = len(list(self._cache_dir.iterdir()))
+        messages_count = len(list(self._cache_dir.glob("**/*")))
         try:
             oldest_message = datetime.datetime.fromtimestamp(
                 max(map(os.path.getctime, self._cache_dir.iterdir()))
@@ -300,6 +301,15 @@ class NekoSpyBeta(loader.Module):
             " to hikka-nekospy channel soon.</b>"
         ),
         "recent_maximum": "Maximum time to restore messages from in seconds",
+        "cfg_nocache_big_chats": (
+            "Don't cache messages from chats with more than 500 users"
+        ),
+        "cfg_nocache_chats": "Don't cache messages from specified chats",
+        "cfg_ecospace_mode": (
+            "Use less space for cache by not caching the chats, which are not tracked"
+            " by the moment. This disables the ability to restore messages from them"
+            " afterwards"
+        ),
     }
 
     strings_ru = {
@@ -395,6 +405,15 @@ class NekoSpyBeta(loader.Module):
             " hikka-nekospy в ближайшее время.</b>"
         ),
         "recent_maximum": "Максимальное время восстановления сообщений в секундах",
+        "cfg_nocache_big_chats": (
+            "Не кэшировать сообщения из чатов с более 500 участников"
+        ),
+        "cfg_nocache_chats": "Не кэшировать сообщения из указанных чатов",
+        "cfg_ecospace_mode": (
+            "Использовать меньше места для кэша, кэшируя только те чаты, которые были"
+            " отслежены в данный момент. Это отключает возможность восстановления"
+            " сообщений из них позже"
+        ),
     }
 
     strings_fr = {
@@ -500,6 +519,15 @@ class NekoSpyBeta(loader.Module):
             " dans le canal hikka-nekospy dans un proche avenir.</b>"
         ),
         "recent_maximum": "Temps maximum de récupération des messages en secondes",
+        "cfg_nocache_big_chats": (
+            "Ne pas mettre en cache les messages de chats avec plus de 500 utilisateurs"
+        ),
+        "cfg_nocache_chats": "Ne pas mettre en cache les messages des chats spécifiés",
+        "cfg_ecospace_mode": (
+            "Utiliser moins d'espace pour le cache en ne mettant pas en cache les chats"
+            " qui ne sont pas suivis au moment où le cache est créé. Cela désactive la"
+            " possibilité de restaurer les messages à partir d'eux"
+        ),
     }
 
     strings_it = {
@@ -606,6 +634,15 @@ class NekoSpyBeta(loader.Module):
             " recapitati al canale hikka-nekospy a breve.</b>"
         ),
         "recent_maximum": "Tempo massimo per ripristinare i messaggi in secondi",
+        "cfg_nocache_big_chats": (
+            "Non memorizzare messaggi da chat con più di 500 utenti"
+        ),
+        "cfg_nocache_chats": "Non memorizzare messaggi da chat specifiche",
+        "cfg_ecospace_mode": (
+            "Usa meno spazio per la cache non memorizzando le chat, che non sono"
+            " monitorate al momento. Questo disabilita la possibilità di ripristinare"
+            " i messaggi da loro successivamente"
+        ),
     }
 
     strings_de = {
@@ -707,6 +744,15 @@ class NekoSpyBeta(loader.Module):
         "recent_maximum": (
             "Maximale Zeit, um Nachrichten in Sekunden wiederherzustellen"
         ),
+        "cfg_nocache_big_chats": (
+            "Nicht zwischenspeichern Nachrichten von Chats mit mehr als 500 Benutzern"
+        ),
+        "cfg_nocache_chats": "Nicht zwischenspeichern Nachrichten von bestimmten Chats",
+        "cfg_ecospace_mode": (
+            "Verwende weniger Speicherplatz für den Zwischenspeicher durch nicht"
+            " zwischenspeichern von Chats, die nicht verfolgt werden. Dies deaktiviert"
+            " die Möglichkeit, Nachrichten aus ihnen nachher wiederherzustellen"
+        ),
     }
 
     strings_uz = {
@@ -797,6 +843,14 @@ class NekoSpyBeta(loader.Module):
             " orada yetaklanadi.</b>"
         ),
         "recent_maximum": "Vaqtini tiklash uchun maksimal vaqt saniyada",
+        "cfg_nocache_big_chats": (
+            "Chatlardan 500 dan ortiq foydalanuvchi bor bo'lgan xabarlarni saqlash"
+        ),
+        "cfg_nocache_chats": "Belgilangan chatlardagi xabarlarni saqlash",
+        "cfg_ecospace_mode": (
+            "Ko'p joy qolish uchun, xabarlarini saqlash uchun ko'rsatilgan chatlardan"
+            " foydalanuvchilar yozgan xabarlarini saqlash"
+        ),
     }
 
     strings_tr = {
@@ -888,6 +942,15 @@ class NekoSpyBeta(loader.Module):
             " hikka-nekospy kanalına gönderilecekler.</b>"
         ),
         "recent_maximum": "İlk kaç saniyelik mesajları geri yükleyeceğin",
+        "cfg_nocache_big_chats": (
+            "500 kullanıcıdan fazla kullanıcıya sahip sohbetlerden mesajları önbelleğe"
+            " almayın"
+        ),
+        "cfg_nocache_chats": "Belirtilen sohbetlerden mesajları önbelleğe alma",
+        "cfg_ecospace_mode": (
+            "Daha az alan kullanarak önbelleğe alınmamış sohbetleri önbelleğe almayın."
+            " Bu, onlardan sonra mesajları geri yüklemeyi devre dışı bırakır."
+        ),
     }
 
     strings_es = {
@@ -989,6 +1052,13 @@ class NekoSpyBeta(loader.Module):
             " al canal hikka-nekospy pronto.</b>"
         ),
         "recent_maximum": "Tiempo máximo para restaurar mensajes de en segundos",
+        "cfg_nocache_big_chats": "No cachear mensajes de chats con más de 500 usuarios",
+        "cfg_nocache_chats": "No cachear mensajes de chats especificados",
+        "cfg_ecospace_mode": (
+            "Usar menos espacio para el caché al no cachear los chats que no están"
+            " siendo rastreados en este momento. Esto deshabilita la capacidad de"
+            " restaurar mensajes de ellos después"
+        ),
     }
 
     strings_kk = {
@@ -1081,10 +1151,18 @@ class NekoSpyBeta(loader.Module):
         "recent_maximum": (
             "Хабарламаларды қалпына келтіру үшін ең үлкен уақыт секундтарда"
         ),
+        "cfg_nocache_big_chats": "Больші чаттерлердің хабарламаларын кештен өшіріңіз",
+        "cfg_nocache_chats": "Кештен өшірілетін чаттерді көрсетіңіз",
+        "cfg_ecospace_mode": (
+            "Кештің пайдалану мөлшерін азайту үшін, бірақ соңында қайта қалпына келтіру"
+            " құрған жоқ болып табылады"
+            " қабылдау үшін кештен өшірілмеген чаттерді пайдалану"
+        ),
     }
 
     def __init__(self):
-        self._tl_channel = None
+        self._tl_channel: int = None
+        self._ignore_cache: typing.List[int] = []
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "enable_pm",
@@ -1157,6 +1235,24 @@ class NekoSpyBeta(loader.Module):
                 60 * 60,
                 lambda: self.strings("recent_maximum"),
                 validator=loader.validators.Integer(minimum=0),
+            ),
+            loader.ConfigValue(
+                "nocache_big_chats",
+                True,
+                lambda: self.strings("cfg_nocache_big_chats"),
+                validator=loader.validators.Boolean(),
+            ),
+            loader.ConfigValue(
+                "nocache_chats",
+                [],
+                lambda: self.strings("cfg_nocache_chats"),
+                validator=loader.validators.Series(loader.validators.EntityLike()),
+            ),
+            loader.ConfigValue(
+                "ecospace_mode",
+                False,
+                lambda: self.strings("cfg_ecospace_mode"),
+                validator=loader.validators.Boolean(),
             ),
         )
 
@@ -1419,14 +1515,24 @@ class NekoSpyBeta(loader.Module):
             return
 
         file["file_reference"] = bytes(bytearray.fromhex(file["file_reference"]))
-        file = await self._client.download_file(
-            (
-                InputPhotoFileLocation
-                if assets.get("photo") or assets.get("sticker")
-                else InputDocumentFileLocation
-            )(**file),
-            bytes,
-        )
+        try:
+            file = await self._client.download_file(
+                (
+                    InputPhotoFileLocation
+                    if assets.get("photo") or assets.get("sticker")
+                    else InputDocumentFileLocation
+                )(**file),
+                bytes,
+            )
+        except Exception:
+            self._queue += [
+                self.inline.bot.send_message(
+                    self._channel,
+                    caption + "\n\n&lt;unable to restore file&gt;",
+                    disable_web_page_preview=True,
+                )
+            ]
+            return
 
         try:
             if not (
@@ -1536,54 +1642,55 @@ class NekoSpyBeta(loader.Module):
             update.message.id,
         )
 
-        sender_id, chat_id, is_chat = (
-            int(msg_obj["sender_id"]),
-            int(msg_obj["chat_id"]),
-            msg_obj["is_chat"],
-        )
+        if msg_obj:
+            sender_id, chat_id, is_chat = (
+                int(msg_obj["sender_id"]),
+                int(msg_obj["chat_id"]),
+                msg_obj["is_chat"],
+            )
 
-        if (
-            (
-                sender_id in self.always_track
-                or chat_id in self.always_track
-                or (
-                    (
-                        self.config["log_edits"]
-                        and self._should_capture(sender_id, chat_id)
-                    )
-                    and (
+            if (
+                (
+                    sender_id in self.always_track
+                    or chat_id in self.always_track
+                    or (
                         (
-                            self.config["enable_pm"]
-                            and not is_chat
-                            or self.config["enable_groups"]
-                            and is_chat
+                            self.config["log_edits"]
+                            and self._should_capture(sender_id, chat_id)
+                        )
+                        and (
+                            (
+                                self.config["enable_pm"]
+                                and not is_chat
+                                or self.config["enable_groups"]
+                                and is_chat
+                            )
                         )
                     )
                 )
-            )
-            and update.message.raw_text != utils.remove_html(msg_obj["text"])
-            and not msg_obj["sender_bot"]
-        ):
-            await self._notify(
-                msg_obj,
-                (
-                    self.strings("edited_chat").format(
-                        msg_obj["chat_url"],
-                        msg_obj["chat_name"],
-                        msg_obj["sender_url"],
-                        msg_obj["sender_name"],
-                        msg_obj["text"],
-                        message_url=msg_obj["url"],
-                    )
-                    if is_chat
-                    else self.strings("edited_pm").format(
-                        msg_obj["sender_url"],
-                        msg_obj["sender_name"],
-                        msg_obj["text"],
-                        message_url=msg_obj["url"],
-                    )
-                ),
-            )
+                and update.message.raw_text != utils.remove_html(msg_obj["text"])
+                and not msg_obj["sender_bot"]
+            ):
+                await self._notify(
+                    msg_obj,
+                    (
+                        self.strings("edited_chat").format(
+                            msg_obj["chat_url"],
+                            msg_obj["chat_name"],
+                            msg_obj["sender_url"],
+                            msg_obj["sender_name"],
+                            msg_obj["text"],
+                            message_url=msg_obj["url"],
+                        )
+                        if is_chat
+                        else self.strings("edited_pm").format(
+                            msg_obj["sender_url"],
+                            msg_obj["sender_name"],
+                            msg_obj["text"],
+                            message_url=msg_obj["url"],
+                        )
+                    ),
+                )
 
         await self._cacher.store_message(update.message)
 
@@ -1689,6 +1796,53 @@ class NekoSpyBeta(loader.Module):
 
     @loader.watcher("in")
     async def watcher(self, message: Message):
+        if (chat_id := utils.get_chat_id(message)) in self._ignore_cache:
+            return
+
+        if (
+            message.is_private
+            and self.config["ecospace_mode"]
+            and (
+                self.config["enable_pm"]
+                and message.is_private
+                and (
+                    self._should_capture(message.sender_id, message.sender_id)
+                    and (not self.config["ignore_inline"] or not message.via_bot_id)
+                    and not message.sender.bot
+                )
+            )
+        ):
+            return
+
+        for chat in self.config["nocache_chats"]:
+            with contextlib.suppress(ValueError):
+                if (await self._client.get_entity(chat)).id == chat_id:
+                    self._ignore_cache += [chat_id]
+                    return
+
+        if message.is_group:
+            if self.config["ecospace_mode"] and not (
+                self._is_always_track(message.sender_id, chat_id)
+                or (
+                    self.config["enable_groups"]
+                    and message.is_group
+                    and (
+                        self._should_capture(message.sender_id, chat_id)
+                        and (not self.config["ignore_inline"] or not message.via_bot_id)
+                        and not message.sender.bot
+                    )
+                )
+            ):
+                return
+
+            if (
+                self.config["nocache_big_chats"]
+                and (await self._client.get_participants(chat_id, limit=1)).total
+                > self.config["nocache_big_chats"]
+            ):
+                self._ignore_cache += [chat_id]
+                return
+
         await self._cacher.store_message(message)
         if (
             not self.config["save_sd"]
