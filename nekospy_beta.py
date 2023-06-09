@@ -20,7 +20,7 @@ __version__ = (2, 12, 1)
 # scope: hikka_min 1.6.3
 # requires: python-magic
 
-# packurl: https://gist.github.com/hikariatama/a1bf9aa5aae566b9d07977fa55e18734/raw/e410e67446d2e67595ce21b120d3597891782ab1/nekospy.yml
+# packurl: https://gist.github.com/hikariatama/a1bf9aa5aae566b9d07977fa55e18734/raw/368fdb3fe92508aee4eb7d68d3cb4311490b6aa8/nekospy.yml
 
 import asyncio
 import contextlib
