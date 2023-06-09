@@ -195,7 +195,8 @@ class BanStickers(loader.Module):
             " gibt es keine Einschränkungen</b>"
         ),
         "all_unbanned": (
-            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Alle Sticker sind im"
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Alle Sticker"
+            " sind im"
             " aktuellen Chat wieder erlaubt</b>"
         ),
         "already_restricted": (

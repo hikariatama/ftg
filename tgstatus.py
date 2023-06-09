@@ -46,7 +46,8 @@ class TgStatus(loader.Module):
             " stopped!</b>"
         ),
         "no_status": (
-            "<emoji document_id=5789838291234720526>💸</emoji> <b>Status rotation is not"
+            "<emoji document_id=5789838291234720526>💸</emoji> <b>Status rotation"
+            " is not"
             " running!</b>"
         ),
     }
@@ -119,7 +120,8 @@ class TgStatus(loader.Module):
         ),
         "status_started": (
             "<emoji document_id=5789838291234720526>💸</emoji> <b>Durum döngüsü"
-            " başladı!</b>\n\n<emoji document_id=5451732530048802485>⏳</emoji> <b>Döngü"
+            " başladı!</b>\n\n<emoji document_id=5451732530048802485>⏳</emoji>"
+            " <b>Döngü"
             " süresi: her {} dakika</b>\n<b>Emojiler: </b>{}"
         ),
         "status_stopped": (

@@ -165,7 +165,8 @@ class RateModuleMod(loader.Module):
         if re.search(r"@.*?[bB][oO][tT]", code) is not None:
             bots = " | ".join(re.findall(r"@.*?[bB][oO][tT]", code))
             comments += (
-                f"🔻 <code>{{-0.2}}</code> <b>Bot-abuse (</b><code>{bots}</code><b>)</b>"
+                "🔻 <code>{-0.2}</code> <b>Bot-abuse"
+                f" (</b><code>{bots}</code><b>)</b>"
                 " <i>[module will die some day]</i>\n"
             )
             score -= 0.2

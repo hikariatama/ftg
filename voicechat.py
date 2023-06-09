@@ -394,9 +394,7 @@ class VoiceChatMod(loader.Module):
             "<bir videoya veya YouTube bağlantısına yanıt> - Bir videoyu sohbet"
             " sırasına ekleyin"
         ),
-        hi_doc=(
-            "<एक वीडियो या YouTube लिंक पर उत्तर> - चैट की लंबित को एक वीडियो जोड़ें"
-        ),
+        hi_doc="<एक वीडियो या YouTube लिंक पर उत्तर> - चैट की लंबित को एक वीडियो जोड़ें",
         uz_doc=(
             "<videoga yoki YouTube havolasiga javob> - Chatni qo'shish uchun video"
             " qo'shing"

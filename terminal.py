@@ -333,11 +333,13 @@ class TerminalMod(loader.Module):
         ),
         "end": "</code>",
         "auth_fail": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Authentication failed,"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Authentication"
+            " failed,"
             " please try again</b>"
         ),
         "auth_needed": (
-            '<emoji document_id=5472308992514464048>🔐</emoji><a href="tg://user?id={}">'
+            "<emoji document_id=5472308992514464048>🔐</emoji><a"
+            ' href="tg://user?id={}">'
             " Interactive authentication required</a>"
         ),
         "auth_msg": (
@@ -346,7 +348,8 @@ class TerminalMod(loader.Module):
             " <code>{}</code>"
         ),
         "auth_locked": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Authentication failed,"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Authentication"
+            " failed,"
             " please try again later</b>"
         ),
         "auth_ongoing": (
@@ -386,7 +389,8 @@ class TerminalMod(loader.Module):
             " неуспешна, попробуй еще раз</b>"
         ),
         "auth_needed": (
-            '<emoji document_id=5472308992514464048>🔐</emoji><a href="tg://user?id={}">'
+            "<emoji document_id=5472308992514464048>🔐</emoji><a"
+            ' href="tg://user?id={}">'
             " Необходима аутентификация</a>"
         ),
         "auth_msg": (
@@ -437,7 +441,8 @@ class TerminalMod(loader.Module):
             " fehlgeschlagen, bitte versuche es erneut</b>"
         ),
         "auth_needed": (
-            '<emoji document_id=5472308992514464048>🔐</emoji><a href="tg://user?id={}">'
+            "<emoji document_id=5472308992514464048>🔐</emoji><a"
+            ' href="tg://user?id={}">'
             " Interaktive Authentifizierung benötigt</a>"
         ),
         "auth_msg": (
@@ -468,7 +473,8 @@ class TerminalMod(loader.Module):
         ),
         "killed": "<b>Durduruldu</b>",
         "no_cmd": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu mesajda çalışan bir"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu mesajda"
+            " çalışan bir"
             " komut yok</b>"
         ),
         "running": (
@@ -487,7 +493,8 @@ class TerminalMod(loader.Module):
             " başarısız, lütfen tekrar deneyin</b>"
         ),
         "auth_needed": (
-            '<emoji document_id=5472308992514464048>🔐</emoji><a href="tg://user?id={}">'
+            "<emoji document_id=5472308992514464048>🔐</emoji><a"
+            ' href="tg://user?id={}">'
             " Etkileşimli kimlik doğrulaması gerekli</a>"
         ),
         "auth_msg": (
@@ -509,14 +516,17 @@ class TerminalMod(loader.Module):
     strings_uz = {
         "fw_protect": "Buyruqlar orasidagi tahrirlash vaqti",
         "what_to_kill": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ishga tushgan buyruqni"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ishga tushgan"
+            " buyruqni"
             " to'xtatish uchun uni javob qilib yuboring</b>"
         ),
         "kill_fail": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Protsessni to'xtatib"
             " bo'lmadi</b>"
         ),
-        "killed": "<emoji document_id=5312526098750252863>🚫</emoji> <b>To'xtatildi</b>",
+        "killed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>To'xtatildi</b>"
+        ),
         "no_cmd": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ushbu xabarda ishga"
             " tushgan buyruq yo'q</b>"
@@ -537,7 +547,8 @@ class TerminalMod(loader.Module):
             " muvaffaqiyatsiz, iltimos qayta urinib ko'ring</b>"
         ),
         "auth_needed": (
-            '<emoji document_id=5472308992514464048>🔐</emoji><a href="tg://user?id={}">'
+            "<emoji document_id=5472308992514464048>🔐</emoji><a"
+            ' href="tg://user?id={}">'
             " Ishlanadigan autentifikatsiya talab qilinadi</a>"
         ),
         "auth_msg": (
@@ -550,7 +561,8 @@ class TerminalMod(loader.Module):
             " muvaffaqiyatsiz, iltimos keyinroq qayta urinib ko'ring</b>"
         ),
         "auth_ongoing": (
-            "<emoji document_id=5213452215527677338>⏳</emoji> <b>Autentifikatsiya davom"
+            "<emoji document_id=5213452215527677338>⏳</emoji> <b>Autentifikatsiya"
+            " davom"
             " etmoqda...</b>"
         ),
         "done": "<emoji document_id=5314250708508220914>✅</emoji> <b>Tugadi</b>",
@@ -589,7 +601,8 @@ class TerminalMod(loader.Module):
             " पुन: प्रयास करें</b>"
         ),
         "auth_needed": (
-            '<emoji document_id=5472308992514464048>🔐</emoji><a href="tg://user?id={}">'
+            "<emoji document_id=5472308992514464048>🔐</emoji><a"
+            ' href="tg://user?id={}">'
             " इंटरैक्टिव प्रमाणीकरण की आवश्यकता है</a>"
         ),
         "auth_msg": (

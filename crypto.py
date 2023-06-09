@@ -69,7 +69,8 @@ class Crypto(loader.Module):
             "<emoji document_id=6053166094816905153>💀</emoji> <b>Incorrect args</b>"
         ),
         "insufficient_funds": (
-            "<emoji document_id=5472363448404809929>👛</emoji> <b>Insufficient funds</b>"
+            "<emoji document_id=5472363448404809929>👛</emoji> <b>Insufficient"
+            " funds</b>"
         ),
         "empty_balance": (
             "<emoji document_id=5370646412243510708>😭</emoji> <b>You don't have any"
@@ -120,7 +121,8 @@ class Crypto(loader.Module):
             " аргументы</b>"
         ),
         "incorrect_args": (
-            "<emoji document_id=6053166094816905153>💀</emoji> <b>Неверные аргументы</b>"
+            "<emoji document_id=6053166094816905153>💀</emoji> <b>Неверные"
+            " аргументы</b>"
         ),
         "insufficient_funds": (
             "<emoji document_id=5472363448404809929>👛</emoji> <b>Недостаточно"
@@ -288,7 +290,8 @@ class Crypto(loader.Module):
             "<emoji document_id=6053166094816905153>💀</emoji> <b>Yanlış argümanlar</b>"
         ),
         "insufficient_funds": (
-            "<emoji document_id=5472363448404809929>👛</emoji> <b>Yeterli bakiye yok</b>"
+            "<emoji document_id=5472363448404809929>👛</emoji> <b>Yeterli bakiye"
+            " yok</b>"
         ),
         "confirm_check": (
             "👛 <b>Lütfen, aşağıdaki bilgilerin doğru veya yanlış olduğunu kontrol"

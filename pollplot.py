@@ -43,7 +43,8 @@ class PollPlotMod(loader.Module):
             " опрос!</b>"
         ),
         "no_answers": (
-            "<emoji document_id=5197183257367552085>😢</emoji> <b>В этом опросе пока что"
+            "<emoji document_id=5197183257367552085>😢</emoji> <b>В этом опросе"
+            " пока что"
             " нет участников.</b>"
         ),
         "_cmd_doc_plot": "<reply> - Создать визуализацию опроса",
@@ -56,7 +57,8 @@ class PollPlotMod(loader.Module):
             " Umfrage erforderlich!</b>"
         ),
         "no_answers": (
-            "<emoji document_id=5197183257367552085>😢</emoji> <b>Diese Umfrage hat noch"
+            "<emoji document_id=5197183257367552085>😢</emoji> <b>Diese Umfrage hat"
+            " noch"
             " keine Antworten.</b>"
         ),
         "_cmd_doc_plot": "<reply> - Erstelle eine Visualisierung von Umfragen",

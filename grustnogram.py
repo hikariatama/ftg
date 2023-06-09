@@ -129,7 +129,8 @@ class GrustnoGramMod(loader.Module):
             " you</b>"
         ),
         "notif_like": (
-            '🖤 <b><a href="https://grustnogram.ru/u/{0}">{0}</a> have broken heart from'
+            '🖤 <b><a href="https://grustnogram.ru/u/{0}">{0}</a> have broken heart'
+            " from"
             ' your <a href="https://grustnogram.ru/p/{1}">post</a></b>'
         ),
     }

@@ -68,7 +68,8 @@ class BulkCheckMod(loader.Module):
             "<emoji document_id=5451732530048802485>⏳</emoji> <b>Verarbeite...</b>"
         ),
         "no_pm": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Dieser Befehl kann nur"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Dieser Befehl"
+            " kann nur"
             " in einem Chat verwendet werden</b>"
         ),
         "leaked": (

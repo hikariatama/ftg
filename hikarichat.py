@@ -669,7 +669,8 @@ class HikariChatMod(loader.Module):
     strings = {
         "name": "HikariChat",
         "args": (
-            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Args are incorrect</b>"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Args are"
+            " incorrect</b>"
         ),
         "no_reason": "Not specified",
         "antitagall_on": (
@@ -697,7 +698,8 @@ class HikariChatMod(loader.Module):
             " protection is now off in this chat</b>"
         ),
         "antizalgo_on": (
-            "<emoji document_id=5213293263083018856>🌀</emoji> <b>AntiZALGO is now on in"
+            "<emoji document_id=5213293263083018856>🌀</emoji> <b>AntiZALGO is now"
+            " on in"
             " this chat\nAction: {}</b>"
         ),
         "antizalgo_off": (
@@ -705,7 +707,8 @@ class HikariChatMod(loader.Module):
             " in this chat</b>"
         ),
         "antistick_on": (
-            "<emoji document_id=5431456208487716895>🎨</emoji> <b>AntiStick is now on in"
+            "<emoji document_id=5431456208487716895>🎨</emoji> <b>AntiStick is now"
+            " on in"
             " this chat\nAction: {}</b>"
         ),
         "antistick_off": (
@@ -717,7 +720,8 @@ class HikariChatMod(loader.Module):
             " this chat</b>"
         ),
         "antihelp_off": (
-            "<emoji document_id=5467759840463953770>🐺</emoji> <b>AntiHelp is now off in"
+            "<emoji document_id=5467759840463953770>🐺</emoji> <b>AntiHelp is now"
+            " off in"
             " this chat</b>"
         ),
         "antiraid_on": (
@@ -740,7 +744,8 @@ class HikariChatMod(loader.Module):
         ),
         "antiraid": (
             "<emoji document_id=6334359218593728345><emoji"
-            " document_id=6037460928423791421>🚪</emoji></emoji> <b>AntiRaid is On. I {}"
+            " document_id=6037460928423791421>🚪</emoji></emoji> <b>AntiRaid is On."
+            " I {}"
             ' <a href="{}">{}</a> in chat {}</b>'
         ),
         "antichannel_on": (
@@ -748,7 +753,8 @@ class HikariChatMod(loader.Module):
             " in this chat</b>"
         ),
         "antichannel_off": (
-            "<emoji document_id=5470094069289984325>📯</emoji> <b>AntiChannel is now off"
+            "<emoji document_id=5470094069289984325>📯</emoji> <b>AntiChannel is"
+            " now off"
             " in this chat</b>"
         ),
         "report_on": (
@@ -772,7 +778,8 @@ class HikariChatMod(loader.Module):
             " in this chat</b>"
         ),
         "antispoiler_off": (
-            "<emoji document_id=5798648862591684122>👻</emoji> <b>AntiSpoiler is now off"
+            "<emoji document_id=5798648862591684122>👻</emoji> <b>AntiSpoiler is"
+            " now off"
             " in this chat</b>"
         ),
         "antigif_on": (
@@ -796,11 +803,13 @@ class HikariChatMod(loader.Module):
             " this chat</b>"
         ),
         "banninja_off": (
-            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja is now off in"
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja is now"
+            " off in"
             " this chat</b>"
         ),
         "antiexplicit_on": (
-            "<emoji document_id=5373123633415723713>🤬</emoji> <b>AntiExplicit is now on"
+            "<emoji document_id=5373123633415723713>🤬</emoji> <b>AntiExplicit is"
+            " now on"
             " in this chat\nAction: {}</b>"
         ),
         "antiexplicit_off": (
@@ -828,7 +837,8 @@ class HikariChatMod(loader.Module):
             " this chat\nAction: {}</b>"
         ),
         "antinsfw_off": (
-            "<emoji document_id=4976982981341086273>🔞</emoji> <b>AntiNSFW is now off in"
+            "<emoji document_id=4976982981341086273>🔞</emoji> <b>AntiNSFW is now"
+            " off in"
             " this chat</b>"
         ),
         "arabic_nickname": (
@@ -849,7 +859,8 @@ class HikariChatMod(loader.Module):
             " appears to be in Combat Anti Spam database.\n👊 Action: I {}</b>"
         ),
         "stick": (
-            '<emoji document_id=5431456208487716895>🎨</emoji> <b><a href="{}">{}</a> is'
+            "<emoji document_id=5431456208487716895>🎨</emoji> <b><a"
+            ' href="{}">{}</a> is'
             " flooding stickers.\n👊 Action: I {}</b>"
         ),
         "explicit": (
@@ -1036,7 +1047,8 @@ class HikariChatMod(loader.Module):
             ' from federation "{}"</b>'
         ),
         "f404": (
-            "<emoji document_id=5773781976905421370>💼</emoji> <b>Current chat is not in"
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Current chat is"
+            " not in"
             ' federation "{}"</b>'
         ),
         "fexists": (
@@ -1054,7 +1066,8 @@ class HikariChatMod(loader.Module):
             " {}</b>"
         ),
         "nofed": (
-            "<emoji document_id=5773781976905421370>💼</emoji> <b>Current chat is not in"
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Current chat is"
+            " not in"
             " any federation</b>"
         ),
         "fban": (
@@ -1183,12 +1196,15 @@ class HikariChatMod(loader.Module):
         "inline_unbanned": (
             '🔓 <b><a href="{}">{}</a> unbanned by <a href="{}">{}</a></b>'
         ),
-        "inline_unmuted": '🔈 <b><a href="{}">{}</a> unmuted by <a href="{}">{}</a></b>',
+        "inline_unmuted": (
+            '🔈 <b><a href="{}">{}</a> unmuted by <a href="{}">{}</a></b>'
+        ),
         "inline_unwarned": (
             '♻️ <b>Forgave last warn of <a href="{}">{}</a> by <a href="{}">{}</a></b>'
         ),
         "inline_funbanned": (
-            '🔓 <b><a href="{}">{}</a> unbanned in federation by <a href="{}">{}</a></b>'
+            '🔓 <b><a href="{}">{}</a> unbanned in federation by <a'
+            ' href="{}">{}</a></b>'
         ),
         "inline_funmuted": (
             '🔈 <b><a href="{}">{}</a> unmuted in federation by <a href="{}">{}</a></b>'
@@ -1212,7 +1228,8 @@ class HikariChatMod(loader.Module):
         "sync": "🔄 <b>Syncing chats and feds with server in force mode...</b>",
         "sync_complete": "😌 <b>Successfully synced</b>",
         "rename_noargs": (
-            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Specify new federation"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Specify new"
+            " federation"
             " name</b>"
         ),
         "rename_success": '😇 <b>Federation renamed to "</b><code>{}</code><b>"</b>',
@@ -1248,7 +1265,8 @@ class HikariChatMod(loader.Module):
             " Removed: {} user(-s)</b>"
         ),
         "clnraid_cancelled": (
-            "<emoji document_id=6323575131239089635>🥷</emoji> <b>RaidCleaner cancelled."
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>RaidCleaner"
+            " cancelled."
             " Removed: {} user(-s)</b>"
         ),
         "smart_anti_raid_active": (
@@ -1262,7 +1280,8 @@ class HikariChatMod(loader.Module):
         ),
         "banninja_report": (
             "<emoji document_id=6323575131239089635>🥷</emoji> <b>BanNinja has done his"
-            " job.</b>\n<i>Deleted {} bot(-s)</i>\n\n🏹 <i>«BanNinja can handle any size"
+            " job.</b>\n<i>Deleted {} bot(-s)</i>\n\n🏹 <i>«BanNinja can handle any"
+            " size"
             " of attack»</i> © <code>@hikariatama</code>"
         ),
         "forbid_messages": (
@@ -1319,11 +1338,13 @@ class HikariChatMod(loader.Module):
             " минут</b>"
         ),
         "captcha_timeout": (
-            '<emoji document_id=5213107179329953547>🚥</emoji> <b><a href="{}">{}</a> не'
+            "<emoji document_id=5213107179329953547>🚥</emoji> <b><a"
+            ' href="{}">{}</a> не'
             " прошел капчу вовремя.\n👊 Действие: {}</b>"
         ),
         "captcha_failed": (
-            '<emoji document_id=5213107179329953547>🚥</emoji> <b><a href="{}">{}</a> не'
+            "<emoji document_id=5213107179329953547>🚥</emoji> <b><a"
+            ' href="{}">{}</a> не'
             " прошел капчу.\n👊 Действие: {}</b>"
         ),
         "cas_on": (
@@ -1357,7 +1378,8 @@ class HikariChatMod(loader.Module):
         ),
         "error": "😵 <b>Произошла ошибка HikariChat</b>",
         "args": (
-            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Неверные аргументы</b>"
+            "<emoji document_id=5300759756669984376>🚫</emoji> <b>Неверные"
+            " аргументы</b>"
         ),
         "no_reason": "Не указана",
         "antitagall_on": (
@@ -1431,7 +1453,8 @@ class HikariChatMod(loader.Module):
             " в этом чате</b>"
         ),
         "report_off": (
-            "<emoji document_id=5213203794619277246>📣</emoji> <b>Report теперь выключен"
+            "<emoji document_id=5213203794619277246>📣</emoji> <b>Report теперь"
+            " выключен"
             " в этом чате</b>"
         ),
         "antiflood_on": (
@@ -1451,7 +1474,8 @@ class HikariChatMod(loader.Module):
             " выключен в этом чате</b>"
         ),
         "antigif_on": (
-            "<emoji document_id=6048825205730577727>🎑</emoji> <b>AntiGIF теперь включен"
+            "<emoji document_id=6048825205730577727>🎑</emoji> <b>AntiGIF теперь"
+            " включен"
             " в этом чате</b>"
         ),
         "antigif_off": (
@@ -1606,7 +1630,9 @@ class HikariChatMod(loader.Module):
         "btn_ban": "🔒 Бан",
         "btn_fban": "💼 Фед. бан",
         "btn_del": "🗑 Удалить",
-        "sync": "🔄 <b>Принудительная синхронизация федераций и чатов с сервером...</b>",
+        "sync": (
+            "🔄 <b>Принудительная синхронизация федераций и чатов с сервером...</b>"
+        ),
         "sync_complete": "😌 <b>Сихнронизирован</b>",
         "rename_noargs": (
             "<emoji document_id=5300759756669984376>🚫</emoji> <b>Укажи имя"
@@ -1630,7 +1656,8 @@ class HikariChatMod(loader.Module):
             " боту. Убедись, что у тебя достаточно прав</b>"
         ),
         "clnraid_started": (
-            "<emoji document_id=6323575131239089635>🥷</emoji> <b>RaidCleaner активен..."
+            "<emoji document_id=6323575131239089635>🥷</emoji> <b>RaidCleaner"
+            " активен..."
             " Найдено {} пользователей для бана...</b>"
         ),
         "clnraid_confirm": (
@@ -1718,7 +1745,8 @@ class HikariChatMod(loader.Module):
         "configure": "Настроить",
         "toggle": "Включить\\выключить",
         "fed": (
-            '<emoji document_id=5773781976905421370>💼</emoji> <b>Федерация "{}":</b>\n🔰'
+            "<emoji document_id=5773781976905421370>💼</emoji> <b>Федерация"
+            ' "{}":</b>\n🔰'
             " <b>Чаты:</b>\n<b>{}</b>\n🔰 <b>Каналы:</b>\n<b>{}</b>\n🔰"
             " <b>Админы:</b>\n<b>{}</b>\n🔰 <b>Предупреждения: {}</b>\n"
         ),
@@ -4042,7 +4070,9 @@ class HikariChatMod(loader.Module):
                 if isinstance(getattr(user, "status", None), UserStatusOnline)
                 else ""
             )
-            admins += f' <b>👤 <a href="{utils.get_link(user)}">{name}</a></b>{status}\n'
+            admins += (
+                f' <b>👤 <a href="{utils.get_link(user)}">{name}</a></b>{status}\n'
+            )
 
         chats = ""
         channels = ""

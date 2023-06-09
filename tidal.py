@@ -34,7 +34,9 @@ class TidalMod(loader.Module):
         "name": "Tidal",
         "args": "🚫 <b>Specify search query</b>",
         "404": "🚫 <b>No results found</b>",
-        "oauth": "🔑 <b>Login to TIDAL</b>\n\n<i>This link will expire in 5 minutes</i>",
+        "oauth": (
+            "🔑 <b>Login to TIDAL</b>\n\n<i>This link will expire in 5 minutes</i>"
+        ),
         "oauth_btn": "🔑 Login",
         "success": "✅ <b>Successfully logged in!</b>",
         "error": "🚫 <b>Error logging in</b>",
@@ -103,9 +105,7 @@ class TidalMod(loader.Module):
     strings_hi = {
         "args": "🚫 <b>खोज प्रश्न निर्दिष्ट करें</b>",
         "404": "🚫 <b>कोई परिणाम नहीं मिला</b>",
-        "oauth": (
-            "🔑 <b>TIDAL में लॉगिन करें</b>\n\n<i>यह लिंक 5 मिनट के लिए सक्रिय होगा</i>"
-        ),
+        "oauth": "🔑 <b>TIDAL में लॉगिन करें</b>\n\n<i>यह लिंक 5 मिनट के लिए सक्रिय होगा</i>",
         "oauth_btn": "🔑 लॉगिन करें",
         "success": "✅ <b>सफलतापूर्वक लॉगिन किया गया!</b>",
         "error": "🚫 <b>लॉगिन त्रुटि</b>",

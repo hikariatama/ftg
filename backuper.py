@@ -45,7 +45,8 @@ class BackuperMod(loader.Module):
             " backup. Do not give it to anyone, it contains personal info.</b>"
         ),
         "reply_to_file": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Reply to .json or .zip"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Reply to .json or"
+            " .zip"
             " file</b>"
         ),
         "db_restored": (
@@ -147,12 +148,14 @@ class BackuperMod(loader.Module):
 
     strings_uz = {
         "backup_caption": (
-            "<emoji document_id=5469718869536940860>👆</emoji> <b>Bu sizning ma'lumotlar"
+            "<emoji document_id=5469718869536940860>👆</emoji> <b>Bu sizning"
+            " ma'lumotlar"
             " bazangizning e'loni. Kimga ko'rsatmasangiz, shu shaxsiy ma'lumotlarni o'z"
             " ichiga oladi.</b>"
         ),
         "reply_to_file": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>.json yoki .zip faylga"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>.json yoki .zip"
+            " faylga"
             " javob bering</b>"
         ),
         "db_restored": (

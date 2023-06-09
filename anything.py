@@ -1,4 +1,4 @@
-__version__ = (1, 0, 5)
+__version__ = (1, 0, 7)
 
 # ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
@@ -21,13 +21,17 @@ __version__ = (1, 0, 5)
 import asyncio
 import io
 import json
+import logging
 import random
 import re
+import time
 
 import requests
 from hikkatl.types import Message
 
 from .. import loader, utils
+
+logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -45,15 +49,17 @@ class Anything(loader.Module):
             " image</b>"
         ),
         "drawing": (
-            "<emoji document_id=5431456208487716895>🎨</emoji> <b>Drawing {} picture(-s)"
+            "<emoji document_id=5431456208487716895>🎨</emoji> <b>Drawing {}"
+            " picture(-s)"
             " using </b><code>{}</code><b>...</b>"
         ),
         "ready": (
-            "<emoji document_id=5398001711786762757>✅</emoji> <b>Image generated!</b>{}"
+            "<emoji document_id=5398001711786762757>✅</emoji> <b>Image"
+            " generated!</b>{}"
         ),
         "debug": (
             "\n\n<i>Model: {model}, CFG: {cfg}, Steps: {steps}, Prompt:"
-            " {prompt}, Negative: {negative}</i>"
+            " {prompt}, Negative: {negative}, {took:.2f}s</i>"
         ),
     }
 
@@ -76,7 +82,7 @@ class Anything(loader.Module):
         ),
         "debug": (
             "\n\n<i>Модель: {model}, CFG: {cfg}, Шаги: {steps}, Запрос:"
-            " {prompt}, Отрицательный запрос: {negative}</i>"
+            " {prompt}, Отрицательный запрос: {negative}, {took:.2f}s</i>"
         ),
     }
 
@@ -99,7 +105,7 @@ class Anything(loader.Module):
         ),
         "debug": (
             "\n\n<i>Modelo: {model}, CFG: {cfg}, Pasos: {steps}, Solicitud:"
-            " {prompt}, Solicitud negativa: {negative}</i>"
+            " {prompt}, Solicitud negativa: {negative}, {took:.2f}s</i>"
         ),
     }
 
@@ -122,7 +128,7 @@ class Anything(loader.Module):
         ),
         "debug": (
             "\n\n<i>Modello: {model}, CFG: {cfg}, Passi: {steps}, Richiesta:"
-            " {prompt}, Richiesta negativa: {negative}</i>"
+            " {prompt}, Richiesta negativa: {negative}, {took:.2f}s</i>"
         ),
     }
 
@@ -144,7 +150,7 @@ class Anything(loader.Module):
         ),
         "debug": (
             "\n\n<i>Modèle: {model}, CFG: {cfg}, Étapes: {steps}, Demande:"
-            " {prompt}, Demande négative: {negative}</i>"
+            " {prompt}, Demande négative: {negative}, {took:.2f}s</i>"
         ),
     }
 
@@ -166,13 +172,14 @@ class Anything(loader.Module):
         ),
         "debug": (
             "\n\n<i>Modell: {model}, CFG: {cfg}, Schritte: {steps}, Anfrage:"
-            " {prompt}, Negative Anfrage: {negative}</i>"
+            " {prompt}, Negative Anfrage: {negative}, {took:.2f}s</i>"
         ),
     }
 
     strings_tr = {
         "args": (
-            "<emoji document_id=5210952531676504517>❌</emoji> <b>Gerekli argümanlar</b>"
+            "<emoji document_id=5210952531676504517>❌</emoji> <b>Gerekli"
+            " argümanlar</b>"
         ),
         "fail": (
             "<emoji document_id=5210952531676504517>❌</emoji> <b>Görüntü"
@@ -188,7 +195,7 @@ class Anything(loader.Module):
         ),
         "debug": (
             "\n\n<i>Model: {model}, CFG: {cfg}, Adımlar: {steps}, Talep:"
-            " {prompt}, Talep reddedildi: {negative}</i>"
+            " {prompt}, Talep reddedildi: {negative}, {took:.2f}s</i>"
         ),
     }
 
@@ -209,7 +216,7 @@ class Anything(loader.Module):
         ),
         "debug": (
             "\n\n<i>Model: {model}, CFG: {cfg}, Qadam: {steps}, Talab:"
-            " {prompt}, Talab qilinmadi: {negative}</i>"
+            " {prompt}, Talab qilinmadi: {negative}, {took:.2f}s</i>"
         ),
     }
 
@@ -228,14 +235,15 @@ class Anything(loader.Module):
         ),
         "debug": (
             "\n\n<i>Модель: {model}, CFG: {cfg}, Қадам: {steps}, Сұрақ:"
-            " {prompt}, Сұрақ жасалмады: {negative}</i>"
+            " {prompt}, Сұрақ жасалмады: {negative}, {took:.2f}s</i>"
         ),
     }
 
     strings_tt = {
         "args": "<emoji document_id=5210952531676504517>❌</emoji> <b>Талап киләнә</b>",
         "fail": (
-            "<emoji document_id=5210952531676504517>❌</emoji> <b>Рәсем ясап булмады</b>"
+            "<emoji document_id=5210952531676504517>❌</emoji> <b>Рәсем ясап"
+            " булмады</b>"
         ),
         "drawing": (
             "<emoji document_id=5431456208487716895>🎨</emoji> <b>Рәсем(-ләр)"
@@ -246,7 +254,7 @@ class Anything(loader.Module):
         ),
         "debug": (
             "\n\n<i>Модель: {model}, CFG: {cfg}, Адым: {steps}, Сорау:"
-            " {prompt}, Сорау ясалмады: {negative}</i>"
+            " {prompt}, Сорау ясалмады: {negative}, {took:.2f}s</i>"
         ),
     }
 
@@ -262,7 +270,7 @@ class Anything(loader.Module):
                 "steps",
                 30,
                 "Steps - The higher the number, the more the image will be detailed",
-                validator=loader.validators.Integer(minimum=1, maximum=30),
+                validator=loader.validators.Integer(minimum=1, maximum=50),
             ),
             loader.ConfigValue(
                 "cfg",
@@ -321,8 +329,8 @@ class Anything(loader.Module):
                         + re.search(
                             (
                                 r'defer="defer"'
-                                r' src="(/js/app\.[^.]*?\.js)"></script><link'
-                                r' href="/css'
+                                r' src="(\/js\/app\.[^.]*?\.js)"><\/script><link'
+                                r' href="\/css'
                             ),
                             (
                                 await utils.run_sync(
@@ -387,11 +395,12 @@ class Anything(loader.Module):
         images = []
 
         negative = negative or self.config["default_negative"]
-
         m = list(self._models.values())
 
-        for _ in range(len(m) if comp else quantity):
-            job = (
+        start = time.time()
+
+        async def create_job():
+            return (
                 await utils.run_sync(
                     requests.get,
                     "https://arran.fly.dev/generate",
@@ -408,6 +417,17 @@ class Anything(loader.Module):
                 )
             ).json()["job"]
 
+        async def create_job_ex():
+            try:
+                return await create_job()
+            except Exception as e:
+                logger.error(e)
+                await asyncio.sleep(5)
+                return await create_job_ex()
+
+        for _ in range(len(m) if comp else quantity):
+            job = await create_job_ex()
+
             q = 0
             while (
                 status := (
@@ -417,7 +437,7 @@ class Anything(loader.Module):
                     )
                 ).json()["status"]
             ) != "succeeded" and q < 20:
-                await asyncio.sleep(3)
+                await asyncio.sleep(5)
                 q += 1
 
             if status != "succeeded":
@@ -436,6 +456,7 @@ class Anything(loader.Module):
             image.name = "hahahahahhaah.png"
 
             images.append(image)
+            await asyncio.sleep(10)
 
         await utils.answer_file(
             message,
@@ -447,6 +468,7 @@ class Anything(loader.Module):
                     steps=self.config["steps"],
                     prompt=utils.escape_html(args),
                     negative=utils.escape_html(negative),
+                    took=time.time() - start,
                 )
                 if self.config["debug"]
                 else ""

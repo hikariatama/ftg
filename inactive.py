@@ -49,7 +49,8 @@ class Inactive(loader.Module):
         "configure": "⚙️ Open config",
         "started": "😼 <b>Processing started! This message will update</b>",
         "processing": (
-            "🫶 <b>Processed {} messages from {} users. Already found {} users to {} and"
+            "🫶 <b>Processed {} messages from {} users. Already found {} users to"
+            " {} and"
             " {} trusted</b>\n\n<i>Still processing...</i>"
         ),
         "kick": "kick",
@@ -63,7 +64,9 @@ class Inactive(loader.Module):
         "cancelling_processing": "🔻 <b>Cancelling processing...</b>",
         "processing_cancelled": "😼 <b>Processing cancelled!</b>",
         "hrs": "hour(-s)",
-        "applying_restrictions": "🔒 <b>Applying restrictions. Found {} users to {}</b>",
+        "applying_restrictions": (
+            "🔒 <b>Applying restrictions. Found {} users to {}</b>"
+        ),
         "restrict": "🔒 Restrict",
         "no_users": "😼 <b>No inactive users found!</b>",
         "messages": "messages",

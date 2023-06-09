@@ -234,7 +234,8 @@ class TicTacToeMod(loader.Module):
             " ({})</b></i>\n<code>{}</code>"
         ),
         "ai_game": (
-            "🧠 <b>{}</b>\n<i><b>{}</b> is playing with <b>🐻 Bear</b></i>\n\n<i>You are"
+            "🧠 <b>{}</b>\n<i><b>{}</b> is playing with <b>🐻"
+            " Bear</b></i>\n\n<i>You are"
             " {}</i>"
         ),
         "not_with_yourself": "You can't play with yourself!",
@@ -242,7 +243,8 @@ class TicTacToeMod(loader.Module):
 
     strings_ru = {
         "gamestart": (
-            "🧠 <b>Поиграть захотелось? Поиграем!</b>\n<i>Ожидание второго игрока...</i>"
+            "🧠 <b>Поиграть захотелось? Поиграем!</b>\n<i>Ожидание второго"
+            " игрока...</i>"
         ),
         "gamestart_ai": "🐻 <b>Мишка готов сражаться! А что насчет тебя?</b>",
         "game_discarded": "Игра отменена",

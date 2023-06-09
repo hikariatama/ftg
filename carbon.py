@@ -30,7 +30,9 @@ class CarbonMod(loader.Module):
         "args": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>No args specified</b>"
         ),
-        "loading": "<emoji document_id=5213452215527677338>⏳</emoji> <b>Loading...</b>",
+        "loading": (
+            "<emoji document_id=5213452215527677338>⏳</emoji> <b>Loading...</b>"
+        ),
     }
 
     strings_ru = {

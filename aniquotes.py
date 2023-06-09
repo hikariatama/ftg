@@ -72,7 +72,8 @@ class AnimatedQuotesMod(loader.Module):
 
     strings_uz = {
         "no_text": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Sticker yaratish uchun"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Sticker yaratish"
+            " uchun"
             " matn kiriting</b>"
         ),
         "processing": (

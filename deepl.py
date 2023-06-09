@@ -123,7 +123,8 @@ class DeepLMod(loader.Module):
 
     strings_uz = {
         "no_text": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Matn ko'rsatilmadi</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Matn"
+            " ko'rsatilmadi</b>"
         ),
         "translated": "🇺🇸 <code>{}</code>",
         "_cmd_doc_deepl": "<matn yoki javob> - DeepL orqali matnni tarjima qilish",
@@ -140,14 +141,14 @@ class DeepLMod(loader.Module):
         "translated": "🇺🇸 <code>{}</code>",
         "_cmd_doc_deepl": "<टेक्स्ट या उत्तर> - डीपएल के माध्यम से पाठ का अनुवाद करें",
         "_cls_doc": (
-            "डीपएल के माध्यम से पाठ का अनुवाद करता है। प्रॉक्सी का उपयोग करने की सलाह"
-            " दी जाती है"
+            "डीपएल के माध्यम से पाठ का अनुवाद करता है। प्रॉक्सी का उपयोग करने की सलाह दी जाती है"
         ),
     }
 
     strings_tr = {
         "no_text": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Metin belirtilmedi</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Metin"
+            " belirtilmedi</b>"
         ),
         "translated": "🇺🇸 <code>{}</code>",
         "_cmd_doc_deepl": "<metin veya yanıt> - DeepL ile metni çevir",

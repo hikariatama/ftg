@@ -66,11 +66,13 @@ class NekoSpy(loader.Module):
             ' href="{}">{}</a> has been deleted. Content:</b>\n{}'
         ),
         "edited_pm": (
-            '🔏 <b><a href="{}">{}</a> edited <a href="{message_url}">message</a> in pm.'
+            '🔏 <b><a href="{}">{}</a> edited <a href="{message_url}">message</a>'
+            " in pm."
             " Old content:</b>\n{}"
         ),
         "edited_chat": (
-            '🔏 <b><a href="{message_url}">Message</a> in chat <a href="{}">{}</a> by <a'
+            '🔏 <b><a href="{message_url}">Message</a> in chat <a href="{}">{}</a>'
+            " by <a"
             ' href="{}">{}</a> has been edited. Old content:</b>\n{}'
         ),
         "on": "on",
@@ -282,7 +284,8 @@ class NekoSpy(loader.Module):
             ' href="{message_url}">Nachricht</a> bearbeitet. Alte Nachricht:</b>\n{}'
         ),
         "edited_chat": (
-            '🔏 <b>Die <a href="{message_url}">Nachricht</a> im Chat <a href="{}">{}</a>'
+            '🔏 <b>Die <a href="{message_url}">Nachricht</a> im Chat <a'
+            ' href="{}">{}</a>'
             ' von <a href="{}">{}</a> wurde bearbeitet. Alte Nachricht:</b>\n{}'
         ),
         "mode_off": (

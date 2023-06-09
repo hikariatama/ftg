@@ -37,7 +37,9 @@ class RPMod(loader.Module):
             "🦊 <b>My RP commands. Restore with </b><code>.rprestore</code>"
         ),
         "no_file": "🚫 <b>Reply to file</b>",
-        "restored": "✅ <b>RP Commands restored. See them with </b><code>.rplist</code>",
+        "restored": (
+            "✅ <b>RP Commands restored. See them with </b><code>.rplist</code>"
+        ),
     }
 
     strings_ru = {

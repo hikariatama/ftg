@@ -78,9 +78,7 @@ class CrAIyonMod(loader.Module):
             "<विवरण> - Craiyon AI (DALL-E) का उपयोग करके विवरण के अनुसार एक छवि उत्पन्न"
             " करता है"
         ),
-        "_cls_doc": (
-            "Craiyon AI (DALL-E) का उपयोग करके विवरण के अनुसार छवियां उत्पन्न करता है"
-        ),
+        "_cls_doc": "Craiyon AI (DALL-E) का उपयोग करके विवरण के अनुसार छवियां उत्पन्न करता है",
     }
 
     strings_uz = {

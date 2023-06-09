@@ -77,7 +77,9 @@ class SpotifyMod(loader.Module):
         "authed": (
             "<emoji document_id=6319076999105087378>🎧</emoji> <b>Auth successful</b>"
         ),
-        "playing": "<emoji document_id=6319076999105087378>🎧</emoji> <b>Playing...</b>",
+        "playing": (
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Playing...</b>"
+        ),
         "back": (
             "<emoji document_id=5469735272017043817>👈</emoji> <b>Switched to previous"
             " track</b>"
@@ -87,7 +89,8 @@ class SpotifyMod(loader.Module):
             "<emoji document_id=6037460928423791421>🚪</emoji> <b>Unauthentificated</b>"
         ),
         "restarted": (
-            "<emoji document_id=5469735272017043817>👈</emoji> <b>Playing track from the"
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Playing track"
+            " from the"
             " beginning</b>"
         ),
         "auth": (
@@ -100,7 +103,8 @@ class SpotifyMod(loader.Module):
             " playback</b>"
         ),
         "autobio": (
-            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Spotify autobio {}</b>"
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Spotify autobio"
+            " {}</b>"
         ),
         "404": "<emoji document_id=5312526098750252863>🚫</emoji> <b>No results</b>",
         "playing_track": (
@@ -156,7 +160,8 @@ class SpotifyMod(loader.Module):
             " отменена</b>"
         ),
         "restarted": (
-            "<emoji document_id=5469735272017043817>👈</emoji> <b>Начал трек сначала</b>"
+            "<emoji document_id=5469735272017043817>👈</emoji> <b>Начал трек"
+            " сначала</b>"
         ),
         "liked": (
             '<emoji document_id=5199727145022134809>❤️</emoji> <b>Поставил "Мне'
@@ -243,7 +248,8 @@ class SpotifyMod(loader.Module):
             " wurde geliked</b>"
         ),
         "autobio": (
-            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Spotify Autobio {}</b>"
+            "<emoji document_id=6319076999105087378>🎧</emoji> <b>Spotify Autobio"
+            " {}</b>"
         ),
         "404": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Keine Ergebnisse</b>"
@@ -287,7 +293,8 @@ class SpotifyMod(loader.Module):
             "<emoji document_id=5471978009449731768>👉</emoji> <b>Şarkı atlandı.</b>"
         ),
         "err": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bir hata oluştu. Müzik"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bir hata oluştu."
+            " Müzik"
             " çalmak istediğinizden emin olun!</b>\n<code>{}</code>"
         ),
         "already_authed": (
@@ -326,7 +333,8 @@ class SpotifyMod(loader.Module):
         ),
         "404": "<emoji document_id=5312526098750252863>🚫</emoji> <b>Sonuç yok</b>",
         "playing_track": (
-            "<emoji document_id=5212941939053175244>🎧</emoji> <b>{} kuyruğa eklendi</b>"
+            "<emoji document_id=5212941939053175244>🎧</emoji> <b>{} kuyruğa"
+            " eklendi</b>"
         ),
         "no_music": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Şu anda müzik"
@@ -379,7 +387,9 @@ class SpotifyMod(loader.Module):
             "<emoji document_id=5469735272017043817>👈</emoji> <b>Oldingi mashqa"
             " o'tildi</b>"
         ),
-        "paused": "<emoji document_id=5469904794376217131>🤚</emoji> <b>To'xtatildi</b>",
+        "paused": (
+            "<emoji document_id=5469904794376217131>🤚</emoji> <b>To'xtatildi</b>"
+        ),
         "deauth": (
             "<emoji document_id=6037460928423791421>🚪</emoji> <b>Tasdiqlash bekor"
             " qilindi</b>"

@@ -61,7 +61,8 @@ class DyslexiaMod(loader.Module):
     }
     strings_de = {
         "no_text": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Kein Text gefunden</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Kein Text"
+            " gefunden</b>"
         ),
         "_cmd_doc_dyslex": (
             "<text | reply> - Zeigt den Text so an, wie er für Menschen mit Dyslexie"
@@ -72,9 +73,7 @@ class DyslexiaMod(loader.Module):
         "no_text": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>पाठ नहीं मिला</b>"
         ),
-        "_cmd_doc_dyslex": (
-            "<पाठ | रिप्लाई> - डिस्लेक्सिया वाले लोगों के लिए यह पाठ दिखाता है"
-        ),
+        "_cmd_doc_dyslex": "<पाठ | रिप्लाई> - डिस्लेक्सिया वाले लोगों के लिए यह पाठ दिखाता है",
     }
     strings_uz = {
         "no_text": (
