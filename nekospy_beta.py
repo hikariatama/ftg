@@ -436,7 +436,11 @@ class NekoSpyBeta(loader.Module):
 
         self._cacher = CacheManagerDisc(self._client, self._db)
         self._gc.start()
-        self._recent: PointerList = self.pointer("recents", [], item_type=RecentsItem)
+        self._recent: PointerList = self.pointer(
+            "recent_msgs",
+            [],
+            item_type=RecentsItem,
+        )
 
     @loader.loop(interval=15)
     async def _gc(self):
@@ -539,8 +543,7 @@ class NekoSpyBeta(loader.Module):
         return "\n".join(
             [
                 "\u0020\u2800\u0020\u2800<emoji"
-                ' document_id=4971987363145188045>▫️</emoji> <b><a href="{}">{}</a></b>'
-                .format(
+                ' document_id=4971987363145188045>▫️</emoji> <b><a href="{}">{}</a></b>'.format(
                     utils.get_entity_url(await self._client.get_entity(x, exp=0)),
                     utils.escape_html(
                         get_display_name(await self._client.get_entity(x, exp=0))
