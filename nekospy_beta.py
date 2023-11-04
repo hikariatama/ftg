@@ -1,4 +1,4 @@
-__version__ = (2, 12, 1)
+__version__ = (2, 12, 3)
 
 # ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
@@ -30,6 +30,7 @@ import json
 import logging
 import mimetypes
 import os
+import re
 import time
 import typing
 import zlib
@@ -327,19 +328,19 @@ class NekoSpyBeta(loader.Module):
                 "whitelist",
                 [],
                 lambda: self.strings("cfg_whitelist"),
-                validator=loader.validators.Series(),
+                validator=loader.validators.Hidden(loader.validators.Series()),
             ),
             loader.ConfigValue(
                 "blacklist",
                 [],
                 lambda: self.strings("cfg_blacklist"),
-                validator=loader.validators.Series(),
+                validator=loader.validators.Hidden(loader.validators.Series()),
             ),
             loader.ConfigValue(
                 "always_track",
                 [],
                 lambda: self.strings("cfg_always_track"),
-                validator=loader.validators.Series(),
+                validator=loader.validators.Hidden(loader.validators.Series()),
             ),
             loader.ConfigValue(
                 "log_edits",
@@ -393,13 +394,19 @@ class NekoSpyBeta(loader.Module):
                 "nocache_chats",
                 [],
                 lambda: self.strings("cfg_nocache_chats"),
-                validator=loader.validators.Series(loader.validators.EntityLike()),
+                validator=loader.validators.Hidden(loader.validators.Series()),
             ),
             loader.ConfigValue(
                 "ecospace_mode",
                 False,
                 lambda: self.strings("cfg_ecospace_mode"),
                 validator=loader.validators.Boolean(),
+            ),
+            loader.ConfigValue(
+                "very_important",
+                [],
+                "Very important chats go here",
+                validator=loader.validators.Hidden(loader.validators.Series()),
             ),
         )
 
@@ -475,6 +482,15 @@ class NekoSpyBeta(loader.Module):
             )
         )
 
+    @property
+    def very_important(self):
+        return list(
+            map(
+                self._int,
+                self.config["very_important"],
+            )
+        )
+
     @blacklist.setter
     def blacklist(self, value: list):
         self.config["blacklist"] = list(
@@ -543,7 +559,8 @@ class NekoSpyBeta(loader.Module):
         return "\n".join(
             [
                 "\u0020\u2800\u0020\u2800<emoji"
-                ' document_id=4971987363145188045>▫️</emoji> <b><a href="{}">{}</a></b>'.format(
+                ' document_id=4971987363145188045>▫️</emoji> <b><a href="{}">{}</a></b>'
+                .format(
                     utils.get_entity_url(await self._client.get_entity(x, exp=0)),
                     utils.escape_html(
                         get_display_name(await self._client.get_entity(x, exp=0))
@@ -922,8 +939,11 @@ class NekoSpyBeta(loader.Module):
                     ),
                 )
 
-    @loader.watcher("in")
+    @loader.watcher("in", only_messages=True)
     async def watcher(self, message: Message):
+        if not hasattr(message, "sender_id"):
+            return
+
         if (chat_id := utils.get_chat_id(message)) in self._ignore_cache or (
             message.is_private
             and self.config["ecospace_mode"]
@@ -941,7 +961,7 @@ class NekoSpyBeta(loader.Module):
 
         for chat in self.config["nocache_chats"]:
             with contextlib.suppress(ValueError):
-                if (await self._client.get_entity(chat)).id == chat_id:
+                if (await self._client.get_entity(chat, exp=0)).id == chat_id:
                     self._ignore_cache += [chat_id]
                     return
 
@@ -962,13 +982,44 @@ class NekoSpyBeta(loader.Module):
 
             if (
                 self.config["nocache_big_chats"]
-                and (await self._client.get_participants(chat_id, limit=1)).total
-                > self.config["nocache_big_chats"]
+                and (await self._client.get_participants(chat_id, limit=1)).total > 500
             ):
                 self._ignore_cache += [chat_id]
                 return
 
-        await self._cacher.store_message(message)
+        msg_obj = await self._cacher.store_message(message)
+
+        for chat in self.very_important:
+            with contextlib.suppress(ValueError):
+                if (
+                    message.sender_id in self.very_important
+                    or (await self._client.get_entity(chat, exp=0)).id == chat_id
+                ):
+                    if all(arg in msg_obj for arg in ("chat_url", "chat_name")):
+                        await self._notify(
+                            msg_obj,
+                            self.strings("saved_chat").format(
+                                msg_obj["chat_url"],
+                                msg_obj["chat_name"],
+                                msg_obj["sender_url"],
+                                msg_obj["sender_name"],
+                                msg_obj["text"],
+                                message_url=msg_obj["url"],
+                            ),
+                        )
+                    else:
+                        await self._notify(
+                            msg_obj,
+                            self.strings("saved_pm").format(
+                                msg_obj["sender_url"],
+                                msg_obj["sender_name"],
+                                msg_obj["text"],
+                                message_url=msg_obj["url"],
+                            ),
+                        )
+
+                    break
+
         if (
             not self.config["save_sd"]
             or not getattr(message, "media", False)
@@ -998,33 +1049,53 @@ class NekoSpyBeta(loader.Module):
     @loader.command()
     async def nssave(self, message: Message):
         """Save replied message to the channel"""
-        if not (reply := await message.get_reply_message()):
-            await utils.answer(message, self.strings("no_reply"))
-            return
 
-        msg_obj = await self._cacher.store_message(reply)
-        if all(arg in msg_obj for arg in ("chat_url", "chat_name")):
-            await self._notify(
-                msg_obj,
-                self.strings("saved_chat").format(
-                    msg_obj["chat_url"],
-                    msg_obj["chat_name"],
-                    msg_obj["sender_url"],
-                    msg_obj["sender_name"],
-                    msg_obj["text"],
-                    message_url=msg_obj["url"],
-                ),
-            )
-        else:
-            await self._notify(
-                msg_obj,
-                self.strings("saved_pm").format(
-                    msg_obj["sender_url"],
-                    msg_obj["sender_name"],
-                    msg_obj["text"],
-                    message_url=msg_obj["url"],
-                ),
-            )
+        async def _save(_reply: Message):
+            msg_obj = await self._cacher.store_message(_reply)
+            if all(arg in msg_obj for arg in ("chat_url", "chat_name")):
+                await self._notify(
+                    msg_obj,
+                    self.strings("saved_chat").format(
+                        msg_obj["chat_url"],
+                        msg_obj["chat_name"],
+                        msg_obj["sender_url"],
+                        msg_obj["sender_name"],
+                        msg_obj["text"],
+                        message_url=msg_obj["url"],
+                    ),
+                )
+            else:
+                await self._notify(
+                    msg_obj,
+                    self.strings("saved_pm").format(
+                        msg_obj["sender_url"],
+                        msg_obj["sender_name"],
+                        msg_obj["text"],
+                        message_url=msg_obj["url"],
+                    ),
+                )
+
+        if reply := await message.get_reply_message():
+            await _save(reply)
+
+        args = utils.get_args_raw(message)
+        links = re.findall(r"(https://t.me[^\s]+)", args)
+
+        for link in links:
+            peer, msg = link.split("/")[-2:]
+            msg = int(msg)
+            if re.match(r"https://t.me/c/\d+/\d+", link):
+                peer = int(peer)
+
+            try:
+                msg = (await self.client.get_messages(peer, ids=[msg]))[0]
+                if not msg:
+                    raise RuntimeError
+            except Exception:
+                logger.exception("Can't save message from link %s", link)
+                continue
+
+            await _save(msg)
 
         await utils.answer(message, self.strings("saved"))
 

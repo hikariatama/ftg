@@ -1,3 +1,5 @@
+__version__ = (2, 0, 1)
+
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
@@ -53,7 +55,7 @@ class TruthOrDareMod(loader.Module):
         "args": "▫️ <code>.todlang en/ru</code>",
     }
 
-    async def client_ready(self, client, db):
+    async def client_ready(self):
         if self.get("lang") in {"ru", "en"}:
             self._update_lang()
 
@@ -63,9 +65,7 @@ class TruthOrDareMod(loader.Module):
                 await utils.run_sync(
                     requests.post,
                     "https://psycatgames.com/api/tod-v2/",
-                    headers={
-                        "referer": "https://psycatgames.com/app/truth-or-dare/?utm_campaign=tod_website&utm_source=tod_en&utm_medium=website"
-                    },
+                    headers={"referer": "https://psycatgames.com/app/truth-or-dare"},
                     data=json.dumps(
                         {
                             "id": "truth-or-dare",
@@ -162,6 +162,53 @@ class TruthOrDareMod(loader.Module):
         )
 
     async def todcmd(self, message: Message):
+        """Get truth or dare"""
+        if not self.get("lang"):
+            await self.inline.form(
+                self.strings("choose_language"),
+                message=message,
+                reply_markup=[
+                    {
+                        "text": "🇷🇺 Русский",
+                        "callback": self._inline_set_language,
+                        "args": ("ru",),
+                    },
+                    {
+                        "text": "🇬🇧 English",
+                        "callback": self._inline_set_language,
+                        "args": ("en",),
+                    },
+                ],
+            )
+            return
+
+        if (category := utils.get_args_raw(message).lower()) not in {
+            "classic",
+            "kids",
+            "party",
+            "hot",
+            "mixed",
+        }:
+            category = "mixed"
+
+        if random.choice(("truth", "dare")) == "truth":
+            action_babel = self.strings(f"truth_{self.get('lang')}")
+            await utils.answer(
+                message,
+                (
+                    f"<b>{action_babel}</b>:\n\n{await self.truth_or_dare('truth', category)}"
+                ),
+            )
+        else:
+            action_babel = self.strings(f"dare_{self.get('lang')}")
+            await utils.answer(
+                message,
+                (
+                    f"<b>{action_babel}</b>:\n\n{await self.truth_or_dare('dare', category)}"
+                ),
+            )
+
+    async def todicmd(self, message: Message):
         """Start new truth or dare game"""
         if not self.get("lang"):
             await self.inline.form(

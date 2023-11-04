@@ -48,7 +48,11 @@ logging.getLogger("pytgcalls").setLevel(logging.ERROR)
 
 @loader.tds
 class VoiceChatMod(loader.Module):
-    """Toolkit for VoiceChats handling"""
+    """
+    Toolkit for VoiceChats handling
+    DISCLAIMER: THIS MODULE MAY CAUSE MEMORY LEAK AND CORRUPT YOUR SERVER DUE TO PYTGCALLS BUG
+    USE WITH CAUTION. DON'T FORGET TO LIMIT YOUR HIKKA DAEMON BY RAM AND CPU USAGE!
+    """
 
     strings = {
         "name": "VoiceChat",
@@ -195,10 +199,6 @@ class VoiceChatMod(loader.Module):
         )
 
     async def client_ready(self, client, db):
-        raise loader.LoadError(
-            "For the sake of security, this module is temporarily disabled for loading."
-            " See https://t.me/hikari_life/80 for more details"
-        )
         # Monkeypatch pytgcalls MtProtoClient to support hikka's custom one
 
         class HikkaTLClient(MtProtoClient):

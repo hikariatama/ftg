@@ -1,23 +1,29 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒 Licensed under the GNU GPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+__version__ = (2, 0, 0)
 
-# meta pic: https://static.hikari.gay/tagall_icon.png
+# ©️ Dan Gazizullin, 2021-2023
+# This file is a part of Hikka Userbot
+# Code is licensed under CC-BY-NC-ND 4.0 unless otherwise specified.
+# 🌐 https://github.com/hikariatama/Hikka
+# 🔑 https://creativecommons.org/licenses/by-nc-nd/4.0/
+# + attribution
+# + non-commercial
+# + no-derivatives
+
+# You CANNOT edit this file without direct permission from the author.
+# You can redistribute this file without any changes.
+
+# meta pic: https://static.dan.tatar/tagall_icon.png
 # meta developer: @hikarimods
 # meta banner: https://mods.hikariatama.ru/badges/tagall.jpg
-# scope: hikka_min 1.3.0
+# scope: hikka_min 1.6.3
 
 import asyncio
 import contextlib
 import logging
 
 from aiogram import Bot
-from telethon.tl.functions.channels import InviteToChannelRequest
-from telethon.tl.types import Message
+from hikkatl.tl.functions.channels import InviteToChannelRequest
+from hikkatl.tl.types import Message
 
 from .. import loader, utils
 from ..inline.types import InlineCall
@@ -45,6 +51,11 @@ class TagAllMod(loader.Module):
         "_cfg_doc_use_bot": "Use inline bot to tag people",
         "_cfg_doc_timeout": "What time interval to sleep between each tag message",
         "_cfg_doc_silent": "Do not send message with cancel button",
+        "_cfg_doc_cycle_tagging": (
+            "Tag all participants over and over again until you stop the script using"
+            " the button in the message"
+        ),
+        "_cfg_doc_cycle_delay": "Delay between each cycle of tagging in seconds",
         "gathering": "🧚‍♀️ <b>Calling participants of this chat...</b>",
         "cancel": "🚫 Cancel",
         "cancelled": "🧚‍♀️ <b>TagAll cancelled!</b>",
@@ -61,6 +72,11 @@ class TagAllMod(loader.Module):
         "_cfg_doc_use_bot": "Использовать бота для тегов",
         "_cfg_doc_timeout": "Время между сообщениями с тегами",
         "_cfg_doc_silent": "Не отправлять сообщение с кнопкой отмены",
+        "_cfg_doc_cycle_tagging": (
+            "Тегать всех участников снова и снова, пока вы не остановите скрипт,"
+            " используя кнопку в сообщении"
+        ),
+        "_cfg_doc_cycle_delay": "Задержка между циклами тегов в секундах",
         "gathering": "🧚‍♀️ <b>Отмечаю участников чата...</b>",
         "cancel": "🚫 Отмена",
         "cancelled": "🧚‍♀️ <b>Сбор участников отменен!</b>",
@@ -75,6 +91,11 @@ class TagAllMod(loader.Module):
             "Zeitintervall, in dem zwischen den Erwähnungen gewartet wird"
         ),
         "_cfg_doc_silent": "Nachricht ohne Abbrechen-Button senden",
+        "_cfg_doc_cycle_tagging": (
+            "Alle Teilnehmer immer wieder erwähnen, bis du das Skript mit der"
+            " Schaltfläche in der Nachricht stoppst"
+        ),
+        "_cfg_doc_cycle_delay": "Verzögerung zwischen jedem Zyklus der Erwähnung in Sekunden",
         "gathering": "🧚‍♀️ <b>Erwähne Teilnehmer dieses Chats...</b>",
         "cancel": "🚫 Abbrechen",
         "cancelled": "🧚‍♀️ <b>TagAll abgebrochen!</b>",
@@ -87,21 +108,14 @@ class TagAllMod(loader.Module):
         "_cfg_doc_use_bot": "İnsanları etiketlemek için inline botu kullan",
         "_cfg_doc_timeout": "Her etiket mesajı arasında ne kadar bekleneceği",
         "_cfg_doc_silent": "İptal düğmesi olmadan mesaj gönderme",
+        "_cfg_doc_cycle_tagging": (
+            "Mesajdaki düğmeyi kullanarak betiği durdurana kadar tüm katılımcıları"
+            " tekrar tekrar etiketle"
+        ),
+        "_cfg_doc_cycle_delay": "Etiketleme döngüsü arasındaki gecikme süresi (saniye)",
         "gathering": "🧚‍♀️ <b>Bu sohbetteki katılımcıları çağırıyorum...</b>",
         "cancel": "🚫 İptal",
         "cancelled": "🧚‍♀️ <b>TagAll iptal edildi!</b>",
-    }
-
-    strings_hi = {
-        "bot_error": "🚫 <b>इनलाइन बॉट को चैट में आमंत्रित करने में विफल रहा</b>",
-        "_cfg_doc_default_message": "डिफ़ॉल्ट संदेश को उल्लेख करें",
-        "_cfg_doc_delete": "टैग करने के बाद संदेश को हटाएं",
-        "_cfg_doc_use_bot": "लोगों को टैग करने के लिए इनलाइन बॉट का उपयोग करें",
-        "_cfg_doc_timeout": "प्रत्येक टैग संदेश के बीच कैसे स्लीप करना है",
-        "_cfg_doc_silent": "रद्द बटन नहीं भेजने के लिए संदेश भेजें",
-        "gathering": "🧚‍♀️ <b>इस चैट के भागीदारों को कॉल कर रहा हूं...</b>",
-        "cancel": "🚫 रद्द करें",
-        "cancelled": "🧚‍♀️ <b>TagAll रद्द कर दिया गया है!</b>",
     }
 
     strings_uz = {
@@ -113,6 +127,11 @@ class TagAllMod(loader.Module):
         "_cfg_doc_use_bot": "Odamlarni etiketlash uchun inline botdan foydalanish",
         "_cfg_doc_timeout": "Har bir etiket xabari orasida nechta kutish kerak",
         "_cfg_doc_silent": "Bekor tugmasi olmadan xabar jo‘natish",
+        "_cfg_doc_cycle_tagging": (
+            "Xabar bo‘yicha tugmani ishlatib, skriptni to‘xtatguncha barcha"
+            " qatnashuvchilarni qayta-qayta etiketlash"
+        ),
+        "_cfg_doc_cycle_delay": "Har bir etiketlash tsikli orasida gecikma (soniya)",
         "gathering": "🧚‍♀️ <b>Ushbu chatta qatnashganlarni chaqiraman...</b>",
         "cancel": "🚫 Bekor qilish",
         "cancelled": "🧚‍♀️ <b>TagAll bekor qilindi!</b>",
@@ -149,6 +168,18 @@ class TagAllMod(loader.Module):
                 lambda: self.strings("_cfg_doc_silent"),
                 validator=loader.validators.Boolean(),
             ),
+            loader.ConfigValue(
+                "cycle_tagging",
+                False,
+                lambda: self.strings("_cfg_cycle_tagging"),
+                validator=loader.validators.Boolean(),
+            ),
+            loader.ConfigValue(
+                "cycle_delay",
+                0,
+                lambda: self.strings("_cfg_cycle_delay"),
+                validator=loader.validators.Integer(minimum=0),
+            ),
         )
 
     async def cancel(self, call: InlineCall, event: StopEvent):
@@ -160,7 +191,6 @@ class TagAllMod(loader.Module):
         ru_doc="[текст] - Отметить всех участников чата",
         de_doc="[Text] - Alle Chatteilnehmer erwähnen",
         tr_doc="[metin] - Sohbet katılımcılarını etiketle",
-        hi_doc="[पाठ] - चैट के सभी भागीदारों को टैग करें",
         uz_doc="[matn] - Chat qatnashuvchilarini tegish",
     )
     async def tagall(self, message: Message):
@@ -198,43 +228,53 @@ class TagAllMod(loader.Module):
                 },
             )
 
-        for chunk in utils.chunks(
-            [
-                f'<a href="tg://user?id={user.id}">\xad</a>'
-                async for user in self._client.iter_participants(message.peer_id)
-            ],
-            5,
-        ):
-            m = await (
-                self.inline.bot.send_message
-                if self.config["use_bot"]
-                else self._client.send_message
-            )(
-                chat_id,
-                utils.escape_html(args or self.config["default_message"])
-                + "\xad".join(chunk),
-            )
+        first, br = True, False
+        while True if self.config["cycle_tagging"] else first:
+            for chunk in utils.chunks(
+                [
+                    f'<a href="tg://user?id={user.id}">\xad</a>'
+                    async for user in self._client.iter_participants(message.peer_id)
+                ],
+                5,
+            ):
+                m = await (
+                    self.inline.bot.send_message
+                    if self.config["use_bot"]
+                    else self._client.send_message
+                )(
+                    chat_id,
+                    utils.escape_html(args or self.config["default_message"])
+                    + "\xad".join(chunk),
+                )
 
-            if self.config["delete"]:
-                with contextlib.suppress(Exception):
-                    await m.delete()
+                if self.config["delete"]:
+                    with contextlib.suppress(Exception):
+                        await m.delete()
 
-            async def _task():
-                nonlocal event, cancel
-                if not self.config["silent"]:
-                    return
-
-                while True:
-                    if not event.state:
-                        await cancel.edit(self.strings("cancelled"))
+                async def _task():
+                    nonlocal event, cancel
+                    if not self.config["silent"]:
                         return
 
-                    await asyncio.sleep(0.1)
+                    while True:
+                        if not event.state:
+                            await cancel.edit(self.strings("cancelled"))
+                            return
 
-            task = asyncio.ensure_future(_task())
-            await asyncio.sleep(self.config["timeout"])
-            task.cancel()
-            if not event.state:
+                        await asyncio.sleep(0.1)
+
+                task = asyncio.ensure_future(_task())
+                await asyncio.sleep(self.config["timeout"])
+                task.cancel()
+                if not event.state:
+                    br = True
+                    break
+
+            if br:
                 break
+
+            first = False
+            if self.config["cycle_tagging"]:
+                await asyncio.sleep(self.config["cycle_delay"])
 
         await cancel.delete()

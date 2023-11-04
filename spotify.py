@@ -28,10 +28,10 @@ from types import FunctionType
 
 import requests
 import spotipy
+from hikkatl.errors.rpcerrorlist import FloodWaitError
+from hikkatl.tl.functions.account import UpdateProfileRequest
+from hikkatl.tl.types import Message
 from PIL import Image, ImageDraw, ImageFont
-from telethon.errors.rpcerrorlist import FloodWaitError
-from telethon.tl.functions.account import UpdateProfileRequest
-from telethon.tl.types import Message
 
 from .. import loader, utils
 
@@ -516,7 +516,7 @@ class SpotifyMod(loader.Module):
         self.sp_auth = spotipy.oauth2.SpotifyOAuth(
             client_id=self._client_id,
             client_secret=self._client_secret,
-            redirect_uri="https://fuccsoc.com/",
+            redirect_uri="https://thefsch.github.io/spotify/",
             scope=self.scope,
         )
         self.config = loader.ModuleConfig(

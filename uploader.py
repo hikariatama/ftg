@@ -168,6 +168,7 @@ class FileUploaderMod(loader.Module):
                 requests.post,
                 "https://0x0.st",
                 files={"file": file},
+                data={"secret": True},
             )
         except ConnectionError:
             await utils.answer(message, self.strings("err"))
