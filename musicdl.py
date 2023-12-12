@@ -1,37 +1,27 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
-
-# meta pic: https://static.hikari.gay/musicdl_icon.png
-# meta banner: https://mods.hikariatama.ru/badges/musicdl.jpg
-# meta developer: @hikarimods
-# scope: hikka_only
-# scope: hikka_min 1.3.0
+# Name: musicdl
+# Description: Download music by hikariatama (modded by @y9chebupelka)
+# Commands:
+# .mdl
+# meta developer: @chepuxmodules
 
 from telethon.tl.types import Message
-
 from .. import loader, utils
-
 
 @loader.tds
 class MusicDLMod(loader.Module):
-    """Download music"""
+    """Download music by hikariatama (modded by @y9chebupelka)"""
 
     strings = {
         "name": "MusicDL",
-        "args": "🚫 <b>Arguments not specified</b>",
-        "loading": "🔍 <b>Loading...</b>",
+        "args": "<emoji document_id=5327801429111349563>🤦</emoji> <b>Arguments not specified</b>",
+        "loading": "<emoji document_id=5325920220550799029>🤓</emoji> <b>Loading...</b>",
         "404": "🚫 <b>Music </b><code>{}</code><b> not found</b>",
     }
 
     strings_ru = {
-        "args": "🚫 <b>Не указаны аргументы</b>",
-        "loading": "🔍 <b>Загрузка...</b>",
-        "404": "🚫 <b>Песня </b><code>{}</code><b> не найдена</b>",
+        "args": "<emoji document_id=5327801429111349563>🤦</emoji> <b>Не указаны аргументы</b>",
+        "loading": "<emoji document_id=5325920220550799029>🤓</emoji> <b>Загрузка...</b>",
+        "404": "<emoji document_id=5325960528818872589>💢</emoji> <b>Песня </b><code>{}</code><b> не найдена</b>",
     }
 
     async def client_ready(self, *_):
@@ -43,23 +33,34 @@ class MusicDLMod(loader.Module):
     @loader.command(ru_doc="<название> - Скачать песню")
     async def mdl(self, message: Message):
         """<name> - Download track"""
-        args = utils.get_args_raw(message)
+        # Если команда была в ответ на сообщение с названием музыки, то берем его как аргумент
+        if message.is_reply:
+            reply = await message.get_reply_message()
+            args = reply.raw_text
+        else:
+            # Иначе берем аргумент из сообщения
+            args = utils.get_args_raw(message)
+        # Если аргумент не указан, то показываем ошибку
         if not args:
-            await utils.answer(message, self.strings("args"))
+            await utils.answer(message, self.strings["args"])
             return
-
-        message = await utils.answer(message, self.strings("loading"))
+        # Добавляем эту строку, чтобы удалить .m из аргументов
+        args = args.replace(".m", "") # Удаляем .m из аргументов
+        # Иначе показываем сообщение о загрузке
+        message = await utils.answer(message, self.strings["loading"])
+        # Используем библиотеку musicdl для скачивания музыки
         result = await self.musicdl.dl(args, only_document=True)
-
+        # Если результат не найден, то показываем ошибку
         if not result:
-            await utils.answer(message, self.strings("404").format(args))
+            await utils.answer(message, self.strings["404"].format(args))
             return
-
+        # Иначе отправляем файл с музыкой
         await self._client.send_file(
             message.peer_id,
             result,
-            caption=f"🎧 {utils.ascii_face()}",
+            caption=f"<emoji document_id=5325965837398450115>😎</emoji> <b>{args.title()}</b>", # Добавляем название музыки в подпись и делаем его жирным
             reply_to=getattr(message, "reply_to_msg_id", None),
         )
+        # Если сообщение было отправлено нами, то удаляем его
         if message.out:
             await message.delete()
