@@ -95,7 +95,9 @@ class TagAllMod(loader.Module):
             "Alle Teilnehmer immer wieder erwähnen, bis du das Skript mit der"
             " Schaltfläche in der Nachricht stoppst"
         ),
-        "_cfg_doc_cycle_delay": "Verzögerung zwischen jedem Zyklus der Erwähnung in Sekunden",
+        "_cfg_doc_cycle_delay": (
+            "Verzögerung zwischen jedem Zyklus der Erwähnung in Sekunden"
+        ),
         "gathering": "🧚‍♀️ <b>Erwähne Teilnehmer dieses Chats...</b>",
         "cancel": "🚫 Abbrechen",
         "cancelled": "🧚‍♀️ <b>TagAll abgebrochen!</b>",

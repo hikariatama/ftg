@@ -8,7 +8,7 @@
 
 # scope: hikka_min 1.2.10
 
-# meta pic: https://static.hikari.gay/fancy_fonts_icon.png
+# meta pic: https://static.dan.tatar/fancy_fonts_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/fancyfonts.jpg
 # meta developer: @hikarimods
 # scope: inline

@@ -7,7 +7,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta desc: Simplifies the interaction with @leomatchbot - Rejects slag, allows you to create filters by age, cities, blacklisted words.
-# meta pic: https://static.hikari.gay/leomatch_icon.png
+# meta pic: https://static.dan.tatar/leomatch_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/leomatch.jpg
 # meta developer: @hikarimods
 # requires: russian-names

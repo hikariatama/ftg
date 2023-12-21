@@ -6,7 +6,7 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://static.hikari.gay/forbid_joins_icon.png
+# meta pic: https://static.dan.tatar/forbid_joins_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/forbid_joins.jpg
 # meta developer: @hikarimods
 # scope: hikka_only

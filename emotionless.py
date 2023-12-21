@@ -10,18 +10,26 @@
 # meta banner: https://mods.hikariatama.ru/badges/emotionless.jpg
 # meta developer: @hikarimods
 # scope: hikka_only
-# scope: hikka_min 1.5.2
+# scope: hikka_min 1.6.3
 
 import logging
 import time
+from typing import NamedTuple, Optional
 
-from telethon.tl.functions.messages import ReadReactionsRequest
-from telethon.tl.types import Message, UpdateMessageReactions
-from telethon.utils import get_input_peer
+from hikkatl.tl.functions.messages import ReadReactionsRequest
+from hikkatl.tl.types import Message, UpdateMessageReactions
 
 from .. import loader, utils
 
 logger = logging.getLogger(__name__)
+
+
+class Entry(NamedTuple):
+    """Entry for reaction queue"""
+
+    chat: int
+    schedule: float
+    top_msg_id: Optional[int] = None
 
 
 @loader.tds
@@ -58,15 +66,6 @@ class EmotionlessMod(loader.Module):
         "_cls_doc": "Liest automatisch Reaktionen",
     }
 
-    strings_hi = {
-        "state": (
-            "<emoji document_id=5314591660192046611>😑</emoji> <b>एमोशनलेस मोड {}</b>"
-        ),
-        "on": "चालू",
-        "off": "बंद",
-        "_cls_doc": "ऑटोमैटिकली रिएक्शन पढ़ता है",
-    }
-
     strings_uz = {
         "state": (
             "<emoji document_id=5314591660192046611>😑</emoji> <b>Emotionless rejimi"
@@ -88,7 +87,7 @@ class EmotionlessMod(loader.Module):
     }
 
     def __init__(self):
-        self._queue = {}
+        self._queue = []
         self._flood_protect = []
         self._flood_protect_sample = 60
         self._threshold = 10
@@ -97,7 +96,6 @@ class EmotionlessMod(loader.Module):
         ru_doc="Переключить авточтение реакций",
         de_doc="Schaltet das automatische Lesen von Reaktionen um",
         tr_doc="Otomatik tepki okumayı aç/kapa",
-        hi_doc="ऑटोमैटिक रिएक्शन पढ़ना चालू/बंद करें",
         uz_doc="Avtomatik reaksiya o'qishni yoqish/ochish",
     )
     async def noreacts(self, message: Message):
@@ -109,13 +107,23 @@ class EmotionlessMod(loader.Module):
             self.strings("state").format(self.strings("on" if state else "off")),
         )
 
-    @loader.loop(interval=5, autostart=True)
+    @loader.loop(interval=3, autostart=True)
     async def _queue_handler(self):
-        for chat, schedule in self._queue.copy().items():
-            if schedule < time.time():
-                await self._client(ReadReactionsRequest(get_input_peer(chat)))
-                logger.debug("Read reactions in queued peer %s", chat)
-                self._queue.pop(chat)
+        if not self._queue:
+            return
+
+        chat, schedule, top_msg_id = self._queue[0]
+        if schedule > time.time():
+            return
+
+        self._queue.pop(0)
+
+        await self._client(ReadReactionsRequest(chat, top_msg_id))
+        logger.debug(
+            "Read reactions in queued peer %s, top_msg_id %s",
+            chat,
+            top_msg_id,
+        )
 
     @loader.raw_handler(UpdateMessageReactions)
     async def _handler(self, update: UpdateMessageReactions):
@@ -139,11 +147,19 @@ class EmotionlessMod(loader.Module):
         )
 
         if len(self._flood_protect) > self._threshold:
-            self._queue[chat] = time.time() + 15
+            self._queue.append(
+                Entry(
+                    chat=chat,
+                    schedule=self._flood_protect[0],
+                    top_msg_id=update.top_msg_id,
+                )
+            )
             logger.debug("Flood protect triggered, chat %s added to queue", update)
             return
 
         self._flood_protect += [int(time.time()) + self._flood_protect_sample]
 
-        await self._client(ReadReactionsRequest(update.peer))
-        logger.debug("Read reaction in %s", update.peer)
+        await self._client(ReadReactionsRequest(update.peer, update.top_msg_id))
+        logger.debug(
+            "Read reaction in %s, top_msg_id %s", update.peer, update.top_msg_id
+        )

@@ -6,7 +6,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://static.hikari.gay/porn_icon.png
+# meta pic: https://static.dan.tatar/porn_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/porn.jpg
 # meta developer: @hikarimods
 # scope: hikka_only

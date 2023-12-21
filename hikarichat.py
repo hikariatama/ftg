@@ -8,7 +8,7 @@ __version__ = (13, 0, 3)
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://static.hikari.gay/hikarichat_icon.png
+# meta pic: https://static.dan.tatar/hikarichat_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/hikarichat.jpg
 # meta desc: Chat administrator toolkit, now with powerful free version
 # meta developer: @hikarimods

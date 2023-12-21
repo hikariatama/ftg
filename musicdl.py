@@ -6,7 +6,7 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://static.hikari.gay/musicdl_icon.png
+# meta pic: https://static.dan.tatar/musicdl_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/musicdl.jpg
 # meta developer: @hikarimods
 # scope: hikka_only

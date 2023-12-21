@@ -6,7 +6,7 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://static.hikari.gay/dnd_statuses_icon.png
+# meta pic: https://static.dan.tatar/dnd_statuses_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/dnd_statuses.jpg
 # meta developer: @hikarimods
 # scope: hikka_only

@@ -944,6 +944,9 @@ class NekoSpyBeta(loader.Module):
         if not hasattr(message, "sender_id"):
             return
 
+        if not hasattr(message, "sender"):
+            message.sender = await message.get_sender()
+
         if (chat_id := utils.get_chat_id(message)) in self._ignore_cache or (
             message.is_private
             and self.config["ecospace_mode"]

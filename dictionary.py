@@ -6,7 +6,7 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://static.hikari.gay/dictionary_icon.png
+# meta pic: https://static.dan.tatar/dictionary_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/dictionary.jpg
 # meta developer: @hikarimods
 # requires: aiohttp urllib bs4

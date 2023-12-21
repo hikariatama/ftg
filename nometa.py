@@ -7,7 +7,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 
-# meta pic: https://static.hikari.gay/nometa_icon.png
+# meta pic: https://static.dan.tatar/nometa_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/nometa.jpg
 # meta developer: @hikarimods
 # scope: hikka_only

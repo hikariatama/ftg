@@ -8,7 +8,7 @@ __version__ = (1, 0, 2)
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://static.hikari.gay/longread_icon.png
+# meta pic: https://static.dan.tatar/longread_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/longread.jpg
 # meta developer: @hikarimods
 # scope: inline

@@ -7,7 +7,7 @@
 # 🔒 Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://static.hikari.gay/craiyon_icon.png
+# meta pic: https://static.dan.tatar/craiyon_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/craiyon.jpg
 # meta developer: @hikarimods
 # scope: hikka_only

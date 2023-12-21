@@ -9,7 +9,7 @@ __version__ = (1, 1, 0)
 # 🔒 Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://static.hikari.gay/artai_icon.png
+# meta pic: https://static.dan.tatar/artai_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/artai.jpg
 # meta developer: @hikarimods
 # scope: hikka_only

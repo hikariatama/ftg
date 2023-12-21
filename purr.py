@@ -7,7 +7,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 
-# meta pic: https://static.hikari.gay/purr_icon.png
+# meta pic: https://static.dan.tatar/purr_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/purr.jpg
 # requires: pydub python-ffmpeg
 # meta developer: @hikarimods

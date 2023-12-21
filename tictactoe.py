@@ -8,7 +8,7 @@ __version__ = (2, 0, 0)
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://static.hikari.gay/tictactoe_icon.png
+# meta pic: https://static.dan.tatar/tictactoe_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/tictactoe.jpg
 # meta developer: @hikarimods
 # scope: inline

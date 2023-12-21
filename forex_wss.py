@@ -6,7 +6,7 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://static.hikari.gay/forex_wss.png
+# meta pic: https://static.dan.tatar/forex_wss.png
 # meta banner: https://mods.hikariatama.ru/badges/forex_wss.jpg
 # meta developer: @hikarimods
 # requires: websockets

@@ -9,7 +9,7 @@ __version__ = (2, 0, 0)
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # Updated by a https://t.me/vsecoder
 
-# meta pic: https://static.hikari.gay/wakatime_icon.png
+# meta pic: https://static.dan.tatar/wakatime_icon.png
 # meta banner: https://mods.hikariatama.ru/badges/wakatime.jpg
 # meta developer: @hikarimods
 # inspiration: @vsecoder

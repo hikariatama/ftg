@@ -6,7 +6,7 @@
 # 🔒 Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://static.hikari.gay/v2a_icon.png
+# meta pic: https://static.dan.tatar/v2a_icon.png
 # meta developer: @hikarimods
 # meta banner: https://mods.hikariatama.ru/badges/v2a.jpg
 # scope: ffmpeg
